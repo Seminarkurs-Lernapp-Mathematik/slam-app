@@ -6,7 +6,7 @@ part of 'topic.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Topic _$TopicFromJson(Map<String, dynamic> json) => _Topic(
+_$TopicImpl _$$TopicImplFromJson(Map<String, dynamic> json) => _$TopicImpl(
       id: json['id'] as String,
       topicKey: json['topicKey'] as String,
       title: json['title'] as String,
@@ -22,7 +22,8 @@ _Topic _$TopicFromJson(Map<String, dynamic> json) => _Topic(
       level: json['level'] as String?,
     );
 
-Map<String, dynamic> _$TopicToJson(_Topic instance) => <String, dynamic>{
+Map<String, dynamic> _$$TopicImplToJson(_$TopicImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'topicKey': instance.topicKey,
       'title': instance.title,
@@ -38,8 +39,8 @@ Map<String, dynamic> _$TopicToJson(_Topic instance) => <String, dynamic>{
       'level': instance.level,
     };
 
-_TopicProgress _$TopicProgressFromJson(Map<String, dynamic> json) =>
-    _TopicProgress(
+_$TopicProgressImpl _$$TopicProgressImplFromJson(Map<String, dynamic> json) =>
+    _$TopicProgressImpl(
       topicKey: json['topicKey'] as String,
       questionsCompleted: (json['questionsCompleted'] as num?)?.toInt() ?? 0,
       totalQuestions: (json['totalQuestions'] as num?)?.toInt() ?? 0,
@@ -54,7 +55,7 @@ _TopicProgress _$TopicProgressFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['createdAt'] as String),
     );
 
-Map<String, dynamic> _$TopicProgressToJson(_TopicProgress instance) =>
+Map<String, dynamic> _$$TopicProgressImplToJson(_$TopicProgressImpl instance) =>
     <String, dynamic>{
       'topicKey': instance.topicKey,
       'questionsCompleted': instance.questionsCompleted,
@@ -66,8 +67,9 @@ Map<String, dynamic> _$TopicProgressToJson(_TopicProgress instance) =>
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 
-_LearningSession _$LearningSessionFromJson(Map<String, dynamic> json) =>
-    _LearningSession(
+_$LearningSessionImpl _$$LearningSessionImplFromJson(
+        Map<String, dynamic> json) =>
+    _$LearningSessionImpl(
       sessionId: json['sessionId'] as String,
       learningPlanItemId: json['learningPlanItemId'],
       generatedQuestionsId: json['generatedQuestionsId'] as String,
@@ -82,7 +84,8 @@ _LearningSession _$LearningSessionFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['endedAt'] as String),
     );
 
-Map<String, dynamic> _$LearningSessionToJson(_LearningSession instance) =>
+Map<String, dynamic> _$$LearningSessionImplToJson(
+        _$LearningSessionImpl instance) =>
     <String, dynamic>{
       'sessionId': instance.sessionId,
       'learningPlanItemId': instance.learningPlanItemId,
@@ -96,8 +99,9 @@ Map<String, dynamic> _$LearningSessionToJson(_LearningSession instance) =>
       'endedAt': instance.endedAt?.toIso8601String(),
     };
 
-_LearningPlanItem _$LearningPlanItemFromJson(Map<String, dynamic> json) =>
-    _LearningPlanItem(
+_$LearningPlanItemImpl _$$LearningPlanItemImplFromJson(
+        Map<String, dynamic> json) =>
+    _$LearningPlanItemImpl(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       themes: (json['themes'] as List<dynamic>?)
@@ -116,7 +120,8 @@ _LearningPlanItem _$LearningPlanItemFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['lastAccessed'] as String),
     );
 
-Map<String, dynamic> _$LearningPlanItemToJson(_LearningPlanItem instance) =>
+Map<String, dynamic> _$$LearningPlanItemImplToJson(
+        _$LearningPlanItemImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

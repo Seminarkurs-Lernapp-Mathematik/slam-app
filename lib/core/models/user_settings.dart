@@ -9,6 +9,8 @@ part 'user_settings.g.dart';
 /// users/{userId}/settings
 @freezed
 class UserSettings with _$UserSettings {
+  const UserSettings._();
+
   const factory UserSettings({
     required ThemeSettings theme,
     required AIModelSettings aiModel,
@@ -33,6 +35,8 @@ class UserSettings with _$UserSettings {
 /// Theme Settings
 @freezed
 class ThemeSettings with _$ThemeSettings {
+  const ThemeSettings._();
+
   const factory ThemeSettings({
     required String name,
     required String primary,
@@ -97,6 +101,8 @@ class ThemeSettings with _$ThemeSettings {
 /// AI Model Settings
 @freezed
 class AIModelSettings with _$AIModelSettings {
+  const AIModelSettings._();
+
   const factory AIModelSettings({
     @Default(50) int detailLevel, // 0-100
     @Default(0.5) double temperature, // 0-1

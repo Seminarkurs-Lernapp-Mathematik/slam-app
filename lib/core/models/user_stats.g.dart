@@ -6,7 +6,8 @@ part of 'user_stats.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UserStats _$UserStatsFromJson(Map<String, dynamic> json) => _UserStats(
+_$UserStatsImpl _$$UserStatsImplFromJson(Map<String, dynamic> json) =>
+    _$UserStatsImpl(
       level: (json['level'] as num?)?.toInt() ?? 1,
       xp: (json['xp'] as num?)?.toInt() ?? 0,
       xpToNextLevel: (json['xpToNextLevel'] as num?)?.toInt() ?? 100,
@@ -15,7 +16,7 @@ _UserStats _$UserStatsFromJson(Map<String, dynamic> json) => _UserStats(
       lastActiveDate: json['lastActiveDate'] as String?,
     );
 
-Map<String, dynamic> _$UserStatsToJson(_UserStats instance) =>
+Map<String, dynamic> _$$UserStatsImplToJson(_$UserStatsImpl instance) =>
     <String, dynamic>{
       'level': instance.level,
       'xp': instance.xp,

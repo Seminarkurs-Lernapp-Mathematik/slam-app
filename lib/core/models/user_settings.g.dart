@@ -6,8 +6,8 @@ part of 'user_settings.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
-    _UserSettings(
+_$UserSettingsImpl _$$UserSettingsImplFromJson(Map<String, dynamic> json) =>
+    _$UserSettingsImpl(
       theme: ThemeSettings.fromJson(json['theme'] as Map<String, dynamic>),
       aiModel:
           AIModelSettings.fromJson(json['aiModel'] as Map<String, dynamic>),
@@ -15,7 +15,7 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
       courseType: json['courseType'] as String? ?? 'Leistungsfach',
     );
 
-Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
+Map<String, dynamic> _$$UserSettingsImplToJson(_$UserSettingsImpl instance) =>
     <String, dynamic>{
       'theme': instance.theme,
       'aiModel': instance.aiModel,
@@ -23,8 +23,8 @@ Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
       'courseType': instance.courseType,
     };
 
-_ThemeSettings _$ThemeSettingsFromJson(Map<String, dynamic> json) =>
-    _ThemeSettings(
+_$ThemeSettingsImpl _$$ThemeSettingsImplFromJson(Map<String, dynamic> json) =>
+    _$ThemeSettingsImpl(
       name: json['name'] as String,
       primary: json['primary'] as String,
       gradient: json['gradient'] as String,
@@ -33,7 +33,7 @@ _ThemeSettings _$ThemeSettingsFromJson(Map<String, dynamic> json) =>
       glow: json['glow'] as String,
     );
 
-Map<String, dynamic> _$ThemeSettingsToJson(_ThemeSettings instance) =>
+Map<String, dynamic> _$$ThemeSettingsImplToJson(_$ThemeSettingsImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
       'primary': instance.primary,
@@ -43,15 +43,17 @@ Map<String, dynamic> _$ThemeSettingsToJson(_ThemeSettings instance) =>
       'glow': instance.glow,
     };
 
-_AIModelSettings _$AIModelSettingsFromJson(Map<String, dynamic> json) =>
-    _AIModelSettings(
+_$AIModelSettingsImpl _$$AIModelSettingsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AIModelSettingsImpl(
       detailLevel: (json['detailLevel'] as num?)?.toInt() ?? 50,
       temperature: (json['temperature'] as num?)?.toDouble() ?? 0.5,
       helpfulness: (json['helpfulness'] as num?)?.toInt() ?? 50,
       autoMode: json['autoMode'] as bool? ?? true,
     );
 
-Map<String, dynamic> _$AIModelSettingsToJson(_AIModelSettings instance) =>
+Map<String, dynamic> _$$AIModelSettingsImplToJson(
+        _$AIModelSettingsImpl instance) =>
     <String, dynamic>{
       'detailLevel': instance.detailLevel,
       'temperature': instance.temperature,

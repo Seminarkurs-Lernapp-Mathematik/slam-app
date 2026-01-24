@@ -8,6 +8,8 @@ part 'question.g.dart';
 /// Kompatibel mit React App Question Structure
 @freezed
 class Question with _$Question {
+  const Question._();
+
   const factory Question({
     required String id,
     required QuestionType type,
@@ -40,6 +42,8 @@ enum QuestionType {
 /// Question Option (for multiple-choice)
 @freezed
 class QuestionOption with _$QuestionOption {
+  const QuestionOption._();
+
   const factory QuestionOption({
     required String id, // A, B, C, D
     required String text,
@@ -53,6 +57,8 @@ class QuestionOption with _$QuestionOption {
 /// Question Hint
 @freezed
 class QuestionHint with _$QuestionHint {
+  const QuestionHint._();
+
   const factory QuestionHint({
     required int level, // 1, 2, 3
     required String text,
@@ -65,6 +71,8 @@ class QuestionHint with _$QuestionHint {
 /// GeoGebra Data
 @freezed
 class GeoGebraData with _$GeoGebraData {
+  const GeoGebraData._();
+
   const factory GeoGebraData({
     String? appletId,
     @Default([]) List<String> commands,
@@ -80,6 +88,8 @@ class GeoGebraData with _$GeoGebraData {
 /// Firestore: users/{userId}/generatedQuestions/{sessionId}
 @freezed
 class QuestionSession with _$QuestionSession {
+  const QuestionSession._();
+
   const factory QuestionSession({
     required String sessionId,
     required int learningPlanItemId,
@@ -97,6 +107,8 @@ class QuestionSession with _$QuestionSession {
 /// Topic Data
 @freezed
 class TopicData with _$TopicData {
+  const TopicData._();
+
   const factory TopicData({
     required String leitidee,
     required String thema,
@@ -110,6 +122,8 @@ class TopicData with _$TopicData {
 /// User Context
 @freezed
 class UserContext with _$UserContext {
+  const UserContext._();
+
   const factory UserContext({
     required String gradeLevel,
     required String courseType,
@@ -124,6 +138,8 @@ class UserContext with _$UserContext {
 /// Firestore: users/{userId}/questionProgress/{questionId}
 @freezed
 class QuestionProgress with _$QuestionProgress {
+  const QuestionProgress._();
+
   const factory QuestionProgress({
     required String questionId,
     required String sessionId,
@@ -158,6 +174,8 @@ enum QuestionStatus {
 /// Hint Usage Detail
 @freezed
 class HintUsageDetail with _$HintUsageDetail {
+  const HintUsageDetail._();
+
   const factory HintUsageDetail({
     required int level, // 1-3
     required DateTime usedAt,
@@ -170,6 +188,8 @@ class HintUsageDetail with _$HintUsageDetail {
 /// XP Breakdown
 @freezed
 class XPBreakdown with _$XPBreakdown {
+  const XPBreakdown._();
+
   const factory XPBreakdown({
     required int base,
     required int hintPenalty,

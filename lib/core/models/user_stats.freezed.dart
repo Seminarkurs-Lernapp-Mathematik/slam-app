@@ -1,4 +1,3 @@
-// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -10,58 +9,38 @@ part of 'user_stats.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+
+UserStats _$UserStatsFromJson(Map<String, dynamic> json) {
+  return _UserStats.fromJson(json);
+}
 
 /// @nodoc
 mixin _$UserStats {
-  int get level;
-  int get xp;
-  int get xpToNextLevel;
-  int get streak;
-  int get totalXp;
-  String? get lastActiveDate;
+  int get level => throw _privateConstructorUsedError;
+  int get xp => throw _privateConstructorUsedError;
+  int get xpToNextLevel => throw _privateConstructorUsedError;
+  int get streak => throw _privateConstructorUsedError;
+  int get totalXp => throw _privateConstructorUsedError;
+  String? get lastActiveDate => throw _privateConstructorUsedError;
+
+  /// Serializes this UserStats to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of UserStats
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $UserStatsCopyWith<UserStats> get copyWith =>
-      _$UserStatsCopyWithImpl<UserStats>(this as UserStats, _$identity);
-
-  /// Serializes this UserStats to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is UserStats &&
-            (identical(other.level, level) || other.level == level) &&
-            (identical(other.xp, xp) || other.xp == xp) &&
-            (identical(other.xpToNextLevel, xpToNextLevel) ||
-                other.xpToNextLevel == xpToNextLevel) &&
-            (identical(other.streak, streak) || other.streak == streak) &&
-            (identical(other.totalXp, totalXp) || other.totalXp == totalXp) &&
-            (identical(other.lastActiveDate, lastActiveDate) ||
-                other.lastActiveDate == lastActiveDate));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, level, xp, xpToNextLevel, streak, totalXp, lastActiveDate);
-
-  @override
-  String toString() {
-    return 'UserStats(level: $level, xp: $xp, xpToNextLevel: $xpToNextLevel, streak: $streak, totalXp: $totalXp, lastActiveDate: $lastActiveDate)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $UserStatsCopyWith<$Res> {
-  factory $UserStatsCopyWith(UserStats value, $Res Function(UserStats) _then) =
-      _$UserStatsCopyWithImpl;
+abstract class $UserStatsCopyWith<$Res> {
+  factory $UserStatsCopyWith(UserStats value, $Res Function(UserStats) then) =
+      _$UserStatsCopyWithImpl<$Res, UserStats>;
   @useResult
   $Res call(
       {int level,
@@ -73,11 +52,14 @@ abstract mixin class $UserStatsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$UserStatsCopyWithImpl<$Res> implements $UserStatsCopyWith<$Res> {
-  _$UserStatsCopyWithImpl(this._self, this._then);
+class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
+    implements $UserStatsCopyWith<$Res> {
+  _$UserStatsCopyWithImpl(this._value, this._then);
 
-  final UserStats _self;
-  final $Res Function(UserStats) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of UserStats
   /// with the given fields replaced by the non-null parameter values.
@@ -91,29 +73,95 @@ class _$UserStatsCopyWithImpl<$Res> implements $UserStatsCopyWith<$Res> {
     Object? totalXp = null,
     Object? lastActiveDate = freezed,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       level: null == level
-          ? _self.level
+          ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
       xp: null == xp
-          ? _self.xp
+          ? _value.xp
           : xp // ignore: cast_nullable_to_non_nullable
               as int,
       xpToNextLevel: null == xpToNextLevel
-          ? _self.xpToNextLevel
+          ? _value.xpToNextLevel
           : xpToNextLevel // ignore: cast_nullable_to_non_nullable
               as int,
       streak: null == streak
-          ? _self.streak
+          ? _value.streak
           : streak // ignore: cast_nullable_to_non_nullable
               as int,
       totalXp: null == totalXp
-          ? _self.totalXp
+          ? _value.totalXp
           : totalXp // ignore: cast_nullable_to_non_nullable
               as int,
       lastActiveDate: freezed == lastActiveDate
-          ? _self.lastActiveDate
+          ? _value.lastActiveDate
+          : lastActiveDate // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UserStatsImplCopyWith<$Res>
+    implements $UserStatsCopyWith<$Res> {
+  factory _$$UserStatsImplCopyWith(
+          _$UserStatsImpl value, $Res Function(_$UserStatsImpl) then) =
+      __$$UserStatsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {int level,
+      int xp,
+      int xpToNextLevel,
+      int streak,
+      int totalXp,
+      String? lastActiveDate});
+}
+
+/// @nodoc
+class __$$UserStatsImplCopyWithImpl<$Res>
+    extends _$UserStatsCopyWithImpl<$Res, _$UserStatsImpl>
+    implements _$$UserStatsImplCopyWith<$Res> {
+  __$$UserStatsImplCopyWithImpl(
+      _$UserStatsImpl _value, $Res Function(_$UserStatsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? level = null,
+    Object? xp = null,
+    Object? xpToNextLevel = null,
+    Object? streak = null,
+    Object? totalXp = null,
+    Object? lastActiveDate = freezed,
+  }) {
+    return _then(_$UserStatsImpl(
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
+      xp: null == xp
+          ? _value.xp
+          : xp // ignore: cast_nullable_to_non_nullable
+              as int,
+      xpToNextLevel: null == xpToNextLevel
+          ? _value.xpToNextLevel
+          : xpToNextLevel // ignore: cast_nullable_to_non_nullable
+              as int,
+      streak: null == streak
+          ? _value.streak
+          : streak // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalXp: null == totalXp
+          ? _value.totalXp
+          : totalXp // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastActiveDate: freezed == lastActiveDate
+          ? _value.lastActiveDate
           : lastActiveDate // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
@@ -122,8 +170,8 @@ class _$UserStatsCopyWithImpl<$Res> implements $UserStatsCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _UserStats extends UserStats {
-  const _UserStats(
+class _$UserStatsImpl extends _UserStats {
+  const _$UserStatsImpl(
       {this.level = 1,
       this.xp = 0,
       this.xpToNextLevel = 100,
@@ -131,8 +179,9 @@ class _UserStats extends UserStats {
       this.totalXp = 0,
       this.lastActiveDate})
       : super._();
-  factory _UserStats.fromJson(Map<String, dynamic> json) =>
-      _$UserStatsFromJson(json);
+
+  factory _$UserStatsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserStatsImplFromJson(json);
 
   @override
   @JsonKey()
@@ -152,26 +201,16 @@ class _UserStats extends UserStats {
   @override
   final String? lastActiveDate;
 
-  /// Create a copy of UserStats
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$UserStatsCopyWith<_UserStats> get copyWith =>
-      __$UserStatsCopyWithImpl<_UserStats>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$UserStatsToJson(
-      this,
-    );
+  String toString() {
+    return 'UserStats(level: $level, xp: $xp, xpToNextLevel: $xpToNextLevel, streak: $streak, totalXp: $totalXp, lastActiveDate: $lastActiveDate)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _UserStats &&
+            other is _$UserStatsImpl &&
             (identical(other.level, level) || other.level == level) &&
             (identical(other.xp, xp) || other.xp == xp) &&
             (identical(other.xpToNextLevel, xpToNextLevel) ||
@@ -187,75 +226,52 @@ class _UserStats extends UserStats {
   int get hashCode => Object.hash(
       runtimeType, level, xp, xpToNextLevel, streak, totalXp, lastActiveDate);
 
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'UserStats(level: $level, xp: $xp, xpToNextLevel: $xpToNextLevel, streak: $streak, totalXp: $totalXp, lastActiveDate: $lastActiveDate)';
+  @pragma('vm:prefer-inline')
+  _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
+      __$$UserStatsImplCopyWithImpl<_$UserStatsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserStatsImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$UserStatsCopyWith<$Res>
-    implements $UserStatsCopyWith<$Res> {
-  factory _$UserStatsCopyWith(
-          _UserStats value, $Res Function(_UserStats) _then) =
-      __$UserStatsCopyWithImpl;
+abstract class _UserStats extends UserStats {
+  const factory _UserStats(
+      {final int level,
+      final int xp,
+      final int xpToNextLevel,
+      final int streak,
+      final int totalXp,
+      final String? lastActiveDate}) = _$UserStatsImpl;
+  const _UserStats._() : super._();
+
+  factory _UserStats.fromJson(Map<String, dynamic> json) =
+      _$UserStatsImpl.fromJson;
+
   @override
-  @useResult
-  $Res call(
-      {int level,
-      int xp,
-      int xpToNextLevel,
-      int streak,
-      int totalXp,
-      String? lastActiveDate});
-}
-
-/// @nodoc
-class __$UserStatsCopyWithImpl<$Res> implements _$UserStatsCopyWith<$Res> {
-  __$UserStatsCopyWithImpl(this._self, this._then);
-
-  final _UserStats _self;
-  final $Res Function(_UserStats) _then;
+  int get level;
+  @override
+  int get xp;
+  @override
+  int get xpToNextLevel;
+  @override
+  int get streak;
+  @override
+  int get totalXp;
+  @override
+  String? get lastActiveDate;
 
   /// Create a copy of UserStats
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? level = null,
-    Object? xp = null,
-    Object? xpToNextLevel = null,
-    Object? streak = null,
-    Object? totalXp = null,
-    Object? lastActiveDate = freezed,
-  }) {
-    return _then(_UserStats(
-      level: null == level
-          ? _self.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
-      xp: null == xp
-          ? _self.xp
-          : xp // ignore: cast_nullable_to_non_nullable
-              as int,
-      xpToNextLevel: null == xpToNextLevel
-          ? _self.xpToNextLevel
-          : xpToNextLevel // ignore: cast_nullable_to_non_nullable
-              as int,
-      streak: null == streak
-          ? _self.streak
-          : streak // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalXp: null == totalXp
-          ? _self.totalXp
-          : totalXp // ignore: cast_nullable_to_non_nullable
-              as int,
-      lastActiveDate: freezed == lastActiveDate
-          ? _self.lastActiveDate
-          : lastActiveDate // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-// dart format on

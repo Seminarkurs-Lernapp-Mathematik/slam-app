@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
+import '../../../../core/models/user_stats.dart';
 import '../widgets/level_progress_circle.dart';
 import '../widgets/xp_stats_card.dart';
 import '../widgets/streak_calendar.dart';
@@ -308,7 +309,8 @@ class ProgressScreen extends ConsumerWidget {
 final userStatsStreamProvider =
     StreamProvider.autoDispose.family((ref, String userId) {
   if (userId.isEmpty) {
-    return Stream.value(null);
+    // Return initial stats for empty userId (not logged in)
+    return Stream.value(UserStats.initial());
   }
 
   final firestoreService = ref.watch(firestoreServiceProvider);

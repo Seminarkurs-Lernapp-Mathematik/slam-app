@@ -1,4 +1,3 @@
-// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -10,56 +9,37 @@ part of 'user_settings.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+
+UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) {
+  return _UserSettings.fromJson(json);
+}
 
 /// @nodoc
 mixin _$UserSettings {
-  ThemeSettings get theme;
-  AIModelSettings get aiModel;
-  String get gradeLevel;
-  String get courseType;
+  ThemeSettings get theme => throw _privateConstructorUsedError;
+  AIModelSettings get aiModel => throw _privateConstructorUsedError;
+  String get gradeLevel => throw _privateConstructorUsedError;
+  String get courseType => throw _privateConstructorUsedError;
+
+  /// Serializes this UserSettings to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $UserSettingsCopyWith<UserSettings> get copyWith =>
-      _$UserSettingsCopyWithImpl<UserSettings>(
-          this as UserSettings, _$identity);
-
-  /// Serializes this UserSettings to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is UserSettings &&
-            (identical(other.theme, theme) || other.theme == theme) &&
-            (identical(other.aiModel, aiModel) || other.aiModel == aiModel) &&
-            (identical(other.gradeLevel, gradeLevel) ||
-                other.gradeLevel == gradeLevel) &&
-            (identical(other.courseType, courseType) ||
-                other.courseType == courseType));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, theme, aiModel, gradeLevel, courseType);
-
-  @override
-  String toString() {
-    return 'UserSettings(theme: $theme, aiModel: $aiModel, gradeLevel: $gradeLevel, courseType: $courseType)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $UserSettingsCopyWith<$Res> {
+abstract class $UserSettingsCopyWith<$Res> {
   factory $UserSettingsCopyWith(
-          UserSettings value, $Res Function(UserSettings) _then) =
-      _$UserSettingsCopyWithImpl;
+          UserSettings value, $Res Function(UserSettings) then) =
+      _$UserSettingsCopyWithImpl<$Res, UserSettings>;
   @useResult
   $Res call(
       {ThemeSettings theme,
@@ -72,11 +52,14 @@ abstract mixin class $UserSettingsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$UserSettingsCopyWithImpl<$Res> implements $UserSettingsCopyWith<$Res> {
-  _$UserSettingsCopyWithImpl(this._self, this._then);
+class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
+    implements $UserSettingsCopyWith<$Res> {
+  _$UserSettingsCopyWithImpl(this._value, this._then);
 
-  final UserSettings _self;
-  final $Res Function(UserSettings) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -88,24 +71,24 @@ class _$UserSettingsCopyWithImpl<$Res> implements $UserSettingsCopyWith<$Res> {
     Object? gradeLevel = null,
     Object? courseType = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       theme: null == theme
-          ? _self.theme
+          ? _value.theme
           : theme // ignore: cast_nullable_to_non_nullable
               as ThemeSettings,
       aiModel: null == aiModel
-          ? _self.aiModel
+          ? _value.aiModel
           : aiModel // ignore: cast_nullable_to_non_nullable
               as AIModelSettings,
       gradeLevel: null == gradeLevel
-          ? _self.gradeLevel
+          ? _value.gradeLevel
           : gradeLevel // ignore: cast_nullable_to_non_nullable
               as String,
       courseType: null == courseType
-          ? _self.courseType
+          ? _value.courseType
           : courseType // ignore: cast_nullable_to_non_nullable
               as String,
-    ));
+    ) as $Val);
   }
 
   /// Create a copy of UserSettings
@@ -113,8 +96,8 @@ class _$UserSettingsCopyWithImpl<$Res> implements $UserSettingsCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $ThemeSettingsCopyWith<$Res> get theme {
-    return $ThemeSettingsCopyWith<$Res>(_self.theme, (value) {
-      return _then(_self.copyWith(theme: value));
+    return $ThemeSettingsCopyWith<$Res>(_value.theme, (value) {
+      return _then(_value.copyWith(theme: value) as $Val);
     });
   }
 
@@ -123,22 +106,83 @@ class _$UserSettingsCopyWithImpl<$Res> implements $UserSettingsCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $AIModelSettingsCopyWith<$Res> get aiModel {
-    return $AIModelSettingsCopyWith<$Res>(_self.aiModel, (value) {
-      return _then(_self.copyWith(aiModel: value));
+    return $AIModelSettingsCopyWith<$Res>(_value.aiModel, (value) {
+      return _then(_value.copyWith(aiModel: value) as $Val);
     });
   }
 }
 
 /// @nodoc
+abstract class _$$UserSettingsImplCopyWith<$Res>
+    implements $UserSettingsCopyWith<$Res> {
+  factory _$$UserSettingsImplCopyWith(
+          _$UserSettingsImpl value, $Res Function(_$UserSettingsImpl) then) =
+      __$$UserSettingsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {ThemeSettings theme,
+      AIModelSettings aiModel,
+      String gradeLevel,
+      String courseType});
+
+  @override
+  $ThemeSettingsCopyWith<$Res> get theme;
+  @override
+  $AIModelSettingsCopyWith<$Res> get aiModel;
+}
+
+/// @nodoc
+class __$$UserSettingsImplCopyWithImpl<$Res>
+    extends _$UserSettingsCopyWithImpl<$Res, _$UserSettingsImpl>
+    implements _$$UserSettingsImplCopyWith<$Res> {
+  __$$UserSettingsImplCopyWithImpl(
+      _$UserSettingsImpl _value, $Res Function(_$UserSettingsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? theme = null,
+    Object? aiModel = null,
+    Object? gradeLevel = null,
+    Object? courseType = null,
+  }) {
+    return _then(_$UserSettingsImpl(
+      theme: null == theme
+          ? _value.theme
+          : theme // ignore: cast_nullable_to_non_nullable
+              as ThemeSettings,
+      aiModel: null == aiModel
+          ? _value.aiModel
+          : aiModel // ignore: cast_nullable_to_non_nullable
+              as AIModelSettings,
+      gradeLevel: null == gradeLevel
+          ? _value.gradeLevel
+          : gradeLevel // ignore: cast_nullable_to_non_nullable
+              as String,
+      courseType: null == courseType
+          ? _value.courseType
+          : courseType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
 @JsonSerializable()
-class _UserSettings implements UserSettings {
-  const _UserSettings(
+class _$UserSettingsImpl extends _UserSettings {
+  const _$UserSettingsImpl(
       {required this.theme,
       required this.aiModel,
       this.gradeLevel = 'Klasse_11',
-      this.courseType = 'Leistungsfach'});
-  factory _UserSettings.fromJson(Map<String, dynamic> json) =>
-      _$UserSettingsFromJson(json);
+      this.courseType = 'Leistungsfach'})
+      : super._();
+
+  factory _$UserSettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserSettingsImplFromJson(json);
 
   @override
   final ThemeSettings theme;
@@ -151,26 +195,16 @@ class _UserSettings implements UserSettings {
   @JsonKey()
   final String courseType;
 
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$UserSettingsCopyWith<_UserSettings> get copyWith =>
-      __$UserSettingsCopyWithImpl<_UserSettings>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$UserSettingsToJson(
-      this,
-    );
+  String toString() {
+    return 'UserSettings(theme: $theme, aiModel: $aiModel, gradeLevel: $gradeLevel, courseType: $courseType)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _UserSettings &&
+            other is _$UserSettingsImpl &&
             (identical(other.theme, theme) || other.theme == theme) &&
             (identical(other.aiModel, aiModel) || other.aiModel == aiModel) &&
             (identical(other.gradeLevel, gradeLevel) ||
@@ -184,143 +218,78 @@ class _UserSettings implements UserSettings {
   int get hashCode =>
       Object.hash(runtimeType, theme, aiModel, gradeLevel, courseType);
 
+  /// Create a copy of UserSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'UserSettings(theme: $theme, aiModel: $aiModel, gradeLevel: $gradeLevel, courseType: $courseType)';
+  @pragma('vm:prefer-inline')
+  _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>
+      __$$UserSettingsImplCopyWithImpl<_$UserSettingsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserSettingsImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$UserSettingsCopyWith<$Res>
-    implements $UserSettingsCopyWith<$Res> {
-  factory _$UserSettingsCopyWith(
-          _UserSettings value, $Res Function(_UserSettings) _then) =
-      __$UserSettingsCopyWithImpl;
-  @override
-  @useResult
-  $Res call(
-      {ThemeSettings theme,
-      AIModelSettings aiModel,
-      String gradeLevel,
-      String courseType});
+abstract class _UserSettings extends UserSettings {
+  const factory _UserSettings(
+      {required final ThemeSettings theme,
+      required final AIModelSettings aiModel,
+      final String gradeLevel,
+      final String courseType}) = _$UserSettingsImpl;
+  const _UserSettings._() : super._();
+
+  factory _UserSettings.fromJson(Map<String, dynamic> json) =
+      _$UserSettingsImpl.fromJson;
 
   @override
-  $ThemeSettingsCopyWith<$Res> get theme;
+  ThemeSettings get theme;
   @override
-  $AIModelSettingsCopyWith<$Res> get aiModel;
+  AIModelSettings get aiModel;
+  @override
+  String get gradeLevel;
+  @override
+  String get courseType;
+
+  /// Create a copy of UserSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
-/// @nodoc
-class __$UserSettingsCopyWithImpl<$Res>
-    implements _$UserSettingsCopyWith<$Res> {
-  __$UserSettingsCopyWithImpl(this._self, this._then);
-
-  final _UserSettings _self;
-  final $Res Function(_UserSettings) _then;
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? theme = null,
-    Object? aiModel = null,
-    Object? gradeLevel = null,
-    Object? courseType = null,
-  }) {
-    return _then(_UserSettings(
-      theme: null == theme
-          ? _self.theme
-          : theme // ignore: cast_nullable_to_non_nullable
-              as ThemeSettings,
-      aiModel: null == aiModel
-          ? _self.aiModel
-          : aiModel // ignore: cast_nullable_to_non_nullable
-              as AIModelSettings,
-      gradeLevel: null == gradeLevel
-          ? _self.gradeLevel
-          : gradeLevel // ignore: cast_nullable_to_non_nullable
-              as String,
-      courseType: null == courseType
-          ? _self.courseType
-          : courseType // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ThemeSettingsCopyWith<$Res> get theme {
-    return $ThemeSettingsCopyWith<$Res>(_self.theme, (value) {
-      return _then(_self.copyWith(theme: value));
-    });
-  }
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AIModelSettingsCopyWith<$Res> get aiModel {
-    return $AIModelSettingsCopyWith<$Res>(_self.aiModel, (value) {
-      return _then(_self.copyWith(aiModel: value));
-    });
-  }
+ThemeSettings _$ThemeSettingsFromJson(Map<String, dynamic> json) {
+  return _ThemeSettings.fromJson(json);
 }
 
 /// @nodoc
 mixin _$ThemeSettings {
-  String get name;
-  String get primary;
-  String get gradient;
-  String get gradientFrom;
-  String get gradientTo;
-  String get glow;
+  String get name => throw _privateConstructorUsedError;
+  String get primary => throw _privateConstructorUsedError;
+  String get gradient => throw _privateConstructorUsedError;
+  String get gradientFrom => throw _privateConstructorUsedError;
+  String get gradientTo => throw _privateConstructorUsedError;
+  String get glow => throw _privateConstructorUsedError;
+
+  /// Serializes this ThemeSettings to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of ThemeSettings
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $ThemeSettingsCopyWith<ThemeSettings> get copyWith =>
-      _$ThemeSettingsCopyWithImpl<ThemeSettings>(
-          this as ThemeSettings, _$identity);
-
-  /// Serializes this ThemeSettings to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is ThemeSettings &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.primary, primary) || other.primary == primary) &&
-            (identical(other.gradient, gradient) ||
-                other.gradient == gradient) &&
-            (identical(other.gradientFrom, gradientFrom) ||
-                other.gradientFrom == gradientFrom) &&
-            (identical(other.gradientTo, gradientTo) ||
-                other.gradientTo == gradientTo) &&
-            (identical(other.glow, glow) || other.glow == glow));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, name, primary, gradient, gradientFrom, gradientTo, glow);
-
-  @override
-  String toString() {
-    return 'ThemeSettings(name: $name, primary: $primary, gradient: $gradient, gradientFrom: $gradientFrom, gradientTo: $gradientTo, glow: $glow)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $ThemeSettingsCopyWith<$Res> {
+abstract class $ThemeSettingsCopyWith<$Res> {
   factory $ThemeSettingsCopyWith(
-          ThemeSettings value, $Res Function(ThemeSettings) _then) =
-      _$ThemeSettingsCopyWithImpl;
+          ThemeSettings value, $Res Function(ThemeSettings) then) =
+      _$ThemeSettingsCopyWithImpl<$Res, ThemeSettings>;
   @useResult
   $Res call(
       {String name,
@@ -332,12 +301,14 @@ abstract mixin class $ThemeSettingsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ThemeSettingsCopyWithImpl<$Res>
+class _$ThemeSettingsCopyWithImpl<$Res, $Val extends ThemeSettings>
     implements $ThemeSettingsCopyWith<$Res> {
-  _$ThemeSettingsCopyWithImpl(this._self, this._then);
+  _$ThemeSettingsCopyWithImpl(this._value, this._then);
 
-  final ThemeSettings _self;
-  final $Res Function(ThemeSettings) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of ThemeSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -351,29 +322,95 @@ class _$ThemeSettingsCopyWithImpl<$Res>
     Object? gradientTo = null,
     Object? glow = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       name: null == name
-          ? _self.name
+          ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
       primary: null == primary
-          ? _self.primary
+          ? _value.primary
           : primary // ignore: cast_nullable_to_non_nullable
               as String,
       gradient: null == gradient
-          ? _self.gradient
+          ? _value.gradient
           : gradient // ignore: cast_nullable_to_non_nullable
               as String,
       gradientFrom: null == gradientFrom
-          ? _self.gradientFrom
+          ? _value.gradientFrom
           : gradientFrom // ignore: cast_nullable_to_non_nullable
               as String,
       gradientTo: null == gradientTo
-          ? _self.gradientTo
+          ? _value.gradientTo
           : gradientTo // ignore: cast_nullable_to_non_nullable
               as String,
       glow: null == glow
-          ? _self.glow
+          ? _value.glow
+          : glow // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ThemeSettingsImplCopyWith<$Res>
+    implements $ThemeSettingsCopyWith<$Res> {
+  factory _$$ThemeSettingsImplCopyWith(
+          _$ThemeSettingsImpl value, $Res Function(_$ThemeSettingsImpl) then) =
+      __$$ThemeSettingsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String name,
+      String primary,
+      String gradient,
+      String gradientFrom,
+      String gradientTo,
+      String glow});
+}
+
+/// @nodoc
+class __$$ThemeSettingsImplCopyWithImpl<$Res>
+    extends _$ThemeSettingsCopyWithImpl<$Res, _$ThemeSettingsImpl>
+    implements _$$ThemeSettingsImplCopyWith<$Res> {
+  __$$ThemeSettingsImplCopyWithImpl(
+      _$ThemeSettingsImpl _value, $Res Function(_$ThemeSettingsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ThemeSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? primary = null,
+    Object? gradient = null,
+    Object? gradientFrom = null,
+    Object? gradientTo = null,
+    Object? glow = null,
+  }) {
+    return _then(_$ThemeSettingsImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      primary: null == primary
+          ? _value.primary
+          : primary // ignore: cast_nullable_to_non_nullable
+              as String,
+      gradient: null == gradient
+          ? _value.gradient
+          : gradient // ignore: cast_nullable_to_non_nullable
+              as String,
+      gradientFrom: null == gradientFrom
+          ? _value.gradientFrom
+          : gradientFrom // ignore: cast_nullable_to_non_nullable
+              as String,
+      gradientTo: null == gradientTo
+          ? _value.gradientTo
+          : gradientTo // ignore: cast_nullable_to_non_nullable
+              as String,
+      glow: null == glow
+          ? _value.glow
           : glow // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -382,16 +419,18 @@ class _$ThemeSettingsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _ThemeSettings implements ThemeSettings {
-  const _ThemeSettings(
+class _$ThemeSettingsImpl extends _ThemeSettings {
+  const _$ThemeSettingsImpl(
       {required this.name,
       required this.primary,
       required this.gradient,
       required this.gradientFrom,
       required this.gradientTo,
-      required this.glow});
-  factory _ThemeSettings.fromJson(Map<String, dynamic> json) =>
-      _$ThemeSettingsFromJson(json);
+      required this.glow})
+      : super._();
+
+  factory _$ThemeSettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ThemeSettingsImplFromJson(json);
 
   @override
   final String name;
@@ -406,26 +445,16 @@ class _ThemeSettings implements ThemeSettings {
   @override
   final String glow;
 
-  /// Create a copy of ThemeSettings
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$ThemeSettingsCopyWith<_ThemeSettings> get copyWith =>
-      __$ThemeSettingsCopyWithImpl<_ThemeSettings>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$ThemeSettingsToJson(
-      this,
-    );
+  String toString() {
+    return 'ThemeSettings(name: $name, primary: $primary, gradient: $gradient, gradientFrom: $gradientFrom, gradientTo: $gradientTo, glow: $glow)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _ThemeSettings &&
+            other is _$ThemeSettingsImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.primary, primary) || other.primary == primary) &&
             (identical(other.gradient, gradient) ||
@@ -442,139 +471,96 @@ class _ThemeSettings implements ThemeSettings {
   int get hashCode => Object.hash(
       runtimeType, name, primary, gradient, gradientFrom, gradientTo, glow);
 
+  /// Create a copy of ThemeSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'ThemeSettings(name: $name, primary: $primary, gradient: $gradient, gradientFrom: $gradientFrom, gradientTo: $gradientTo, glow: $glow)';
+  @pragma('vm:prefer-inline')
+  _$$ThemeSettingsImplCopyWith<_$ThemeSettingsImpl> get copyWith =>
+      __$$ThemeSettingsImplCopyWithImpl<_$ThemeSettingsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ThemeSettingsImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$ThemeSettingsCopyWith<$Res>
-    implements $ThemeSettingsCopyWith<$Res> {
-  factory _$ThemeSettingsCopyWith(
-          _ThemeSettings value, $Res Function(_ThemeSettings) _then) =
-      __$ThemeSettingsCopyWithImpl;
+abstract class _ThemeSettings extends ThemeSettings {
+  const factory _ThemeSettings(
+      {required final String name,
+      required final String primary,
+      required final String gradient,
+      required final String gradientFrom,
+      required final String gradientTo,
+      required final String glow}) = _$ThemeSettingsImpl;
+  const _ThemeSettings._() : super._();
+
+  factory _ThemeSettings.fromJson(Map<String, dynamic> json) =
+      _$ThemeSettingsImpl.fromJson;
+
   @override
-  @useResult
-  $Res call(
-      {String name,
-      String primary,
-      String gradient,
-      String gradientFrom,
-      String gradientTo,
-      String glow});
-}
-
-/// @nodoc
-class __$ThemeSettingsCopyWithImpl<$Res>
-    implements _$ThemeSettingsCopyWith<$Res> {
-  __$ThemeSettingsCopyWithImpl(this._self, this._then);
-
-  final _ThemeSettings _self;
-  final $Res Function(_ThemeSettings) _then;
+  String get name;
+  @override
+  String get primary;
+  @override
+  String get gradient;
+  @override
+  String get gradientFrom;
+  @override
+  String get gradientTo;
+  @override
+  String get glow;
 
   /// Create a copy of ThemeSettings
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? name = null,
-    Object? primary = null,
-    Object? gradient = null,
-    Object? gradientFrom = null,
-    Object? gradientTo = null,
-    Object? glow = null,
-  }) {
-    return _then(_ThemeSettings(
-      name: null == name
-          ? _self.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      primary: null == primary
-          ? _self.primary
-          : primary // ignore: cast_nullable_to_non_nullable
-              as String,
-      gradient: null == gradient
-          ? _self.gradient
-          : gradient // ignore: cast_nullable_to_non_nullable
-              as String,
-      gradientFrom: null == gradientFrom
-          ? _self.gradientFrom
-          : gradientFrom // ignore: cast_nullable_to_non_nullable
-              as String,
-      gradientTo: null == gradientTo
-          ? _self.gradientTo
-          : gradientTo // ignore: cast_nullable_to_non_nullable
-              as String,
-      glow: null == glow
-          ? _self.glow
-          : glow // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ThemeSettingsImplCopyWith<_$ThemeSettingsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+AIModelSettings _$AIModelSettingsFromJson(Map<String, dynamic> json) {
+  return _AIModelSettings.fromJson(json);
 }
 
 /// @nodoc
 mixin _$AIModelSettings {
-  int get detailLevel; // 0-100
-  double get temperature; // 0-1
-  int get helpfulness; // 0-100
-  bool get autoMode;
+  int get detailLevel => throw _privateConstructorUsedError; // 0-100
+  double get temperature => throw _privateConstructorUsedError; // 0-1
+  int get helpfulness => throw _privateConstructorUsedError; // 0-100
+  bool get autoMode => throw _privateConstructorUsedError;
+
+  /// Serializes this AIModelSettings to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of AIModelSettings
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $AIModelSettingsCopyWith<AIModelSettings> get copyWith =>
-      _$AIModelSettingsCopyWithImpl<AIModelSettings>(
-          this as AIModelSettings, _$identity);
-
-  /// Serializes this AIModelSettings to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is AIModelSettings &&
-            (identical(other.detailLevel, detailLevel) ||
-                other.detailLevel == detailLevel) &&
-            (identical(other.temperature, temperature) ||
-                other.temperature == temperature) &&
-            (identical(other.helpfulness, helpfulness) ||
-                other.helpfulness == helpfulness) &&
-            (identical(other.autoMode, autoMode) ||
-                other.autoMode == autoMode));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, detailLevel, temperature, helpfulness, autoMode);
-
-  @override
-  String toString() {
-    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $AIModelSettingsCopyWith<$Res> {
+abstract class $AIModelSettingsCopyWith<$Res> {
   factory $AIModelSettingsCopyWith(
-          AIModelSettings value, $Res Function(AIModelSettings) _then) =
-      _$AIModelSettingsCopyWithImpl;
+          AIModelSettings value, $Res Function(AIModelSettings) then) =
+      _$AIModelSettingsCopyWithImpl<$Res, AIModelSettings>;
   @useResult
   $Res call(
       {int detailLevel, double temperature, int helpfulness, bool autoMode});
 }
 
 /// @nodoc
-class _$AIModelSettingsCopyWithImpl<$Res>
+class _$AIModelSettingsCopyWithImpl<$Res, $Val extends AIModelSettings>
     implements $AIModelSettingsCopyWith<$Res> {
-  _$AIModelSettingsCopyWithImpl(this._self, this._then);
+  _$AIModelSettingsCopyWithImpl(this._value, this._then);
 
-  final AIModelSettings _self;
-  final $Res Function(AIModelSettings) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of AIModelSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -586,21 +572,72 @@ class _$AIModelSettingsCopyWithImpl<$Res>
     Object? helpfulness = null,
     Object? autoMode = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       detailLevel: null == detailLevel
-          ? _self.detailLevel
+          ? _value.detailLevel
           : detailLevel // ignore: cast_nullable_to_non_nullable
               as int,
       temperature: null == temperature
-          ? _self.temperature
+          ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
               as double,
       helpfulness: null == helpfulness
-          ? _self.helpfulness
+          ? _value.helpfulness
           : helpfulness // ignore: cast_nullable_to_non_nullable
               as int,
       autoMode: null == autoMode
-          ? _self.autoMode
+          ? _value.autoMode
+          : autoMode // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$AIModelSettingsImplCopyWith<$Res>
+    implements $AIModelSettingsCopyWith<$Res> {
+  factory _$$AIModelSettingsImplCopyWith(_$AIModelSettingsImpl value,
+          $Res Function(_$AIModelSettingsImpl) then) =
+      __$$AIModelSettingsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {int detailLevel, double temperature, int helpfulness, bool autoMode});
+}
+
+/// @nodoc
+class __$$AIModelSettingsImplCopyWithImpl<$Res>
+    extends _$AIModelSettingsCopyWithImpl<$Res, _$AIModelSettingsImpl>
+    implements _$$AIModelSettingsImplCopyWith<$Res> {
+  __$$AIModelSettingsImplCopyWithImpl(
+      _$AIModelSettingsImpl _value, $Res Function(_$AIModelSettingsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AIModelSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? detailLevel = null,
+    Object? temperature = null,
+    Object? helpfulness = null,
+    Object? autoMode = null,
+  }) {
+    return _then(_$AIModelSettingsImpl(
+      detailLevel: null == detailLevel
+          ? _value.detailLevel
+          : detailLevel // ignore: cast_nullable_to_non_nullable
+              as int,
+      temperature: null == temperature
+          ? _value.temperature
+          : temperature // ignore: cast_nullable_to_non_nullable
+              as double,
+      helpfulness: null == helpfulness
+          ? _value.helpfulness
+          : helpfulness // ignore: cast_nullable_to_non_nullable
+              as int,
+      autoMode: null == autoMode
+          ? _value.autoMode
           : autoMode // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
@@ -609,14 +646,16 @@ class _$AIModelSettingsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _AIModelSettings implements AIModelSettings {
-  const _AIModelSettings(
+class _$AIModelSettingsImpl extends _AIModelSettings {
+  const _$AIModelSettingsImpl(
       {this.detailLevel = 50,
       this.temperature = 0.5,
       this.helpfulness = 50,
-      this.autoMode = true});
-  factory _AIModelSettings.fromJson(Map<String, dynamic> json) =>
-      _$AIModelSettingsFromJson(json);
+      this.autoMode = true})
+      : super._();
+
+  factory _$AIModelSettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AIModelSettingsImplFromJson(json);
 
   @override
   @JsonKey()
@@ -634,26 +673,16 @@ class _AIModelSettings implements AIModelSettings {
   @JsonKey()
   final bool autoMode;
 
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$AIModelSettingsCopyWith<_AIModelSettings> get copyWith =>
-      __$AIModelSettingsCopyWithImpl<_AIModelSettings>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$AIModelSettingsToJson(
-      this,
-    );
+  String toString() {
+    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _AIModelSettings &&
+            other is _$AIModelSettingsImpl &&
             (identical(other.detailLevel, detailLevel) ||
                 other.detailLevel == detailLevel) &&
             (identical(other.temperature, temperature) ||
@@ -669,61 +698,47 @@ class _AIModelSettings implements AIModelSettings {
   int get hashCode =>
       Object.hash(runtimeType, detailLevel, temperature, helpfulness, autoMode);
 
+  /// Create a copy of AIModelSettings
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode)';
+  @pragma('vm:prefer-inline')
+  _$$AIModelSettingsImplCopyWith<_$AIModelSettingsImpl> get copyWith =>
+      __$$AIModelSettingsImplCopyWithImpl<_$AIModelSettingsImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AIModelSettingsImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$AIModelSettingsCopyWith<$Res>
-    implements $AIModelSettingsCopyWith<$Res> {
-  factory _$AIModelSettingsCopyWith(
-          _AIModelSettings value, $Res Function(_AIModelSettings) _then) =
-      __$AIModelSettingsCopyWithImpl;
+abstract class _AIModelSettings extends AIModelSettings {
+  const factory _AIModelSettings(
+      {final int detailLevel,
+      final double temperature,
+      final int helpfulness,
+      final bool autoMode}) = _$AIModelSettingsImpl;
+  const _AIModelSettings._() : super._();
+
+  factory _AIModelSettings.fromJson(Map<String, dynamic> json) =
+      _$AIModelSettingsImpl.fromJson;
+
   @override
-  @useResult
-  $Res call(
-      {int detailLevel, double temperature, int helpfulness, bool autoMode});
-}
-
-/// @nodoc
-class __$AIModelSettingsCopyWithImpl<$Res>
-    implements _$AIModelSettingsCopyWith<$Res> {
-  __$AIModelSettingsCopyWithImpl(this._self, this._then);
-
-  final _AIModelSettings _self;
-  final $Res Function(_AIModelSettings) _then;
+  int get detailLevel; // 0-100
+  @override
+  double get temperature; // 0-1
+  @override
+  int get helpfulness; // 0-100
+  @override
+  bool get autoMode;
 
   /// Create a copy of AIModelSettings
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? detailLevel = null,
-    Object? temperature = null,
-    Object? helpfulness = null,
-    Object? autoMode = null,
-  }) {
-    return _then(_AIModelSettings(
-      detailLevel: null == detailLevel
-          ? _self.detailLevel
-          : detailLevel // ignore: cast_nullable_to_non_nullable
-              as int,
-      temperature: null == temperature
-          ? _self.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
-      helpfulness: null == helpfulness
-          ? _self.helpfulness
-          : helpfulness // ignore: cast_nullable_to_non_nullable
-              as int,
-      autoMode: null == autoMode
-          ? _self.autoMode
-          : autoMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AIModelSettingsImplCopyWith<_$AIModelSettingsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-// dart format on

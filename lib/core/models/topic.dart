@@ -8,6 +8,8 @@ part 'topic.g.dart';
 /// Represents a single topic in the learning plan
 @freezed
 class Topic with _$Topic {
+  const Topic._();
+
   const factory Topic({
     required String id,
     required String topicKey, // e.g., "Analysis|Ableitungen|Potenzregel"
@@ -63,6 +65,8 @@ class Topic with _$Topic {
 /// Firestore: users/{userId}/topicProgress/{topicKey}
 @freezed
 class TopicProgress with _$TopicProgress {
+  const TopicProgress._();
+
   const factory TopicProgress({
     required String topicKey,
     @Default(0) int questionsCompleted,
@@ -95,6 +99,8 @@ class TopicProgress with _$TopicProgress {
 /// Firestore: users/{userId}/learningSessions/{sessionId}
 @freezed
 class LearningSession with _$LearningSession {
+  const LearningSession._();
+
   const factory LearningSession({
     required String sessionId,
     required dynamic learningPlanItemId, // int or string
@@ -115,6 +121,8 @@ class LearningSession with _$LearningSession {
 /// Learning Plan Item
 @freezed
 class LearningPlanItem with _$LearningPlanItem {
+  const LearningPlanItem._();
+
   const factory LearningPlanItem({
     required int id,
     required String title,

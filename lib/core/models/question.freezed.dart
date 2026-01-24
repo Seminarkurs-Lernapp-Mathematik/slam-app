@@ -1,4 +1,3 @@
-// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -10,88 +9,45 @@ part of 'question.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+
+Question _$QuestionFromJson(Map<String, dynamic> json) {
+  return _Question.fromJson(json);
+}
 
 /// @nodoc
 mixin _$Question {
-  String get id;
-  QuestionType get type;
-  int get difficulty; // 1-10
-  String get topic;
-  String get subtopic;
-  String get question; // LaTeX formatted
-  List<QuestionOption>? get options; // For multiple-choice
-  List<QuestionHint> get hints;
-  String get solution;
-  String get explanation;
-  GeoGebraData? get geogebra;
-  bool get hasGeoGebraVisualization;
+  String get id => throw _privateConstructorUsedError;
+  QuestionType get type => throw _privateConstructorUsedError;
+  int get difficulty => throw _privateConstructorUsedError; // 1-10
+  String get topic => throw _privateConstructorUsedError;
+  String get subtopic => throw _privateConstructorUsedError;
+  String get question => throw _privateConstructorUsedError; // LaTeX formatted
+  List<QuestionOption>? get options =>
+      throw _privateConstructorUsedError; // For multiple-choice
+  List<QuestionHint> get hints => throw _privateConstructorUsedError;
+  String get solution => throw _privateConstructorUsedError;
+  String get explanation => throw _privateConstructorUsedError;
+  GeoGebraData? get geogebra => throw _privateConstructorUsedError;
+  bool get hasGeoGebraVisualization => throw _privateConstructorUsedError;
+
+  /// Serializes this Question to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of Question
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $QuestionCopyWith<Question> get copyWith =>
-      _$QuestionCopyWithImpl<Question>(this as Question, _$identity);
-
-  /// Serializes this Question to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is Question &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.difficulty, difficulty) ||
-                other.difficulty == difficulty) &&
-            (identical(other.topic, topic) || other.topic == topic) &&
-            (identical(other.subtopic, subtopic) ||
-                other.subtopic == subtopic) &&
-            (identical(other.question, question) ||
-                other.question == question) &&
-            const DeepCollectionEquality().equals(other.options, options) &&
-            const DeepCollectionEquality().equals(other.hints, hints) &&
-            (identical(other.solution, solution) ||
-                other.solution == solution) &&
-            (identical(other.explanation, explanation) ||
-                other.explanation == explanation) &&
-            (identical(other.geogebra, geogebra) ||
-                other.geogebra == geogebra) &&
-            (identical(
-                    other.hasGeoGebraVisualization, hasGeoGebraVisualization) ||
-                other.hasGeoGebraVisualization == hasGeoGebraVisualization));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      type,
-      difficulty,
-      topic,
-      subtopic,
-      question,
-      const DeepCollectionEquality().hash(options),
-      const DeepCollectionEquality().hash(hints),
-      solution,
-      explanation,
-      geogebra,
-      hasGeoGebraVisualization);
-
-  @override
-  String toString() {
-    return 'Question(id: $id, type: $type, difficulty: $difficulty, topic: $topic, subtopic: $subtopic, question: $question, options: $options, hints: $hints, solution: $solution, explanation: $explanation, geogebra: $geogebra, hasGeoGebraVisualization: $hasGeoGebraVisualization)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $QuestionCopyWith<$Res> {
-  factory $QuestionCopyWith(Question value, $Res Function(Question) _then) =
-      _$QuestionCopyWithImpl;
+abstract class $QuestionCopyWith<$Res> {
+  factory $QuestionCopyWith(Question value, $Res Function(Question) then) =
+      _$QuestionCopyWithImpl<$Res, Question>;
   @useResult
   $Res call(
       {String id,
@@ -111,11 +67,14 @@ abstract mixin class $QuestionCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$QuestionCopyWithImpl<$Res> implements $QuestionCopyWith<$Res> {
-  _$QuestionCopyWithImpl(this._self, this._then);
+class _$QuestionCopyWithImpl<$Res, $Val extends Question>
+    implements $QuestionCopyWith<$Res> {
+  _$QuestionCopyWithImpl(this._value, this._then);
 
-  final Question _self;
-  final $Res Function(Question) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of Question
   /// with the given fields replaced by the non-null parameter values.
@@ -135,56 +94,56 @@ class _$QuestionCopyWithImpl<$Res> implements $QuestionCopyWith<$Res> {
     Object? geogebra = freezed,
     Object? hasGeoGebraVisualization = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       id: null == id
-          ? _self.id
+          ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
       type: null == type
-          ? _self.type
+          ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as QuestionType,
       difficulty: null == difficulty
-          ? _self.difficulty
+          ? _value.difficulty
           : difficulty // ignore: cast_nullable_to_non_nullable
               as int,
       topic: null == topic
-          ? _self.topic
+          ? _value.topic
           : topic // ignore: cast_nullable_to_non_nullable
               as String,
       subtopic: null == subtopic
-          ? _self.subtopic
+          ? _value.subtopic
           : subtopic // ignore: cast_nullable_to_non_nullable
               as String,
       question: null == question
-          ? _self.question
+          ? _value.question
           : question // ignore: cast_nullable_to_non_nullable
               as String,
       options: freezed == options
-          ? _self.options
+          ? _value.options
           : options // ignore: cast_nullable_to_non_nullable
               as List<QuestionOption>?,
       hints: null == hints
-          ? _self.hints
+          ? _value.hints
           : hints // ignore: cast_nullable_to_non_nullable
               as List<QuestionHint>,
       solution: null == solution
-          ? _self.solution
+          ? _value.solution
           : solution // ignore: cast_nullable_to_non_nullable
               as String,
       explanation: null == explanation
-          ? _self.explanation
+          ? _value.explanation
           : explanation // ignore: cast_nullable_to_non_nullable
               as String,
       geogebra: freezed == geogebra
-          ? _self.geogebra
+          ? _value.geogebra
           : geogebra // ignore: cast_nullable_to_non_nullable
               as GeoGebraData?,
       hasGeoGebraVisualization: null == hasGeoGebraVisualization
-          ? _self.hasGeoGebraVisualization
+          ? _value.hasGeoGebraVisualization
           : hasGeoGebraVisualization // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 
   /// Create a copy of Question
@@ -192,20 +151,125 @@ class _$QuestionCopyWithImpl<$Res> implements $QuestionCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $GeoGebraDataCopyWith<$Res>? get geogebra {
-    if (_self.geogebra == null) {
+    if (_value.geogebra == null) {
       return null;
     }
 
-    return $GeoGebraDataCopyWith<$Res>(_self.geogebra!, (value) {
-      return _then(_self.copyWith(geogebra: value));
+    return $GeoGebraDataCopyWith<$Res>(_value.geogebra!, (value) {
+      return _then(_value.copyWith(geogebra: value) as $Val);
     });
   }
 }
 
 /// @nodoc
+abstract class _$$QuestionImplCopyWith<$Res>
+    implements $QuestionCopyWith<$Res> {
+  factory _$$QuestionImplCopyWith(
+          _$QuestionImpl value, $Res Function(_$QuestionImpl) then) =
+      __$$QuestionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      QuestionType type,
+      int difficulty,
+      String topic,
+      String subtopic,
+      String question,
+      List<QuestionOption>? options,
+      List<QuestionHint> hints,
+      String solution,
+      String explanation,
+      GeoGebraData? geogebra,
+      bool hasGeoGebraVisualization});
+
+  @override
+  $GeoGebraDataCopyWith<$Res>? get geogebra;
+}
+
+/// @nodoc
+class __$$QuestionImplCopyWithImpl<$Res>
+    extends _$QuestionCopyWithImpl<$Res, _$QuestionImpl>
+    implements _$$QuestionImplCopyWith<$Res> {
+  __$$QuestionImplCopyWithImpl(
+      _$QuestionImpl _value, $Res Function(_$QuestionImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Question
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? type = null,
+    Object? difficulty = null,
+    Object? topic = null,
+    Object? subtopic = null,
+    Object? question = null,
+    Object? options = freezed,
+    Object? hints = null,
+    Object? solution = null,
+    Object? explanation = null,
+    Object? geogebra = freezed,
+    Object? hasGeoGebraVisualization = null,
+  }) {
+    return _then(_$QuestionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as QuestionType,
+      difficulty: null == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as int,
+      topic: null == topic
+          ? _value.topic
+          : topic // ignore: cast_nullable_to_non_nullable
+              as String,
+      subtopic: null == subtopic
+          ? _value.subtopic
+          : subtopic // ignore: cast_nullable_to_non_nullable
+              as String,
+      question: null == question
+          ? _value.question
+          : question // ignore: cast_nullable_to_non_nullable
+              as String,
+      options: freezed == options
+          ? _value._options
+          : options // ignore: cast_nullable_to_non_nullable
+              as List<QuestionOption>?,
+      hints: null == hints
+          ? _value._hints
+          : hints // ignore: cast_nullable_to_non_nullable
+              as List<QuestionHint>,
+      solution: null == solution
+          ? _value.solution
+          : solution // ignore: cast_nullable_to_non_nullable
+              as String,
+      explanation: null == explanation
+          ? _value.explanation
+          : explanation // ignore: cast_nullable_to_non_nullable
+              as String,
+      geogebra: freezed == geogebra
+          ? _value.geogebra
+          : geogebra // ignore: cast_nullable_to_non_nullable
+              as GeoGebraData?,
+      hasGeoGebraVisualization: null == hasGeoGebraVisualization
+          ? _value.hasGeoGebraVisualization
+          : hasGeoGebraVisualization // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
 @JsonSerializable()
-class _Question implements Question {
-  const _Question(
+class _$QuestionImpl extends _Question {
+  const _$QuestionImpl(
       {required this.id,
       required this.type,
       required this.difficulty,
@@ -219,9 +283,11 @@ class _Question implements Question {
       this.geogebra,
       this.hasGeoGebraVisualization = false})
       : _options = options,
-        _hints = hints;
-  factory _Question.fromJson(Map<String, dynamic> json) =>
-      _$QuestionFromJson(json);
+        _hints = hints,
+        super._();
+
+  factory _$QuestionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionImplFromJson(json);
 
   @override
   final String id;
@@ -269,26 +335,16 @@ class _Question implements Question {
   @JsonKey()
   final bool hasGeoGebraVisualization;
 
-  /// Create a copy of Question
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$QuestionCopyWith<_Question> get copyWith =>
-      __$QuestionCopyWithImpl<_Question>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$QuestionToJson(
-      this,
-    );
+  String toString() {
+    return 'Question(id: $id, type: $type, difficulty: $difficulty, topic: $topic, subtopic: $subtopic, question: $question, options: $options, hints: $hints, solution: $solution, explanation: $explanation, geogebra: $geogebra, hasGeoGebraVisualization: $hasGeoGebraVisualization)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Question &&
+            other is _$QuestionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.difficulty, difficulty) ||
@@ -328,183 +384,112 @@ class _Question implements Question {
       geogebra,
       hasGeoGebraVisualization);
 
+  /// Create a copy of Question
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'Question(id: $id, type: $type, difficulty: $difficulty, topic: $topic, subtopic: $subtopic, question: $question, options: $options, hints: $hints, solution: $solution, explanation: $explanation, geogebra: $geogebra, hasGeoGebraVisualization: $hasGeoGebraVisualization)';
+  @pragma('vm:prefer-inline')
+  _$$QuestionImplCopyWith<_$QuestionImpl> get copyWith =>
+      __$$QuestionImplCopyWithImpl<_$QuestionImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$QuestionCopyWith<$Res>
-    implements $QuestionCopyWith<$Res> {
-  factory _$QuestionCopyWith(_Question value, $Res Function(_Question) _then) =
-      __$QuestionCopyWithImpl;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      QuestionType type,
-      int difficulty,
-      String topic,
-      String subtopic,
-      String question,
-      List<QuestionOption>? options,
-      List<QuestionHint> hints,
-      String solution,
-      String explanation,
-      GeoGebraData? geogebra,
-      bool hasGeoGebraVisualization});
+abstract class _Question extends Question {
+  const factory _Question(
+      {required final String id,
+      required final QuestionType type,
+      required final int difficulty,
+      required final String topic,
+      required final String subtopic,
+      required final String question,
+      final List<QuestionOption>? options,
+      final List<QuestionHint> hints,
+      required final String solution,
+      required final String explanation,
+      final GeoGebraData? geogebra,
+      final bool hasGeoGebraVisualization}) = _$QuestionImpl;
+  const _Question._() : super._();
+
+  factory _Question.fromJson(Map<String, dynamic> json) =
+      _$QuestionImpl.fromJson;
 
   @override
-  $GeoGebraDataCopyWith<$Res>? get geogebra;
-}
-
-/// @nodoc
-class __$QuestionCopyWithImpl<$Res> implements _$QuestionCopyWith<$Res> {
-  __$QuestionCopyWithImpl(this._self, this._then);
-
-  final _Question _self;
-  final $Res Function(_Question) _then;
+  String get id;
+  @override
+  QuestionType get type;
+  @override
+  int get difficulty; // 1-10
+  @override
+  String get topic;
+  @override
+  String get subtopic;
+  @override
+  String get question; // LaTeX formatted
+  @override
+  List<QuestionOption>? get options; // For multiple-choice
+  @override
+  List<QuestionHint> get hints;
+  @override
+  String get solution;
+  @override
+  String get explanation;
+  @override
+  GeoGebraData? get geogebra;
+  @override
+  bool get hasGeoGebraVisualization;
 
   /// Create a copy of Question
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? id = null,
-    Object? type = null,
-    Object? difficulty = null,
-    Object? topic = null,
-    Object? subtopic = null,
-    Object? question = null,
-    Object? options = freezed,
-    Object? hints = null,
-    Object? solution = null,
-    Object? explanation = null,
-    Object? geogebra = freezed,
-    Object? hasGeoGebraVisualization = null,
-  }) {
-    return _then(_Question(
-      id: null == id
-          ? _self.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      type: null == type
-          ? _self.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as QuestionType,
-      difficulty: null == difficulty
-          ? _self.difficulty
-          : difficulty // ignore: cast_nullable_to_non_nullable
-              as int,
-      topic: null == topic
-          ? _self.topic
-          : topic // ignore: cast_nullable_to_non_nullable
-              as String,
-      subtopic: null == subtopic
-          ? _self.subtopic
-          : subtopic // ignore: cast_nullable_to_non_nullable
-              as String,
-      question: null == question
-          ? _self.question
-          : question // ignore: cast_nullable_to_non_nullable
-              as String,
-      options: freezed == options
-          ? _self._options
-          : options // ignore: cast_nullable_to_non_nullable
-              as List<QuestionOption>?,
-      hints: null == hints
-          ? _self._hints
-          : hints // ignore: cast_nullable_to_non_nullable
-              as List<QuestionHint>,
-      solution: null == solution
-          ? _self.solution
-          : solution // ignore: cast_nullable_to_non_nullable
-              as String,
-      explanation: null == explanation
-          ? _self.explanation
-          : explanation // ignore: cast_nullable_to_non_nullable
-              as String,
-      geogebra: freezed == geogebra
-          ? _self.geogebra
-          : geogebra // ignore: cast_nullable_to_non_nullable
-              as GeoGebraData?,
-      hasGeoGebraVisualization: null == hasGeoGebraVisualization
-          ? _self.hasGeoGebraVisualization
-          : hasGeoGebraVisualization // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionImplCopyWith<_$QuestionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
 
-  /// Create a copy of Question
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $GeoGebraDataCopyWith<$Res>? get geogebra {
-    if (_self.geogebra == null) {
-      return null;
-    }
-
-    return $GeoGebraDataCopyWith<$Res>(_self.geogebra!, (value) {
-      return _then(_self.copyWith(geogebra: value));
-    });
-  }
+QuestionOption _$QuestionOptionFromJson(Map<String, dynamic> json) {
+  return _QuestionOption.fromJson(json);
 }
 
 /// @nodoc
 mixin _$QuestionOption {
-  String get id; // A, B, C, D
-  String get text;
-  bool get isCorrect;
+  String get id => throw _privateConstructorUsedError; // A, B, C, D
+  String get text => throw _privateConstructorUsedError;
+  bool get isCorrect => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionOption to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of QuestionOption
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $QuestionOptionCopyWith<QuestionOption> get copyWith =>
-      _$QuestionOptionCopyWithImpl<QuestionOption>(
-          this as QuestionOption, _$identity);
-
-  /// Serializes this QuestionOption to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is QuestionOption &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.text, text) || other.text == text) &&
-            (identical(other.isCorrect, isCorrect) ||
-                other.isCorrect == isCorrect));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, text, isCorrect);
-
-  @override
-  String toString() {
-    return 'QuestionOption(id: $id, text: $text, isCorrect: $isCorrect)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $QuestionOptionCopyWith<$Res> {
+abstract class $QuestionOptionCopyWith<$Res> {
   factory $QuestionOptionCopyWith(
-          QuestionOption value, $Res Function(QuestionOption) _then) =
-      _$QuestionOptionCopyWithImpl;
+          QuestionOption value, $Res Function(QuestionOption) then) =
+      _$QuestionOptionCopyWithImpl<$Res, QuestionOption>;
   @useResult
   $Res call({String id, String text, bool isCorrect});
 }
 
 /// @nodoc
-class _$QuestionOptionCopyWithImpl<$Res>
+class _$QuestionOptionCopyWithImpl<$Res, $Val extends QuestionOption>
     implements $QuestionOptionCopyWith<$Res> {
-  _$QuestionOptionCopyWithImpl(this._self, this._then);
+  _$QuestionOptionCopyWithImpl(this._value, this._then);
 
-  final QuestionOption _self;
-  final $Res Function(QuestionOption) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of QuestionOption
   /// with the given fields replaced by the non-null parameter values.
@@ -515,17 +500,62 @@ class _$QuestionOptionCopyWithImpl<$Res>
     Object? text = null,
     Object? isCorrect = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       id: null == id
-          ? _self.id
+          ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
       text: null == text
-          ? _self.text
+          ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
               as String,
       isCorrect: null == isCorrect
-          ? _self.isCorrect
+          ? _value.isCorrect
+          : isCorrect // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionOptionImplCopyWith<$Res>
+    implements $QuestionOptionCopyWith<$Res> {
+  factory _$$QuestionOptionImplCopyWith(_$QuestionOptionImpl value,
+          $Res Function(_$QuestionOptionImpl) then) =
+      __$$QuestionOptionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String text, bool isCorrect});
+}
+
+/// @nodoc
+class __$$QuestionOptionImplCopyWithImpl<$Res>
+    extends _$QuestionOptionCopyWithImpl<$Res, _$QuestionOptionImpl>
+    implements _$$QuestionOptionImplCopyWith<$Res> {
+  __$$QuestionOptionImplCopyWithImpl(
+      _$QuestionOptionImpl _value, $Res Function(_$QuestionOptionImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of QuestionOption
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? text = null,
+    Object? isCorrect = null,
+  }) {
+    return _then(_$QuestionOptionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      isCorrect: null == isCorrect
+          ? _value.isCorrect
           : isCorrect // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
@@ -534,11 +564,13 @@ class _$QuestionOptionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _QuestionOption implements QuestionOption {
-  const _QuestionOption(
-      {required this.id, required this.text, this.isCorrect = false});
-  factory _QuestionOption.fromJson(Map<String, dynamic> json) =>
-      _$QuestionOptionFromJson(json);
+class _$QuestionOptionImpl extends _QuestionOption {
+  const _$QuestionOptionImpl(
+      {required this.id, required this.text, this.isCorrect = false})
+      : super._();
+
+  factory _$QuestionOptionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionOptionImplFromJson(json);
 
   @override
   final String id;
@@ -549,26 +581,16 @@ class _QuestionOption implements QuestionOption {
   @JsonKey()
   final bool isCorrect;
 
-  /// Create a copy of QuestionOption
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$QuestionOptionCopyWith<_QuestionOption> get copyWith =>
-      __$QuestionOptionCopyWithImpl<_QuestionOption>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$QuestionOptionToJson(
-      this,
-    );
+  String toString() {
+    return 'QuestionOption(id: $id, text: $text, isCorrect: $isCorrect)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _QuestionOption &&
+            other is _$QuestionOptionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.isCorrect, isCorrect) ||
@@ -579,107 +601,85 @@ class _QuestionOption implements QuestionOption {
   @override
   int get hashCode => Object.hash(runtimeType, id, text, isCorrect);
 
+  /// Create a copy of QuestionOption
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'QuestionOption(id: $id, text: $text, isCorrect: $isCorrect)';
+  @pragma('vm:prefer-inline')
+  _$$QuestionOptionImplCopyWith<_$QuestionOptionImpl> get copyWith =>
+      __$$QuestionOptionImplCopyWithImpl<_$QuestionOptionImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionOptionImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$QuestionOptionCopyWith<$Res>
-    implements $QuestionOptionCopyWith<$Res> {
-  factory _$QuestionOptionCopyWith(
-          _QuestionOption value, $Res Function(_QuestionOption) _then) =
-      __$QuestionOptionCopyWithImpl;
+abstract class _QuestionOption extends QuestionOption {
+  const factory _QuestionOption(
+      {required final String id,
+      required final String text,
+      final bool isCorrect}) = _$QuestionOptionImpl;
+  const _QuestionOption._() : super._();
+
+  factory _QuestionOption.fromJson(Map<String, dynamic> json) =
+      _$QuestionOptionImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({String id, String text, bool isCorrect});
-}
-
-/// @nodoc
-class __$QuestionOptionCopyWithImpl<$Res>
-    implements _$QuestionOptionCopyWith<$Res> {
-  __$QuestionOptionCopyWithImpl(this._self, this._then);
-
-  final _QuestionOption _self;
-  final $Res Function(_QuestionOption) _then;
+  String get id; // A, B, C, D
+  @override
+  String get text;
+  @override
+  bool get isCorrect;
 
   /// Create a copy of QuestionOption
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? id = null,
-    Object? text = null,
-    Object? isCorrect = null,
-  }) {
-    return _then(_QuestionOption(
-      id: null == id
-          ? _self.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      text: null == text
-          ? _self.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-      isCorrect: null == isCorrect
-          ? _self.isCorrect
-          : isCorrect // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionOptionImplCopyWith<_$QuestionOptionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionHint _$QuestionHintFromJson(Map<String, dynamic> json) {
+  return _QuestionHint.fromJson(json);
 }
 
 /// @nodoc
 mixin _$QuestionHint {
-  int get level; // 1, 2, 3
-  String get text;
+  int get level => throw _privateConstructorUsedError; // 1, 2, 3
+  String get text => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionHint to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of QuestionHint
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $QuestionHintCopyWith<QuestionHint> get copyWith =>
-      _$QuestionHintCopyWithImpl<QuestionHint>(
-          this as QuestionHint, _$identity);
-
-  /// Serializes this QuestionHint to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is QuestionHint &&
-            (identical(other.level, level) || other.level == level) &&
-            (identical(other.text, text) || other.text == text));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, level, text);
-
-  @override
-  String toString() {
-    return 'QuestionHint(level: $level, text: $text)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $QuestionHintCopyWith<$Res> {
+abstract class $QuestionHintCopyWith<$Res> {
   factory $QuestionHintCopyWith(
-          QuestionHint value, $Res Function(QuestionHint) _then) =
-      _$QuestionHintCopyWithImpl;
+          QuestionHint value, $Res Function(QuestionHint) then) =
+      _$QuestionHintCopyWithImpl<$Res, QuestionHint>;
   @useResult
   $Res call({int level, String text});
 }
 
 /// @nodoc
-class _$QuestionHintCopyWithImpl<$Res> implements $QuestionHintCopyWith<$Res> {
-  _$QuestionHintCopyWithImpl(this._self, this._then);
+class _$QuestionHintCopyWithImpl<$Res, $Val extends QuestionHint>
+    implements $QuestionHintCopyWith<$Res> {
+  _$QuestionHintCopyWithImpl(this._value, this._then);
 
-  final QuestionHint _self;
-  final $Res Function(QuestionHint) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of QuestionHint
   /// with the given fields replaced by the non-null parameter values.
@@ -689,13 +689,53 @@ class _$QuestionHintCopyWithImpl<$Res> implements $QuestionHintCopyWith<$Res> {
     Object? level = null,
     Object? text = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       level: null == level
-          ? _self.level
+          ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
       text: null == text
-          ? _self.text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionHintImplCopyWith<$Res>
+    implements $QuestionHintCopyWith<$Res> {
+  factory _$$QuestionHintImplCopyWith(
+          _$QuestionHintImpl value, $Res Function(_$QuestionHintImpl) then) =
+      __$$QuestionHintImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int level, String text});
+}
+
+/// @nodoc
+class __$$QuestionHintImplCopyWithImpl<$Res>
+    extends _$QuestionHintCopyWithImpl<$Res, _$QuestionHintImpl>
+    implements _$$QuestionHintImplCopyWith<$Res> {
+  __$$QuestionHintImplCopyWithImpl(
+      _$QuestionHintImpl _value, $Res Function(_$QuestionHintImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of QuestionHint
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? level = null,
+    Object? text = null,
+  }) {
+    return _then(_$QuestionHintImpl(
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
+      text: null == text
+          ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -704,10 +744,12 @@ class _$QuestionHintCopyWithImpl<$Res> implements $QuestionHintCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _QuestionHint implements QuestionHint {
-  const _QuestionHint({required this.level, required this.text});
-  factory _QuestionHint.fromJson(Map<String, dynamic> json) =>
-      _$QuestionHintFromJson(json);
+class _$QuestionHintImpl extends _QuestionHint {
+  const _$QuestionHintImpl({required this.level, required this.text})
+      : super._();
+
+  factory _$QuestionHintImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionHintImplFromJson(json);
 
   @override
   final int level;
@@ -715,26 +757,16 @@ class _QuestionHint implements QuestionHint {
   @override
   final String text;
 
-  /// Create a copy of QuestionHint
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$QuestionHintCopyWith<_QuestionHint> get copyWith =>
-      __$QuestionHintCopyWithImpl<_QuestionHint>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$QuestionHintToJson(
-      this,
-    );
+  String toString() {
+    return 'QuestionHint(level: $level, text: $text)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _QuestionHint &&
+            other is _$QuestionHintImpl &&
             (identical(other.level, level) || other.level == level) &&
             (identical(other.text, text) || other.text == text));
   }
@@ -743,107 +775,82 @@ class _QuestionHint implements QuestionHint {
   @override
   int get hashCode => Object.hash(runtimeType, level, text);
 
+  /// Create a copy of QuestionHint
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'QuestionHint(level: $level, text: $text)';
+  @pragma('vm:prefer-inline')
+  _$$QuestionHintImplCopyWith<_$QuestionHintImpl> get copyWith =>
+      __$$QuestionHintImplCopyWithImpl<_$QuestionHintImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionHintImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$QuestionHintCopyWith<$Res>
-    implements $QuestionHintCopyWith<$Res> {
-  factory _$QuestionHintCopyWith(
-          _QuestionHint value, $Res Function(_QuestionHint) _then) =
-      __$QuestionHintCopyWithImpl;
+abstract class _QuestionHint extends QuestionHint {
+  const factory _QuestionHint(
+      {required final int level,
+      required final String text}) = _$QuestionHintImpl;
+  const _QuestionHint._() : super._();
+
+  factory _QuestionHint.fromJson(Map<String, dynamic> json) =
+      _$QuestionHintImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({int level, String text});
-}
-
-/// @nodoc
-class __$QuestionHintCopyWithImpl<$Res>
-    implements _$QuestionHintCopyWith<$Res> {
-  __$QuestionHintCopyWithImpl(this._self, this._then);
-
-  final _QuestionHint _self;
-  final $Res Function(_QuestionHint) _then;
+  int get level; // 1, 2, 3
+  @override
+  String get text;
 
   /// Create a copy of QuestionHint
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? level = null,
-    Object? text = null,
-  }) {
-    return _then(_QuestionHint(
-      level: null == level
-          ? _self.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
-      text: null == text
-          ? _self.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionHintImplCopyWith<_$QuestionHintImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+GeoGebraData _$GeoGebraDataFromJson(Map<String, dynamic> json) {
+  return _GeoGebraData.fromJson(json);
 }
 
 /// @nodoc
 mixin _$GeoGebraData {
-  String? get appletId;
-  List<String> get commands;
-  String get description;
+  String? get appletId => throw _privateConstructorUsedError;
+  List<String> get commands => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
+
+  /// Serializes this GeoGebraData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of GeoGebraData
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $GeoGebraDataCopyWith<GeoGebraData> get copyWith =>
-      _$GeoGebraDataCopyWithImpl<GeoGebraData>(
-          this as GeoGebraData, _$identity);
-
-  /// Serializes this GeoGebraData to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is GeoGebraData &&
-            (identical(other.appletId, appletId) ||
-                other.appletId == appletId) &&
-            const DeepCollectionEquality().equals(other.commands, commands) &&
-            (identical(other.description, description) ||
-                other.description == description));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, appletId,
-      const DeepCollectionEquality().hash(commands), description);
-
-  @override
-  String toString() {
-    return 'GeoGebraData(appletId: $appletId, commands: $commands, description: $description)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $GeoGebraDataCopyWith<$Res> {
+abstract class $GeoGebraDataCopyWith<$Res> {
   factory $GeoGebraDataCopyWith(
-          GeoGebraData value, $Res Function(GeoGebraData) _then) =
-      _$GeoGebraDataCopyWithImpl;
+          GeoGebraData value, $Res Function(GeoGebraData) then) =
+      _$GeoGebraDataCopyWithImpl<$Res, GeoGebraData>;
   @useResult
   $Res call({String? appletId, List<String> commands, String description});
 }
 
 /// @nodoc
-class _$GeoGebraDataCopyWithImpl<$Res> implements $GeoGebraDataCopyWith<$Res> {
-  _$GeoGebraDataCopyWithImpl(this._self, this._then);
+class _$GeoGebraDataCopyWithImpl<$Res, $Val extends GeoGebraData>
+    implements $GeoGebraDataCopyWith<$Res> {
+  _$GeoGebraDataCopyWithImpl(this._value, this._then);
 
-  final GeoGebraData _self;
-  final $Res Function(GeoGebraData) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of GeoGebraData
   /// with the given fields replaced by the non-null parameter values.
@@ -854,17 +861,62 @@ class _$GeoGebraDataCopyWithImpl<$Res> implements $GeoGebraDataCopyWith<$Res> {
     Object? commands = null,
     Object? description = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       appletId: freezed == appletId
-          ? _self.appletId
+          ? _value.appletId
           : appletId // ignore: cast_nullable_to_non_nullable
               as String?,
       commands: null == commands
-          ? _self.commands
+          ? _value.commands
           : commands // ignore: cast_nullable_to_non_nullable
               as List<String>,
       description: null == description
-          ? _self.description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$GeoGebraDataImplCopyWith<$Res>
+    implements $GeoGebraDataCopyWith<$Res> {
+  factory _$$GeoGebraDataImplCopyWith(
+          _$GeoGebraDataImpl value, $Res Function(_$GeoGebraDataImpl) then) =
+      __$$GeoGebraDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? appletId, List<String> commands, String description});
+}
+
+/// @nodoc
+class __$$GeoGebraDataImplCopyWithImpl<$Res>
+    extends _$GeoGebraDataCopyWithImpl<$Res, _$GeoGebraDataImpl>
+    implements _$$GeoGebraDataImplCopyWith<$Res> {
+  __$$GeoGebraDataImplCopyWithImpl(
+      _$GeoGebraDataImpl _value, $Res Function(_$GeoGebraDataImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of GeoGebraData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? appletId = freezed,
+    Object? commands = null,
+    Object? description = null,
+  }) {
+    return _then(_$GeoGebraDataImpl(
+      appletId: freezed == appletId
+          ? _value.appletId
+          : appletId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      commands: null == commands
+          ? _value._commands
+          : commands // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      description: null == description
+          ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -873,14 +925,16 @@ class _$GeoGebraDataCopyWithImpl<$Res> implements $GeoGebraDataCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _GeoGebraData implements GeoGebraData {
-  const _GeoGebraData(
+class _$GeoGebraDataImpl extends _GeoGebraData {
+  const _$GeoGebraDataImpl(
       {this.appletId,
       final List<String> commands = const [],
       this.description = ''})
-      : _commands = commands;
-  factory _GeoGebraData.fromJson(Map<String, dynamic> json) =>
-      _$GeoGebraDataFromJson(json);
+      : _commands = commands,
+        super._();
+
+  factory _$GeoGebraDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GeoGebraDataImplFromJson(json);
 
   @override
   final String? appletId;
@@ -897,26 +951,16 @@ class _GeoGebraData implements GeoGebraData {
   @JsonKey()
   final String description;
 
-  /// Create a copy of GeoGebraData
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$GeoGebraDataCopyWith<_GeoGebraData> get copyWith =>
-      __$GeoGebraDataCopyWithImpl<_GeoGebraData>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$GeoGebraDataToJson(
-      this,
-    );
+  String toString() {
+    return 'GeoGebraData(appletId: $appletId, commands: $commands, description: $description)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _GeoGebraData &&
+            other is _$GeoGebraDataImpl &&
             (identical(other.appletId, appletId) ||
                 other.appletId == appletId) &&
             const DeepCollectionEquality().equals(other._commands, _commands) &&
@@ -929,120 +973,76 @@ class _GeoGebraData implements GeoGebraData {
   int get hashCode => Object.hash(runtimeType, appletId,
       const DeepCollectionEquality().hash(_commands), description);
 
+  /// Create a copy of GeoGebraData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'GeoGebraData(appletId: $appletId, commands: $commands, description: $description)';
+  @pragma('vm:prefer-inline')
+  _$$GeoGebraDataImplCopyWith<_$GeoGebraDataImpl> get copyWith =>
+      __$$GeoGebraDataImplCopyWithImpl<_$GeoGebraDataImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GeoGebraDataImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$GeoGebraDataCopyWith<$Res>
-    implements $GeoGebraDataCopyWith<$Res> {
-  factory _$GeoGebraDataCopyWith(
-          _GeoGebraData value, $Res Function(_GeoGebraData) _then) =
-      __$GeoGebraDataCopyWithImpl;
+abstract class _GeoGebraData extends GeoGebraData {
+  const factory _GeoGebraData(
+      {final String? appletId,
+      final List<String> commands,
+      final String description}) = _$GeoGebraDataImpl;
+  const _GeoGebraData._() : super._();
+
+  factory _GeoGebraData.fromJson(Map<String, dynamic> json) =
+      _$GeoGebraDataImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({String? appletId, List<String> commands, String description});
-}
-
-/// @nodoc
-class __$GeoGebraDataCopyWithImpl<$Res>
-    implements _$GeoGebraDataCopyWith<$Res> {
-  __$GeoGebraDataCopyWithImpl(this._self, this._then);
-
-  final _GeoGebraData _self;
-  final $Res Function(_GeoGebraData) _then;
+  String? get appletId;
+  @override
+  List<String> get commands;
+  @override
+  String get description;
 
   /// Create a copy of GeoGebraData
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? appletId = freezed,
-    Object? commands = null,
-    Object? description = null,
-  }) {
-    return _then(_GeoGebraData(
-      appletId: freezed == appletId
-          ? _self.appletId
-          : appletId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      commands: null == commands
-          ? _self._commands
-          : commands // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      description: null == description
-          ? _self.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GeoGebraDataImplCopyWith<_$GeoGebraDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionSession _$QuestionSessionFromJson(Map<String, dynamic> json) {
+  return _QuestionSession.fromJson(json);
 }
 
 /// @nodoc
 mixin _$QuestionSession {
-  String get sessionId;
-  int get learningPlanItemId;
-  List<TopicData> get topics;
-  UserContext get userContext;
-  List<Question> get questions;
-  int get totalQuestions;
-  DateTime get createdAt;
+  String get sessionId => throw _privateConstructorUsedError;
+  int get learningPlanItemId => throw _privateConstructorUsedError;
+  List<TopicData> get topics => throw _privateConstructorUsedError;
+  UserContext get userContext => throw _privateConstructorUsedError;
+  List<Question> get questions => throw _privateConstructorUsedError;
+  int get totalQuestions => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionSession to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of QuestionSession
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $QuestionSessionCopyWith<QuestionSession> get copyWith =>
-      _$QuestionSessionCopyWithImpl<QuestionSession>(
-          this as QuestionSession, _$identity);
-
-  /// Serializes this QuestionSession to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is QuestionSession &&
-            (identical(other.sessionId, sessionId) ||
-                other.sessionId == sessionId) &&
-            (identical(other.learningPlanItemId, learningPlanItemId) ||
-                other.learningPlanItemId == learningPlanItemId) &&
-            const DeepCollectionEquality().equals(other.topics, topics) &&
-            (identical(other.userContext, userContext) ||
-                other.userContext == userContext) &&
-            const DeepCollectionEquality().equals(other.questions, questions) &&
-            (identical(other.totalQuestions, totalQuestions) ||
-                other.totalQuestions == totalQuestions) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      sessionId,
-      learningPlanItemId,
-      const DeepCollectionEquality().hash(topics),
-      userContext,
-      const DeepCollectionEquality().hash(questions),
-      totalQuestions,
-      createdAt);
-
-  @override
-  String toString() {
-    return 'QuestionSession(sessionId: $sessionId, learningPlanItemId: $learningPlanItemId, topics: $topics, userContext: $userContext, questions: $questions, totalQuestions: $totalQuestions, createdAt: $createdAt)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $QuestionSessionCopyWith<$Res> {
+abstract class $QuestionSessionCopyWith<$Res> {
   factory $QuestionSessionCopyWith(
-          QuestionSession value, $Res Function(QuestionSession) _then) =
-      _$QuestionSessionCopyWithImpl;
+          QuestionSession value, $Res Function(QuestionSession) then) =
+      _$QuestionSessionCopyWithImpl<$Res, QuestionSession>;
   @useResult
   $Res call(
       {String sessionId,
@@ -1057,12 +1057,14 @@ abstract mixin class $QuestionSessionCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$QuestionSessionCopyWithImpl<$Res>
+class _$QuestionSessionCopyWithImpl<$Res, $Val extends QuestionSession>
     implements $QuestionSessionCopyWith<$Res> {
-  _$QuestionSessionCopyWithImpl(this._self, this._then);
+  _$QuestionSessionCopyWithImpl(this._value, this._then);
 
-  final QuestionSession _self;
-  final $Res Function(QuestionSession) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of QuestionSession
   /// with the given fields replaced by the non-null parameter values.
@@ -1077,36 +1079,36 @@ class _$QuestionSessionCopyWithImpl<$Res>
     Object? totalQuestions = null,
     Object? createdAt = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       sessionId: null == sessionId
-          ? _self.sessionId
+          ? _value.sessionId
           : sessionId // ignore: cast_nullable_to_non_nullable
               as String,
       learningPlanItemId: null == learningPlanItemId
-          ? _self.learningPlanItemId
+          ? _value.learningPlanItemId
           : learningPlanItemId // ignore: cast_nullable_to_non_nullable
               as int,
       topics: null == topics
-          ? _self.topics
+          ? _value.topics
           : topics // ignore: cast_nullable_to_non_nullable
               as List<TopicData>,
       userContext: null == userContext
-          ? _self.userContext
+          ? _value.userContext
           : userContext // ignore: cast_nullable_to_non_nullable
               as UserContext,
       questions: null == questions
-          ? _self.questions
+          ? _value.questions
           : questions // ignore: cast_nullable_to_non_nullable
               as List<Question>,
       totalQuestions: null == totalQuestions
-          ? _self.totalQuestions
+          ? _value.totalQuestions
           : totalQuestions // ignore: cast_nullable_to_non_nullable
               as int,
       createdAt: null == createdAt
-          ? _self.createdAt
+          ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-    ));
+    ) as $Val);
   }
 
   /// Create a copy of QuestionSession
@@ -1114,16 +1116,91 @@ class _$QuestionSessionCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $UserContextCopyWith<$Res> get userContext {
-    return $UserContextCopyWith<$Res>(_self.userContext, (value) {
-      return _then(_self.copyWith(userContext: value));
+    return $UserContextCopyWith<$Res>(_value.userContext, (value) {
+      return _then(_value.copyWith(userContext: value) as $Val);
     });
   }
 }
 
 /// @nodoc
+abstract class _$$QuestionSessionImplCopyWith<$Res>
+    implements $QuestionSessionCopyWith<$Res> {
+  factory _$$QuestionSessionImplCopyWith(_$QuestionSessionImpl value,
+          $Res Function(_$QuestionSessionImpl) then) =
+      __$$QuestionSessionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String sessionId,
+      int learningPlanItemId,
+      List<TopicData> topics,
+      UserContext userContext,
+      List<Question> questions,
+      int totalQuestions,
+      DateTime createdAt});
+
+  @override
+  $UserContextCopyWith<$Res> get userContext;
+}
+
+/// @nodoc
+class __$$QuestionSessionImplCopyWithImpl<$Res>
+    extends _$QuestionSessionCopyWithImpl<$Res, _$QuestionSessionImpl>
+    implements _$$QuestionSessionImplCopyWith<$Res> {
+  __$$QuestionSessionImplCopyWithImpl(
+      _$QuestionSessionImpl _value, $Res Function(_$QuestionSessionImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of QuestionSession
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? sessionId = null,
+    Object? learningPlanItemId = null,
+    Object? topics = null,
+    Object? userContext = null,
+    Object? questions = null,
+    Object? totalQuestions = null,
+    Object? createdAt = null,
+  }) {
+    return _then(_$QuestionSessionImpl(
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      learningPlanItemId: null == learningPlanItemId
+          ? _value.learningPlanItemId
+          : learningPlanItemId // ignore: cast_nullable_to_non_nullable
+              as int,
+      topics: null == topics
+          ? _value._topics
+          : topics // ignore: cast_nullable_to_non_nullable
+              as List<TopicData>,
+      userContext: null == userContext
+          ? _value.userContext
+          : userContext // ignore: cast_nullable_to_non_nullable
+              as UserContext,
+      questions: null == questions
+          ? _value._questions
+          : questions // ignore: cast_nullable_to_non_nullable
+              as List<Question>,
+      totalQuestions: null == totalQuestions
+          ? _value.totalQuestions
+          : totalQuestions // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
+  }
+}
+
+/// @nodoc
 @JsonSerializable()
-class _QuestionSession implements QuestionSession {
-  const _QuestionSession(
+class _$QuestionSessionImpl extends _QuestionSession {
+  const _$QuestionSessionImpl(
       {required this.sessionId,
       required this.learningPlanItemId,
       required final List<TopicData> topics,
@@ -1132,9 +1209,11 @@ class _QuestionSession implements QuestionSession {
       required this.totalQuestions,
       required this.createdAt})
       : _topics = topics,
-        _questions = questions;
-  factory _QuestionSession.fromJson(Map<String, dynamic> json) =>
-      _$QuestionSessionFromJson(json);
+        _questions = questions,
+        super._();
+
+  factory _$QuestionSessionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionSessionImplFromJson(json);
 
   @override
   final String sessionId;
@@ -1163,26 +1242,16 @@ class _QuestionSession implements QuestionSession {
   @override
   final DateTime createdAt;
 
-  /// Create a copy of QuestionSession
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$QuestionSessionCopyWith<_QuestionSession> get copyWith =>
-      __$QuestionSessionCopyWithImpl<_QuestionSession>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$QuestionSessionToJson(
-      this,
-    );
+  String toString() {
+    return 'QuestionSession(sessionId: $sessionId, learningPlanItemId: $learningPlanItemId, topics: $topics, userContext: $userContext, questions: $questions, totalQuestions: $totalQuestions, createdAt: $createdAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _QuestionSession &&
+            other is _$QuestionSessionImpl &&
             (identical(other.sessionId, sessionId) ||
                 other.sessionId == sessionId) &&
             (identical(other.learningPlanItemId, learningPlanItemId) ||
@@ -1210,149 +1279,97 @@ class _QuestionSession implements QuestionSession {
       totalQuestions,
       createdAt);
 
+  /// Create a copy of QuestionSession
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'QuestionSession(sessionId: $sessionId, learningPlanItemId: $learningPlanItemId, topics: $topics, userContext: $userContext, questions: $questions, totalQuestions: $totalQuestions, createdAt: $createdAt)';
+  @pragma('vm:prefer-inline')
+  _$$QuestionSessionImplCopyWith<_$QuestionSessionImpl> get copyWith =>
+      __$$QuestionSessionImplCopyWithImpl<_$QuestionSessionImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionSessionImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$QuestionSessionCopyWith<$Res>
-    implements $QuestionSessionCopyWith<$Res> {
-  factory _$QuestionSessionCopyWith(
-          _QuestionSession value, $Res Function(_QuestionSession) _then) =
-      __$QuestionSessionCopyWithImpl;
-  @override
-  @useResult
-  $Res call(
-      {String sessionId,
-      int learningPlanItemId,
-      List<TopicData> topics,
-      UserContext userContext,
-      List<Question> questions,
-      int totalQuestions,
-      DateTime createdAt});
+abstract class _QuestionSession extends QuestionSession {
+  const factory _QuestionSession(
+      {required final String sessionId,
+      required final int learningPlanItemId,
+      required final List<TopicData> topics,
+      required final UserContext userContext,
+      required final List<Question> questions,
+      required final int totalQuestions,
+      required final DateTime createdAt}) = _$QuestionSessionImpl;
+  const _QuestionSession._() : super._();
+
+  factory _QuestionSession.fromJson(Map<String, dynamic> json) =
+      _$QuestionSessionImpl.fromJson;
 
   @override
-  $UserContextCopyWith<$Res> get userContext;
-}
-
-/// @nodoc
-class __$QuestionSessionCopyWithImpl<$Res>
-    implements _$QuestionSessionCopyWith<$Res> {
-  __$QuestionSessionCopyWithImpl(this._self, this._then);
-
-  final _QuestionSession _self;
-  final $Res Function(_QuestionSession) _then;
+  String get sessionId;
+  @override
+  int get learningPlanItemId;
+  @override
+  List<TopicData> get topics;
+  @override
+  UserContext get userContext;
+  @override
+  List<Question> get questions;
+  @override
+  int get totalQuestions;
+  @override
+  DateTime get createdAt;
 
   /// Create a copy of QuestionSession
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? sessionId = null,
-    Object? learningPlanItemId = null,
-    Object? topics = null,
-    Object? userContext = null,
-    Object? questions = null,
-    Object? totalQuestions = null,
-    Object? createdAt = null,
-  }) {
-    return _then(_QuestionSession(
-      sessionId: null == sessionId
-          ? _self.sessionId
-          : sessionId // ignore: cast_nullable_to_non_nullable
-              as String,
-      learningPlanItemId: null == learningPlanItemId
-          ? _self.learningPlanItemId
-          : learningPlanItemId // ignore: cast_nullable_to_non_nullable
-              as int,
-      topics: null == topics
-          ? _self._topics
-          : topics // ignore: cast_nullable_to_non_nullable
-              as List<TopicData>,
-      userContext: null == userContext
-          ? _self.userContext
-          : userContext // ignore: cast_nullable_to_non_nullable
-              as UserContext,
-      questions: null == questions
-          ? _self._questions
-          : questions // ignore: cast_nullable_to_non_nullable
-              as List<Question>,
-      totalQuestions: null == totalQuestions
-          ? _self.totalQuestions
-          : totalQuestions // ignore: cast_nullable_to_non_nullable
-              as int,
-      createdAt: null == createdAt
-          ? _self.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionSessionImplCopyWith<_$QuestionSessionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
 
-  /// Create a copy of QuestionSession
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $UserContextCopyWith<$Res> get userContext {
-    return $UserContextCopyWith<$Res>(_self.userContext, (value) {
-      return _then(_self.copyWith(userContext: value));
-    });
-  }
+TopicData _$TopicDataFromJson(Map<String, dynamic> json) {
+  return _TopicData.fromJson(json);
 }
 
 /// @nodoc
 mixin _$TopicData {
-  String get leitidee;
-  String get thema;
-  String get unterthema;
+  String get leitidee => throw _privateConstructorUsedError;
+  String get thema => throw _privateConstructorUsedError;
+  String get unterthema => throw _privateConstructorUsedError;
+
+  /// Serializes this TopicData to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of TopicData
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $TopicDataCopyWith<TopicData> get copyWith =>
-      _$TopicDataCopyWithImpl<TopicData>(this as TopicData, _$identity);
-
-  /// Serializes this TopicData to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is TopicData &&
-            (identical(other.leitidee, leitidee) ||
-                other.leitidee == leitidee) &&
-            (identical(other.thema, thema) || other.thema == thema) &&
-            (identical(other.unterthema, unterthema) ||
-                other.unterthema == unterthema));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, leitidee, thema, unterthema);
-
-  @override
-  String toString() {
-    return 'TopicData(leitidee: $leitidee, thema: $thema, unterthema: $unterthema)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $TopicDataCopyWith<$Res> {
-  factory $TopicDataCopyWith(TopicData value, $Res Function(TopicData) _then) =
-      _$TopicDataCopyWithImpl;
+abstract class $TopicDataCopyWith<$Res> {
+  factory $TopicDataCopyWith(TopicData value, $Res Function(TopicData) then) =
+      _$TopicDataCopyWithImpl<$Res, TopicData>;
   @useResult
   $Res call({String leitidee, String thema, String unterthema});
 }
 
 /// @nodoc
-class _$TopicDataCopyWithImpl<$Res> implements $TopicDataCopyWith<$Res> {
-  _$TopicDataCopyWithImpl(this._self, this._then);
+class _$TopicDataCopyWithImpl<$Res, $Val extends TopicData>
+    implements $TopicDataCopyWith<$Res> {
+  _$TopicDataCopyWithImpl(this._value, this._then);
 
-  final TopicData _self;
-  final $Res Function(TopicData) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of TopicData
   /// with the given fields replaced by the non-null parameter values.
@@ -1363,17 +1380,62 @@ class _$TopicDataCopyWithImpl<$Res> implements $TopicDataCopyWith<$Res> {
     Object? thema = null,
     Object? unterthema = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       leitidee: null == leitidee
-          ? _self.leitidee
+          ? _value.leitidee
           : leitidee // ignore: cast_nullable_to_non_nullable
               as String,
       thema: null == thema
-          ? _self.thema
+          ? _value.thema
           : thema // ignore: cast_nullable_to_non_nullable
               as String,
       unterthema: null == unterthema
-          ? _self.unterthema
+          ? _value.unterthema
+          : unterthema // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TopicDataImplCopyWith<$Res>
+    implements $TopicDataCopyWith<$Res> {
+  factory _$$TopicDataImplCopyWith(
+          _$TopicDataImpl value, $Res Function(_$TopicDataImpl) then) =
+      __$$TopicDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String leitidee, String thema, String unterthema});
+}
+
+/// @nodoc
+class __$$TopicDataImplCopyWithImpl<$Res>
+    extends _$TopicDataCopyWithImpl<$Res, _$TopicDataImpl>
+    implements _$$TopicDataImplCopyWith<$Res> {
+  __$$TopicDataImplCopyWithImpl(
+      _$TopicDataImpl _value, $Res Function(_$TopicDataImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TopicData
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? leitidee = null,
+    Object? thema = null,
+    Object? unterthema = null,
+  }) {
+    return _then(_$TopicDataImpl(
+      leitidee: null == leitidee
+          ? _value.leitidee
+          : leitidee // ignore: cast_nullable_to_non_nullable
+              as String,
+      thema: null == thema
+          ? _value.thema
+          : thema // ignore: cast_nullable_to_non_nullable
+              as String,
+      unterthema: null == unterthema
+          ? _value.unterthema
           : unterthema // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -1382,11 +1444,13 @@ class _$TopicDataCopyWithImpl<$Res> implements $TopicDataCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _TopicData implements TopicData {
-  const _TopicData(
-      {required this.leitidee, required this.thema, required this.unterthema});
-  factory _TopicData.fromJson(Map<String, dynamic> json) =>
-      _$TopicDataFromJson(json);
+class _$TopicDataImpl extends _TopicData {
+  const _$TopicDataImpl(
+      {required this.leitidee, required this.thema, required this.unterthema})
+      : super._();
+
+  factory _$TopicDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TopicDataImplFromJson(json);
 
   @override
   final String leitidee;
@@ -1395,26 +1459,16 @@ class _TopicData implements TopicData {
   @override
   final String unterthema;
 
-  /// Create a copy of TopicData
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$TopicDataCopyWith<_TopicData> get copyWith =>
-      __$TopicDataCopyWithImpl<_TopicData>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$TopicDataToJson(
-      this,
-    );
+  String toString() {
+    return 'TopicData(leitidee: $leitidee, thema: $thema, unterthema: $unterthema)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _TopicData &&
+            other is _$TopicDataImpl &&
             (identical(other.leitidee, leitidee) ||
                 other.leitidee == leitidee) &&
             (identical(other.thema, thema) || other.thema == thema) &&
@@ -1426,107 +1480,84 @@ class _TopicData implements TopicData {
   @override
   int get hashCode => Object.hash(runtimeType, leitidee, thema, unterthema);
 
+  /// Create a copy of TopicData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'TopicData(leitidee: $leitidee, thema: $thema, unterthema: $unterthema)';
+  @pragma('vm:prefer-inline')
+  _$$TopicDataImplCopyWith<_$TopicDataImpl> get copyWith =>
+      __$$TopicDataImplCopyWithImpl<_$TopicDataImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TopicDataImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$TopicDataCopyWith<$Res>
-    implements $TopicDataCopyWith<$Res> {
-  factory _$TopicDataCopyWith(
-          _TopicData value, $Res Function(_TopicData) _then) =
-      __$TopicDataCopyWithImpl;
+abstract class _TopicData extends TopicData {
+  const factory _TopicData(
+      {required final String leitidee,
+      required final String thema,
+      required final String unterthema}) = _$TopicDataImpl;
+  const _TopicData._() : super._();
+
+  factory _TopicData.fromJson(Map<String, dynamic> json) =
+      _$TopicDataImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({String leitidee, String thema, String unterthema});
-}
-
-/// @nodoc
-class __$TopicDataCopyWithImpl<$Res> implements _$TopicDataCopyWith<$Res> {
-  __$TopicDataCopyWithImpl(this._self, this._then);
-
-  final _TopicData _self;
-  final $Res Function(_TopicData) _then;
+  String get leitidee;
+  @override
+  String get thema;
+  @override
+  String get unterthema;
 
   /// Create a copy of TopicData
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? leitidee = null,
-    Object? thema = null,
-    Object? unterthema = null,
-  }) {
-    return _then(_TopicData(
-      leitidee: null == leitidee
-          ? _self.leitidee
-          : leitidee // ignore: cast_nullable_to_non_nullable
-              as String,
-      thema: null == thema
-          ? _self.thema
-          : thema // ignore: cast_nullable_to_non_nullable
-              as String,
-      unterthema: null == unterthema
-          ? _self.unterthema
-          : unterthema // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TopicDataImplCopyWith<_$TopicDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UserContext _$UserContextFromJson(Map<String, dynamic> json) {
+  return _UserContext.fromJson(json);
 }
 
 /// @nodoc
 mixin _$UserContext {
-  String get gradeLevel;
-  String get courseType;
+  String get gradeLevel => throw _privateConstructorUsedError;
+  String get courseType => throw _privateConstructorUsedError;
+
+  /// Serializes this UserContext to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of UserContext
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $UserContextCopyWith<UserContext> get copyWith =>
-      _$UserContextCopyWithImpl<UserContext>(this as UserContext, _$identity);
-
-  /// Serializes this UserContext to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is UserContext &&
-            (identical(other.gradeLevel, gradeLevel) ||
-                other.gradeLevel == gradeLevel) &&
-            (identical(other.courseType, courseType) ||
-                other.courseType == courseType));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, gradeLevel, courseType);
-
-  @override
-  String toString() {
-    return 'UserContext(gradeLevel: $gradeLevel, courseType: $courseType)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $UserContextCopyWith<$Res> {
+abstract class $UserContextCopyWith<$Res> {
   factory $UserContextCopyWith(
-          UserContext value, $Res Function(UserContext) _then) =
-      _$UserContextCopyWithImpl;
+          UserContext value, $Res Function(UserContext) then) =
+      _$UserContextCopyWithImpl<$Res, UserContext>;
   @useResult
   $Res call({String gradeLevel, String courseType});
 }
 
 /// @nodoc
-class _$UserContextCopyWithImpl<$Res> implements $UserContextCopyWith<$Res> {
-  _$UserContextCopyWithImpl(this._self, this._then);
+class _$UserContextCopyWithImpl<$Res, $Val extends UserContext>
+    implements $UserContextCopyWith<$Res> {
+  _$UserContextCopyWithImpl(this._value, this._then);
 
-  final UserContext _self;
-  final $Res Function(UserContext) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of UserContext
   /// with the given fields replaced by the non-null parameter values.
@@ -1536,13 +1567,53 @@ class _$UserContextCopyWithImpl<$Res> implements $UserContextCopyWith<$Res> {
     Object? gradeLevel = null,
     Object? courseType = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       gradeLevel: null == gradeLevel
-          ? _self.gradeLevel
+          ? _value.gradeLevel
           : gradeLevel // ignore: cast_nullable_to_non_nullable
               as String,
       courseType: null == courseType
-          ? _self.courseType
+          ? _value.courseType
+          : courseType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UserContextImplCopyWith<$Res>
+    implements $UserContextCopyWith<$Res> {
+  factory _$$UserContextImplCopyWith(
+          _$UserContextImpl value, $Res Function(_$UserContextImpl) then) =
+      __$$UserContextImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String gradeLevel, String courseType});
+}
+
+/// @nodoc
+class __$$UserContextImplCopyWithImpl<$Res>
+    extends _$UserContextCopyWithImpl<$Res, _$UserContextImpl>
+    implements _$$UserContextImplCopyWith<$Res> {
+  __$$UserContextImplCopyWithImpl(
+      _$UserContextImpl _value, $Res Function(_$UserContextImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserContext
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? gradeLevel = null,
+    Object? courseType = null,
+  }) {
+    return _then(_$UserContextImpl(
+      gradeLevel: null == gradeLevel
+          ? _value.gradeLevel
+          : gradeLevel // ignore: cast_nullable_to_non_nullable
+              as String,
+      courseType: null == courseType
+          ? _value.courseType
           : courseType // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -1551,36 +1622,28 @@ class _$UserContextCopyWithImpl<$Res> implements $UserContextCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _UserContext implements UserContext {
-  const _UserContext({required this.gradeLevel, required this.courseType});
-  factory _UserContext.fromJson(Map<String, dynamic> json) =>
-      _$UserContextFromJson(json);
+class _$UserContextImpl extends _UserContext {
+  const _$UserContextImpl({required this.gradeLevel, required this.courseType})
+      : super._();
+
+  factory _$UserContextImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserContextImplFromJson(json);
 
   @override
   final String gradeLevel;
   @override
   final String courseType;
 
-  /// Create a copy of UserContext
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$UserContextCopyWith<_UserContext> get copyWith =>
-      __$UserContextCopyWithImpl<_UserContext>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$UserContextToJson(
-      this,
-    );
+  String toString() {
+    return 'UserContext(gradeLevel: $gradeLevel, courseType: $courseType)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _UserContext &&
+            other is _$UserContextImpl &&
             (identical(other.gradeLevel, gradeLevel) ||
                 other.gradeLevel == gradeLevel) &&
             (identical(other.courseType, courseType) ||
@@ -1591,142 +1654,81 @@ class _UserContext implements UserContext {
   @override
   int get hashCode => Object.hash(runtimeType, gradeLevel, courseType);
 
+  /// Create a copy of UserContext
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'UserContext(gradeLevel: $gradeLevel, courseType: $courseType)';
+  @pragma('vm:prefer-inline')
+  _$$UserContextImplCopyWith<_$UserContextImpl> get copyWith =>
+      __$$UserContextImplCopyWithImpl<_$UserContextImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserContextImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$UserContextCopyWith<$Res>
-    implements $UserContextCopyWith<$Res> {
-  factory _$UserContextCopyWith(
-          _UserContext value, $Res Function(_UserContext) _then) =
-      __$UserContextCopyWithImpl;
+abstract class _UserContext extends UserContext {
+  const factory _UserContext(
+      {required final String gradeLevel,
+      required final String courseType}) = _$UserContextImpl;
+  const _UserContext._() : super._();
+
+  factory _UserContext.fromJson(Map<String, dynamic> json) =
+      _$UserContextImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({String gradeLevel, String courseType});
-}
-
-/// @nodoc
-class __$UserContextCopyWithImpl<$Res> implements _$UserContextCopyWith<$Res> {
-  __$UserContextCopyWithImpl(this._self, this._then);
-
-  final _UserContext _self;
-  final $Res Function(_UserContext) _then;
+  String get gradeLevel;
+  @override
+  String get courseType;
 
   /// Create a copy of UserContext
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? gradeLevel = null,
-    Object? courseType = null,
-  }) {
-    return _then(_UserContext(
-      gradeLevel: null == gradeLevel
-          ? _self.gradeLevel
-          : gradeLevel // ignore: cast_nullable_to_non_nullable
-              as String,
-      courseType: null == courseType
-          ? _self.courseType
-          : courseType // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserContextImplCopyWith<_$UserContextImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionProgress _$QuestionProgressFromJson(Map<String, dynamic> json) {
+  return _QuestionProgress.fromJson(json);
 }
 
 /// @nodoc
 mixin _$QuestionProgress {
-  String get questionId;
-  String get sessionId;
-  DateTime get startedAt;
-  DateTime? get completedAt;
-  QuestionStatus get status;
-  int get hintsUsed;
-  List<HintUsageDetail> get hintsUsedDetails;
-  bool get isCorrect;
-  String? get userAnswer;
-  int get timeSpent; // seconds
-  int get xpEarned;
-  XPBreakdown? get xpBreakdown;
-  String get topic;
-  int get difficulty;
+  String get questionId => throw _privateConstructorUsedError;
+  String get sessionId => throw _privateConstructorUsedError;
+  DateTime get startedAt => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
+  QuestionStatus get status => throw _privateConstructorUsedError;
+  int get hintsUsed => throw _privateConstructorUsedError;
+  List<HintUsageDetail> get hintsUsedDetails =>
+      throw _privateConstructorUsedError;
+  bool get isCorrect => throw _privateConstructorUsedError;
+  String? get userAnswer => throw _privateConstructorUsedError;
+  int get timeSpent => throw _privateConstructorUsedError; // seconds
+  int get xpEarned => throw _privateConstructorUsedError;
+  XPBreakdown? get xpBreakdown => throw _privateConstructorUsedError;
+  String get topic => throw _privateConstructorUsedError;
+  int get difficulty => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionProgress to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of QuestionProgress
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $QuestionProgressCopyWith<QuestionProgress> get copyWith =>
-      _$QuestionProgressCopyWithImpl<QuestionProgress>(
-          this as QuestionProgress, _$identity);
-
-  /// Serializes this QuestionProgress to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is QuestionProgress &&
-            (identical(other.questionId, questionId) ||
-                other.questionId == questionId) &&
-            (identical(other.sessionId, sessionId) ||
-                other.sessionId == sessionId) &&
-            (identical(other.startedAt, startedAt) ||
-                other.startedAt == startedAt) &&
-            (identical(other.completedAt, completedAt) ||
-                other.completedAt == completedAt) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.hintsUsed, hintsUsed) ||
-                other.hintsUsed == hintsUsed) &&
-            const DeepCollectionEquality()
-                .equals(other.hintsUsedDetails, hintsUsedDetails) &&
-            (identical(other.isCorrect, isCorrect) ||
-                other.isCorrect == isCorrect) &&
-            (identical(other.userAnswer, userAnswer) ||
-                other.userAnswer == userAnswer) &&
-            (identical(other.timeSpent, timeSpent) ||
-                other.timeSpent == timeSpent) &&
-            (identical(other.xpEarned, xpEarned) ||
-                other.xpEarned == xpEarned) &&
-            (identical(other.xpBreakdown, xpBreakdown) ||
-                other.xpBreakdown == xpBreakdown) &&
-            (identical(other.topic, topic) || other.topic == topic) &&
-            (identical(other.difficulty, difficulty) ||
-                other.difficulty == difficulty));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      questionId,
-      sessionId,
-      startedAt,
-      completedAt,
-      status,
-      hintsUsed,
-      const DeepCollectionEquality().hash(hintsUsedDetails),
-      isCorrect,
-      userAnswer,
-      timeSpent,
-      xpEarned,
-      xpBreakdown,
-      topic,
-      difficulty);
-
-  @override
-  String toString() {
-    return 'QuestionProgress(questionId: $questionId, sessionId: $sessionId, startedAt: $startedAt, completedAt: $completedAt, status: $status, hintsUsed: $hintsUsed, hintsUsedDetails: $hintsUsedDetails, isCorrect: $isCorrect, userAnswer: $userAnswer, timeSpent: $timeSpent, xpEarned: $xpEarned, xpBreakdown: $xpBreakdown, topic: $topic, difficulty: $difficulty)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $QuestionProgressCopyWith<$Res> {
+abstract class $QuestionProgressCopyWith<$Res> {
   factory $QuestionProgressCopyWith(
-          QuestionProgress value, $Res Function(QuestionProgress) _then) =
-      _$QuestionProgressCopyWithImpl;
+          QuestionProgress value, $Res Function(QuestionProgress) then) =
+      _$QuestionProgressCopyWithImpl<$Res, QuestionProgress>;
   @useResult
   $Res call(
       {String questionId,
@@ -1748,12 +1750,14 @@ abstract mixin class $QuestionProgressCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$QuestionProgressCopyWithImpl<$Res>
+class _$QuestionProgressCopyWithImpl<$Res, $Val extends QuestionProgress>
     implements $QuestionProgressCopyWith<$Res> {
-  _$QuestionProgressCopyWithImpl(this._self, this._then);
+  _$QuestionProgressCopyWithImpl(this._value, this._then);
 
-  final QuestionProgress _self;
-  final $Res Function(QuestionProgress) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of QuestionProgress
   /// with the given fields replaced by the non-null parameter values.
@@ -1775,64 +1779,64 @@ class _$QuestionProgressCopyWithImpl<$Res>
     Object? topic = null,
     Object? difficulty = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       questionId: null == questionId
-          ? _self.questionId
+          ? _value.questionId
           : questionId // ignore: cast_nullable_to_non_nullable
               as String,
       sessionId: null == sessionId
-          ? _self.sessionId
+          ? _value.sessionId
           : sessionId // ignore: cast_nullable_to_non_nullable
               as String,
       startedAt: null == startedAt
-          ? _self.startedAt
+          ? _value.startedAt
           : startedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
       completedAt: freezed == completedAt
-          ? _self.completedAt
+          ? _value.completedAt
           : completedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
       status: null == status
-          ? _self.status
+          ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as QuestionStatus,
       hintsUsed: null == hintsUsed
-          ? _self.hintsUsed
+          ? _value.hintsUsed
           : hintsUsed // ignore: cast_nullable_to_non_nullable
               as int,
       hintsUsedDetails: null == hintsUsedDetails
-          ? _self.hintsUsedDetails
+          ? _value.hintsUsedDetails
           : hintsUsedDetails // ignore: cast_nullable_to_non_nullable
               as List<HintUsageDetail>,
       isCorrect: null == isCorrect
-          ? _self.isCorrect
+          ? _value.isCorrect
           : isCorrect // ignore: cast_nullable_to_non_nullable
               as bool,
       userAnswer: freezed == userAnswer
-          ? _self.userAnswer
+          ? _value.userAnswer
           : userAnswer // ignore: cast_nullable_to_non_nullable
               as String?,
       timeSpent: null == timeSpent
-          ? _self.timeSpent
+          ? _value.timeSpent
           : timeSpent // ignore: cast_nullable_to_non_nullable
               as int,
       xpEarned: null == xpEarned
-          ? _self.xpEarned
+          ? _value.xpEarned
           : xpEarned // ignore: cast_nullable_to_non_nullable
               as int,
       xpBreakdown: freezed == xpBreakdown
-          ? _self.xpBreakdown
+          ? _value.xpBreakdown
           : xpBreakdown // ignore: cast_nullable_to_non_nullable
               as XPBreakdown?,
       topic: null == topic
-          ? _self.topic
+          ? _value.topic
           : topic // ignore: cast_nullable_to_non_nullable
               as String,
       difficulty: null == difficulty
-          ? _self.difficulty
+          ? _value.difficulty
           : difficulty // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 
   /// Create a copy of QuestionProgress
@@ -1840,20 +1844,137 @@ class _$QuestionProgressCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $XPBreakdownCopyWith<$Res>? get xpBreakdown {
-    if (_self.xpBreakdown == null) {
+    if (_value.xpBreakdown == null) {
       return null;
     }
 
-    return $XPBreakdownCopyWith<$Res>(_self.xpBreakdown!, (value) {
-      return _then(_self.copyWith(xpBreakdown: value));
+    return $XPBreakdownCopyWith<$Res>(_value.xpBreakdown!, (value) {
+      return _then(_value.copyWith(xpBreakdown: value) as $Val);
     });
   }
 }
 
 /// @nodoc
+abstract class _$$QuestionProgressImplCopyWith<$Res>
+    implements $QuestionProgressCopyWith<$Res> {
+  factory _$$QuestionProgressImplCopyWith(_$QuestionProgressImpl value,
+          $Res Function(_$QuestionProgressImpl) then) =
+      __$$QuestionProgressImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String questionId,
+      String sessionId,
+      DateTime startedAt,
+      DateTime? completedAt,
+      QuestionStatus status,
+      int hintsUsed,
+      List<HintUsageDetail> hintsUsedDetails,
+      bool isCorrect,
+      String? userAnswer,
+      int timeSpent,
+      int xpEarned,
+      XPBreakdown? xpBreakdown,
+      String topic,
+      int difficulty});
+
+  @override
+  $XPBreakdownCopyWith<$Res>? get xpBreakdown;
+}
+
+/// @nodoc
+class __$$QuestionProgressImplCopyWithImpl<$Res>
+    extends _$QuestionProgressCopyWithImpl<$Res, _$QuestionProgressImpl>
+    implements _$$QuestionProgressImplCopyWith<$Res> {
+  __$$QuestionProgressImplCopyWithImpl(_$QuestionProgressImpl _value,
+      $Res Function(_$QuestionProgressImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of QuestionProgress
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? questionId = null,
+    Object? sessionId = null,
+    Object? startedAt = null,
+    Object? completedAt = freezed,
+    Object? status = null,
+    Object? hintsUsed = null,
+    Object? hintsUsedDetails = null,
+    Object? isCorrect = null,
+    Object? userAnswer = freezed,
+    Object? timeSpent = null,
+    Object? xpEarned = null,
+    Object? xpBreakdown = freezed,
+    Object? topic = null,
+    Object? difficulty = null,
+  }) {
+    return _then(_$QuestionProgressImpl(
+      questionId: null == questionId
+          ? _value.questionId
+          : questionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      startedAt: null == startedAt
+          ? _value.startedAt
+          : startedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as QuestionStatus,
+      hintsUsed: null == hintsUsed
+          ? _value.hintsUsed
+          : hintsUsed // ignore: cast_nullable_to_non_nullable
+              as int,
+      hintsUsedDetails: null == hintsUsedDetails
+          ? _value._hintsUsedDetails
+          : hintsUsedDetails // ignore: cast_nullable_to_non_nullable
+              as List<HintUsageDetail>,
+      isCorrect: null == isCorrect
+          ? _value.isCorrect
+          : isCorrect // ignore: cast_nullable_to_non_nullable
+              as bool,
+      userAnswer: freezed == userAnswer
+          ? _value.userAnswer
+          : userAnswer // ignore: cast_nullable_to_non_nullable
+              as String?,
+      timeSpent: null == timeSpent
+          ? _value.timeSpent
+          : timeSpent // ignore: cast_nullable_to_non_nullable
+              as int,
+      xpEarned: null == xpEarned
+          ? _value.xpEarned
+          : xpEarned // ignore: cast_nullable_to_non_nullable
+              as int,
+      xpBreakdown: freezed == xpBreakdown
+          ? _value.xpBreakdown
+          : xpBreakdown // ignore: cast_nullable_to_non_nullable
+              as XPBreakdown?,
+      topic: null == topic
+          ? _value.topic
+          : topic // ignore: cast_nullable_to_non_nullable
+              as String,
+      difficulty: null == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
 @JsonSerializable()
-class _QuestionProgress implements QuestionProgress {
-  const _QuestionProgress(
+class _$QuestionProgressImpl extends _QuestionProgress {
+  const _$QuestionProgressImpl(
       {required this.questionId,
       required this.sessionId,
       required this.startedAt,
@@ -1868,9 +1989,11 @@ class _QuestionProgress implements QuestionProgress {
       this.xpBreakdown,
       required this.topic,
       required this.difficulty})
-      : _hintsUsedDetails = hintsUsedDetails;
-  factory _QuestionProgress.fromJson(Map<String, dynamic> json) =>
-      _$QuestionProgressFromJson(json);
+      : _hintsUsedDetails = hintsUsedDetails,
+        super._();
+
+  factory _$QuestionProgressImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionProgressImplFromJson(json);
 
   @override
   final String questionId;
@@ -1914,26 +2037,16 @@ class _QuestionProgress implements QuestionProgress {
   @override
   final int difficulty;
 
-  /// Create a copy of QuestionProgress
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$QuestionProgressCopyWith<_QuestionProgress> get copyWith =>
-      __$QuestionProgressCopyWithImpl<_QuestionProgress>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$QuestionProgressToJson(
-      this,
-    );
+  String toString() {
+    return 'QuestionProgress(questionId: $questionId, sessionId: $sessionId, startedAt: $startedAt, completedAt: $completedAt, status: $status, hintsUsed: $hintsUsed, hintsUsedDetails: $hintsUsedDetails, isCorrect: $isCorrect, userAnswer: $userAnswer, timeSpent: $timeSpent, xpEarned: $xpEarned, xpBreakdown: $xpBreakdown, topic: $topic, difficulty: $difficulty)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _QuestionProgress &&
+            other is _$QuestionProgressImpl &&
             (identical(other.questionId, questionId) ||
                 other.questionId == questionId) &&
             (identical(other.sessionId, sessionId) ||
@@ -1981,194 +2094,118 @@ class _QuestionProgress implements QuestionProgress {
       topic,
       difficulty);
 
+  /// Create a copy of QuestionProgress
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'QuestionProgress(questionId: $questionId, sessionId: $sessionId, startedAt: $startedAt, completedAt: $completedAt, status: $status, hintsUsed: $hintsUsed, hintsUsedDetails: $hintsUsedDetails, isCorrect: $isCorrect, userAnswer: $userAnswer, timeSpent: $timeSpent, xpEarned: $xpEarned, xpBreakdown: $xpBreakdown, topic: $topic, difficulty: $difficulty)';
+  @pragma('vm:prefer-inline')
+  _$$QuestionProgressImplCopyWith<_$QuestionProgressImpl> get copyWith =>
+      __$$QuestionProgressImplCopyWithImpl<_$QuestionProgressImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionProgressImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$QuestionProgressCopyWith<$Res>
-    implements $QuestionProgressCopyWith<$Res> {
-  factory _$QuestionProgressCopyWith(
-          _QuestionProgress value, $Res Function(_QuestionProgress) _then) =
-      __$QuestionProgressCopyWithImpl;
-  @override
-  @useResult
-  $Res call(
-      {String questionId,
-      String sessionId,
-      DateTime startedAt,
-      DateTime? completedAt,
-      QuestionStatus status,
-      int hintsUsed,
-      List<HintUsageDetail> hintsUsedDetails,
-      bool isCorrect,
-      String? userAnswer,
-      int timeSpent,
-      int xpEarned,
-      XPBreakdown? xpBreakdown,
-      String topic,
-      int difficulty});
+abstract class _QuestionProgress extends QuestionProgress {
+  const factory _QuestionProgress(
+      {required final String questionId,
+      required final String sessionId,
+      required final DateTime startedAt,
+      final DateTime? completedAt,
+      required final QuestionStatus status,
+      final int hintsUsed,
+      final List<HintUsageDetail> hintsUsedDetails,
+      final bool isCorrect,
+      final String? userAnswer,
+      final int timeSpent,
+      final int xpEarned,
+      final XPBreakdown? xpBreakdown,
+      required final String topic,
+      required final int difficulty}) = _$QuestionProgressImpl;
+  const _QuestionProgress._() : super._();
+
+  factory _QuestionProgress.fromJson(Map<String, dynamic> json) =
+      _$QuestionProgressImpl.fromJson;
 
   @override
-  $XPBreakdownCopyWith<$Res>? get xpBreakdown;
-}
-
-/// @nodoc
-class __$QuestionProgressCopyWithImpl<$Res>
-    implements _$QuestionProgressCopyWith<$Res> {
-  __$QuestionProgressCopyWithImpl(this._self, this._then);
-
-  final _QuestionProgress _self;
-  final $Res Function(_QuestionProgress) _then;
+  String get questionId;
+  @override
+  String get sessionId;
+  @override
+  DateTime get startedAt;
+  @override
+  DateTime? get completedAt;
+  @override
+  QuestionStatus get status;
+  @override
+  int get hintsUsed;
+  @override
+  List<HintUsageDetail> get hintsUsedDetails;
+  @override
+  bool get isCorrect;
+  @override
+  String? get userAnswer;
+  @override
+  int get timeSpent; // seconds
+  @override
+  int get xpEarned;
+  @override
+  XPBreakdown? get xpBreakdown;
+  @override
+  String get topic;
+  @override
+  int get difficulty;
 
   /// Create a copy of QuestionProgress
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? questionId = null,
-    Object? sessionId = null,
-    Object? startedAt = null,
-    Object? completedAt = freezed,
-    Object? status = null,
-    Object? hintsUsed = null,
-    Object? hintsUsedDetails = null,
-    Object? isCorrect = null,
-    Object? userAnswer = freezed,
-    Object? timeSpent = null,
-    Object? xpEarned = null,
-    Object? xpBreakdown = freezed,
-    Object? topic = null,
-    Object? difficulty = null,
-  }) {
-    return _then(_QuestionProgress(
-      questionId: null == questionId
-          ? _self.questionId
-          : questionId // ignore: cast_nullable_to_non_nullable
-              as String,
-      sessionId: null == sessionId
-          ? _self.sessionId
-          : sessionId // ignore: cast_nullable_to_non_nullable
-              as String,
-      startedAt: null == startedAt
-          ? _self.startedAt
-          : startedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      completedAt: freezed == completedAt
-          ? _self.completedAt
-          : completedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      status: null == status
-          ? _self.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as QuestionStatus,
-      hintsUsed: null == hintsUsed
-          ? _self.hintsUsed
-          : hintsUsed // ignore: cast_nullable_to_non_nullable
-              as int,
-      hintsUsedDetails: null == hintsUsedDetails
-          ? _self._hintsUsedDetails
-          : hintsUsedDetails // ignore: cast_nullable_to_non_nullable
-              as List<HintUsageDetail>,
-      isCorrect: null == isCorrect
-          ? _self.isCorrect
-          : isCorrect // ignore: cast_nullable_to_non_nullable
-              as bool,
-      userAnswer: freezed == userAnswer
-          ? _self.userAnswer
-          : userAnswer // ignore: cast_nullable_to_non_nullable
-              as String?,
-      timeSpent: null == timeSpent
-          ? _self.timeSpent
-          : timeSpent // ignore: cast_nullable_to_non_nullable
-              as int,
-      xpEarned: null == xpEarned
-          ? _self.xpEarned
-          : xpEarned // ignore: cast_nullable_to_non_nullable
-              as int,
-      xpBreakdown: freezed == xpBreakdown
-          ? _self.xpBreakdown
-          : xpBreakdown // ignore: cast_nullable_to_non_nullable
-              as XPBreakdown?,
-      topic: null == topic
-          ? _self.topic
-          : topic // ignore: cast_nullable_to_non_nullable
-              as String,
-      difficulty: null == difficulty
-          ? _self.difficulty
-          : difficulty // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionProgressImplCopyWith<_$QuestionProgressImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
 
-  /// Create a copy of QuestionProgress
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $XPBreakdownCopyWith<$Res>? get xpBreakdown {
-    if (_self.xpBreakdown == null) {
-      return null;
-    }
-
-    return $XPBreakdownCopyWith<$Res>(_self.xpBreakdown!, (value) {
-      return _then(_self.copyWith(xpBreakdown: value));
-    });
-  }
+HintUsageDetail _$HintUsageDetailFromJson(Map<String, dynamic> json) {
+  return _HintUsageDetail.fromJson(json);
 }
 
 /// @nodoc
 mixin _$HintUsageDetail {
-  int get level; // 1-3
-  DateTime get usedAt;
+  int get level => throw _privateConstructorUsedError; // 1-3
+  DateTime get usedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this HintUsageDetail to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of HintUsageDetail
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $HintUsageDetailCopyWith<HintUsageDetail> get copyWith =>
-      _$HintUsageDetailCopyWithImpl<HintUsageDetail>(
-          this as HintUsageDetail, _$identity);
-
-  /// Serializes this HintUsageDetail to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is HintUsageDetail &&
-            (identical(other.level, level) || other.level == level) &&
-            (identical(other.usedAt, usedAt) || other.usedAt == usedAt));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, level, usedAt);
-
-  @override
-  String toString() {
-    return 'HintUsageDetail(level: $level, usedAt: $usedAt)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $HintUsageDetailCopyWith<$Res> {
+abstract class $HintUsageDetailCopyWith<$Res> {
   factory $HintUsageDetailCopyWith(
-          HintUsageDetail value, $Res Function(HintUsageDetail) _then) =
-      _$HintUsageDetailCopyWithImpl;
+          HintUsageDetail value, $Res Function(HintUsageDetail) then) =
+      _$HintUsageDetailCopyWithImpl<$Res, HintUsageDetail>;
   @useResult
   $Res call({int level, DateTime usedAt});
 }
 
 /// @nodoc
-class _$HintUsageDetailCopyWithImpl<$Res>
+class _$HintUsageDetailCopyWithImpl<$Res, $Val extends HintUsageDetail>
     implements $HintUsageDetailCopyWith<$Res> {
-  _$HintUsageDetailCopyWithImpl(this._self, this._then);
+  _$HintUsageDetailCopyWithImpl(this._value, this._then);
 
-  final HintUsageDetail _self;
-  final $Res Function(HintUsageDetail) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of HintUsageDetail
   /// with the given fields replaced by the non-null parameter values.
@@ -2178,13 +2215,53 @@ class _$HintUsageDetailCopyWithImpl<$Res>
     Object? level = null,
     Object? usedAt = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       level: null == level
-          ? _self.level
+          ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
       usedAt: null == usedAt
-          ? _self.usedAt
+          ? _value.usedAt
+          : usedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$HintUsageDetailImplCopyWith<$Res>
+    implements $HintUsageDetailCopyWith<$Res> {
+  factory _$$HintUsageDetailImplCopyWith(_$HintUsageDetailImpl value,
+          $Res Function(_$HintUsageDetailImpl) then) =
+      __$$HintUsageDetailImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int level, DateTime usedAt});
+}
+
+/// @nodoc
+class __$$HintUsageDetailImplCopyWithImpl<$Res>
+    extends _$HintUsageDetailCopyWithImpl<$Res, _$HintUsageDetailImpl>
+    implements _$$HintUsageDetailImplCopyWith<$Res> {
+  __$$HintUsageDetailImplCopyWithImpl(
+      _$HintUsageDetailImpl _value, $Res Function(_$HintUsageDetailImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of HintUsageDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? level = null,
+    Object? usedAt = null,
+  }) {
+    return _then(_$HintUsageDetailImpl(
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
+      usedAt: null == usedAt
+          ? _value.usedAt
           : usedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ));
@@ -2193,10 +2270,12 @@ class _$HintUsageDetailCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _HintUsageDetail implements HintUsageDetail {
-  const _HintUsageDetail({required this.level, required this.usedAt});
-  factory _HintUsageDetail.fromJson(Map<String, dynamic> json) =>
-      _$HintUsageDetailFromJson(json);
+class _$HintUsageDetailImpl extends _HintUsageDetail {
+  const _$HintUsageDetailImpl({required this.level, required this.usedAt})
+      : super._();
+
+  factory _$HintUsageDetailImpl.fromJson(Map<String, dynamic> json) =>
+      _$$HintUsageDetailImplFromJson(json);
 
   @override
   final int level;
@@ -2204,26 +2283,16 @@ class _HintUsageDetail implements HintUsageDetail {
   @override
   final DateTime usedAt;
 
-  /// Create a copy of HintUsageDetail
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$HintUsageDetailCopyWith<_HintUsageDetail> get copyWith =>
-      __$HintUsageDetailCopyWithImpl<_HintUsageDetail>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$HintUsageDetailToJson(
-      this,
-    );
+  String toString() {
+    return 'HintUsageDetail(level: $level, usedAt: $usedAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _HintUsageDetail &&
+            other is _$HintUsageDetailImpl &&
             (identical(other.level, level) || other.level == level) &&
             (identical(other.usedAt, usedAt) || other.usedAt == usedAt));
   }
@@ -2232,109 +2301,84 @@ class _HintUsageDetail implements HintUsageDetail {
   @override
   int get hashCode => Object.hash(runtimeType, level, usedAt);
 
+  /// Create a copy of HintUsageDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'HintUsageDetail(level: $level, usedAt: $usedAt)';
+  @pragma('vm:prefer-inline')
+  _$$HintUsageDetailImplCopyWith<_$HintUsageDetailImpl> get copyWith =>
+      __$$HintUsageDetailImplCopyWithImpl<_$HintUsageDetailImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$HintUsageDetailImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$HintUsageDetailCopyWith<$Res>
-    implements $HintUsageDetailCopyWith<$Res> {
-  factory _$HintUsageDetailCopyWith(
-          _HintUsageDetail value, $Res Function(_HintUsageDetail) _then) =
-      __$HintUsageDetailCopyWithImpl;
+abstract class _HintUsageDetail extends HintUsageDetail {
+  const factory _HintUsageDetail(
+      {required final int level,
+      required final DateTime usedAt}) = _$HintUsageDetailImpl;
+  const _HintUsageDetail._() : super._();
+
+  factory _HintUsageDetail.fromJson(Map<String, dynamic> json) =
+      _$HintUsageDetailImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({int level, DateTime usedAt});
-}
-
-/// @nodoc
-class __$HintUsageDetailCopyWithImpl<$Res>
-    implements _$HintUsageDetailCopyWith<$Res> {
-  __$HintUsageDetailCopyWithImpl(this._self, this._then);
-
-  final _HintUsageDetail _self;
-  final $Res Function(_HintUsageDetail) _then;
+  int get level; // 1-3
+  @override
+  DateTime get usedAt;
 
   /// Create a copy of HintUsageDetail
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? level = null,
-    Object? usedAt = null,
-  }) {
-    return _then(_HintUsageDetail(
-      level: null == level
-          ? _self.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
-      usedAt: null == usedAt
-          ? _self.usedAt
-          : usedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$HintUsageDetailImplCopyWith<_$HintUsageDetailImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+XPBreakdown _$XPBreakdownFromJson(Map<String, dynamic> json) {
+  return _XPBreakdown.fromJson(json);
 }
 
 /// @nodoc
 mixin _$XPBreakdown {
-  int get base;
-  int get hintPenalty;
-  int get timeBonus;
-  int get streakBonus;
+  int get base => throw _privateConstructorUsedError;
+  int get hintPenalty => throw _privateConstructorUsedError;
+  int get timeBonus => throw _privateConstructorUsedError;
+  int get streakBonus => throw _privateConstructorUsedError;
+
+  /// Serializes this XPBreakdown to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of XPBreakdown
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
   $XPBreakdownCopyWith<XPBreakdown> get copyWith =>
-      _$XPBreakdownCopyWithImpl<XPBreakdown>(this as XPBreakdown, _$identity);
-
-  /// Serializes this XPBreakdown to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is XPBreakdown &&
-            (identical(other.base, base) || other.base == base) &&
-            (identical(other.hintPenalty, hintPenalty) ||
-                other.hintPenalty == hintPenalty) &&
-            (identical(other.timeBonus, timeBonus) ||
-                other.timeBonus == timeBonus) &&
-            (identical(other.streakBonus, streakBonus) ||
-                other.streakBonus == streakBonus));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, base, hintPenalty, timeBonus, streakBonus);
-
-  @override
-  String toString() {
-    return 'XPBreakdown(base: $base, hintPenalty: $hintPenalty, timeBonus: $timeBonus, streakBonus: $streakBonus)';
-  }
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $XPBreakdownCopyWith<$Res> {
+abstract class $XPBreakdownCopyWith<$Res> {
   factory $XPBreakdownCopyWith(
-          XPBreakdown value, $Res Function(XPBreakdown) _then) =
-      _$XPBreakdownCopyWithImpl;
+          XPBreakdown value, $Res Function(XPBreakdown) then) =
+      _$XPBreakdownCopyWithImpl<$Res, XPBreakdown>;
   @useResult
   $Res call({int base, int hintPenalty, int timeBonus, int streakBonus});
 }
 
 /// @nodoc
-class _$XPBreakdownCopyWithImpl<$Res> implements $XPBreakdownCopyWith<$Res> {
-  _$XPBreakdownCopyWithImpl(this._self, this._then);
+class _$XPBreakdownCopyWithImpl<$Res, $Val extends XPBreakdown>
+    implements $XPBreakdownCopyWith<$Res> {
+  _$XPBreakdownCopyWithImpl(this._value, this._then);
 
-  final XPBreakdown _self;
-  final $Res Function(XPBreakdown) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
   /// Create a copy of XPBreakdown
   /// with the given fields replaced by the non-null parameter values.
@@ -2346,21 +2390,71 @@ class _$XPBreakdownCopyWithImpl<$Res> implements $XPBreakdownCopyWith<$Res> {
     Object? timeBonus = null,
     Object? streakBonus = null,
   }) {
-    return _then(_self.copyWith(
+    return _then(_value.copyWith(
       base: null == base
-          ? _self.base
+          ? _value.base
           : base // ignore: cast_nullable_to_non_nullable
               as int,
       hintPenalty: null == hintPenalty
-          ? _self.hintPenalty
+          ? _value.hintPenalty
           : hintPenalty // ignore: cast_nullable_to_non_nullable
               as int,
       timeBonus: null == timeBonus
-          ? _self.timeBonus
+          ? _value.timeBonus
           : timeBonus // ignore: cast_nullable_to_non_nullable
               as int,
       streakBonus: null == streakBonus
-          ? _self.streakBonus
+          ? _value.streakBonus
+          : streakBonus // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$XPBreakdownImplCopyWith<$Res>
+    implements $XPBreakdownCopyWith<$Res> {
+  factory _$$XPBreakdownImplCopyWith(
+          _$XPBreakdownImpl value, $Res Function(_$XPBreakdownImpl) then) =
+      __$$XPBreakdownImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int base, int hintPenalty, int timeBonus, int streakBonus});
+}
+
+/// @nodoc
+class __$$XPBreakdownImplCopyWithImpl<$Res>
+    extends _$XPBreakdownCopyWithImpl<$Res, _$XPBreakdownImpl>
+    implements _$$XPBreakdownImplCopyWith<$Res> {
+  __$$XPBreakdownImplCopyWithImpl(
+      _$XPBreakdownImpl _value, $Res Function(_$XPBreakdownImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of XPBreakdown
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? base = null,
+    Object? hintPenalty = null,
+    Object? timeBonus = null,
+    Object? streakBonus = null,
+  }) {
+    return _then(_$XPBreakdownImpl(
+      base: null == base
+          ? _value.base
+          : base // ignore: cast_nullable_to_non_nullable
+              as int,
+      hintPenalty: null == hintPenalty
+          ? _value.hintPenalty
+          : hintPenalty // ignore: cast_nullable_to_non_nullable
+              as int,
+      timeBonus: null == timeBonus
+          ? _value.timeBonus
+          : timeBonus // ignore: cast_nullable_to_non_nullable
+              as int,
+      streakBonus: null == streakBonus
+          ? _value.streakBonus
           : streakBonus // ignore: cast_nullable_to_non_nullable
               as int,
     ));
@@ -2369,14 +2463,16 @@ class _$XPBreakdownCopyWithImpl<$Res> implements $XPBreakdownCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _XPBreakdown implements XPBreakdown {
-  const _XPBreakdown(
+class _$XPBreakdownImpl extends _XPBreakdown {
+  const _$XPBreakdownImpl(
       {required this.base,
       required this.hintPenalty,
       required this.timeBonus,
-      required this.streakBonus});
-  factory _XPBreakdown.fromJson(Map<String, dynamic> json) =>
-      _$XPBreakdownFromJson(json);
+      required this.streakBonus})
+      : super._();
+
+  factory _$XPBreakdownImpl.fromJson(Map<String, dynamic> json) =>
+      _$$XPBreakdownImplFromJson(json);
 
   @override
   final int base;
@@ -2387,26 +2483,16 @@ class _XPBreakdown implements XPBreakdown {
   @override
   final int streakBonus;
 
-  /// Create a copy of XPBreakdown
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$XPBreakdownCopyWith<_XPBreakdown> get copyWith =>
-      __$XPBreakdownCopyWithImpl<_XPBreakdown>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$XPBreakdownToJson(
-      this,
-    );
+  String toString() {
+    return 'XPBreakdown(base: $base, hintPenalty: $hintPenalty, timeBonus: $timeBonus, streakBonus: $streakBonus)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _XPBreakdown &&
+            other is _$XPBreakdownImpl &&
             (identical(other.base, base) || other.base == base) &&
             (identical(other.hintPenalty, hintPenalty) ||
                 other.hintPenalty == hintPenalty) &&
@@ -2421,59 +2507,46 @@ class _XPBreakdown implements XPBreakdown {
   int get hashCode =>
       Object.hash(runtimeType, base, hintPenalty, timeBonus, streakBonus);
 
+  /// Create a copy of XPBreakdown
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  String toString() {
-    return 'XPBreakdown(base: $base, hintPenalty: $hintPenalty, timeBonus: $timeBonus, streakBonus: $streakBonus)';
+  @pragma('vm:prefer-inline')
+  _$$XPBreakdownImplCopyWith<_$XPBreakdownImpl> get copyWith =>
+      __$$XPBreakdownImplCopyWithImpl<_$XPBreakdownImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$XPBreakdownImplToJson(
+      this,
+    );
   }
 }
 
-/// @nodoc
-abstract mixin class _$XPBreakdownCopyWith<$Res>
-    implements $XPBreakdownCopyWith<$Res> {
-  factory _$XPBreakdownCopyWith(
-          _XPBreakdown value, $Res Function(_XPBreakdown) _then) =
-      __$XPBreakdownCopyWithImpl;
+abstract class _XPBreakdown extends XPBreakdown {
+  const factory _XPBreakdown(
+      {required final int base,
+      required final int hintPenalty,
+      required final int timeBonus,
+      required final int streakBonus}) = _$XPBreakdownImpl;
+  const _XPBreakdown._() : super._();
+
+  factory _XPBreakdown.fromJson(Map<String, dynamic> json) =
+      _$XPBreakdownImpl.fromJson;
+
   @override
-  @useResult
-  $Res call({int base, int hintPenalty, int timeBonus, int streakBonus});
-}
-
-/// @nodoc
-class __$XPBreakdownCopyWithImpl<$Res> implements _$XPBreakdownCopyWith<$Res> {
-  __$XPBreakdownCopyWithImpl(this._self, this._then);
-
-  final _XPBreakdown _self;
-  final $Res Function(_XPBreakdown) _then;
+  int get base;
+  @override
+  int get hintPenalty;
+  @override
+  int get timeBonus;
+  @override
+  int get streakBonus;
 
   /// Create a copy of XPBreakdown
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? base = null,
-    Object? hintPenalty = null,
-    Object? timeBonus = null,
-    Object? streakBonus = null,
-  }) {
-    return _then(_XPBreakdown(
-      base: null == base
-          ? _self.base
-          : base // ignore: cast_nullable_to_non_nullable
-              as int,
-      hintPenalty: null == hintPenalty
-          ? _self.hintPenalty
-          : hintPenalty // ignore: cast_nullable_to_non_nullable
-              as int,
-      timeBonus: null == timeBonus
-          ? _self.timeBonus
-          : timeBonus // ignore: cast_nullable_to_non_nullable
-              as int,
-      streakBonus: null == streakBonus
-          ? _self.streakBonus
-          : streakBonus // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$XPBreakdownImplCopyWith<_$XPBreakdownImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-// dart format on

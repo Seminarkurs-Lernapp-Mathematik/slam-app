@@ -6,7 +6,8 @@ part of 'question.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
+_$QuestionImpl _$$QuestionImplFromJson(Map<String, dynamic> json) =>
+    _$QuestionImpl(
       id: json['id'] as String,
       type: $enumDecode(_$QuestionTypeEnumMap, json['type']),
       difficulty: (json['difficulty'] as num).toInt(),
@@ -29,7 +30,8 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
           json['hasGeoGebraVisualization'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
+Map<String, dynamic> _$$QuestionImplToJson(_$QuestionImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'type': _$QuestionTypeEnumMap[instance.type]!,
       'difficulty': instance.difficulty,
@@ -49,34 +51,35 @@ const _$QuestionTypeEnumMap = {
   QuestionType.stepByStep: 'step-by-step',
 };
 
-_QuestionOption _$QuestionOptionFromJson(Map<String, dynamic> json) =>
-    _QuestionOption(
+_$QuestionOptionImpl _$$QuestionOptionImplFromJson(Map<String, dynamic> json) =>
+    _$QuestionOptionImpl(
       id: json['id'] as String,
       text: json['text'] as String,
       isCorrect: json['isCorrect'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$QuestionOptionToJson(_QuestionOption instance) =>
+Map<String, dynamic> _$$QuestionOptionImplToJson(
+        _$QuestionOptionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'text': instance.text,
       'isCorrect': instance.isCorrect,
     };
 
-_QuestionHint _$QuestionHintFromJson(Map<String, dynamic> json) =>
-    _QuestionHint(
+_$QuestionHintImpl _$$QuestionHintImplFromJson(Map<String, dynamic> json) =>
+    _$QuestionHintImpl(
       level: (json['level'] as num).toInt(),
       text: json['text'] as String,
     );
 
-Map<String, dynamic> _$QuestionHintToJson(_QuestionHint instance) =>
+Map<String, dynamic> _$$QuestionHintImplToJson(_$QuestionHintImpl instance) =>
     <String, dynamic>{
       'level': instance.level,
       'text': instance.text,
     };
 
-_GeoGebraData _$GeoGebraDataFromJson(Map<String, dynamic> json) =>
-    _GeoGebraData(
+_$GeoGebraDataImpl _$$GeoGebraDataImplFromJson(Map<String, dynamic> json) =>
+    _$GeoGebraDataImpl(
       appletId: json['appletId'] as String?,
       commands: (json['commands'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -85,15 +88,16 @@ _GeoGebraData _$GeoGebraDataFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String? ?? '',
     );
 
-Map<String, dynamic> _$GeoGebraDataToJson(_GeoGebraData instance) =>
+Map<String, dynamic> _$$GeoGebraDataImplToJson(_$GeoGebraDataImpl instance) =>
     <String, dynamic>{
       'appletId': instance.appletId,
       'commands': instance.commands,
       'description': instance.description,
     };
 
-_QuestionSession _$QuestionSessionFromJson(Map<String, dynamic> json) =>
-    _QuestionSession(
+_$QuestionSessionImpl _$$QuestionSessionImplFromJson(
+        Map<String, dynamic> json) =>
+    _$QuestionSessionImpl(
       sessionId: json['sessionId'] as String,
       learningPlanItemId: (json['learningPlanItemId'] as num).toInt(),
       topics: (json['topics'] as List<dynamic>)
@@ -108,7 +112,8 @@ _QuestionSession _$QuestionSessionFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
-Map<String, dynamic> _$QuestionSessionToJson(_QuestionSession instance) =>
+Map<String, dynamic> _$$QuestionSessionImplToJson(
+        _$QuestionSessionImpl instance) =>
     <String, dynamic>{
       'sessionId': instance.sessionId,
       'learningPlanItemId': instance.learningPlanItemId,
@@ -119,32 +124,35 @@ Map<String, dynamic> _$QuestionSessionToJson(_QuestionSession instance) =>
       'createdAt': instance.createdAt.toIso8601String(),
     };
 
-_TopicData _$TopicDataFromJson(Map<String, dynamic> json) => _TopicData(
+_$TopicDataImpl _$$TopicDataImplFromJson(Map<String, dynamic> json) =>
+    _$TopicDataImpl(
       leitidee: json['leitidee'] as String,
       thema: json['thema'] as String,
       unterthema: json['unterthema'] as String,
     );
 
-Map<String, dynamic> _$TopicDataToJson(_TopicData instance) =>
+Map<String, dynamic> _$$TopicDataImplToJson(_$TopicDataImpl instance) =>
     <String, dynamic>{
       'leitidee': instance.leitidee,
       'thema': instance.thema,
       'unterthema': instance.unterthema,
     };
 
-_UserContext _$UserContextFromJson(Map<String, dynamic> json) => _UserContext(
+_$UserContextImpl _$$UserContextImplFromJson(Map<String, dynamic> json) =>
+    _$UserContextImpl(
       gradeLevel: json['gradeLevel'] as String,
       courseType: json['courseType'] as String,
     );
 
-Map<String, dynamic> _$UserContextToJson(_UserContext instance) =>
+Map<String, dynamic> _$$UserContextImplToJson(_$UserContextImpl instance) =>
     <String, dynamic>{
       'gradeLevel': instance.gradeLevel,
       'courseType': instance.courseType,
     };
 
-_QuestionProgress _$QuestionProgressFromJson(Map<String, dynamic> json) =>
-    _QuestionProgress(
+_$QuestionProgressImpl _$$QuestionProgressImplFromJson(
+        Map<String, dynamic> json) =>
+    _$QuestionProgressImpl(
       questionId: json['questionId'] as String,
       sessionId: json['sessionId'] as String,
       startedAt: DateTime.parse(json['startedAt'] as String),
@@ -168,7 +176,8 @@ _QuestionProgress _$QuestionProgressFromJson(Map<String, dynamic> json) =>
       difficulty: (json['difficulty'] as num).toInt(),
     );
 
-Map<String, dynamic> _$QuestionProgressToJson(_QuestionProgress instance) =>
+Map<String, dynamic> _$$QuestionProgressImplToJson(
+        _$QuestionProgressImpl instance) =>
     <String, dynamic>{
       'questionId': instance.questionId,
       'sessionId': instance.sessionId,
@@ -191,26 +200,29 @@ const _$QuestionStatusEnumMap = {
   QuestionStatus.skipped: 'skipped',
 };
 
-_HintUsageDetail _$HintUsageDetailFromJson(Map<String, dynamic> json) =>
-    _HintUsageDetail(
+_$HintUsageDetailImpl _$$HintUsageDetailImplFromJson(
+        Map<String, dynamic> json) =>
+    _$HintUsageDetailImpl(
       level: (json['level'] as num).toInt(),
       usedAt: DateTime.parse(json['usedAt'] as String),
     );
 
-Map<String, dynamic> _$HintUsageDetailToJson(_HintUsageDetail instance) =>
+Map<String, dynamic> _$$HintUsageDetailImplToJson(
+        _$HintUsageDetailImpl instance) =>
     <String, dynamic>{
       'level': instance.level,
       'usedAt': instance.usedAt.toIso8601String(),
     };
 
-_XPBreakdown _$XPBreakdownFromJson(Map<String, dynamic> json) => _XPBreakdown(
+_$XPBreakdownImpl _$$XPBreakdownImplFromJson(Map<String, dynamic> json) =>
+    _$XPBreakdownImpl(
       base: (json['base'] as num).toInt(),
       hintPenalty: (json['hintPenalty'] as num).toInt(),
       timeBonus: (json['timeBonus'] as num).toInt(),
       streakBonus: (json['streakBonus'] as num).toInt(),
     );
 
-Map<String, dynamic> _$XPBreakdownToJson(_XPBreakdown instance) =>
+Map<String, dynamic> _$$XPBreakdownImplToJson(_$XPBreakdownImpl instance) =>
     <String, dynamic>{
       'base': instance.base,
       'hintPenalty': instance.hintPenalty,

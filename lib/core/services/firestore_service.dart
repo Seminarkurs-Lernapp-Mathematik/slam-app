@@ -84,18 +84,18 @@ class FirestoreService {
   }
 
   /// User stats stream (real-time)
-  Stream<UserStats?> userStatsStream(String userId) {
+  Stream<UserStats> userStatsStream(String userId) {
     return _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
         .snapshots()
         .map((snapshot) {
       final data = snapshot.data();
-      if (data == null) return null;
+      if (data == null) return UserStats.initial();
 
       final statsData =
           data[FirebaseCollections.stats] as Map<String, dynamic>?;
-      if (statsData == null) return null;
+      if (statsData == null) return UserStats.initial();
 
       return UserStats.fromJson(statsData);
     });
@@ -144,18 +144,18 @@ class FirestoreService {
   }
 
   /// User settings stream (real-time)
-  Stream<UserSettings?> userSettingsStream(String userId) {
+  Stream<UserSettings> userSettingsStream(String userId) {
     return _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
         .snapshots()
         .map((snapshot) {
       final data = snapshot.data();
-      if (data == null) return null;
+      if (data == null) return UserSettings.initial();
 
       final settingsData =
           data[FirebaseCollections.settings] as Map<String, dynamic>?;
-      if (settingsData == null) return null;
+      if (settingsData == null) return UserSettings.initial();
 
       return UserSettings.fromJson(settingsData);
     });
