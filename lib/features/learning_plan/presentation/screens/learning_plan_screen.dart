@@ -24,6 +24,13 @@ class LearningPlanScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/home'),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.go('/settings'),
+            tooltip: 'Einstellungen',
+          ),
+        ],
       ),
       body: Stack(
         children: [

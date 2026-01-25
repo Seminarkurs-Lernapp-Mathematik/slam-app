@@ -30,21 +30,6 @@ class ProgressScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dein Fortschritt'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              // Navigate to settings (Phase 3)
-            },
-            tooltip: 'Einstellungen',
-          ),
-        ],
-      ),
       body: userStatsAsync.when(
         data: (stats) => SafeArea(
           child: SingleChildScrollView(

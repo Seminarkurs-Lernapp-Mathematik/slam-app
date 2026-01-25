@@ -60,6 +60,12 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
                   : Icons.lightbulb,
             ),
             onPressed: () => _showHintPanel(context),
+            tooltip: 'Hinweis',
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.go('/settings'),
+            tooltip: 'Einstellungen',
           ),
         ],
       ),

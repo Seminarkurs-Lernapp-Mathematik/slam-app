@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'geogebra_screen.dart';
+import 'generative_apps_screen.dart';
+import 'content_library_screen.dart';
+
 /// Apps Hub Screen - GeoGebra, KI-Labor, Content Library
-/// TODO: Implement full Apps Hub functionality in Phase 5
 class AppsHubScreen extends ConsumerStatefulWidget {
   const AppsHubScreen({super.key});
 
@@ -28,10 +31,9 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Apps'),
-        bottom: TabBar(
+    return Column(
+      children: [
+        TabBar(
           controller: _tabController,
           tabs: const [
             Tab(
@@ -48,68 +50,17 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen>
             ),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          _PlaceholderTab(
-            icon: Icons.functions,
-            title: 'GeoGebra',
-            subtitle: 'Coming soon in Phase 5',
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: const [
+              GeogebraScreen(),
+              GenerativeAppsScreen(),
+              ContentLibraryScreen(),
+            ],
           ),
-          _PlaceholderTab(
-            icon: Icons.auto_awesome,
-            title: 'KI-Labor',
-            subtitle: 'Coming soon in Phase 5',
-          ),
-          _PlaceholderTab(
-            icon: Icons.folder,
-            title: 'Meine Inhalte',
-            subtitle: 'Coming soon in Phase 5',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _PlaceholderTab({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 64,
-            color: Colors.grey,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: const TextStyle(color: Colors.grey),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
