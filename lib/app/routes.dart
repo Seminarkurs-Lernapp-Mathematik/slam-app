@@ -9,6 +9,7 @@ import '../features/auth/presentation/screens/email_verification_screen.dart';
 import '../features/gamification/presentation/screens/progress_screen.dart';
 import '../features/home/presentation/widgets/main_navigation.dart';
 import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
+import '../features/question_session/presentation/screens/question_session_screen.dart';
 
 part 'routes.g.dart';
 
@@ -56,11 +57,7 @@ GoRouter router(Ref ref) {
         name: 'question-session',
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          return Scaffold(
-            body: Center(
-              child: Text('Question Session: $sessionId - Coming Soon'),
-            ),
-          );
+          return QuestionSessionScreen(sessionId: sessionId);
         },
       ),
 
