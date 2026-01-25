@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Apps Hub Screen - GeoGebra, KI-Labor, Content Library
 /// TODO: Implement full Apps Hub functionality in Phase 5
@@ -36,15 +35,15 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen>
           controller: _tabController,
           tabs: const [
             Tab(
-              icon: Icon(PhosphorIconsRegular.function),
+              icon: Icon(Icons.functions),
               text: 'GeoGebra',
             ),
             Tab(
-              icon: Icon(PhosphorIconsRegular.sparkle),
+              icon: Icon(Icons.auto_awesome),
               text: 'KI-Labor',
             ),
             Tab(
-              icon: Icon(PhosphorIconsRegular.folder),
+              icon: Icon(Icons.folder),
               text: 'Meine Inhalte',
             ),
           ],
@@ -54,17 +53,17 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen>
         controller: _tabController,
         children: const [
           _PlaceholderTab(
-            icon: PhosphorIconsRegular.function,
+            icon: Icons.functions,
             title: 'GeoGebra',
             subtitle: 'Coming soon in Phase 5',
           ),
           _PlaceholderTab(
-            icon: PhosphorIconsRegular.sparkle,
+            icon: Icons.auto_awesome,
             title: 'KI-Labor',
             subtitle: 'Coming soon in Phase 5',
           ),
           _PlaceholderTab(
-            icon: PhosphorIconsRegular.folder,
+            icon: Icons.folder,
             title: 'Meine Inhalte',
             subtitle: 'Coming soon in Phase 5',
           ),

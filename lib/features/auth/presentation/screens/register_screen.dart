@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
@@ -86,7 +85,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     children: [
                       // Logo & Title
                       Icon(
-                        PhosphorIconsRegular.userPlus,
+                        Icons.person_add,
                         size: 64,
                         color: theme.colorScheme.primary,
                       ),
@@ -113,7 +112,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         decoration: InputDecoration(
                           labelText: 'Name',
                           hintText: 'Max Mustermann',
-                          prefixIcon: Icon(PhosphorIconsRegular.user),
+                          prefixIcon: Icon(Icons.account_circle),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -134,7 +133,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         decoration: InputDecoration(
                           labelText: 'E-Mail',
                           hintText: 'name@mvl-gym.de',
-                          prefixIcon: Icon(PhosphorIconsRegular.at),
+                          prefixIcon: Icon(Icons.alternate_email),
                           helperText: 'Nur @mvl-gym.de Adressen erlaubt',
                         ),
                         validator: (value) {
@@ -156,12 +155,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           labelText: 'Passwort',
-                          prefixIcon: Icon(PhosphorIconsRegular.lock),
+                          prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword
-                                  ? PhosphorIconsRegular.eye
-                                  : PhosphorIconsRegular.eyeSlash,
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
@@ -189,12 +188,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         obscureText: _obscureConfirmPassword,
                         decoration: InputDecoration(
                           labelText: 'Passwort bestätigen',
-                          prefixIcon: Icon(PhosphorIconsRegular.lockKey),
+                          prefixIcon: Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscureConfirmPassword
-                                  ? PhosphorIconsRegular.eye
-                                  : PhosphorIconsRegular.eyeSlash,
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
@@ -226,7 +225,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         text: 'Registrieren',
                         onPressed: _handleRegister,
                         isLoading: _isLoading,
-                        icon: PhosphorIconsRegular.userPlus,
+                        icon: Icons.person_add,
                       ),
                       const SizedBox(height: 16),
 

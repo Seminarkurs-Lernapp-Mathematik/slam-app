@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../widgets/question_card.dart';
 import '../widgets/hint_panel.dart';
@@ -49,7 +48,7 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(PhosphorIconsRegular.arrowLeft),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => _showExitConfirmation(context),
         ),
         title: Text('Frage ${currentIndex + 1} / ${demoQuestions.length}'),
@@ -57,8 +56,8 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
           IconButton(
             icon: Icon(
               hintsUsed < 3
-                  ? PhosphorIconsRegular.lightbulb
-                  : PhosphorIconsFill.lightbulb,
+                  ? Icons.lightbulb_outline
+                  : Icons.lightbulb,
             ),
             onPressed: () => _showHintPanel(context),
           ),
@@ -91,13 +90,13 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
             if (!showFeedback)
               FilledButton.icon(
                 onPressed: () => _submitAnswer(context),
-                icon: const Icon(PhosphorIconsRegular.check),
+                icon: const Icon(Icons.check),
                 label: const Text('Antwort prüfen'),
               )
             else
               FilledButton.icon(
                 onPressed: _nextQuestion,
-                icon: const Icon(PhosphorIconsRegular.arrowRight),
+                icon: const Icon(Icons.arrow_forward),
                 label: Text(
                   currentIndex < demoQuestions.length - 1
                       ? 'Nächste Frage'
@@ -152,7 +151,7 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
-                  PhosphorIconsFill.star,
+                  Icons.star,
                   size: 64,
                   color: Colors.amber,
                 ),
@@ -230,7 +229,7 @@ class _SessionCompleteScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
-                PhosphorIconsFill.trophy,
+                Icons.emoji_events,
                 size: 96,
                 color: Colors.amber,
               ),
@@ -251,7 +250,7 @@ class _SessionCompleteScreen extends StatelessWidget {
               const SizedBox(height: 48),
               FilledButton.icon(
                 onPressed: () => context.go('/home'),
-                icon: const Icon(PhosphorIconsRegular.house),
+                icon: const Icon(Icons.home),
                 label: const Text('Zurück zur Startseite'),
               ),
             ],
@@ -287,8 +286,8 @@ class FeedbackPanel extends ConsumerWidget {
               children: [
                 Icon(
                   isCorrect
-                      ? PhosphorIconsFill.checkCircle
-                      : PhosphorIconsFill.xCircle,
+                      ? Icons.check_circle
+                      : Icons.cancel,
                   color: isCorrect ? Colors.green : Colors.red,
                   size: 32,
                 ),
@@ -321,7 +320,7 @@ class FeedbackPanel extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(PhosphorIconsFill.star, color: Colors.amber, size: 20),
+                    const Icon(Icons.star, color: Colors.amber, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       '+$xpEarned XP',

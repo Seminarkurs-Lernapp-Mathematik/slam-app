@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// XP Animation Widget
 ///
@@ -210,7 +209,7 @@ class _XPAnimationState extends State<XPAnimation>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            PhosphorIconsRegular.sparkle,
+                            Icons.auto_awesome,
                             color: Colors.white,
                             size: 32,
                           ),

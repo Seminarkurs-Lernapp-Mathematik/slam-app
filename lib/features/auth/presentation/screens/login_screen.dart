@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../shared/widgets/widgets.dart';
 import '../providers/auth_providers.dart';
@@ -79,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       // Logo & Title
                       Icon(
-                        PhosphorIconsRegular.graduationCap,
+                        Icons.school,
                         size: 64,
                         color: theme.colorScheme.primary,
                       ),
@@ -106,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         decoration: InputDecoration(
                           labelText: 'E-Mail',
                           hintText: 'name@mvl-gym.de',
-                          prefixIcon: Icon(PhosphorIconsRegular.at),
+                          prefixIcon: Icon(Icons.alternate_email),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -126,12 +125,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           labelText: 'Passwort',
-                          prefixIcon: Icon(PhosphorIconsRegular.lock),
+                          prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword
-                                  ? PhosphorIconsRegular.eye
-                                  : PhosphorIconsRegular.eyeSlash,
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                             onPressed: () {
                               setState(() {
@@ -160,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         text: 'Anmelden',
                         onPressed: _handleLogin,
                         isLoading: _isLoading,
-                        icon: PhosphorIconsRegular.signIn,
+                        icon: Icons.login,
                       ),
                       const SizedBox(height: 16),
 

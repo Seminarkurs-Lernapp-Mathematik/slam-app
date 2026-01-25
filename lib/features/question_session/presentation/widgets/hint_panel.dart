@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../providers/question_session_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
@@ -93,7 +92,7 @@ class HintPanel extends ConsumerWidget {
             // Custom Hint Button (TODO: Implement AI-powered hints)
             OutlinedButton.icon(
               onPressed: null, // TODO: Implement custom hint request
-              icon: const Icon(PhosphorIconsRegular.sparkle),
+              icon: const Icon(Icons.auto_awesome),
               label: const Text('Individuelle Hilfe anfragen'),
             ),
 
@@ -165,7 +164,7 @@ class _HintCard extends StatelessWidget {
                 if (!isRevealed)
                   TextButton.icon(
                     onPressed: onReveal,
-                    icon: const Icon(PhosphorIconsRegular.eye, size: 16),
+                    icon: const Icon(Icons.visibility, size: 16),
                     label: const Text('-5 XP'),
                   ),
               ],

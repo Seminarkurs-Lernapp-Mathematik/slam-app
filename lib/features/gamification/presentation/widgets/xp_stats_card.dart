@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/models/user_stats.dart';
 import '../../../../shared/widgets/widgets.dart';
@@ -39,7 +38,7 @@ class XPStatsCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  PhosphorIconsRegular.sparkle,
+                  Icons.auto_awesome,
                   color: Colors.white,
                   size: 24,
                 ),
@@ -77,7 +76,7 @@ class XPStatsCard extends StatelessWidget {
               Expanded(
                 child: _buildXPStat(
                   context,
-                  icon: PhosphorIconsRegular.trendUp,
+                  icon: Icons.trending_up,
                   label: 'Aktuell',
                   value: '${stats.xp} XP',
                   color: theme.colorScheme.primary,
@@ -91,7 +90,7 @@ class XPStatsCard extends StatelessWidget {
               Expanded(
                 child: _buildXPStat(
                   context,
-                  icon: PhosphorIconsRegular.target,
+                  icon: Icons.adjust,
                   label: 'Nächstes Level',
                   value: '${stats.xpToNextLevel} XP',
                   color: theme.colorScheme.secondary,

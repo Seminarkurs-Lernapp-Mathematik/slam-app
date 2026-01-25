@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../providers/learning_plan_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
@@ -20,7 +19,7 @@ class TopicTree extends ConsumerWidget {
           context,
           ref,
           'Algebra',
-          PhosphorIconsRegular.function,
+          Icons.functions,
           [
             'Lineare Gleichungen',
             'Quadratische Gleichungen',
@@ -34,7 +33,7 @@ class TopicTree extends ConsumerWidget {
           context,
           ref,
           'Analysis',
-          PhosphorIconsRegular.chartLine,
+          Icons.show_chart,
           [
             'Ableitungsregeln',
             'Kurvendiskussion',
@@ -48,7 +47,7 @@ class TopicTree extends ConsumerWidget {
           context,
           ref,
           'Geometrie',
-          PhosphorIconsRegular.polygon,
+          Icons.hexagon,
           [
             'Trigonometrie',
             'Vektorrechnung',
@@ -61,7 +60,7 @@ class TopicTree extends ConsumerWidget {
           context,
           ref,
           'Stochastik',
-          PhosphorIconsRegular.chartBar,
+          Icons.bar_chart,
           [
             'Wahrscheinlichkeitsrechnung',
             'Normalverteilung',

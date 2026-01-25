@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
@@ -127,7 +126,7 @@ class _EmailVerificationScreenState
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        PhosphorIconsRegular.envelope,
+                        Icons.email,
                         size: 64,
                         color: theme.colorScheme.primary,
                       ),
@@ -208,7 +207,7 @@ class _EmailVerificationScreenState
                         child: Row(
                           children: [
                             Icon(
-                              PhosphorIconsRegular.checkCircle,
+                              Icons.check_circle_outline,
                               color: Colors.green,
                               size: 20,
                             ),
@@ -242,7 +241,7 @@ class _EmailVerificationScreenState
                           Row(
                             children: [
                               Icon(
-                                PhosphorIconsRegular.lightbulb,
+                                Icons.lightbulb_outline,
                                 size: 20,
                                 color: theme.colorScheme.primary,
                               ),
@@ -277,7 +276,7 @@ class _EmailVerificationScreenState
                     SecondaryButton(
                       text: 'E-Mail erneut senden',
                       onPressed: _resendVerificationEmail,
-                      icon: PhosphorIconsRegular.arrowClockwise,
+                      icon: Icons.refresh,
                     ),
                     const SizedBox(height: 16),
 
@@ -302,7 +301,7 @@ class _EmailVerificationScreenState
       child: Row(
         children: [
           Icon(
-            PhosphorIconsRegular.check,
+            Icons.check,
             size: 16,
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 /// Live Feed Screen - Adaptive difficulty question stream
@@ -15,7 +14,7 @@ class LiveFeedScreen extends ConsumerWidget {
         title: const Text('Live Feed'),
         actions: [
           IconButton(
-            icon: const Icon(PhosphorIconsRegular.gear),
+            icon: const Icon(Icons.settings),
             onPressed: () => context.go('/settings'),
           ),
         ],
@@ -25,7 +24,7 @@ class LiveFeedScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              PhosphorIconsRegular.rss,
+              Icons.rss_feed,
               size: 64,
               color: Colors.grey,
             ),
@@ -45,7 +44,7 @@ class LiveFeedScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             FilledButton.icon(
               onPressed: () => context.go('/learning-plan'),
-              icon: const Icon(PhosphorIconsRegular.book),
+              icon: const Icon(Icons.book),
               label: const Text('Neue Lernsession starten'),
             ),
           ],

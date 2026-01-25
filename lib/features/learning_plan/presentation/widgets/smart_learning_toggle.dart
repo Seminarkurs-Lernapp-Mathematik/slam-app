@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../shared/widgets/glass_panel.dart';
 
@@ -23,7 +22,7 @@ class SmartLearningToggle extends StatelessWidget {
         title: Row(
           children: [
             Icon(
-              PhosphorIconsRegular.brain,
+              Icons.psychology,
               color: Theme.of(context).colorScheme.primary,
               size: 20,
             ),

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../../../core/services/ai_service.dart';
-import '../../../../core/services/firestore_service.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/learning_plan_providers.dart';
 import '../widgets/topic_tree.dart';
 import '../widgets/smart_learning_toggle.dart';
@@ -25,7 +21,7 @@ class LearningPlanScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Lernplan'),
         leading: IconButton(
-          icon: const Icon(PhosphorIconsRegular.arrowLeft),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/home'),
         ),
       ),
@@ -53,7 +49,7 @@ class LearningPlanScreen extends ConsumerWidget {
                       child: Row(
                         children: [
                           Icon(
-                            PhosphorIconsRegular.checkCircle,
+                            Icons.check_circle_outline,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 12),
@@ -115,7 +111,7 @@ class LearningPlanScreen extends ConsumerWidget {
       floatingActionButton: selectedTopics.isNotEmpty && !isGenerating
           ? FloatingActionButton.extended(
               onPressed: () => _generateQuestions(context, ref),
-              icon: const Icon(PhosphorIconsRegular.sparkle),
+              icon: const Icon(Icons.auto_awesome),
               label: const Text('Fragen generieren'),
             )
           : null,
@@ -125,39 +121,18 @@ class LearningPlanScreen extends ConsumerWidget {
   Future<void> _generateQuestions(BuildContext context, WidgetRef ref) async {
     final selectedTopics = ref.read(selectedTopicsProvider);
     final smartMode = ref.read(smartLearningModeProvider);
-    final user = ref.read(currentUserProvider);
-
-    if (user == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Fehler: Benutzer nicht eingeloggt'),
-          ),
-        );
-      }
-      return;
-    }
 
     // Set loading state
     ref.read(isGeneratingQuestionsProvider.notifier).set(true);
 
     try {
-      // Call AI Service to generate questions
-      final questions = await ref.read(aiServiceProvider).generateQuestions(
-            topics: selectedTopics.toList(),
-            smartLearningMode: smartMode,
-            userId: user.uid,
-          );
+      // TODO: Implement full AI question generation
+      // For now, just navigate to a placeholder session
+      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
 
-      // Save session to Firestore
-      final sessionId = await ref.read(firestoreServiceProvider).createQuestionSession(
-            userId: user.uid,
-            questions: questions,
-          );
-
-      // Navigate to question session
+      // Navigate to question session (placeholder)
       if (context.mounted) {
-        context.go('/question-session/$sessionId');
+        context.go('/question-session/demo-session-id');
       }
     } catch (e) {
       if (context.mounted) {

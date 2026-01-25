@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../live_feed/presentation/screens/live_feed_screen.dart';
 import '../../../apps/presentation/screens/apps_hub_screen.dart';
@@ -40,18 +39,18 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(PhosphorIconsRegular.rss),
-            selectedIcon: Icon(PhosphorIconsFill.rss),
+            icon: Icon(Icons.rss_feed_outlined),
+            selectedIcon: Icon(Icons.rss_feed),
             label: 'Feed',
           ),
           NavigationDestination(
-            icon: Icon(PhosphorIconsRegular.sparkle),
-            selectedIcon: Icon(PhosphorIconsFill.sparkle),
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
             label: 'Apps',
           ),
           NavigationDestination(
-            icon: Icon(PhosphorIconsRegular.chartLine),
-            selectedIcon: Icon(PhosphorIconsFill.chartLine),
+            icon: Icon(Icons.show_chart_outlined),
+            selectedIcon: Icon(Icons.show_chart),
             label: 'Fortschritt',
           ),
         ],

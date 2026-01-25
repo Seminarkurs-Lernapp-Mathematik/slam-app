@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/models/user_stats.dart';
 
@@ -100,7 +99,7 @@ class StreakCalendar extends StatelessWidget {
           child: Center(
             child: isActive
                 ? Icon(
-                    PhosphorIconsRegular.fire,
+                    Icons.local_fire_department,
                     color: Colors.white,
                     size: 18,
                   )

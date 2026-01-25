@@ -10,6 +10,7 @@ import '../features/gamification/presentation/screens/progress_screen.dart';
 import '../features/home/presentation/widgets/main_navigation.dart';
 import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
 import '../features/question_session/presentation/screens/question_session_screen.dart';
+import '../features/settings/presentation/screens/settings_screen.dart';
 
 part 'routes.g.dart';
 
@@ -65,11 +66,7 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: '/settings',
         name: 'settings',
-        builder: (context, state) => const Scaffold(
-          body: Center(
-            child: Text('Settings - Coming Soon'),
-          ),
-        ),
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // Progress/Gamification

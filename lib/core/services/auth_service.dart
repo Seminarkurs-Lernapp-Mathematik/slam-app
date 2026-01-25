@@ -222,6 +222,23 @@ class AuthService {
     await user.reload();
   }
 
+  /// Delete account
+  Future<void> deleteAccount() async {
+    final user = currentUser;
+    if (user == null) {
+      throw AuthException(
+        code: 'no-user',
+        message: 'Kein Benutzer angemeldet.',
+      );
+    }
+
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
   /// Handle Firebase Auth Exceptions
   AuthException _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {

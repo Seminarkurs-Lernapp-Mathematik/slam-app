@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
@@ -38,7 +37,7 @@ class ProgressScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(PhosphorIconsRegular.gear),
+            icon: Icon(Icons.settings),
             onPressed: () {
               // Navigate to settings (Phase 3)
             },
@@ -77,7 +76,7 @@ class ProgressScreen extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
-                              PhosphorIconsRegular.fire,
+                              Icons.local_fire_department,
                               color: theme.colorScheme.primary,
                               size: 24,
                             ),
@@ -141,7 +140,7 @@ class ProgressScreen extends ConsumerWidget {
         Expanded(
           child: _buildStatCard(
             context,
-            icon: PhosphorIconsRegular.star,
+            icon: Icons.star,
             title: 'Total XP',
             value: stats.totalXp.toString(),
             color: theme.colorScheme.primary,
@@ -151,7 +150,7 @@ class ProgressScreen extends ConsumerWidget {
         Expanded(
           child: _buildStatCard(
             context,
-            icon: PhosphorIconsRegular.trophy,
+            icon: Icons.emoji_events,
             title: 'Level',
             value: stats.level.toString(),
             color: theme.colorScheme.secondary,
@@ -209,7 +208,7 @@ class ProgressScreen extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                PhosphorIconsRegular.crown,
+                Icons.military_tech,
                 color: theme.colorScheme.primary,
                 size: 28,
               ),
@@ -260,7 +259,7 @@ class ProgressScreen extends ConsumerWidget {
         child: Row(
           children: [
             Icon(
-              PhosphorIconsRegular.medal,
+              Icons.workspace_premium,
               color: theme.colorScheme.primary,
               size: 20,
             ),
@@ -288,7 +287,7 @@ class ProgressScreen extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
-            PhosphorIconsRegular.gift,
+            Icons.card_giftcard,
             color: theme.colorScheme.primary,
             size: 20,
           ),

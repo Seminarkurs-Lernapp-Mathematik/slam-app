@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// App Theme - Material 3 Expressive Design mit Sunset Orange Theme
 ///
@@ -201,113 +202,116 @@ class AppTheme {
         ),
       ),
 
-      // Text Theme - Material 3 Expressive Typography
+      // Text Theme - Material 3 Expressive Typography with Google Sans
       // More dramatic scale with enhanced contrast
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 64, // Expressive: larger displays
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: -0.5,
-          height: 1.1,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 52, // Expressive
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: -0.25,
-          height: 1.15,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 40, // Expressive
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: 0,
-          height: 1.2,
-        ),
-        headlineLarge: TextStyle(
-          fontSize: 36, // Expressive: larger headlines
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: 0,
-          height: 1.25,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: 0,
-          height: 1.25,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
-          letterSpacing: 0,
-          height: 1.3,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 22, // Slightly larger
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: 0.15,
-          height: 1.4,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 18, // Slightly larger
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: 0.15,
-          height: 1.4,
-        ),
-        titleSmall: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: 0.1,
-          height: 1.4,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 17, // Slightly larger for better readability
-          fontWeight: FontWeight.w400,
-          color: textPrimary,
-          letterSpacing: 0.25,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 15, // Slightly larger
-          fontWeight: FontWeight.w400,
-          color: textPrimary,
-          letterSpacing: 0.25,
-          height: 1.5,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 13, // Slightly larger
-          fontWeight: FontWeight.w400,
-          color: textSecondary,
-          letterSpacing: 0.4,
-          height: 1.4,
-        ),
-        labelLarge: TextStyle(
-          fontSize: 15, // Slightly larger
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: 0.1,
-          height: 1.4,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: 0.5,
-          height: 1.3,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: textSecondary,
-          letterSpacing: 0.5,
-          height: 1.3,
+      // Using Google Sans for smooth, modern typography
+      textTheme: GoogleFonts.interTextTheme(
+        const TextTheme(
+          displayLarge: TextStyle(
+            fontSize: 64, // Expressive: larger displays
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: -0.5,
+            height: 1.1,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 52, // Expressive
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: -0.25,
+            height: 1.15,
+          ),
+          displaySmall: TextStyle(
+            fontSize: 40, // Expressive
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: 0,
+            height: 1.2,
+          ),
+          headlineLarge: TextStyle(
+            fontSize: 36, // Expressive: larger headlines
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: 0,
+            height: 1.25,
+          ),
+          headlineMedium: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: 0,
+            height: 1.25,
+          ),
+          headlineSmall: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+            letterSpacing: 0,
+            height: 1.3,
+          ),
+          titleLarge: TextStyle(
+            fontSize: 22, // Slightly larger
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+            letterSpacing: 0.15,
+            height: 1.4,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 18, // Slightly larger
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+            letterSpacing: 0.15,
+            height: 1.4,
+          ),
+          titleSmall: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+            letterSpacing: 0.1,
+            height: 1.4,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 17, // Slightly larger for better readability
+            fontWeight: FontWeight.w400,
+            color: textPrimary,
+            letterSpacing: 0.25,
+            height: 1.5,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 15, // Slightly larger
+            fontWeight: FontWeight.w400,
+            color: textPrimary,
+            letterSpacing: 0.25,
+            height: 1.5,
+          ),
+          bodySmall: TextStyle(
+            fontSize: 13, // Slightly larger
+            fontWeight: FontWeight.w400,
+            color: textSecondary,
+            letterSpacing: 0.4,
+            height: 1.4,
+          ),
+          labelLarge: TextStyle(
+            fontSize: 15, // Slightly larger
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+            letterSpacing: 0.1,
+            height: 1.4,
+          ),
+          labelMedium: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+            letterSpacing: 0.5,
+            height: 1.3,
+          ),
+          labelSmall: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: textSecondary,
+            letterSpacing: 0.5,
+            height: 1.3,
+          ),
         ),
       ),
 
