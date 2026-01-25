@@ -169,6 +169,9 @@ class _CircleProgressPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width - strokeWidth) / 2;
 
+    // Clamp progress to valid range
+    final clampedProgress = progress.clamp(0.0, 1.0);
+
     // Background Circle
     final backgroundPaint = Paint()
       ..color = backgroundColor
@@ -178,36 +181,37 @@ class _CircleProgressPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius, backgroundPaint);
 
-    // Progress Arc (Gradient)
-    final rect = Rect.fromCircle(center: center, radius: radius);
-    final gradient = SweepGradient(
-      startAngle: -math.pi / 2,
-      endAngle: -math.pi / 2 + 2 * math.pi * progress,
-      colors: [
-        progressColor,
-        secondaryColor,
-      ],
-      stops: const [0.0, 1.0],
-    );
+    // Only draw progress if there is any
+    if (clampedProgress > 0.01) {
+      // Progress Arc (Gradient)
+      final rect = Rect.fromCircle(center: center, radius: radius);
+      final gradient = SweepGradient(
+        startAngle: -math.pi / 2,
+        endAngle: -math.pi / 2 + 2 * math.pi * clampedProgress,
+        colors: [
+          progressColor,
+          secondaryColor,
+        ],
+        stops: const [0.0, 1.0],
+      );
 
-    final progressPaint = Paint()
-      ..shader = gradient.createShader(rect)
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      final progressPaint = Paint()
+        ..shader = gradient.createShader(rect)
+        ..strokeWidth = strokeWidth
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round;
 
-    // Draw Progress Arc
-    canvas.drawArc(
-      rect,
-      -math.pi / 2, // Start at top
-      2 * math.pi * progress, // Sweep angle
-      false,
-      progressPaint,
-    );
+      // Draw Progress Arc
+      canvas.drawArc(
+        rect,
+        -math.pi / 2, // Start at top
+        2 * math.pi * clampedProgress, // Sweep angle
+        false,
+        progressPaint,
+      );
 
-    // Glow effect at end of progress
-    if (progress > 0) {
-      final glowAngle = -math.pi / 2 + 2 * math.pi * progress;
+      // Glow effect at end of progress
+      final glowAngle = -math.pi / 2 + 2 * math.pi * clampedProgress;
       final glowX = center.dx + radius * math.cos(glowAngle);
       final glowY = center.dy + radius * math.sin(glowAngle);
 

@@ -7,6 +7,8 @@ import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/email_verification_screen.dart';
 import '../features/gamification/presentation/screens/progress_screen.dart';
+import '../features/home/presentation/widgets/main_navigation.dart';
+import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
 
 part 'routes.g.dart';
 
@@ -38,22 +40,14 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const Scaffold(
-          body: Center(
-            child: Text('Home Screen - Coming Soon'),
-          ),
-        ),
+        builder: (context, state) => const MainNavigation(),
       ),
 
       // Learning Plan
       GoRoute(
         path: '/learning-plan',
         name: 'learning-plan',
-        builder: (context, state) => const Scaffold(
-          body: Center(
-            child: Text('Learning Plan - Coming Soon'),
-          ),
-        ),
+        builder: (context, state) => const LearningPlanScreen(),
       ),
 
       // Question Session
