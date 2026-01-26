@@ -61,5 +61,24 @@ final educationConfigNotifierProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$EducationConfigNotifier = AutoDisposeNotifier<EducationConfig>;
+String _$debugConfigNotifierHash() =>
+    r'3fdd4001eaa345f5ed7b03d22c2ca3c450a43608';
+
+/// Debug Configuration Provider
+///
+/// Copied from [DebugConfigNotifier].
+@ProviderFor(DebugConfigNotifier)
+final debugConfigNotifierProvider =
+    AutoDisposeNotifierProvider<DebugConfigNotifier, DebugConfig>.internal(
+  DebugConfigNotifier.new,
+  name: r'debugConfigNotifierProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$debugConfigNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$DebugConfigNotifier = AutoDisposeNotifier<DebugConfig>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

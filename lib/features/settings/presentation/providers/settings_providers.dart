@@ -137,3 +137,91 @@ class EducationConfigNotifier extends _$EducationConfigNotifier {
     state = state.copyWith(courseType: type);
   }
 }
+
+/// Debug Configuration Model
+class DebugConfig {
+  final String claudeApiKey;
+  final String geminiApiKey;
+  final String backendUrl;
+  final bool mockMode;
+  final bool verboseLogging;
+  final bool skipEmailVerification;
+
+  const DebugConfig({
+    required this.claudeApiKey,
+    required this.geminiApiKey,
+    required this.backendUrl,
+    required this.mockMode,
+    required this.verboseLogging,
+    required this.skipEmailVerification,
+  });
+
+  DebugConfig copyWith({
+    String? claudeApiKey,
+    String? geminiApiKey,
+    String? backendUrl,
+    bool? mockMode,
+    bool? verboseLogging,
+    bool? skipEmailVerification,
+  }) {
+    return DebugConfig(
+      claudeApiKey: claudeApiKey ?? this.claudeApiKey,
+      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
+      backendUrl: backendUrl ?? this.backendUrl,
+      mockMode: mockMode ?? this.mockMode,
+      verboseLogging: verboseLogging ?? this.verboseLogging,
+      skipEmailVerification: skipEmailVerification ?? this.skipEmailVerification,
+    );
+  }
+}
+
+/// Debug Configuration Provider
+@riverpod
+class DebugConfigNotifier extends _$DebugConfigNotifier {
+  @override
+  DebugConfig build() {
+    return const DebugConfig(
+      claudeApiKey: '',
+      geminiApiKey: '',
+      backendUrl: 'https://api.slam-learning.de',
+      mockMode: false,
+      verboseLogging: false,
+      skipEmailVerification: false,
+    );
+  }
+
+  void setClaudeApiKey(String key) {
+    state = state.copyWith(claudeApiKey: key);
+  }
+
+  void setGeminiApiKey(String key) {
+    state = state.copyWith(geminiApiKey: key);
+  }
+
+  void setBackendUrl(String url) {
+    state = state.copyWith(backendUrl: url);
+  }
+
+  void setMockMode(bool enabled) {
+    state = state.copyWith(mockMode: enabled);
+  }
+
+  void setVerboseLogging(bool enabled) {
+    state = state.copyWith(verboseLogging: enabled);
+  }
+
+  void setSkipEmailVerification(bool enabled) {
+    state = state.copyWith(skipEmailVerification: enabled);
+  }
+
+  void reset() {
+    state = const DebugConfig(
+      claudeApiKey: '',
+      geminiApiKey: '',
+      backendUrl: 'https://api.slam-learning.de',
+      mockMode: false,
+      verboseLogging: false,
+      skipEmailVerification: false,
+    );
+  }
+}

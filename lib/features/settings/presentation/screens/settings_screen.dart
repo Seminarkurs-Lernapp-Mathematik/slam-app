@@ -6,6 +6,7 @@ import '../widgets/theme_selector.dart';
 import '../widgets/ai_config_panel.dart';
 import '../widgets/education_settings.dart';
 import '../widgets/account_settings.dart';
+import '../widgets/debug_panel.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
 /// Settings Screen - Theme, AI Config, Account Settings
@@ -70,6 +71,19 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           const AccountSettings(),
+
+          const SizedBox(height: 32),
+
+          // Debug / Developer Settings
+          Text(
+            'Debug / Developer',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+          ),
+          const SizedBox(height: 12),
+          const DebugPanel(),
 
           const SizedBox(height: 24),
         ],
