@@ -91,6 +91,68 @@ class ProgressScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
 
+                // Streak Freezes Section
+                GlassPanel(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.ac_unit,
+                              color: Colors.blue,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Streak Freezes',
+                                style: theme.textTheme.titleMedium,
+                              ),
+                              Text(
+                                '${stats.streakFreezes} verfügbar',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          FilledButton.icon(
+                            onPressed: stats.totalXp >= 100
+                                ? () => _purchaseStreakFreeze(context, ref, userId, stats)
+                                : null,
+                            icon: const Icon(Icons.add_shopping_cart, size: 18),
+                            label: const Text('100 XP'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Streak Freezes schützen deine Streak vor dem Ablaufen. '
+                        'Kaufe sie für 100 XP und nutze sie, wenn du einen Tag verpasst hast.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // Statistics Overview
                 _buildStatsGrid(context, stats, theme),
                 const SizedBox(height: 24),
@@ -286,6 +348,64 @@ class ProgressScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Purchase Streak Freeze (costs 100 XP)
+  Future<void> _purchaseStreakFreeze(
+    BuildContext context,
+    WidgetRef ref,
+    String userId,
+    UserStats currentStats,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Streak Freeze kaufen'),
+        content: const Text(
+          'Möchtest du einen Streak Freeze für 100 XP kaufen?\n\n'
+          'Streak Freezes schützen deine Streak, wenn du einen Tag verpasst.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            child: const Text('Kaufen'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        final updatedStats = currentStats.purchaseStreakFreeze();
+
+        await ref.read(firestoreServiceProvider).updateUserStats(userId, updatedStats);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Streak Freeze gekauft! ❄️'),
+              backgroundColor: Colors.blue,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Fehler: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 }
 

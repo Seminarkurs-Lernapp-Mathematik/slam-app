@@ -25,6 +25,8 @@ mixin _$UserStats {
   int get xpToNextLevel => throw _privateConstructorUsedError;
   int get streak => throw _privateConstructorUsedError;
   int get totalXp => throw _privateConstructorUsedError;
+  int get streakFreezes =>
+      throw _privateConstructorUsedError; // Number of streak freezes owned
   String? get lastActiveDate => throw _privateConstructorUsedError;
 
   /// Serializes this UserStats to a JSON map.
@@ -48,6 +50,7 @@ abstract class $UserStatsCopyWith<$Res> {
       int xpToNextLevel,
       int streak,
       int totalXp,
+      int streakFreezes,
       String? lastActiveDate});
 }
 
@@ -71,6 +74,7 @@ class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
     Object? xpToNextLevel = null,
     Object? streak = null,
     Object? totalXp = null,
+    Object? streakFreezes = null,
     Object? lastActiveDate = freezed,
   }) {
     return _then(_value.copyWith(
@@ -94,6 +98,10 @@ class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
           ? _value.totalXp
           : totalXp // ignore: cast_nullable_to_non_nullable
               as int,
+      streakFreezes: null == streakFreezes
+          ? _value.streakFreezes
+          : streakFreezes // ignore: cast_nullable_to_non_nullable
+              as int,
       lastActiveDate: freezed == lastActiveDate
           ? _value.lastActiveDate
           : lastActiveDate // ignore: cast_nullable_to_non_nullable
@@ -116,6 +124,7 @@ abstract class _$$UserStatsImplCopyWith<$Res>
       int xpToNextLevel,
       int streak,
       int totalXp,
+      int streakFreezes,
       String? lastActiveDate});
 }
 
@@ -137,6 +146,7 @@ class __$$UserStatsImplCopyWithImpl<$Res>
     Object? xpToNextLevel = null,
     Object? streak = null,
     Object? totalXp = null,
+    Object? streakFreezes = null,
     Object? lastActiveDate = freezed,
   }) {
     return _then(_$UserStatsImpl(
@@ -160,6 +170,10 @@ class __$$UserStatsImplCopyWithImpl<$Res>
           ? _value.totalXp
           : totalXp // ignore: cast_nullable_to_non_nullable
               as int,
+      streakFreezes: null == streakFreezes
+          ? _value.streakFreezes
+          : streakFreezes // ignore: cast_nullable_to_non_nullable
+              as int,
       lastActiveDate: freezed == lastActiveDate
           ? _value.lastActiveDate
           : lastActiveDate // ignore: cast_nullable_to_non_nullable
@@ -177,6 +191,7 @@ class _$UserStatsImpl extends _UserStats {
       this.xpToNextLevel = 100,
       this.streak = 0,
       this.totalXp = 0,
+      this.streakFreezes = 0,
       this.lastActiveDate})
       : super._();
 
@@ -199,11 +214,15 @@ class _$UserStatsImpl extends _UserStats {
   @JsonKey()
   final int totalXp;
   @override
+  @JsonKey()
+  final int streakFreezes;
+// Number of streak freezes owned
+  @override
   final String? lastActiveDate;
 
   @override
   String toString() {
-    return 'UserStats(level: $level, xp: $xp, xpToNextLevel: $xpToNextLevel, streak: $streak, totalXp: $totalXp, lastActiveDate: $lastActiveDate)';
+    return 'UserStats(level: $level, xp: $xp, xpToNextLevel: $xpToNextLevel, streak: $streak, totalXp: $totalXp, streakFreezes: $streakFreezes, lastActiveDate: $lastActiveDate)';
   }
 
   @override
@@ -217,14 +236,16 @@ class _$UserStatsImpl extends _UserStats {
                 other.xpToNextLevel == xpToNextLevel) &&
             (identical(other.streak, streak) || other.streak == streak) &&
             (identical(other.totalXp, totalXp) || other.totalXp == totalXp) &&
+            (identical(other.streakFreezes, streakFreezes) ||
+                other.streakFreezes == streakFreezes) &&
             (identical(other.lastActiveDate, lastActiveDate) ||
                 other.lastActiveDate == lastActiveDate));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, level, xp, xpToNextLevel, streak, totalXp, lastActiveDate);
+  int get hashCode => Object.hash(runtimeType, level, xp, xpToNextLevel, streak,
+      totalXp, streakFreezes, lastActiveDate);
 
   /// Create a copy of UserStats
   /// with the given fields replaced by the non-null parameter values.
@@ -249,6 +270,7 @@ abstract class _UserStats extends UserStats {
       final int xpToNextLevel,
       final int streak,
       final int totalXp,
+      final int streakFreezes,
       final String? lastActiveDate}) = _$UserStatsImpl;
   const _UserStats._() : super._();
 
@@ -265,6 +287,8 @@ abstract class _UserStats extends UserStats {
   int get streak;
   @override
   int get totalXp;
+  @override
+  int get streakFreezes; // Number of streak freezes owned
   @override
   String? get lastActiveDate;
 

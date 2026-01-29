@@ -94,10 +94,45 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
             const SizedBox(height: 24),
 
             if (!showFeedback)
-              FilledButton.icon(
-                onPressed: () => _submitAnswer(context),
-                icon: const Icon(Icons.check),
-                label: const Text('Antwort prüfen'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () => _submitAnswer(context),
+                    icon: const Icon(Icons.check),
+                    label: const Text('Antwort prüfen'),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: currentIndex > 0
+                              ? _previousQuestion
+                              : null,
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Zurück'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _skipQuestion,
+                          icon: const Icon(Icons.skip_next),
+                          label: const Text('Überspringen'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _pauseSession(context),
+                          icon: const Icon(Icons.pause),
+                          label: const Text('Pause'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               )
             else
               FilledButton.icon(
@@ -188,6 +223,52 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
     ref.read(showFeedbackProvider.notifier).state = false;
     ref.read(currentAnswerProvider.notifier).state = '';
     ref.read(hintsUsedProvider.notifier).state = 0;
+  }
+
+  void _previousQuestion() {
+    ref.read(currentQuestionIndexProvider.notifier).decrement();
+    ref.read(showFeedbackProvider.notifier).state = false;
+    ref.read(currentAnswerProvider.notifier).state = '';
+    ref.read(hintsUsedProvider.notifier).state = 0;
+  }
+
+  void _skipQuestion() {
+    final currentIndex = ref.read(currentQuestionIndexProvider);
+    ref.read(skippedQuestionsProvider.notifier).addSkipped(currentIndex);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Frage ${currentIndex + 1} übersprungen'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    _nextQuestion();
+  }
+
+  void _pauseSession(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Session pausieren?'),
+        content: const Text(
+          'Dein Fortschritt wird gespeichert. Du kannst später weitermachen.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/home');
+            },
+            child: const Text('Pausieren'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showExitConfirmation(BuildContext context) {

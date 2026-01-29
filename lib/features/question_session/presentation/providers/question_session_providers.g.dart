@@ -27,7 +27,7 @@ final demoQuestionsProvider =
 // ignore: unused_element
 typedef DemoQuestionsRef = AutoDisposeProviderRef<List<Map<String, dynamic>>>;
 String _$currentQuestionIndexHash() =>
-    r'f8bde65813641f3d9a907b4abdbb4cc710a7524c';
+    r'446da66f94d4279f27b6a54569deb0f54742adee';
 
 /// Current Question Index Provider
 ///
@@ -113,5 +113,23 @@ final lastXPEarnedProvider =
 );
 
 typedef _$LastXPEarned = AutoDisposeNotifier<int>;
+String _$skippedQuestionsHash() => r'202f07b6a91b75abca4f56f6a5aa73b992872e4a';
+
+/// Skipped Questions Provider
+///
+/// Copied from [SkippedQuestions].
+@ProviderFor(SkippedQuestions)
+final skippedQuestionsProvider =
+    AutoDisposeNotifierProvider<SkippedQuestions, Set<int>>.internal(
+  SkippedQuestions.new,
+  name: r'skippedQuestionsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$skippedQuestionsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SkippedQuestions = AutoDisposeNotifier<Set<int>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

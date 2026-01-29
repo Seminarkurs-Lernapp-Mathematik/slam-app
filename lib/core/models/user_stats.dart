@@ -18,6 +18,7 @@ class UserStats with _$UserStats {
     @Default(100) int xpToNextLevel,
     @Default(0) int streak,
     @Default(0) int totalXp,
+    @Default(0) int streakFreezes, // Number of streak freezes owned
     String? lastActiveDate, // ISO date string "2024-01-21"
   }) = _UserStats;
 
@@ -59,6 +60,7 @@ class UserStats with _$UserStats {
       xpToNextLevel: 100,
       streak: 0,
       totalXp: 0,
+      streakFreezes: 0,
       lastActiveDate: null,
     );
   }
@@ -78,7 +80,7 @@ class UserStats with _$UserStats {
   }
 
   /// Update streak (call daily)
-  UserStats updateStreak(String todayDate) {
+  UserStats updateStreak(String todayDate, {bool useFreeze = false}) {
     if (lastActiveDate == null) {
       return copyWith(streak: 1, lastActiveDate: todayDate);
     }
@@ -93,10 +95,35 @@ class UserStats with _$UserStats {
     } else if (difference == 1) {
       // Consecutive day - increment streak
       return copyWith(streak: streak + 1, lastActiveDate: todayDate);
+    } else if (useFreeze && streakFreezes > 0 && difference <= 2) {
+      // Use freeze to maintain streak (within 2 days)
+      return copyWith(
+        streakFreezes: streakFreezes - 1,
+        lastActiveDate: todayDate,
+      );
     } else {
       // Streak broken - reset to 1
       return copyWith(streak: 1, lastActiveDate: todayDate);
     }
+  }
+
+  /// Purchase streak freeze (costs 100 XP)
+  UserStats purchaseStreakFreeze() {
+    if (totalXp < 100) {
+      throw Exception('Nicht genug XP für Streak Freeze (benötigt 100 XP)');
+    }
+
+    final newTotalXp = totalXp - 100;
+    final newLevel = LevelSystem.levelFromXp(newTotalXp);
+    final progress = LevelSystem.progressToNextLevel(newTotalXp);
+
+    return copyWith(
+      level: newLevel,
+      xp: progress['currentXp'] as int,
+      xpToNextLevel: progress['xpNeeded'] as int,
+      totalXp: newTotalXp,
+      streakFreezes: streakFreezes + 1,
+    );
   }
 
   /// Check if streak is at risk (no activity today)

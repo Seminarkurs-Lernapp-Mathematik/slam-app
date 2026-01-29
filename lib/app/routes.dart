@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/email_verification_screen.dart';
+import '../features/auth/presentation/screens/password_reset_screen.dart';
 import '../features/gamification/presentation/screens/progress_screen.dart';
 import '../features/home/presentation/widgets/main_navigation.dart';
 import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
@@ -36,6 +37,11 @@ GoRouter router(Ref ref) {
         path: '/email-verification',
         name: 'email-verification',
         builder: (context, state) => const EmailVerificationScreen(),
+      ),
+      GoRoute(
+        path: '/password-reset',
+        name: 'password-reset',
+        builder: (context, state) => const PasswordResetScreen(),
       ),
 
       // Main App Routes (after authentication)

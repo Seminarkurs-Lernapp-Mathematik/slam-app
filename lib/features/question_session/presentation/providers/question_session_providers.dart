@@ -14,6 +14,10 @@ class CurrentQuestionIndex extends _$CurrentQuestionIndex {
     state++;
   }
 
+  void decrement() {
+    if (state > 0) state--;
+  }
+
   void reset() {
     state = 0;
   }
@@ -52,6 +56,23 @@ class LastXPEarned extends _$LastXPEarned {
   @override
   int build() {
     return 0;
+  }
+}
+
+/// Skipped Questions Provider
+@riverpod
+class SkippedQuestions extends _$SkippedQuestions {
+  @override
+  Set<int> build() {
+    return {};
+  }
+
+  void addSkipped(int index) {
+    state = {...state, index};
+  }
+
+  void removeSkipped(int index) {
+    state = {...state}..remove(index);
   }
 }
 
