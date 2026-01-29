@@ -29,6 +29,12 @@ class ApiEndpoints {
   // Image Analysis
   static const String analyzeImage = '/api/analyze-image';
 
+  // Learning Plan Management
+  static const String manageLearningPlan = '/api/manage-learning-plan';
+
+  // Memories & Spaced Repetition
+  static const String manageMemories = '/api/manage-memories';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

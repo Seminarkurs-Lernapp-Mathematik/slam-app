@@ -51,6 +51,21 @@ service cloud.firestore {
       match /initialKnowledge/{assessmentId} {
         allow read, write: if isOwner(userId);
       }
+
+      // Learning Plans subcollection
+      match /learningPlans/{planId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Memories (Spaced Repetition) subcollection
+      match /memories/{memoryId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Saved Content subcollection (Generative Apps, GeoGebra)
+      match /savedContent/{contentId} {
+        allow read, write: if isOwner(userId);
+      }
     }
   }
 }

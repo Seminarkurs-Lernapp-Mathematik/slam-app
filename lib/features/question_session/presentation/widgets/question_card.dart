@@ -59,7 +59,7 @@ class QuestionCard extends ConsumerWidget {
             // Answer Input
             TextField(
               onChanged: (value) {
-                ref.read(currentAnswerProvider.notifier).state = value;
+                ref.read(currentAnswerProvider.notifier).setAnswer(value);
               },
               decoration: InputDecoration(
                 labelText: 'Deine Antwort',

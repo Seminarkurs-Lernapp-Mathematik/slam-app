@@ -19,6 +19,7 @@ class UserStats with _$UserStats {
     @Default(0) int streak,
     @Default(0) int totalXp,
     @Default(0) int streakFreezes, // Number of streak freezes owned
+    @Default(0) int xpNeededUntil, // XP needed to reach next level threshold
     String? lastActiveDate, // ISO date string "2024-01-21"
   }) = _UserStats;
 
@@ -61,6 +62,7 @@ class UserStats with _$UserStats {
       streak: 0,
       totalXp: 0,
       streakFreezes: 0,
+      xpNeededUntil: 100,
       lastActiveDate: null,
     );
   }
@@ -75,6 +77,7 @@ class UserStats with _$UserStats {
       level: newLevel,
       xp: progress['currentXp'] as int,
       xpToNextLevel: progress['xpNeeded'] as int,
+      xpNeededUntil: progress['xpNeeded'] as int,
       totalXp: newTotalXp,
     );
   }
@@ -121,6 +124,7 @@ class UserStats with _$UserStats {
       level: newLevel,
       xp: progress['currentXp'] as int,
       xpToNextLevel: progress['xpNeeded'] as int,
+      xpNeededUntil: progress['xpNeeded'] as int,
       totalXp: newTotalXp,
       streakFreezes: streakFreezes + 1,
     );

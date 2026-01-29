@@ -168,14 +168,14 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
       return;
     }
 
-    ref.read(showFeedbackProvider.notifier).state = true;
+    ref.read(showFeedbackProvider.notifier).show();
 
     final hintsUsed = ref.read(hintsUsedProvider);
     final baseXP = 25;
     final hintPenalty = hintsUsed * 5;
     final xpEarned = (baseXP - hintPenalty).clamp(5, baseXP);
 
-    ref.read(lastXPEarnedProvider.notifier).state = xpEarned;
+    ref.read(lastXPEarnedProvider.notifier).setXP(xpEarned);
 
     _showXPAnimation(context, xpEarned);
   }
@@ -220,16 +220,16 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
 
   void _nextQuestion() {
     ref.read(currentQuestionIndexProvider.notifier).increment();
-    ref.read(showFeedbackProvider.notifier).state = false;
-    ref.read(currentAnswerProvider.notifier).state = '';
-    ref.read(hintsUsedProvider.notifier).state = 0;
+    ref.read(showFeedbackProvider.notifier).hide();
+    ref.read(currentAnswerProvider.notifier).clear();
+    ref.read(hintsUsedProvider.notifier).reset();
   }
 
   void _previousQuestion() {
     ref.read(currentQuestionIndexProvider.notifier).decrement();
-    ref.read(showFeedbackProvider.notifier).state = false;
-    ref.read(currentAnswerProvider.notifier).state = '';
-    ref.read(hintsUsedProvider.notifier).state = 0;
+    ref.read(showFeedbackProvider.notifier).hide();
+    ref.read(currentAnswerProvider.notifier).clear();
+    ref.read(hintsUsedProvider.notifier).reset();
   }
 
   void _skipQuestion() {

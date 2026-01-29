@@ -386,6 +386,265 @@ class FirestoreService {
         .map((doc) => LearningSession.fromJson(doc.data()))
         .toList();
   }
+
+  // ============================================================================
+  // LEARNING PLANS
+  // ============================================================================
+
+  /// Create learning plan
+  Future<void> createLearningPlan({
+    required String userId,
+    required Map<String, dynamic> planData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .doc(planData['id'] as String)
+        .set(planData);
+  }
+
+  /// Update learning plan
+  Future<void> updateLearningPlan({
+    required String userId,
+    required String planId,
+    required Map<String, dynamic> updates,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .doc(planId)
+        .update(updates);
+  }
+
+  /// Get learning plan
+  Future<Map<String, dynamic>?> getLearningPlan({
+    required String userId,
+    required String planId,
+  }) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .doc(planId)
+        .get();
+
+    return doc.data();
+  }
+
+  /// Get active learning plan
+  Future<Map<String, dynamic>?> getActiveLearningPlan(String userId) async {
+    final querySnapshot = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .where('isActive', isEqualTo: true)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) return null;
+    return querySnapshot.docs.first.data();
+  }
+
+  /// Get all learning plans
+  Future<List<Map<String, dynamic>>> getAllLearningPlans(String userId) async {
+    final querySnapshot = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Delete learning plan
+  Future<void> deleteLearningPlan({
+    required String userId,
+    required String planId,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('learningPlans')
+        .doc(planId)
+        .delete();
+  }
+
+  // ============================================================================
+  // MEMORIES (SPACED REPETITION)
+  // ============================================================================
+
+  /// Create memory
+  Future<void> createMemory({
+    required String userId,
+    required Map<String, dynamic> memoryData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories')
+        .doc(memoryData['id'] as String)
+        .set(memoryData);
+  }
+
+  /// Update memory
+  Future<void> updateMemory({
+    required String userId,
+    required String memoryId,
+    required Map<String, dynamic> updates,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories')
+        .doc(memoryId)
+        .update(updates);
+  }
+
+  /// Get memory
+  Future<Map<String, dynamic>?> getMemory({
+    required String userId,
+    required String memoryId,
+  }) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories')
+        .doc(memoryId)
+        .get();
+
+    return doc.data();
+  }
+
+  /// Get due memories
+  Future<List<Map<String, dynamic>>> getDueMemories(String userId) async {
+    final now = Timestamp.fromDate(DateTime.now());
+    final querySnapshot = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories')
+        .where('nextReviewAt', isLessThanOrEqualTo: now)
+        .where('isArchived', isEqualTo: false)
+        .orderBy('nextReviewAt')
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Get all memories
+  Future<List<Map<String, dynamic>>> getAllMemories({
+    required String userId,
+    bool? includeArchived,
+  }) async {
+    var query = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories');
+
+    if (includeArchived == false) {
+      query = query.where('isArchived', isEqualTo: false) as CollectionReference<Map<String, dynamic>>;
+    }
+
+    final querySnapshot = await query
+        .orderBy('nextReviewAt')
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Delete memory
+  Future<void> deleteMemory({
+    required String userId,
+    required String memoryId,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('memories')
+        .doc(memoryId)
+        .delete();
+  }
+
+  // ============================================================================
+  // SAVED CONTENT (Generative Apps, GeoGebra, etc.)
+  // ============================================================================
+
+  /// Save content
+  Future<void> saveContent({
+    required String userId,
+    required Map<String, dynamic> contentData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('savedContent')
+        .doc(contentData['id'] as String)
+        .set(contentData);
+  }
+
+  /// Get saved content
+  Future<Map<String, dynamic>?> getSavedContent({
+    required String userId,
+    required String contentId,
+  }) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('savedContent')
+        .doc(contentId)
+        .get();
+
+    return doc.data();
+  }
+
+  /// Get all saved content
+  Future<List<Map<String, dynamic>>> getAllSavedContent({
+    required String userId,
+    String? type,
+  }) async {
+    var query = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('savedContent');
+
+    if (type != null) {
+      query = query.where('type', isEqualTo: type) as CollectionReference<Map<String, dynamic>>;
+    }
+
+    final querySnapshot = await query
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Delete saved content
+  Future<void> deleteSavedContent({
+    required String userId,
+    required String contentId,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('savedContent')
+        .doc(contentId)
+        .delete();
+  }
+
+  /// Stream saved content (real-time)
+  Stream<List<Map<String, dynamic>>> savedContentStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection('savedContent')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
 }
 
 /// Firestore Service Provider

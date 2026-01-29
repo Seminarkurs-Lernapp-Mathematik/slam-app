@@ -15,6 +15,44 @@ import '../features/settings/presentation/screens/settings_screen.dart';
 
 part 'routes.g.dart';
 
+/// Material 3 Expressive Page Transition
+/// Uses emphasized easing curves for smooth, physics-based motion
+CustomTransitionPage<void> buildPageWithExpressiveTransition({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Material 3 Expressive easing: Emphasized curve for motion
+      const curve = Curves.easeInOutCubicEmphasized;
+
+      // Fade + Scale animation (subtle, smooth)
+      final fadeAnimation = CurvedAnimation(
+        parent: animation,
+        curve: curve,
+      );
+
+      final scaleAnimation = Tween<double>(
+        begin: 0.95,
+        end: 1.0,
+      ).animate(fadeAnimation);
+
+      return FadeTransition(
+        opacity: fadeAnimation,
+        child: ScaleTransition(
+          scale: scaleAnimation,
+          child: child,
+        ),
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 400),
+    reverseTransitionDuration: const Duration(milliseconds: 350),
+  );
+}
+
 /// App Routes Provider
 @riverpod
 GoRouter router(Ref ref) {
@@ -26,45 +64,73 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const LoginScreen(),
+        ),
       ),
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const RegisterScreen(),
+        ),
       ),
       GoRoute(
         path: '/email-verification',
         name: 'email-verification',
-        builder: (context, state) => const EmailVerificationScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const EmailVerificationScreen(),
+        ),
       ),
       GoRoute(
         path: '/password-reset',
         name: 'password-reset',
-        builder: (context, state) => const PasswordResetScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const PasswordResetScreen(),
+        ),
       ),
 
       // Main App Routes (after authentication)
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const MainNavigation(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const MainNavigation(),
+        ),
       ),
 
       // Learning Plan
       GoRoute(
         path: '/learning-plan',
         name: 'learning-plan',
-        builder: (context, state) => const LearningPlanScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const LearningPlanScreen(),
+        ),
       ),
 
       // Question Session
       GoRoute(
         path: '/question-session/:sessionId',
         name: 'question-session',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
-          return QuestionSessionScreen(sessionId: sessionId);
+          return buildPageWithExpressiveTransition(
+            context: context,
+            state: state,
+            child: QuestionSessionScreen(sessionId: sessionId),
+          );
         },
       ),
 
@@ -72,7 +138,11 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: '/settings',
         name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const SettingsScreen(),
+        ),
       ),
 
       // Progress/Gamification

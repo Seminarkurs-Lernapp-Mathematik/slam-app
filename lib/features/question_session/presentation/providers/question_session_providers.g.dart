@@ -45,7 +45,7 @@ final currentQuestionIndexProvider =
 );
 
 typedef _$CurrentQuestionIndex = AutoDisposeNotifier<int>;
-String _$currentAnswerHash() => r'c04185fe6e3cfbece02f369ad384a0f604b3ece6';
+String _$currentAnswerHash() => r'd1e305c2bc3da2abf8a04f06e18c5119decacdb1';
 
 /// Current Answer Provider
 ///
@@ -63,7 +63,7 @@ final currentAnswerProvider =
 );
 
 typedef _$CurrentAnswer = AutoDisposeNotifier<String>;
-String _$hintsUsedHash() => r'141bf2266b3e49b6f1dbdfcf359cfc14e6297b10';
+String _$hintsUsedHash() => r'bd15b47269e22c6a5dd7ceeef6e69894f3d27c2a';
 
 /// Hints Used Provider
 ///
@@ -79,7 +79,7 @@ final hintsUsedProvider = AutoDisposeNotifierProvider<HintsUsed, int>.internal(
 );
 
 typedef _$HintsUsed = AutoDisposeNotifier<int>;
-String _$showFeedbackHash() => r'3c4e6eb4688cc67c51c61d8a81533407028902d4';
+String _$showFeedbackHash() => r'7b0fac56d592ed68b0e50785fa6ae789f3d0f226';
 
 /// Show Feedback Provider
 ///
@@ -96,7 +96,7 @@ final showFeedbackProvider =
 );
 
 typedef _$ShowFeedback = AutoDisposeNotifier<bool>;
-String _$lastXPEarnedHash() => r'fe2da3b1393fbd36b7191ae3ea016622aadb30da';
+String _$lastXPEarnedHash() => r'8b7d07c6425cdd39339c143b80c99f497234cc74';
 
 /// Last XP Earned Provider
 ///

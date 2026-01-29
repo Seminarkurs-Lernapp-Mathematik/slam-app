@@ -30,6 +30,14 @@ class CurrentAnswer extends _$CurrentAnswer {
   String build() {
     return '';
   }
+
+  void setAnswer(String answer) {
+    state = answer;
+  }
+
+  void clear() {
+    state = '';
+  }
 }
 
 /// Hints Used Provider
@@ -38,6 +46,18 @@ class HintsUsed extends _$HintsUsed {
   @override
   int build() {
     return 0;
+  }
+
+  void increment() {
+    state++;
+  }
+
+  void setLevel(int level) {
+    state = level;
+  }
+
+  void reset() {
+    state = 0;
   }
 }
 
@@ -48,6 +68,14 @@ class ShowFeedback extends _$ShowFeedback {
   bool build() {
     return false;
   }
+
+  void show() {
+    state = true;
+  }
+
+  void hide() {
+    state = false;
+  }
 }
 
 /// Last XP Earned Provider
@@ -56,6 +84,10 @@ class LastXPEarned extends _$LastXPEarned {
   @override
   int build() {
     return 0;
+  }
+
+  void setXP(int xp) {
+    state = xp;
   }
 }
 

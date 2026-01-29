@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../live_feed/presentation/screens/live_feed_screen.dart';
 import '../../../apps/presentation/screens/apps_hub_screen.dart';
-import '../../../gamification/presentation/screens/progress_screen.dart';
+import '../screens/profil_screen.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../core/models/user_stats.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
-/// Main Navigation with 3 tabs: Feed, Apps, Progress
+/// Main Navigation with 3 tabs: Feed, Apps, Profil
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
 
@@ -25,19 +25,11 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final _screens = const [
     LiveFeedScreen(),
     AppsHubScreen(),
-    ProgressScreen(),
-  ];
-
-  // Tab titles
-  final _tabTitles = const [
-    'Live Feed',
-    'Apps',
-    'Fortschritt',
+    ProfilScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final currentUser = ref.watch(currentUserProvider);
     final userId = currentUser?.uid ?? '';
 
@@ -48,17 +40,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_tabTitles[_selectedIndex]),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: theme.colorScheme.primaryContainer,
-            child: Icon(
-              Icons.person,
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ),
         actions: [
           // User Stats Display
           userStatsAsync.when(
@@ -66,20 +47,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             loading: () => const SizedBox(width: 16),
             error: (_, __) => const SizedBox(width: 16),
           ),
-
-          // Command Center Button
-          IconButton(
-            icon: const Icon(Icons.dashboard_customize_outlined),
-            onPressed: () => _showCommandCenter(context),
-            tooltip: 'Command Center',
-          ),
-
-          // Settings Button
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.go('/settings'),
-            tooltip: 'Einstellungen',
-          ),
+          const SizedBox(width: 16),
         ],
       ),
       body: IndexedStack(
@@ -105,9 +73,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             label: 'Apps',
           ),
           NavigationDestination(
-            icon: Icon(Icons.show_chart_outlined),
-            selectedIcon: Icon(Icons.show_chart),
-            label: 'Fortschritt',
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profil',
           ),
         ],
       ),

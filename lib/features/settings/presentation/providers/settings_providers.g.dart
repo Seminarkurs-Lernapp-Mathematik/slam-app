@@ -43,7 +43,7 @@ final aIConfigNotifierProvider =
 
 typedef _$AIConfigNotifier = AutoDisposeNotifier<AIConfig>;
 String _$educationConfigNotifierHash() =>
-    r'7b583b338d98461cce110508ae51475317b783e2';
+    r'6a1a5b9d4221e4b47e3e749e32efd8834df47c6c';
 
 /// Education Configuration Provider
 ///

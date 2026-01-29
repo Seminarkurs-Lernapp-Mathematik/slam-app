@@ -51,8 +51,6 @@ class EducationSettings extends ConsumerWidget {
                 DropdownMenuItem(value: '10', child: Text('Klasse 10')),
                 DropdownMenuItem(value: '11', child: Text('Klasse 11')),
                 DropdownMenuItem(value: '12', child: Text('Klasse 12')),
-                DropdownMenuItem(value: '13', child: Text('Klasse 13')),
-                DropdownMenuItem(value: 'studium', child: Text('Studium')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -81,10 +79,6 @@ class EducationSettings extends ConsumerWidget {
                 DropdownMenuItem(
                   value: CourseType.leistungskurs,
                   child: Text('Leistungskurs'),
-                ),
-                DropdownMenuItem(
-                  value: CourseType.standard,
-                  child: Text('Standard'),
                 ),
               ],
               onChanged: (value) {

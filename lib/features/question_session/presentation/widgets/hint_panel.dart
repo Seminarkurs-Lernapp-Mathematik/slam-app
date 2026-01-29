@@ -106,7 +106,7 @@ class HintPanel extends ConsumerWidget {
   void _revealHint(WidgetRef ref, int level) {
     final currentHints = ref.read(hintsUsedProvider);
     if (currentHints < level) {
-      ref.read(hintsUsedProvider.notifier).state = level;
+      ref.read(hintsUsedProvider.notifier).setLevel(level);
     }
   }
 }

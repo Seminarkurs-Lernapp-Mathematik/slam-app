@@ -5,7 +5,6 @@ import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../providers/live_feed_providers.dart';
-import '../widgets/difficulty_slider.dart';
 import '../widgets/feed_question_card.dart';
 
 /// Live Feed Screen - Adaptive difficulty question stream
@@ -184,12 +183,6 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Difficulty Slider
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: DifficultySlider(),
-          ),
-
           // Question Area
           Expanded(
             child: _buildQuestionArea(currentQuestion),
@@ -369,11 +362,13 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: 4),
         Text(
           value,
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -381,6 +376,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         ),
         Text(
           label,
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

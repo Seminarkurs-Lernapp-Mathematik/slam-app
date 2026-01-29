@@ -14,6 +14,7 @@ _$UserStatsImpl _$$UserStatsImplFromJson(Map<String, dynamic> json) =>
       streak: (json['streak'] as num?)?.toInt() ?? 0,
       totalXp: (json['totalXp'] as num?)?.toInt() ?? 0,
       streakFreezes: (json['streakFreezes'] as num?)?.toInt() ?? 0,
+      xpNeededUntil: (json['xpNeededUntil'] as num?)?.toInt() ?? 0,
       lastActiveDate: json['lastActiveDate'] as String?,
     );
 
@@ -25,5 +26,6 @@ Map<String, dynamic> _$$UserStatsImplToJson(_$UserStatsImpl instance) =>
       'streak': instance.streak,
       'totalXp': instance.totalXp,
       'streakFreezes': instance.streakFreezes,
+      'xpNeededUntil': instance.xpNeededUntil,
       'lastActiveDate': instance.lastActiveDate,
     };

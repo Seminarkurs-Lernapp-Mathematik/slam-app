@@ -39,7 +39,7 @@ class ThemeSelector extends ConsumerWidget {
                 return _ThemeChip(
                   theme: theme,
                   isSelected: isSelected,
-                  onTap: () => ref.read(selectedThemeProvider.notifier).state = theme,
+                  onTap: () => ref.read(selectedThemeProvider.notifier).setTheme(theme),
                 );
               }).toList(),
             ),

@@ -267,6 +267,70 @@ class AIService {
   }
 
   // ============================================================================
+  // LEARNING PLAN MANAGEMENT
+  // ============================================================================
+
+  /// Manage learning plan
+  ///
+  /// POST /api/manage-learning-plan
+  Future<Map<String, dynamic>> manageLearningPlan({
+    required String action, // 'create', 'update', 'prioritize', etc.
+    required String userId,
+    String? planId,
+    Map<String, dynamic>? planData,
+    String? apiKey,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.getFullUrl(ApiEndpoints.manageLearningPlan),
+        data: {
+          'action': action,
+          'userId': userId,
+          'planId': planId,
+          'planData': planData,
+          'apiKey': apiKey,
+        },
+      );
+
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
+  // ============================================================================
+  // MEMORIES & SPACED REPETITION
+  // ============================================================================
+
+  /// Manage memories (spaced repetition)
+  ///
+  /// POST /api/manage-memories
+  Future<Map<String, dynamic>> manageMemories({
+    required String action, // 'create', 'review', 'get-due', 'get-stats'
+    required String userId,
+    String? memoryId,
+    Map<String, dynamic>? memoryData,
+    int? quality, // 0-5 for SM-2 algorithm
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.getFullUrl(ApiEndpoints.manageMemories),
+        data: {
+          'action': action,
+          'userId': userId,
+          'memoryId': memoryId,
+          'memoryData': memoryData,
+          'quality': quality,
+        },
+      );
+
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
+  // ============================================================================
   // ERROR HANDLING
   // ============================================================================
 

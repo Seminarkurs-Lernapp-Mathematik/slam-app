@@ -7,7 +7,6 @@ import '../widgets/ai_config_panel.dart';
 import '../widgets/education_settings.dart';
 import '../widgets/account_settings.dart';
 import '../widgets/debug_panel.dart';
-import '../../../../shared/widgets/glass_panel.dart';
 
 /// Settings Screen - Theme, AI Config, Account Settings
 class SettingsScreen extends ConsumerWidget {
@@ -21,7 +20,6 @@ class SettingsScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/home'),
         ),
-        title: const Text('Einstellungen'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

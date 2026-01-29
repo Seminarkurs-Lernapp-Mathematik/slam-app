@@ -22,7 +22,6 @@ enum AIProvider {
 enum CourseType {
   grundkurs,
   leistungskurs,
-  standard,
 }
 
 /// Selected Theme Provider
@@ -124,8 +123,8 @@ class EducationConfigNotifier extends _$EducationConfigNotifier {
   @override
   EducationConfig build() {
     return const EducationConfig(
-      gradeLevel: '10',
-      courseType: CourseType.standard,
+      gradeLevel: '11',
+      courseType: CourseType.leistungskurs,
     );
   }
 
