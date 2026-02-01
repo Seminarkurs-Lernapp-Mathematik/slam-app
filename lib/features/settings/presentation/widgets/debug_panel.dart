@@ -400,19 +400,21 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             children: [
               Icon(Icons.check_circle, color: Colors.green),
               SizedBox(width: 8),
-              Text('Verbindung erfolgreich'),
+              Flexible(child: Text('Verbindung erfolgreich')),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Backend URL: ${_backendUrlController.text}'),
-              const SizedBox(height: 8),
-              const Text('Status: 200 OK'),
-              const SizedBox(height: 8),
-              const Text('Latenz: 125ms'),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Backend URL: ${_backendUrlController.text}'),
+                const SizedBox(height: 8),
+                const Text('Status: 200 OK'),
+                const SizedBox(height: 8),
+                const Text('Latenz: 125ms'),
+              ],
+            ),
           ),
           actions: [
             TextButton(

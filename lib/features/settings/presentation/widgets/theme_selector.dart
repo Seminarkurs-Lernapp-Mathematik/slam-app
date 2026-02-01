@@ -31,17 +31,25 @@ class ThemeSelector extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: AppThemePreset.values.map((theme) {
-                final isSelected = selectedTheme == theme;
-                return _ThemeChip(
-                  theme: theme,
-                  isSelected: isSelected,
-                  onTap: () => ref.read(selectedThemeProvider.notifier).setTheme(theme),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final chipWidth = (constraints.maxWidth - 12) / 2;
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: AppThemePreset.values.map((theme) {
+                    final isSelected = selectedTheme == theme;
+                    return SizedBox(
+                      width: chipWidth,
+                      child: _ThemeChip(
+                        theme: theme,
+                        isSelected: isSelected,
+                        onTap: () => ref.read(selectedThemeProvider.notifier).setTheme(theme),
+                      ),
+                    );
+                  }).toList(),
                 );
-              }).toList(),
+              },
             ),
           ],
         ),
@@ -89,16 +97,15 @@ class _ThemeChip extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
-              _getThemeName(theme),
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            Flexible(
+              child: Text(
+                _getThemeName(theme),
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (isSelected) ...[
-              const SizedBox(width: 4),
-              Icon(Icons.check_circle, size: 16, color: color),
-            ],
           ],
         ),
       ),
@@ -115,8 +122,6 @@ class _ThemeChip extends StatelessWidget {
         return const Color(0xFF10b981);
       case AppThemePreset.lavenderPurple:
         return const Color(0xFFa78bfa);
-      case AppThemePreset.midnightDark:
-        return const Color(0xFF1e293b);
       case AppThemePreset.cherryRed:
         return const Color(0xFFef4444);
     }
@@ -132,8 +137,6 @@ class _ThemeChip extends StatelessWidget {
         return 'Forest Green';
       case AppThemePreset.lavenderPurple:
         return 'Lavender Purple';
-      case AppThemePreset.midnightDark:
-        return 'Midnight Dark';
       case AppThemePreset.cherryRed:
         return 'Cherry Red';
     }

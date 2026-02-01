@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
@@ -57,6 +58,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     try {
       final difficulty = ref.read(liveFeedDifficultyProvider);
       final aiService = ref.read(aiServiceProvider);
+      final aiConfig = ref.read(aIConfigNotifierProvider);
 
       // Create a simple question generation request
       // In production, you'd call a dedicated /api/generate-single-question endpoint
@@ -72,7 +74,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
             unterthema: 'Lineare Gleichungen',
           ),
         ],
-        selectedModel: 'claude-sonnet-4-5-20250929',
+        selectedModel: aiConfig.getModelName(),
         userContext: const UserContext(
           gradeLevel: '10',
           courseType: 'Grundkurs',
@@ -329,7 +331,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildStatItem(
             icon: Icons.quiz_outlined,
@@ -360,28 +362,31 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     required String value,
     required Color color,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-        ),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
-      ],
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+          ),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

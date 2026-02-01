@@ -417,9 +417,6 @@ class AppTheme {
       case AppThemePreset.lavenderPurple:
         primaryColor = const Color(0xFFa78bfa);
         break;
-      case AppThemePreset.midnightDark:
-        primaryColor = const Color(0xFF1e293b);
-        break;
       case AppThemePreset.cherryRed:
         primaryColor = const Color(0xFFef4444);
         break;

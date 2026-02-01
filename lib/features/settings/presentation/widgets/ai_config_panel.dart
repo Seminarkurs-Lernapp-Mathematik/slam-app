@@ -54,6 +54,24 @@ class AIConfigPanel extends ConsumerWidget {
               ),
             ),
 
+            const SizedBox(height: 16),
+
+            // Auto Button
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  ref.read(aIConfigNotifierProvider.notifier).setDetailLevel(5);
+                  ref.read(aIConfigNotifierProvider.notifier).setTemperature(0.7);
+                  ref.read(aIConfigNotifierProvider.notifier).setHelpfulness(7);
+                },
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Auto'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(120, 36),
+                ),
+              ),
+            ),
+
             const SizedBox(height: 24),
 
             // Detail Level Slider

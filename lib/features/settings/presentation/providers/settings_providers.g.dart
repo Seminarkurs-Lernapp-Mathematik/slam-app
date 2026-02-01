@@ -6,7 +6,7 @@ part of 'settings_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedThemeHash() => r'fc936d63e0962d98ff214a4e1304b9f79f7c0ffa';
+String _$selectedThemeHash() => r'1bf2a6af7e27c9530c4629ac97ef5bf19730f677';
 
 /// Selected Theme Provider
 ///
@@ -24,7 +24,7 @@ final selectedThemeProvider =
 );
 
 typedef _$SelectedTheme = AutoDisposeNotifier<AppThemePreset>;
-String _$aIConfigNotifierHash() => r'263e902ad3ef023e813704e1d7d41a68bb2fad95';
+String _$aIConfigNotifierHash() => r'59c3ddb034ad7e7500490a8db67d8f2c2e5930fc';
 
 /// AI Configuration Provider
 ///
