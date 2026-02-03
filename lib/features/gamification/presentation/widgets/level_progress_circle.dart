@@ -109,7 +109,7 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          widget.stats.level.toString(),
+                          widget.stats.calculatedLevel.toString(),
                           style: theme.textTheme.displayLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.primary,

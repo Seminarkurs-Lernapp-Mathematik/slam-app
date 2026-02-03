@@ -470,7 +470,14 @@ export async function onRequestPost(context) {
       6: 60, 7: 75, 8: 90, 9: 110, 10: 130
     }
 
+    // Coin calculation based on difficulty
+    const BASE_COINS = {
+      1: 1, 2: 1, 3: 2, 4: 2, 5: 3,
+      6: 3, 7: 4, 8: 4, 9: 5, 10: 5
+    }
+
     let baseXp = BASE_XP[questionData.difficulty] || 20
+    let baseCoins = BASE_COINS[questionData.difficulty] || 2
 
     // If skipped
     if (skipped) {
@@ -481,11 +488,17 @@ export async function onRequestPost(context) {
           feedback: 'Frage übersprungen',
           correctAnswer,
           xpEarned: 0,
+          coinsEarned: 0,
           xpBreakdown: {
             base: baseXp,
             hintPenalty: -baseXp,
             timePenalty: 0,
             bonuses: 0,
+            total: 0
+          },
+          coinBreakdown: {
+            base: baseCoins,
+            multiplier: 0,
             total: 0
           },
           misconceptions: [],
@@ -511,11 +524,17 @@ export async function onRequestPost(context) {
           feedback,
           correctAnswer,
           xpEarned: 0,
+          coinsEarned: 0,
           xpBreakdown: {
             base: baseXp,
             hintPenalty: 0,
             timePenalty: 0,
             bonuses: 0,
+            total: 0
+          },
+          coinBreakdown: {
+            base: baseCoins,
+            multiplier: 0,
             total: 0
           },
           misconceptions,
@@ -566,6 +585,33 @@ export async function onRequestPost(context) {
 
     const totalXp = Math.round(xp)
 
+    // Calculate coins for correct answer
+    let coinMultiplier = 1.0
+    let coinBonuses = []
+
+    // First question of the day bonus (2x multiplier)
+    // Note: firstQuestionToday should be passed from client
+    const isFirstQuestion = body.isFirstQuestionToday || false
+    if (isFirstQuestion) {
+      coinMultiplier *= 2.0
+      coinBonuses.push({ type: 'firstQuestion', bonus: 'x2' })
+    }
+
+    // Streak bonus for coins (5+ days: +50%)
+    if (body.dailyStreak && body.dailyStreak >= 5) {
+      coinMultiplier *= 1.5
+      coinBonuses.push({ type: 'streakBonus', bonus: '+50%' })
+    }
+
+    // Perfect answer bonus (no hints, fast time: +25%)
+    const isPerfect = (hintsUsed || 0) === 0 && timeSpent && timeSpent < expectedTime * 0.5
+    if (isPerfect) {
+      coinMultiplier *= 1.25
+      coinBonuses.push({ type: 'perfect', bonus: '+25%' })
+    }
+
+    const totalCoins = Math.round(baseCoins * coinMultiplier)
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -573,6 +619,7 @@ export async function onRequestPost(context) {
         feedback,
         correctAnswer,
         xpEarned: totalXp,
+        coinsEarned: totalCoins,
         xpBreakdown: {
           base: baseXp,
           hintPenalty: -Math.round(hintPenalty),
@@ -581,6 +628,12 @@ export async function onRequestPost(context) {
           streakBonus: Math.round(streakBonus),
           equivalenceBonus: Math.round(equivalenceBonus),
           total: totalXp
+        },
+        coinBreakdown: {
+          base: baseCoins,
+          multiplier: coinMultiplier,
+          bonuses: coinBonuses,
+          total: totalCoins
         },
         misconceptions: [],
         equivalenceResult
@@ -608,12 +661,13 @@ export async function onRequestGet(context) {
       method: 'POST',
       description: 'Evaluates user answer with semantic math comparison and misconception detection',
       requiredFields: ['questionData', 'userAnswer'],
-      optionalFields: ['hintsUsed', 'timeSpent', 'skipped', 'correctStreak', 'streakFreezeAvailable'],
+      optionalFields: ['hintsUsed', 'timeSpent', 'skipped', 'correctStreak', 'streakFreezeAvailable', 'isFirstQuestionToday', 'dailyStreak'],
       features: [
         'Semantic math equivalence (x+1 = 1+x)',
         'Numeric equivalence (1/2 = 0.5)',
         'Misconception detection',
         'XP calculation with bonuses',
+        'Coin calculation with multipliers',
         'Streak freeze support'
       ]
     }),

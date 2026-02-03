@@ -91,20 +91,24 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Coins (tappable, opens shop)
+          GestureDetector(
+            onTap: () => context.go('/shop'),
+            child: _buildStatChip(
+              context,
+              icon: Icons.monetization_on,
+              value: _formatNumber(stats.coins),
+              color: Colors.amber.shade700,
+              showBorder: true,
+            ),
+          ),
+          const SizedBox(width: 8),
+
           // XP
           _buildStatChip(
             context,
             icon: Icons.star,
-            value: stats.totalXp.toString(),
-            color: Colors.amber,
-          ),
-          const SizedBox(width: 8),
-
-          // Level
-          _buildStatChip(
-            context,
-            icon: Icons.military_tech,
-            value: stats.level.toString(),
+            value: _formatNumber(stats.totalXp),
             color: theme.colorScheme.primary,
           ),
           const SizedBox(width: 8),
@@ -121,12 +125,23 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     );
   }
 
+  /// Format number with K suffix for large values
+  String _formatNumber(int number) {
+    if (number >= 10000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    } else if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    }
+    return number.toString();
+  }
+
   /// Build Individual Stat Chip
   Widget _buildStatChip(
     BuildContext context, {
     required IconData icon,
     required String value,
     required Color color,
+    bool showBorder = false,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -134,8 +149,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1,
+          color: color.withValues(alpha: showBorder ? 0.5 : 0.3),
+          width: showBorder ? 1.5 : 1,
         ),
       ),
       child: Row(
@@ -252,6 +267,15 @@ class _CommandCenterSheet extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   context.go('/progress');
+                },
+              ),
+              _buildActionButton(
+                context,
+                icon: Icons.storefront,
+                label: 'Shop',
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/shop');
                 },
               ),
               _buildActionButton(

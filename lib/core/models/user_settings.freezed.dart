@@ -527,10 +527,22 @@ AIModelSettings _$AIModelSettingsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$AIModelSettings {
-  int get detailLevel => throw _privateConstructorUsedError; // 0-100
+  int get detailLevel => throw _privateConstructorUsedError; // 1-10
   double get temperature => throw _privateConstructorUsedError; // 0-1
-  int get helpfulness => throw _privateConstructorUsedError; // 0-100
+  int get helpfulness => throw _privateConstructorUsedError; // 1-10
   bool get autoMode => throw _privateConstructorUsedError;
+  String get aiProvider =>
+      throw _privateConstructorUsedError; // 'claude' or 'gemini'
+  String? get claudeApiKey => throw _privateConstructorUsedError;
+  String? get geminiApiKey => throw _privateConstructorUsedError;
+  String get geminiFastModel => throw _privateConstructorUsedError;
+  String get geminiModel => throw _privateConstructorUsedError;
+  String get geminiSmartModel => throw _privateConstructorUsedError;
+  String get modelMode =>
+      throw _privateConstructorUsedError; // 'fast', 'standard', 'smart'
+  String? get selectedModel =>
+      throw _privateConstructorUsedError; // Current active model (derived from provider + mode)
+  bool get showAiAssessments => throw _privateConstructorUsedError;
 
   /// Serializes this AIModelSettings to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -549,7 +561,19 @@ abstract class $AIModelSettingsCopyWith<$Res> {
       _$AIModelSettingsCopyWithImpl<$Res, AIModelSettings>;
   @useResult
   $Res call(
-      {int detailLevel, double temperature, int helpfulness, bool autoMode});
+      {int detailLevel,
+      double temperature,
+      int helpfulness,
+      bool autoMode,
+      String aiProvider,
+      String? claudeApiKey,
+      String? geminiApiKey,
+      String geminiFastModel,
+      String geminiModel,
+      String geminiSmartModel,
+      String modelMode,
+      String? selectedModel,
+      bool showAiAssessments});
 }
 
 /// @nodoc
@@ -571,6 +595,15 @@ class _$AIModelSettingsCopyWithImpl<$Res, $Val extends AIModelSettings>
     Object? temperature = null,
     Object? helpfulness = null,
     Object? autoMode = null,
+    Object? aiProvider = null,
+    Object? claudeApiKey = freezed,
+    Object? geminiApiKey = freezed,
+    Object? geminiFastModel = null,
+    Object? geminiModel = null,
+    Object? geminiSmartModel = null,
+    Object? modelMode = null,
+    Object? selectedModel = freezed,
+    Object? showAiAssessments = null,
   }) {
     return _then(_value.copyWith(
       detailLevel: null == detailLevel
@@ -589,6 +622,42 @@ class _$AIModelSettingsCopyWithImpl<$Res, $Val extends AIModelSettings>
           ? _value.autoMode
           : autoMode // ignore: cast_nullable_to_non_nullable
               as bool,
+      aiProvider: null == aiProvider
+          ? _value.aiProvider
+          : aiProvider // ignore: cast_nullable_to_non_nullable
+              as String,
+      claudeApiKey: freezed == claudeApiKey
+          ? _value.claudeApiKey
+          : claudeApiKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      geminiApiKey: freezed == geminiApiKey
+          ? _value.geminiApiKey
+          : geminiApiKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      geminiFastModel: null == geminiFastModel
+          ? _value.geminiFastModel
+          : geminiFastModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      geminiModel: null == geminiModel
+          ? _value.geminiModel
+          : geminiModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      geminiSmartModel: null == geminiSmartModel
+          ? _value.geminiSmartModel
+          : geminiSmartModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      modelMode: null == modelMode
+          ? _value.modelMode
+          : modelMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      selectedModel: freezed == selectedModel
+          ? _value.selectedModel
+          : selectedModel // ignore: cast_nullable_to_non_nullable
+              as String?,
+      showAiAssessments: null == showAiAssessments
+          ? _value.showAiAssessments
+          : showAiAssessments // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -602,7 +671,19 @@ abstract class _$$AIModelSettingsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int detailLevel, double temperature, int helpfulness, bool autoMode});
+      {int detailLevel,
+      double temperature,
+      int helpfulness,
+      bool autoMode,
+      String aiProvider,
+      String? claudeApiKey,
+      String? geminiApiKey,
+      String geminiFastModel,
+      String geminiModel,
+      String geminiSmartModel,
+      String modelMode,
+      String? selectedModel,
+      bool showAiAssessments});
 }
 
 /// @nodoc
@@ -622,6 +703,15 @@ class __$$AIModelSettingsImplCopyWithImpl<$Res>
     Object? temperature = null,
     Object? helpfulness = null,
     Object? autoMode = null,
+    Object? aiProvider = null,
+    Object? claudeApiKey = freezed,
+    Object? geminiApiKey = freezed,
+    Object? geminiFastModel = null,
+    Object? geminiModel = null,
+    Object? geminiSmartModel = null,
+    Object? modelMode = null,
+    Object? selectedModel = freezed,
+    Object? showAiAssessments = null,
   }) {
     return _then(_$AIModelSettingsImpl(
       detailLevel: null == detailLevel
@@ -640,6 +730,42 @@ class __$$AIModelSettingsImplCopyWithImpl<$Res>
           ? _value.autoMode
           : autoMode // ignore: cast_nullable_to_non_nullable
               as bool,
+      aiProvider: null == aiProvider
+          ? _value.aiProvider
+          : aiProvider // ignore: cast_nullable_to_non_nullable
+              as String,
+      claudeApiKey: freezed == claudeApiKey
+          ? _value.claudeApiKey
+          : claudeApiKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      geminiApiKey: freezed == geminiApiKey
+          ? _value.geminiApiKey
+          : geminiApiKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      geminiFastModel: null == geminiFastModel
+          ? _value.geminiFastModel
+          : geminiFastModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      geminiModel: null == geminiModel
+          ? _value.geminiModel
+          : geminiModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      geminiSmartModel: null == geminiSmartModel
+          ? _value.geminiSmartModel
+          : geminiSmartModel // ignore: cast_nullable_to_non_nullable
+              as String,
+      modelMode: null == modelMode
+          ? _value.modelMode
+          : modelMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      selectedModel: freezed == selectedModel
+          ? _value.selectedModel
+          : selectedModel // ignore: cast_nullable_to_non_nullable
+              as String?,
+      showAiAssessments: null == showAiAssessments
+          ? _value.showAiAssessments
+          : showAiAssessments // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -648,10 +774,19 @@ class __$$AIModelSettingsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AIModelSettingsImpl extends _AIModelSettings {
   const _$AIModelSettingsImpl(
-      {this.detailLevel = 50,
-      this.temperature = 0.5,
-      this.helpfulness = 50,
-      this.autoMode = true})
+      {this.detailLevel = 5,
+      this.temperature = 0.7,
+      this.helpfulness = 7,
+      this.autoMode = true,
+      this.aiProvider = 'gemini',
+      this.claudeApiKey,
+      this.geminiApiKey,
+      this.geminiFastModel = 'gemini-2.0-flash-lite',
+      this.geminiModel = 'gemini-2.0-flash',
+      this.geminiSmartModel = 'gemini-2.5-pro-preview-05-06',
+      this.modelMode = 'fast',
+      this.selectedModel,
+      this.showAiAssessments = false})
       : super._();
 
   factory _$AIModelSettingsImpl.fromJson(Map<String, dynamic> json) =>
@@ -660,7 +795,7 @@ class _$AIModelSettingsImpl extends _AIModelSettings {
   @override
   @JsonKey()
   final int detailLevel;
-// 0-100
+// 1-10
   @override
   @JsonKey()
   final double temperature;
@@ -668,14 +803,41 @@ class _$AIModelSettingsImpl extends _AIModelSettings {
   @override
   @JsonKey()
   final int helpfulness;
-// 0-100
+// 1-10
   @override
   @JsonKey()
   final bool autoMode;
+  @override
+  @JsonKey()
+  final String aiProvider;
+// 'claude' or 'gemini'
+  @override
+  final String? claudeApiKey;
+  @override
+  final String? geminiApiKey;
+  @override
+  @JsonKey()
+  final String geminiFastModel;
+  @override
+  @JsonKey()
+  final String geminiModel;
+  @override
+  @JsonKey()
+  final String geminiSmartModel;
+  @override
+  @JsonKey()
+  final String modelMode;
+// 'fast', 'standard', 'smart'
+  @override
+  final String? selectedModel;
+// Current active model (derived from provider + mode)
+  @override
+  @JsonKey()
+  final bool showAiAssessments;
 
   @override
   String toString() {
-    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode)';
+    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode, aiProvider: $aiProvider, claudeApiKey: $claudeApiKey, geminiApiKey: $geminiApiKey, geminiFastModel: $geminiFastModel, geminiModel: $geminiModel, geminiSmartModel: $geminiSmartModel, modelMode: $modelMode, selectedModel: $selectedModel, showAiAssessments: $showAiAssessments)';
   }
 
   @override
@@ -690,13 +852,44 @@ class _$AIModelSettingsImpl extends _AIModelSettings {
             (identical(other.helpfulness, helpfulness) ||
                 other.helpfulness == helpfulness) &&
             (identical(other.autoMode, autoMode) ||
-                other.autoMode == autoMode));
+                other.autoMode == autoMode) &&
+            (identical(other.aiProvider, aiProvider) ||
+                other.aiProvider == aiProvider) &&
+            (identical(other.claudeApiKey, claudeApiKey) ||
+                other.claudeApiKey == claudeApiKey) &&
+            (identical(other.geminiApiKey, geminiApiKey) ||
+                other.geminiApiKey == geminiApiKey) &&
+            (identical(other.geminiFastModel, geminiFastModel) ||
+                other.geminiFastModel == geminiFastModel) &&
+            (identical(other.geminiModel, geminiModel) ||
+                other.geminiModel == geminiModel) &&
+            (identical(other.geminiSmartModel, geminiSmartModel) ||
+                other.geminiSmartModel == geminiSmartModel) &&
+            (identical(other.modelMode, modelMode) ||
+                other.modelMode == modelMode) &&
+            (identical(other.selectedModel, selectedModel) ||
+                other.selectedModel == selectedModel) &&
+            (identical(other.showAiAssessments, showAiAssessments) ||
+                other.showAiAssessments == showAiAssessments));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, detailLevel, temperature, helpfulness, autoMode);
+  int get hashCode => Object.hash(
+      runtimeType,
+      detailLevel,
+      temperature,
+      helpfulness,
+      autoMode,
+      aiProvider,
+      claudeApiKey,
+      geminiApiKey,
+      geminiFastModel,
+      geminiModel,
+      geminiSmartModel,
+      modelMode,
+      selectedModel,
+      showAiAssessments);
 
   /// Create a copy of AIModelSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -720,20 +913,48 @@ abstract class _AIModelSettings extends AIModelSettings {
       {final int detailLevel,
       final double temperature,
       final int helpfulness,
-      final bool autoMode}) = _$AIModelSettingsImpl;
+      final bool autoMode,
+      final String aiProvider,
+      final String? claudeApiKey,
+      final String? geminiApiKey,
+      final String geminiFastModel,
+      final String geminiModel,
+      final String geminiSmartModel,
+      final String modelMode,
+      final String? selectedModel,
+      final bool showAiAssessments}) = _$AIModelSettingsImpl;
   const _AIModelSettings._() : super._();
 
   factory _AIModelSettings.fromJson(Map<String, dynamic> json) =
       _$AIModelSettingsImpl.fromJson;
 
   @override
-  int get detailLevel; // 0-100
+  int get detailLevel; // 1-10
   @override
   double get temperature; // 0-1
   @override
-  int get helpfulness; // 0-100
+  int get helpfulness; // 1-10
   @override
   bool get autoMode;
+  @override
+  String get aiProvider; // 'claude' or 'gemini'
+  @override
+  String? get claudeApiKey;
+  @override
+  String? get geminiApiKey;
+  @override
+  String get geminiFastModel;
+  @override
+  String get geminiModel;
+  @override
+  String get geminiSmartModel;
+  @override
+  String get modelMode; // 'fast', 'standard', 'smart'
+  @override
+  String?
+      get selectedModel; // Current active model (derived from provider + mode)
+  @override
+  bool get showAiAssessments;
 
   /// Create a copy of AIModelSettings
   /// with the given fields replaced by the non-null parameter values.

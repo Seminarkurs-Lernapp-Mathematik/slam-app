@@ -199,7 +199,7 @@ class ProgressScreen extends ConsumerWidget {
             context,
             icon: Icons.emoji_events,
             title: 'Level',
-            value: stats.level.toString(),
+            value: stats.calculatedLevel.toString(),
             color: theme.colorScheme.secondary,
           ),
         ),
@@ -272,7 +272,7 @@ class ProgressScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Level ${stats.level}',
+                      'Level ${stats.calculatedLevel}',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ],
@@ -341,7 +341,7 @@ class ProgressScreen extends ConsumerWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Noch ${stats.xpNeededForNextLevel} XP bis Level ${stats.level + 1}',
+              'Noch ${stats.xpNeededForNextLevel} XP bis Level ${stats.calculatedLevel + 1}',
               style: theme.textTheme.bodyMedium,
             ),
           ),

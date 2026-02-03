@@ -78,6 +78,7 @@ class AIService {
     required int hintsUsed,
     required int timeSpentSeconds,
     required int correctStreak,
+    bool isFirstQuestionToday = false,
   }) async {
     try {
       final response = await _dio.post(
@@ -91,6 +92,7 @@ class AIService {
           'hintsUsed': hintsUsed,
           'timeSpent': timeSpentSeconds,
           'correctStreak': correctStreak,
+          'isFirstQuestionToday': isFirstQuestionToday,
         },
       );
 
@@ -378,6 +380,7 @@ class AnswerEvaluation {
   final String feedback;
   final List<Misconception>? misconceptions;
   final int xpEarned;
+  final int coinsEarned;
   final XPBreakdown? xpBreakdown;
 
   AnswerEvaluation({
@@ -386,6 +389,7 @@ class AnswerEvaluation {
     required this.feedback,
     this.misconceptions,
     required this.xpEarned,
+    required this.coinsEarned,
     this.xpBreakdown,
   });
 
@@ -398,6 +402,7 @@ class AnswerEvaluation {
           ?.map((m) => Misconception.fromJson(m))
           .toList(),
       xpEarned: json['xpEarned'] as int? ?? 0,
+      coinsEarned: json['coinsEarned'] as int? ?? 0,
       xpBreakdown: json['xpBreakdown'] != null
           ? XPBreakdown.fromJson(json['xpBreakdown'])
           : null,

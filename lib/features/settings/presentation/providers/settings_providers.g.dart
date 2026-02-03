@@ -6,9 +6,26 @@ part of 'settings_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedThemeHash() => r'1bf2a6af7e27c9530c4629ac97ef5bf19730f677';
+String _$appSettingsNotifierHash() =>
+    r'5b80e6d8436f2e7e32e53ac07228c149a56aae60';
 
-/// Selected Theme Provider
+/// See also [AppSettingsNotifier].
+@ProviderFor(AppSettingsNotifier)
+final appSettingsNotifierProvider =
+    AutoDisposeNotifierProvider<AppSettingsNotifier, AppSettings>.internal(
+  AppSettingsNotifier.new,
+  name: r'appSettingsNotifierProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$appSettingsNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AppSettingsNotifier = AutoDisposeNotifier<AppSettings>;
+String _$selectedThemeHash() => r'e00d40fccb484ce7cf51d211722f1ac8bd93279f';
+
+/// Selected Theme Provider (legacy - now uses AppSettingsNotifier)
 ///
 /// Copied from [SelectedTheme].
 @ProviderFor(SelectedTheme)
@@ -24,9 +41,9 @@ final selectedThemeProvider =
 );
 
 typedef _$SelectedTheme = AutoDisposeNotifier<AppThemePreset>;
-String _$aIConfigNotifierHash() => r'59c3ddb034ad7e7500490a8db67d8f2c2e5930fc';
+String _$aIConfigNotifierHash() => r'2d5344399353fadc5d3a3da5e17588b41da21899';
 
-/// AI Configuration Provider
+/// AI Config Provider (legacy wrapper)
 ///
 /// Copied from [AIConfigNotifier].
 @ProviderFor(AIConfigNotifier)
@@ -43,9 +60,9 @@ final aIConfigNotifierProvider =
 
 typedef _$AIConfigNotifier = AutoDisposeNotifier<AIConfig>;
 String _$educationConfigNotifierHash() =>
-    r'6a1a5b9d4221e4b47e3e749e32efd8834df47c6c';
+    r'5240e895ff7dc59ec0a4a3bc20fc28fd50a2edac';
 
-/// Education Configuration Provider
+/// Education Configuration Provider (legacy wrapper)
 ///
 /// Copied from [EducationConfigNotifier].
 @ProviderFor(EducationConfigNotifier)

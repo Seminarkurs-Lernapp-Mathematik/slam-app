@@ -94,12 +94,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
         'isCorrect': evaluation.isCorrect,
         'feedback': evaluation.feedback,
         'xpEarned': evaluation.xpEarned,
+        'coinsEarned': evaluation.coinsEarned,
         'xpBreakdown': evaluation.xpBreakdown,
         'misconceptions': evaluation.misconceptions,
       });
 
       // Update stats
-      _updateStats(evaluation.isCorrect, evaluation.xpEarned);
+      _updateStats(evaluation.isCorrect, evaluation.xpEarned, evaluation.coinsEarned);
 
       // Update adaptive difficulty
       _updateAdaptiveDifficulty(evaluation.isCorrect);
@@ -116,7 +117,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
       }
 
       // Save progress to Firestore
-      _saveProgress(evaluation.isCorrect, evaluation.xpEarned);
+      _saveProgress(evaluation.isCorrect, evaluation.xpEarned, evaluation.coinsEarned);
 
       // Auto-advance after 3 seconds
       _autoAdvanceTimer = Timer(const Duration(seconds: 3), () {
@@ -132,7 +133,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
     }
   }
 
-  void _updateStats(bool isCorrect, int xpEarned) {
+  void _updateStats(bool isCorrect, int xpEarned, int coinsEarned) {
     // Update questions answered
     ref.read(liveFeedQuestionsAnsweredProvider.notifier).increment();
 
@@ -149,11 +150,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
       ref.read(consecutiveCorrectProvider.notifier).reset();
     }
 
-    // Update user stats (XP) in Firestore
-    _updateUserXP(xpEarned);
+    // Update user stats (XP and Coins) in Firestore
+    _updateUserStats(xpEarned, coinsEarned);
   }
 
-  Future<void> _updateUserXP(int xpEarned) async {
+  Future<void> _updateUserStats(int xpEarned, int coinsEarned) async {
     final userId = ref.read(authStateChangesProvider).value?.uid;
     if (userId == null) return;
 
@@ -162,11 +163,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
       final currentStats = await firestoreService.getUserStats(userId);
 
       if (currentStats != null) {
-        final updatedStats = currentStats.addXp(xpEarned);
+        final updatedStats = currentStats.addXp(xpEarned).addCoins(coinsEarned);
         await firestoreService.updateUserStats(userId, updatedStats);
       }
     } catch (e) {
-      debugPrint('Error updating user XP: $e');
+      debugPrint('Error updating user stats: $e');
     }
   }
 
@@ -185,7 +186,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
     }
   }
 
-  Future<void> _saveProgress(bool isCorrect, int xpEarned) async {
+  Future<void> _saveProgress(bool isCorrect, int xpEarned, int coinsEarned) async {
     final userId = ref.read(authStateChangesProvider).value?.uid;
     if (userId == null) return;
 
@@ -211,6 +212,9 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
         userId: userId,
         progress: progress,
       );
+
+      // Note: Coins earned is tracked separately via UserStats updates
+      debugPrint('Coins earned: $coinsEarned');
     } catch (e) {
       debugPrint('Error saving question progress: $e');
     }
@@ -280,9 +284,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Chip(
-                      avatar: const Icon(Icons.timer_outlined, size: 18),
-                      label: Text(_formatTime(_timeSpentSeconds)),
+                    _AnimatedTimerChip(
+                      seconds: _timeSpentSeconds,
                     ),
                     Chip(
                       avatar: const Icon(Icons.speed, size: 18),
@@ -384,6 +387,104 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
             ),
       );
     }
+  }
+}
+
+/// Animated Timer Chip with smooth sliding animation
+class _AnimatedTimerChip extends StatefulWidget {
+  final int seconds;
+
+  const _AnimatedTimerChip({required this.seconds});
+
+  @override
+  State<_AnimatedTimerChip> createState() => _AnimatedTimerChipState();
+}
+
+class _AnimatedTimerChipState extends State<_AnimatedTimerChip>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  int _previousSeconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _previousSeconds = widget.seconds;
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(_AnimatedTimerChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.seconds != widget.seconds) {
+      _controller.forward(from: 0.0);
+      _previousSeconds = oldWidget.seconds;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      avatar: const Icon(Icons.timer_outlined, size: 18),
+      label: SizedBox(
+        width: 42,
+        height: 20,
+        child: ClipRect(
+          child: Stack(
+            children: [
+              // Previous time sliding out (upward)
+              if (_previousSeconds != widget.seconds)
+                SlideTransition(
+                  position: Tween<Offset>(
+                    begin: Offset.zero,
+                    end: const Offset(0, 1),
+                  ).animate(CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.easeOutCubic,
+                  )),
+                  child: Opacity(
+                    opacity: 1.0 - _controller.value,
+                    child: Text(
+                      _formatTime(_previousSeconds),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
+              // Current time sliding in (from top)
+              SlideTransition(
+                position: _slideAnimation,
+                child: Text(
+                  _formatTime(widget.seconds),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

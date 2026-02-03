@@ -3,12 +3,12 @@ import 'dart:math';
 /// Level System & XP Constants
 ///
 /// Basiert auf dem Gamification-System aus der React-App.
-/// Exponentielles Level-System mit 11 Levels.
+/// Exponentielles Level-System mit 20 Levels.
 class LevelSystem {
   LevelSystem._(); // Private constructor
 
   // Max Level
-  static const int maxLevel = 11;
+  static const int maxLevel = 20;
 
   // Base XP for Level 2
   static const int baseXP = 100;
@@ -100,6 +100,15 @@ class LevelSystem {
     9: 'Mythisch',
     10: 'Göttlich',
     11: 'Transzendent',
+    12: 'Unsterblich',
+    13: 'Allwissend',
+    14: 'Universell',
+    15: 'Kosmisch',
+    16: 'Zeitlos',
+    17: 'Unendlich',
+    18: 'Absolut',
+    19: 'Uranfänglich',
+    20: 'Singularität',
   };
 
   /// Get level title
@@ -189,5 +198,76 @@ class XPSystem {
   /// Get base XP for difficulty
   static int getBaseXP(int difficulty) {
     return baseXP[difficulty.clamp(1, 10)] ?? 10;
+  }
+}
+
+/// Coin System Constants
+///
+/// Coins are a separate currency from XP used for cosmetic purchases
+/// (themes) and streak freezes.
+class CoinSystem {
+  CoinSystem._(); // Private constructor
+
+  // Base coins by question difficulty level
+  static const Map<int, int> baseCoins = {
+    1: 1, // Level 1-2
+    2: 1,
+    3: 2, // Level 3-4
+    4: 2,
+    5: 3, // Level 5-6
+    6: 3,
+    7: 4, // Level 7-8
+    8: 4,
+    9: 5, // Level 9-10
+    10: 5,
+  };
+
+  // Multipliers
+  static const double firstQuestionBonus = 2.0; // 2x coins for first question
+  static const double streakBonus = 0.5; // +50% for 5+ streak
+  static const double perfectAnswerBonus = 0.25; // +25% for perfect answer
+
+  /// Calculate coins earned for answering a question
+  ///
+  /// Formula:
+  /// baseCoins * firstQuestionMultiplier + streakBonus + perfectBonus
+  ///
+  /// Example:
+  /// - Difficulty 5: 3 base coins
+  /// - First question: * 2.0 = 6 coins
+  /// - 5+ streak: + 1.5 coins
+  /// - Perfect answer (no hints, fast): + 0.75 coins
+  /// - Total: ~8 coins
+  static int calculateCoins({
+    required int difficulty,
+    required bool isFirstQuestionToday,
+    required int currentStreak,
+    required bool isPerfectAnswer, // No hints used, answered quickly
+  }) {
+    // Get base coins
+    final base = baseCoins[difficulty.clamp(1, 10)] ?? 1;
+    double coins = base.toDouble();
+
+    // First question bonus
+    if (isFirstQuestionToday) {
+      coins *= firstQuestionBonus;
+    }
+
+    // Streak bonus (5+ days)
+    if (currentStreak >= 5) {
+      coins += coins * streakBonus;
+    }
+
+    // Perfect answer bonus
+    if (isPerfectAnswer) {
+      coins += coins * perfectAnswerBonus;
+    }
+
+    return coins.round();
+  }
+
+  /// Get base coins for difficulty
+  static int getBaseCoins(int difficulty) {
+    return baseCoins[difficulty.clamp(1, 10)] ?? 1;
   }
 }

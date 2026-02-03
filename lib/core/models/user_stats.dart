@@ -20,6 +20,7 @@ class UserStats with _$UserStats {
     @Default(0) int totalXp,
     @Default(0) int streakFreezes, // Number of streak freezes owned
     @Default(0) int xpNeededUntil, // XP needed to reach next level threshold
+    @Default(0) int coins, // Coins for cosmetics and streak freezes
     String? lastActiveDate, // ISO date string "2024-01-21"
   }) = _UserStats;
 
@@ -63,6 +64,7 @@ class UserStats with _$UserStats {
       totalXp: 0,
       streakFreezes: 0,
       xpNeededUntil: 100,
+      coins: 0,
       lastActiveDate: null,
     );
   }
@@ -139,5 +141,31 @@ class UserStats with _$UserStats {
     final difference = today.difference(lastDate).inDays;
 
     return difference >= 1;
+  }
+
+  /// Add coins (earned from answering questions)
+  UserStats addCoins(int earnedCoins) {
+    return copyWith(coins: coins + earnedCoins);
+  }
+
+  /// Spend coins (for themes, streak freezes, etc.)
+  UserStats spendCoins(int amount, String reason) {
+    if (coins < amount) {
+      throw Exception('Nicht genug Münzen. Benötigt: $amount, Verfügbar: $coins');
+    }
+
+    return copyWith(coins: coins - amount);
+  }
+
+  /// Purchase streak freeze with coins (costs 50 coins)
+  UserStats purchaseStreakFreezeWithCoins() {
+    if (coins < 50) {
+      throw Exception('Nicht genug Münzen für Streak Freeze (benötigt 50 Münzen)');
+    }
+
+    return copyWith(
+      coins: coins - 50,
+      streakFreezes: streakFreezes + 1,
+    );
   }
 }

@@ -46,10 +46,21 @@ Map<String, dynamic> _$$ThemeSettingsImplToJson(_$ThemeSettingsImpl instance) =>
 _$AIModelSettingsImpl _$$AIModelSettingsImplFromJson(
         Map<String, dynamic> json) =>
     _$AIModelSettingsImpl(
-      detailLevel: (json['detailLevel'] as num?)?.toInt() ?? 50,
-      temperature: (json['temperature'] as num?)?.toDouble() ?? 0.5,
-      helpfulness: (json['helpfulness'] as num?)?.toInt() ?? 50,
+      detailLevel: (json['detailLevel'] as num?)?.toInt() ?? 5,
+      temperature: (json['temperature'] as num?)?.toDouble() ?? 0.7,
+      helpfulness: (json['helpfulness'] as num?)?.toInt() ?? 7,
       autoMode: json['autoMode'] as bool? ?? true,
+      aiProvider: json['aiProvider'] as String? ?? 'gemini',
+      claudeApiKey: json['claudeApiKey'] as String?,
+      geminiApiKey: json['geminiApiKey'] as String?,
+      geminiFastModel:
+          json['geminiFastModel'] as String? ?? 'gemini-2.0-flash-lite',
+      geminiModel: json['geminiModel'] as String? ?? 'gemini-2.0-flash',
+      geminiSmartModel:
+          json['geminiSmartModel'] as String? ?? 'gemini-2.5-pro-preview-05-06',
+      modelMode: json['modelMode'] as String? ?? 'fast',
+      selectedModel: json['selectedModel'] as String?,
+      showAiAssessments: json['showAiAssessments'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$AIModelSettingsImplToJson(
@@ -59,4 +70,13 @@ Map<String, dynamic> _$$AIModelSettingsImplToJson(
       'temperature': instance.temperature,
       'helpfulness': instance.helpfulness,
       'autoMode': instance.autoMode,
+      'aiProvider': instance.aiProvider,
+      'claudeApiKey': instance.claudeApiKey,
+      'geminiApiKey': instance.geminiApiKey,
+      'geminiFastModel': instance.geminiFastModel,
+      'geminiModel': instance.geminiModel,
+      'geminiSmartModel': instance.geminiSmartModel,
+      'modelMode': instance.modelMode,
+      'selectedModel': instance.selectedModel,
+      'showAiAssessments': instance.showAiAssessments,
     };

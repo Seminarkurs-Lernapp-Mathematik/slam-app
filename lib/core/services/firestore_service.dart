@@ -645,6 +645,71 @@ class FirestoreService {
       return snapshot.docs.map((doc) => doc.data()).toList();
     });
   }
+
+  // ============================================================================
+  // THEME UNLOCKS
+  // ============================================================================
+
+  /// Get theme unlocks
+  Future<Map<String, dynamic>?> getThemeUnlocks(String userId) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .get();
+
+    if (!doc.exists) return null;
+
+    final data = doc.data();
+    return data?['themeUnlocks'] as Map<String, dynamic>?;
+  }
+
+  /// Unlock theme
+  Future<void> unlockTheme({
+    required String userId,
+    required String themeName,
+  }) async {
+    final userRef = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId);
+
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+
+      if (!snapshot.exists) {
+        throw Exception('User document does not exist');
+      }
+
+      final data = snapshot.data() ?? {};
+      final themeUnlocks = data['themeUnlocks'] as Map<String, dynamic>? ?? {};
+      final unlockedThemes = List<String>.from(themeUnlocks['unlockedThemes'] ?? []);
+
+      if (!unlockedThemes.contains(themeName)) {
+        unlockedThemes.add(themeName);
+
+        transaction.update(userRef, {
+          'themeUnlocks.unlockedThemes': unlockedThemes,
+        });
+      }
+    });
+  }
+
+  /// Stream theme unlocks
+  Stream<Map<String, dynamic>> themeUnlocksStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) {
+        return {'unlockedThemes': ['sunsetOrange']};
+      }
+
+      final data = snapshot.data();
+      final themeUnlocks = data?['themeUnlocks'] as Map<String, dynamic>?;
+
+      return themeUnlocks ?? {'unlockedThemes': ['sunsetOrange']};
+    });
+  }
 }
 
 /// Firestore Service Provider

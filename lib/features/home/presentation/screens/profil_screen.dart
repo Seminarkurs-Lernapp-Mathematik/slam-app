@@ -262,7 +262,7 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildStatRow(context, 'Level', stats.level.toString(), Icons.military_tech, theme.colorScheme.primary),
+              _buildStatRow(context, 'Level', stats.calculatedLevel.toString(), Icons.military_tech, theme.colorScheme.primary),
               const Divider(),
               _buildStatRow(context, 'Gesamt XP', stats.totalXp.toString(), Icons.star, Colors.amber),
               const Divider(),

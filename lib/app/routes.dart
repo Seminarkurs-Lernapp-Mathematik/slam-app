@@ -3,15 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/email_verification_screen.dart';
 import '../features/auth/presentation/screens/password_reset_screen.dart';
 import '../features/gamification/presentation/screens/progress_screen.dart';
+import '../features/gamification/presentation/screens/shop_screen.dart';
 import '../features/home/presentation/widgets/main_navigation.dart';
 import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
 import '../features/question_session/presentation/screens/question_session_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
+import '../core/services/auth_service.dart';
 
 part 'routes.g.dart';
 
@@ -56,10 +59,47 @@ CustomTransitionPage<void> buildPageWithExpressiveTransition({
 /// App Routes Provider
 @riverpod
 GoRouter router(Ref ref) {
+  final authService = ref.watch(authServiceProvider);
+
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/',
     debugLogDiagnostics: true,
+    redirect: (BuildContext context, GoRouterState state) {
+      final user = authService.currentUser;
+      final isAuthenticated = user != null && user.emailVerified;
+      final isOnAuthRoute = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register' ||
+          state.matchedLocation == '/password-reset' ||
+          state.matchedLocation == '/verify-email';
+      final isOnSplash = state.matchedLocation == '/';
+
+      // Allow splash screen
+      if (isOnSplash) return null;
+
+      // If authenticated and trying to access auth routes, redirect to home
+      if (isAuthenticated && isOnAuthRoute) {
+        return '/home';
+      }
+
+      // If not authenticated and trying to access protected routes, redirect to login
+      if (!isAuthenticated && !isOnAuthRoute && !isOnSplash) {
+        return '/login';
+      }
+
+      // No redirect needed
+      return null;
+    },
     routes: [
+      // Splash Screen (initial route)
+      GoRoute(
+        path: '/',
+        name: 'splash',
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const SplashScreen(),
+        ),
+      ),
       // Auth Routes
       GoRoute(
         path: '/login',
@@ -80,8 +120,8 @@ GoRouter router(Ref ref) {
         ),
       ),
       GoRoute(
-        path: '/email-verification',
-        name: 'email-verification',
+        path: '/verify-email',
+        name: 'verify-email',
         pageBuilder: (context, state) => buildPageWithExpressiveTransition(
           context: context,
           state: state,
@@ -150,6 +190,17 @@ GoRouter router(Ref ref) {
         path: '/progress',
         name: 'progress',
         builder: (context, state) => const ProgressScreen(),
+      ),
+
+      // Shop
+      GoRoute(
+        path: '/shop',
+        name: 'shop',
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const ShopScreen(),
+        ),
       ),
     ],
 
