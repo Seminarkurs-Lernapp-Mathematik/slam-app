@@ -32,6 +32,9 @@
       "Bash(dart run build_runner build:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\marco\\dev\\Seminarkurs\\slam-backend"
+    ]
   }
 }

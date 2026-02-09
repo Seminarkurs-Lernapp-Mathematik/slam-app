@@ -5,9 +5,12 @@
 class ApiEndpoints {
   ApiEndpoints._(); // Private constructor
 
-  // Base URL (wird in Produktion durch echte URL ersetzt)
-  // TODO: Replace with actual Cloudflare Workers URL
-  static const String baseUrl = 'https://your-cloudflare-worker.workers.dev';
+  // Base URL - api.learn-smart.app (Cloudflare Workers)
+  // Can be overridden with --dart-define=API_BASE_URL=https://...
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.learn-smart.app',
+  );
 
   // Question Generation & Evaluation
   static const String generateQuestions = '/api/generate-questions';

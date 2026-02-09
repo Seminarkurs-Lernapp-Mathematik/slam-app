@@ -109,7 +109,13 @@ _$QuestionSessionImpl _$$QuestionSessionImplFromJson(
           .map((e) => Question.fromJson(e as Map<String, dynamic>))
           .toList(),
       totalQuestions: (json['totalQuestions'] as num).toInt(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      fromCache: json['fromCache'] as bool?,
+      cacheKey: json['cacheKey'] as String?,
+      modelUsed: json['modelUsed'] as String?,
+      providerUsed: json['providerUsed'] as String?,
     );
 
 Map<String, dynamic> _$$QuestionSessionImplToJson(
@@ -121,7 +127,11 @@ Map<String, dynamic> _$$QuestionSessionImplToJson(
       'userContext': instance.userContext,
       'questions': instance.questions,
       'totalQuestions': instance.totalQuestions,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'fromCache': instance.fromCache,
+      'cacheKey': instance.cacheKey,
+      'modelUsed': instance.modelUsed,
+      'providerUsed': instance.providerUsed,
     };
 
 _$TopicDataImpl _$$TopicDataImplFromJson(Map<String, dynamic> json) =>

@@ -1,0 +1,61 @@
+name: Deploy Flutter Web to Staging
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.27.0'
+
+jobs:
+  build-and-deploy-staging:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Flutter Web (Staging)
+        run: |
+          flutter build web \
+            --release \
+            --web-renderer canvaskit \
+            --dart-define=API_BASE_URL=https://api-staging.learn-smart.app \
+            --dart-define=ENVIRONMENT=staging
+
+      - name: Deploy to Cloudflare Pages (Staging)
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: slam-app-staging
+          directory: build/web
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: staging
+          wranglerVersion: '3'
+
+      - name: Post-deployment summary
+        if: success()
+        run: |
+          echo "✅ Flutter Web (staging) deployed successfully!"
+          echo "🌐 URL: https://staging.learn-smart.app"
+          echo "🔗 API Endpoint: https://api-staging.learn-smart.app"

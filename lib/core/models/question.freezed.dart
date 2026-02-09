@@ -1026,7 +1026,12 @@ mixin _$QuestionSession {
   UserContext get userContext => throw _privateConstructorUsedError;
   List<Question> get questions => throw _privateConstructorUsedError;
   int get totalQuestions => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt =>
+      throw _privateConstructorUsedError; // Made optional - backend doesn't always return it
+  bool? get fromCache => throw _privateConstructorUsedError;
+  String? get cacheKey => throw _privateConstructorUsedError;
+  String? get modelUsed => throw _privateConstructorUsedError;
+  String? get providerUsed => throw _privateConstructorUsedError;
 
   /// Serializes this QuestionSession to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1051,7 +1056,11 @@ abstract class $QuestionSessionCopyWith<$Res> {
       UserContext userContext,
       List<Question> questions,
       int totalQuestions,
-      DateTime createdAt});
+      DateTime? createdAt,
+      bool? fromCache,
+      String? cacheKey,
+      String? modelUsed,
+      String? providerUsed});
 
   $UserContextCopyWith<$Res> get userContext;
 }
@@ -1077,7 +1086,11 @@ class _$QuestionSessionCopyWithImpl<$Res, $Val extends QuestionSession>
     Object? userContext = null,
     Object? questions = null,
     Object? totalQuestions = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
+    Object? fromCache = freezed,
+    Object? cacheKey = freezed,
+    Object? modelUsed = freezed,
+    Object? providerUsed = freezed,
   }) {
     return _then(_value.copyWith(
       sessionId: null == sessionId
@@ -1104,10 +1117,26 @@ class _$QuestionSessionCopyWithImpl<$Res, $Val extends QuestionSession>
           ? _value.totalQuestions
           : totalQuestions // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
+      fromCache: freezed == fromCache
+          ? _value.fromCache
+          : fromCache // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      cacheKey: freezed == cacheKey
+          ? _value.cacheKey
+          : cacheKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      modelUsed: freezed == modelUsed
+          ? _value.modelUsed
+          : modelUsed // ignore: cast_nullable_to_non_nullable
+              as String?,
+      providerUsed: freezed == providerUsed
+          ? _value.providerUsed
+          : providerUsed // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 
@@ -1137,7 +1166,11 @@ abstract class _$$QuestionSessionImplCopyWith<$Res>
       UserContext userContext,
       List<Question> questions,
       int totalQuestions,
-      DateTime createdAt});
+      DateTime? createdAt,
+      bool? fromCache,
+      String? cacheKey,
+      String? modelUsed,
+      String? providerUsed});
 
   @override
   $UserContextCopyWith<$Res> get userContext;
@@ -1162,7 +1195,11 @@ class __$$QuestionSessionImplCopyWithImpl<$Res>
     Object? userContext = null,
     Object? questions = null,
     Object? totalQuestions = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
+    Object? fromCache = freezed,
+    Object? cacheKey = freezed,
+    Object? modelUsed = freezed,
+    Object? providerUsed = freezed,
   }) {
     return _then(_$QuestionSessionImpl(
       sessionId: null == sessionId
@@ -1189,10 +1226,26 @@ class __$$QuestionSessionImplCopyWithImpl<$Res>
           ? _value.totalQuestions
           : totalQuestions // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
+      fromCache: freezed == fromCache
+          ? _value.fromCache
+          : fromCache // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      cacheKey: freezed == cacheKey
+          ? _value.cacheKey
+          : cacheKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      modelUsed: freezed == modelUsed
+          ? _value.modelUsed
+          : modelUsed // ignore: cast_nullable_to_non_nullable
+              as String?,
+      providerUsed: freezed == providerUsed
+          ? _value.providerUsed
+          : providerUsed // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1207,7 +1260,11 @@ class _$QuestionSessionImpl extends _QuestionSession {
       required this.userContext,
       required final List<Question> questions,
       required this.totalQuestions,
-      required this.createdAt})
+      this.createdAt,
+      this.fromCache,
+      this.cacheKey,
+      this.modelUsed,
+      this.providerUsed})
       : _topics = topics,
         _questions = questions,
         super._();
@@ -1240,11 +1297,20 @@ class _$QuestionSessionImpl extends _QuestionSession {
   @override
   final int totalQuestions;
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
+// Made optional - backend doesn't always return it
+  @override
+  final bool? fromCache;
+  @override
+  final String? cacheKey;
+  @override
+  final String? modelUsed;
+  @override
+  final String? providerUsed;
 
   @override
   String toString() {
-    return 'QuestionSession(sessionId: $sessionId, learningPlanItemId: $learningPlanItemId, topics: $topics, userContext: $userContext, questions: $questions, totalQuestions: $totalQuestions, createdAt: $createdAt)';
+    return 'QuestionSession(sessionId: $sessionId, learningPlanItemId: $learningPlanItemId, topics: $topics, userContext: $userContext, questions: $questions, totalQuestions: $totalQuestions, createdAt: $createdAt, fromCache: $fromCache, cacheKey: $cacheKey, modelUsed: $modelUsed, providerUsed: $providerUsed)';
   }
 
   @override
@@ -1264,7 +1330,15 @@ class _$QuestionSessionImpl extends _QuestionSession {
             (identical(other.totalQuestions, totalQuestions) ||
                 other.totalQuestions == totalQuestions) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.fromCache, fromCache) ||
+                other.fromCache == fromCache) &&
+            (identical(other.cacheKey, cacheKey) ||
+                other.cacheKey == cacheKey) &&
+            (identical(other.modelUsed, modelUsed) ||
+                other.modelUsed == modelUsed) &&
+            (identical(other.providerUsed, providerUsed) ||
+                other.providerUsed == providerUsed));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1277,7 +1351,11 @@ class _$QuestionSessionImpl extends _QuestionSession {
       userContext,
       const DeepCollectionEquality().hash(_questions),
       totalQuestions,
-      createdAt);
+      createdAt,
+      fromCache,
+      cacheKey,
+      modelUsed,
+      providerUsed);
 
   /// Create a copy of QuestionSession
   /// with the given fields replaced by the non-null parameter values.
@@ -1304,7 +1382,11 @@ abstract class _QuestionSession extends QuestionSession {
       required final UserContext userContext,
       required final List<Question> questions,
       required final int totalQuestions,
-      required final DateTime createdAt}) = _$QuestionSessionImpl;
+      final DateTime? createdAt,
+      final bool? fromCache,
+      final String? cacheKey,
+      final String? modelUsed,
+      final String? providerUsed}) = _$QuestionSessionImpl;
   const _QuestionSession._() : super._();
 
   factory _QuestionSession.fromJson(Map<String, dynamic> json) =
@@ -1323,7 +1405,15 @@ abstract class _QuestionSession extends QuestionSession {
   @override
   int get totalQuestions;
   @override
-  DateTime get createdAt;
+  DateTime? get createdAt; // Made optional - backend doesn't always return it
+  @override
+  bool? get fromCache;
+  @override
+  String? get cacheKey;
+  @override
+  String? get modelUsed;
+  @override
+  String? get providerUsed;
 
   /// Create a copy of QuestionSession
   /// with the given fields replaced by the non-null parameter values.

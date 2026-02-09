@@ -97,7 +97,11 @@ class QuestionSession with _$QuestionSession {
     required UserContext userContext,
     required List<Question> questions,
     required int totalQuestions,
-    required DateTime createdAt,
+    DateTime? createdAt, // Made optional - backend doesn't always return it
+    bool? fromCache,
+    String? cacheKey,
+    String? modelUsed,
+    String? providerUsed,
   }) = _QuestionSession;
 
   factory QuestionSession.fromJson(Map<String, dynamic> json) =>

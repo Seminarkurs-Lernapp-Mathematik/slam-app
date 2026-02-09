@@ -7,7 +7,7 @@ part of 'settings_providers.dart';
 // **************************************************************************
 
 String _$appSettingsNotifierHash() =>
-    r'5b80e6d8436f2e7e32e53ac07228c149a56aae60';
+    r'531e6076f98f1c64290c019a85f2350767a59f72';
 
 /// See also [AppSettingsNotifier].
 @ProviderFor(AppSettingsNotifier)
@@ -79,9 +79,9 @@ final educationConfigNotifierProvider = AutoDisposeNotifierProvider<
 
 typedef _$EducationConfigNotifier = AutoDisposeNotifier<EducationConfig>;
 String _$debugConfigNotifierHash() =>
-    r'3fdd4001eaa345f5ed7b03d22c2ca3c450a43608';
+    r'09916d2384057a33a7a95d0e77d1e021332876cb';
 
-/// Debug Configuration Provider
+/// Debug Configuration Provider with SharedPreferences persistence
 ///
 /// Copied from [DebugConfigNotifier].
 @ProviderFor(DebugConfigNotifier)

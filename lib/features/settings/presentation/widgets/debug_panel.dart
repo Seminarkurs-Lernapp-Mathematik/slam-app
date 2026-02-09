@@ -24,10 +24,11 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
   @override
   void initState() {
     super.initState();
-    // Load saved values
+    // Load saved values from app settings (Firebase)
+    final appSettings = ref.read(appSettingsNotifierProvider);
     final debugConfig = ref.read(debugConfigNotifierProvider);
-    _claudeApiKeyController.text = debugConfig.claudeApiKey;
-    _geminiApiKeyController.text = debugConfig.geminiApiKey;
+    _claudeApiKeyController.text = appSettings.claudeApiKey ?? '';
+    _geminiApiKeyController.text = appSettings.geminiApiKey ?? '';
     _backendUrlController.text = debugConfig.backendUrl;
   }
 
@@ -89,13 +90,15 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                 prefixIcon: const Icon(Icons.cloud),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.save),
-                  onPressed: () {
-                    ref
+                  onPressed: () async {
+                    await ref
                         .read(debugConfigNotifierProvider.notifier)
                         .setBackendUrl(_backendUrlController.text);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Backend URL gespeichert')),
-                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Backend URL gespeichert')),
+                      );
+                    }
                   },
                 ),
                 border: OutlineInputBorder(
@@ -119,7 +122,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                 const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: () {
-                    _backendUrlController.text = 'https://api.slam-learning.de';
+                    _backendUrlController.text = 'https://learn-smart.app';
                   },
                   icon: const Icon(Icons.cloud, size: 16),
                   label: const Text('Production'),
@@ -164,13 +167,16 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.save),
-                      onPressed: () {
+                      onPressed: () async {
+                        // Save to Firebase via appSettingsNotifier
                         ref
-                            .read(debugConfigNotifierProvider.notifier)
+                            .read(appSettingsNotifierProvider.notifier)
                             .setClaudeApiKey(_claudeApiKeyController.text);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Claude API Key gespeichert')),
-                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Claude API Key in Firebase gespeichert')),
+                          );
+                        }
                       },
                     ),
                   ],
@@ -205,13 +211,16 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.save),
-                      onPressed: () {
+                      onPressed: () async {
+                        // Save to Firebase via appSettingsNotifier
                         ref
-                            .read(debugConfigNotifierProvider.notifier)
+                            .read(appSettingsNotifierProvider.notifier)
                             .setGeminiApiKey(_geminiApiKeyController.text);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Gemini API Key gespeichert')),
-                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Gemini API Key in Firebase gespeichert')),
+                          );
+                        }
                       },
                     ),
                   ],
@@ -236,8 +245,8 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             // Mock Mode
             SwitchListTile(
               value: debugConfig.mockMode,
-              onChanged: (value) {
-                ref.read(debugConfigNotifierProvider.notifier).setMockMode(value);
+              onChanged: (value) async {
+                await ref.read(debugConfigNotifierProvider.notifier).setMockMode(value);
               },
               title: const Text('Mock-Modus'),
               subtitle: const Text('Verwendet Demo-Daten statt echter API-Aufrufe'),
@@ -248,8 +257,8 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             // Verbose Logging
             SwitchListTile(
               value: debugConfig.verboseLogging,
-              onChanged: (value) {
-                ref.read(debugConfigNotifierProvider.notifier).setVerboseLogging(value);
+              onChanged: (value) async {
+                await ref.read(debugConfigNotifierProvider.notifier).setVerboseLogging(value);
               },
               title: const Text('Verbose Logging'),
               subtitle: const Text('Detaillierte Logs in der Konsole'),
@@ -260,8 +269,8 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             // Skip Email Verification
             SwitchListTile(
               value: debugConfig.skipEmailVerification,
-              onChanged: (value) {
-                ref.read(debugConfigNotifierProvider.notifier).setSkipEmailVerification(value);
+              onChanged: (value) async {
+                await ref.read(debugConfigNotifierProvider.notifier).setSkipEmailVerification(value);
               },
               title: const Text('E-Mail-Verifizierung überspringen'),
               subtitle: const Text('Nur für Tests - nicht in Production!'),
@@ -492,7 +501,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
       ref.read(debugConfigNotifierProvider.notifier).reset();
       _claudeApiKeyController.clear();
       _geminiApiKeyController.clear();
-      _backendUrlController.text = 'https://api.slam-learning.de';
+      _backendUrlController.text = 'https://learn-smart.app';
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

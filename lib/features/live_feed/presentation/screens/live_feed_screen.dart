@@ -60,12 +60,29 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       final aiService = ref.read(aiServiceProvider);
       final aiConfig = ref.read(aIConfigNotifierProvider);
 
+      // Get API key from Firebase settings based on selected AI provider
+      final selectedProvider = aiConfig.provider;
+      final apiKey = selectedProvider == AIProvider.claude
+          ? (aiConfig.claudeApiKey ?? '')
+          : (aiConfig.geminiApiKey ?? '');
+
+      // Get provider string for backend
+      final providerString = selectedProvider == AIProvider.claude ? 'claude' : 'gemini';
+
+      // Check if API key is configured
+      if (apiKey.isEmpty) {
+        throw Exception(
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${selectedProvider == AIProvider.claude ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+        );
+      }
+
       // Create a simple question generation request
       // In production, you'd call a dedicated /api/generate-single-question endpoint
       // For now, we'll use the existing generateQuestions with a single question
       final session = await aiService.generateQuestions(
-        apiKey: 'demo-key', // TODO: Get from user settings
+        apiKey: apiKey,
         userId: ref.read(authStateChangesProvider).value?.uid ?? 'demo-user',
+        provider: providerString, // Add provider parameter
         learningPlanItemId: 0,
         topics: [
           const TopicData(

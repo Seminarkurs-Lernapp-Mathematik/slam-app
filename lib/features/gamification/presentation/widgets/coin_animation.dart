@@ -53,7 +53,6 @@ class _CoinAnimationState extends State<CoinAnimation>
 
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _bounceAnimation;
 
   final List<_FlyingCoin> _flyingCoins = [];
 

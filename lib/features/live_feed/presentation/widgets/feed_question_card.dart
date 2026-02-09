@@ -258,12 +258,6 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard> {
     );
   }
 
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final isEvaluating = ref.watch(isEvaluatingProvider);

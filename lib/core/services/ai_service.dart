@@ -36,6 +36,7 @@ class AIService {
     required List<TopicData> topics,
     required String selectedModel,
     required UserContext userContext,
+    required String provider, // claude or gemini
     Map<String, dynamic>? autoModeAssessment,
     List<Map<String, dynamic>>? recentMemories,
     Map<String, dynamic>? recentPerformance,
@@ -50,6 +51,7 @@ class AIService {
           'topics': topics.map((t) => t.toJson()).toList(),
           'selectedModel': selectedModel,
           'userContext': userContext.toJson(),
+          'provider': provider, // Add provider field
           'autoModeAssessment': autoModeAssessment,
           'recentMemories': recentMemories,
           'recentPerformance': recentPerformance,
@@ -539,8 +541,16 @@ class AIException implements Exception {
 /// AI Service Provider
 @riverpod
 AIService aiService(AiServiceRef ref) {
+  // Get backend URL from debug settings, fallback to default
+  String baseUrl = ApiEndpoints.baseUrl;
+
+  // Note: If you want to use the debug config's backend URL, uncomment:
+  // final debugConfig = ref.watch(debugConfigNotifierProvider);
+  // baseUrl = debugConfig.backendUrl;
+
   final dio = Dio(
     BaseOptions(
+      baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 60),
       headers: {

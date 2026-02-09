@@ -360,6 +360,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     _isLoading = true;
 
     try {
+      debugPrint('🔄 Loading settings for user: $_userId');
+
       // First try Firebase if logged in
       if (_userId != null && _userId!.isNotEmpty) {
         final doc = await FirebaseFirestore.instance
@@ -367,22 +369,31 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
             .doc(_userId)
             .get();
 
+        debugPrint('📄 Firebase document exists: ${doc.exists}');
+
         if (doc.exists) {
           final data = doc.data();
           final settings = data?['settings'] as Map<String, dynamic>?;
+
+          debugPrint('⚙️ Settings data from Firebase: ${settings?.keys.toList()}');
+
           if (settings != null) {
             state = AppSettings.fromJson(settings);
+            debugPrint('✅ Loaded from Firebase - Claude Key: ${state.claudeApiKey?.substring(0, 10)}..., Gemini Key: ${state.geminiApiKey?.substring(0, 10)}...');
             await _saveToLocalStorage();
             _isLoading = false;
             return;
           }
+        } else {
+          debugPrint('⚠️ Firebase document does not exist, will be created on first save');
         }
       }
 
       // Fallback to local storage
+      debugPrint('📱 Loading from local storage');
       await _loadFromLocalStorage();
     } catch (e) {
-      debugPrint('Error loading settings: $e');
+      debugPrint('❌ Error loading settings: $e');
       await _loadFromLocalStorage();
     } finally {
       _isLoading = false;
@@ -407,6 +418,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     final courseType = prefs.getString('course_type') ?? 'Leistungsfach';
     final gradeLevel = prefs.getString('grade_level') ?? 'Klasse_11';
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
+
+    debugPrint('📱 Loaded from local - Claude Key: ${claudeApiKey?.substring(0, 10) ?? "null"}..., Gemini Key: ${geminiApiKey?.substring(0, 10) ?? "null"}...');
 
     state = AppSettings(
       aiModel: AIModelConfig(
@@ -440,9 +453,11 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     await prefs.setBool('ai_auto_mode', state.aiModel.autoMode);
     if (state.claudeApiKey != null) {
       await prefs.setString('ai_claude_api_key', state.claudeApiKey!);
+      debugPrint('💾 Saved Claude Key to local storage');
     }
     if (state.geminiApiKey != null) {
       await prefs.setString('ai_gemini_api_key', state.geminiApiKey!);
+      debugPrint('💾 Saved Gemini Key to local storage');
     }
     await prefs.setString('ai_gemini_fast_model', state.geminiFastModel);
     await prefs.setString('ai_gemini_model', state.geminiModel);
@@ -463,12 +478,17 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         selectedModel: state.getActiveModel(),
       );
 
+      // Use set with merge to create document if it doesn't exist
       await FirebaseFirestore.instance
           .collection('users')
           .doc(_userId)
-          .update({'settings': settingsWithModel.toJson()});
+          .set({
+        'settings': settingsWithModel.toJson()
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ Settings synced to Firebase successfully');
     } catch (e) {
-      debugPrint('Failed to sync settings to Firebase: $e');
+      debugPrint('❌ Failed to sync settings to Firebase: $e');
     }
   }
 
@@ -514,13 +534,17 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
 
   // API Keys
   void setClaudeApiKey(String? key) {
+    debugPrint('🔑 Setting Claude API Key: ${key?.substring(0, 10)}...');
     state = state.copyWith(claudeApiKey: key);
     _saveSettings();
+    debugPrint('✅ Claude API Key saved to state');
   }
 
   void setGeminiApiKey(String? key) {
+    debugPrint('🔑 Setting Gemini API Key: ${key?.substring(0, 10)}...');
     state = state.copyWith(geminiApiKey: key);
     _saveSettings();
+    debugPrint('✅ Gemini API Key saved to state');
   }
 
   // Model mode
@@ -793,53 +817,93 @@ class DebugConfig {
   }
 }
 
-/// Debug Configuration Provider
+/// Debug Configuration Provider with SharedPreferences persistence
 @riverpod
 class DebugConfigNotifier extends _$DebugConfigNotifier {
+  static const String _keyClaudeApiKey = 'debug_claude_api_key';
+  static const String _keyGeminiApiKey = 'debug_gemini_api_key';
+  static const String _keyBackendUrl = 'debug_backend_url';
+  static const String _keyMockMode = 'debug_mock_mode';
+  static const String _keyVerboseLogging = 'debug_verbose_logging';
+  static const String _keySkipEmailVerification = 'debug_skip_email_verification';
+
   @override
   DebugConfig build() {
+    // Load from SharedPreferences asynchronously
+    _loadFromPreferences();
+
     return const DebugConfig(
       claudeApiKey: '',
       geminiApiKey: '',
-      backendUrl: 'https://api.slam-learning.de',
+      backendUrl: 'https://api.learn-smart.app',
       mockMode: false,
       verboseLogging: false,
       skipEmailVerification: false,
     );
   }
 
-  void setClaudeApiKey(String key) {
+  Future<void> _loadFromPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    state = DebugConfig(
+      claudeApiKey: prefs.getString(_keyClaudeApiKey) ?? '',
+      geminiApiKey: prefs.getString(_keyGeminiApiKey) ?? '',
+      backendUrl: prefs.getString(_keyBackendUrl) ?? 'https://api.learn-smart.app',
+      mockMode: prefs.getBool(_keyMockMode) ?? false,
+      verboseLogging: prefs.getBool(_keyVerboseLogging) ?? false,
+      skipEmailVerification: prefs.getBool(_keySkipEmailVerification) ?? false,
+    );
+  }
+
+  Future<void> _saveToPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyClaudeApiKey, state.claudeApiKey);
+    await prefs.setString(_keyGeminiApiKey, state.geminiApiKey);
+    await prefs.setString(_keyBackendUrl, state.backendUrl);
+    await prefs.setBool(_keyMockMode, state.mockMode);
+    await prefs.setBool(_keyVerboseLogging, state.verboseLogging);
+    await prefs.setBool(_keySkipEmailVerification, state.skipEmailVerification);
+  }
+
+  Future<void> setClaudeApiKey(String key) async {
     state = state.copyWith(claudeApiKey: key);
+    await _saveToPreferences();
   }
 
-  void setGeminiApiKey(String key) {
+  Future<void> setGeminiApiKey(String key) async {
     state = state.copyWith(geminiApiKey: key);
+    await _saveToPreferences();
   }
 
-  void setBackendUrl(String url) {
+  Future<void> setBackendUrl(String url) async {
     state = state.copyWith(backendUrl: url);
+    await _saveToPreferences();
   }
 
-  void setMockMode(bool enabled) {
+  Future<void> setMockMode(bool enabled) async {
     state = state.copyWith(mockMode: enabled);
+    await _saveToPreferences();
   }
 
-  void setVerboseLogging(bool enabled) {
+  Future<void> setVerboseLogging(bool enabled) async {
     state = state.copyWith(verboseLogging: enabled);
+    await _saveToPreferences();
   }
 
-  void setSkipEmailVerification(bool enabled) {
+  Future<void> setSkipEmailVerification(bool enabled) async {
     state = state.copyWith(skipEmailVerification: enabled);
+    await _saveToPreferences();
   }
 
-  void reset() {
+  Future<void> reset() async {
     state = const DebugConfig(
       claudeApiKey: '',
       geminiApiKey: '',
-      backendUrl: 'https://api.slam-learning.de',
+      backendUrl: 'https://api.learn-smart.app',
       mockMode: false,
       verboseLogging: false,
       skipEmailVerification: false,
     );
+    await _saveToPreferences();
   }
 }

@@ -125,8 +125,9 @@ class LearningPlanScreen extends ConsumerWidget {
   }
 
   Future<void> _generateQuestions(BuildContext context, WidgetRef ref) async {
-    final selectedTopics = ref.read(selectedTopicsProvider);
-    final smartMode = ref.read(smartLearningModeProvider);
+    // TODO: Use selectedTopics and smartMode when implementing full AI question generation
+    // final selectedTopics = ref.read(selectedTopicsProvider);
+    // final smartMode = ref.read(smartLearningModeProvider);
 
     // Set loading state
     ref.read(isGeneratingQuestionsProvider.notifier).set(true);
