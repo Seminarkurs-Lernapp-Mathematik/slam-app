@@ -38,7 +38,6 @@ jobs:
         run: |
           flutter build web \
             --release \
-            --web-renderer canvaskit \
             --dart-define=API_BASE_URL=https://api-staging.learn-smart.app \
             --dart-define=ENVIRONMENT=staging
 
