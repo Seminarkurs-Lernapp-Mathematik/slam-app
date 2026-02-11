@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -65,4 +62,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'seminarkurs-lernapp.firebasestorage.app',
     iosBundleId: 'de.mvlgym.slamAppFlutter',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDTge-QQKB2aY-ZRZqtuDq8PcpBiErmfWQ',
+    appId: '1:640778470963:web:ce209272262574ac95c546',
+    messagingSenderId: '640778470963',
+    projectId: 'seminarkurs-lernapp',
+    authDomain: 'seminarkurs-lernapp.firebaseapp.com',
+    storageBucket: 'seminarkurs-lernapp.firebasestorage.app',
+  );
+
 }
