@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/services.dart';
 
 import '../providers/settings_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
+import 'model_selection_panel.dart';
 
 /// Debug Panel - API Keys, Backend URL, Developer Options
 class DebugPanel extends ConsumerStatefulWidget {
@@ -231,7 +231,21 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
               ),
             ),
 
-            const Divider(height: 32),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
+
+            // Model Selection
+            Text(
+              'Modellauswahl',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            const ModelSelectionPanel(),
+
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
 
             // Debug Options
             Text(

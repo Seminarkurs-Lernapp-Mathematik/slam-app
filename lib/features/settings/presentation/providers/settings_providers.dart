@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/ai_service.dart';
 
 part 'settings_providers.g.dart';
 
@@ -212,6 +213,7 @@ class AppSettings {
   final String courseType; // 'Leistungsfach' or 'Grundkurs'
   final String gradeLevel; // 'Klasse_11', 'Klasse_12', etc.
   final ThemeConfig theme;
+  final Map<String, String> taskModels;
 
   const AppSettings({
     this.aiModel = const AIModelConfig(),
@@ -227,6 +229,7 @@ class AppSettings {
     this.courseType = 'Leistungsfach',
     this.gradeLevel = 'Klasse_11',
     required this.theme,
+    this.taskModels = const {},
   });
 
   factory AppSettings.initial() {
@@ -250,6 +253,7 @@ class AppSettings {
         'courseType': courseType,
         'gradeLevel': gradeLevel,
         'theme': theme.toJson(),
+        'taskModels': taskModels,
       };
 
   /// Create from Firebase JSON
@@ -272,6 +276,9 @@ class AppSettings {
       theme: json['theme'] != null
           ? ThemeConfig.fromJson(json['theme'] as Map<String, dynamic>)
           : ThemeConfig.fromPreset(AppThemePreset.sunsetOrange),
+      taskModels: json['taskModels'] != null
+          ? Map<String, String>.from(json['taskModels'] as Map)
+          : {},
     );
   }
 
@@ -289,6 +296,7 @@ class AppSettings {
     String? courseType,
     String? gradeLevel,
     ThemeConfig? theme,
+    Map<String, String>? taskModels,
   }) {
     return AppSettings(
       aiModel: aiModel ?? this.aiModel,
@@ -304,7 +312,13 @@ class AppSettings {
       courseType: courseType ?? this.courseType,
       gradeLevel: gradeLevel ?? this.gradeLevel,
       theme: theme ?? this.theme,
+      taskModels: taskModels ?? this.taskModels,
     );
+  }
+
+  /// Get model for specific task
+  String? getModelForTask(String taskName) {
+    return taskModels[taskName];
   }
 
   /// Get current model name based on provider and mode
@@ -584,6 +598,14 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         helpfulness: 7,
         temperature: 0.7,
       ),
+    );
+    _saveSettings();
+  }
+
+  // Task Models
+  void setTaskModel(String taskName, String modelId) {
+    state = state.copyWith(
+      taskModels: {...state.taskModels, taskName: modelId},
     );
     _saveSettings();
   }
@@ -906,4 +928,22 @@ class DebugConfigNotifier extends _$DebugConfigNotifier {
     );
     await _saveToPreferences();
   }
+}
+
+// ============================================================================
+// AVAILABLE MODELS PROVIDER
+// ============================================================================
+
+/// Available models from backend based on current provider
+@riverpod
+Future<List<dynamic>> availableModels(
+  AvailableModelsRef ref,
+) async {
+  final settings = ref.watch(appSettingsNotifierProvider);
+  final aiService = ref.watch(aiServiceProvider);
+
+  final provider = settings.aiProvider == 'claude' ? 'claude' : 'gemini';
+
+  // Import ModelInfo from ai_service.dart if not already imported
+  return await aiService.getAvailableModels(provider: provider);
 }

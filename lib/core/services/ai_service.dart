@@ -7,6 +7,33 @@ import '../models/user_settings.dart';
 
 part 'ai_service.g.dart';
 
+/// Model information from backend
+class ModelInfo {
+  final String id;
+  final String name;
+  final String description;
+  final String tier; // 'fast', 'standard', or 'smart'
+  final int contextWindow;
+
+  ModelInfo({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.tier,
+    required this.contextWindow,
+  });
+
+  factory ModelInfo.fromJson(Map<String, dynamic> json) {
+    return ModelInfo(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      tier: json['tier'] as String,
+      contextWindow: json['contextWindow'] as int,
+    );
+  }
+}
+
 /// AI Service
 ///
 /// Handles all Cloudflare Workers API calls for:
@@ -331,6 +358,31 @@ class AIService {
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);
+    }
+  }
+
+  // ============================================================================
+  // MODEL SELECTION
+  // ============================================================================
+
+  /// Get available models for provider
+  ///
+  /// GET /api/get-models?provider=claude
+  Future<List<ModelInfo>> getAvailableModels({
+    required String provider,
+  }) async {
+    try {
+      final response = await _dio.get(
+        ApiEndpoints.getFullUrl('/api/get-models'),
+        queryParameters: {
+          'provider': provider,
+        },
+      );
+
+      final List<dynamic> models = response.data['models'] as List<dynamic>;
+      return models.map((m) => ModelInfo.fromJson(m as Map<String, dynamic>)).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch models: $e');
     }
   }
 

@@ -6,8 +6,28 @@ part of 'settings_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$availableModelsHash() => r'81f1008bd41e51b6f86979e9a89a5b0f7def3364';
+
+/// Available models from backend based on current provider
+///
+/// Copied from [availableModels].
+@ProviderFor(availableModels)
+final availableModelsProvider =
+    AutoDisposeFutureProvider<List<dynamic>>.internal(
+  availableModels,
+  name: r'availableModelsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$availableModelsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AvailableModelsRef = AutoDisposeFutureProviderRef<List<dynamic>>;
 String _$appSettingsNotifierHash() =>
-    r'531e6076f98f1c64290c019a85f2350767a59f72';
+    r'90061f4241f04afc785b9f5965a707975b5dc708';
 
 /// See also [AppSettingsNotifier].
 @ProviderFor(AppSettingsNotifier)
