@@ -227,3 +227,133 @@ class LastEvaluationResult extends _$LastEvaluationResult {
     state = null;
   }
 }
+
+// ============================================================================
+// QUEUE SYSTEM
+// ============================================================================
+
+/// Queue state for live feed questions
+class LiveFeedQueueState {
+  final List<Question> questions;
+  final bool isGenerating;
+  final int currentIndex;
+
+  LiveFeedQueueState({
+    this.questions = const [],
+    this.isGenerating = false,
+    this.currentIndex = 0,
+  });
+
+  LiveFeedQueueState copyWith({
+    List<Question>? questions,
+    bool? isGenerating,
+    int? currentIndex,
+  }) {
+    return LiveFeedQueueState(
+      questions: questions ?? this.questions,
+      isGenerating: isGenerating ?? this.isGenerating,
+      currentIndex: currentIndex ?? this.currentIndex,
+    );
+  }
+
+  int get remainingCount => questions.length - currentIndex;
+  Question? get currentQuestion =>
+      currentIndex < questions.length ? questions[currentIndex] : null;
+  bool get hasNext => currentIndex + 1 < questions.length;
+}
+
+/// Live Feed Queue Provider
+@riverpod
+class LiveFeedQueue extends _$LiveFeedQueue {
+  @override
+  LiveFeedQueueState build() {
+    return LiveFeedQueueState();
+  }
+
+  /// Add a batch of questions to the queue
+  void addQuestions(List<Question> newQuestions) {
+    state = state.copyWith(
+      questions: [...state.questions, ...newQuestions],
+    );
+  }
+
+  /// Move to the next question in the queue
+  Question? nextQuestion() {
+    if (!state.hasNext) return null;
+    final nextIndex = state.currentIndex + 1;
+    state = state.copyWith(currentIndex: nextIndex);
+    return state.currentQuestion;
+  }
+
+  /// Set the current question (first question load)
+  void setCurrentIndex(int index) {
+    state = state.copyWith(currentIndex: index);
+  }
+
+  /// Set generating state
+  void setGenerating(bool generating) {
+    state = state.copyWith(isGenerating: generating);
+  }
+
+  /// Clear the queue and reset
+  void clear() {
+    state = LiveFeedQueueState();
+  }
+
+  /// Get remaining question count
+  int get remainingCount => state.remainingCount;
+
+  /// Whether more questions should be generated
+  bool get needsMoreQuestions => state.remainingCount <= 2;
+}
+
+/// Selected Option Provider (tracks which MCQ option was selected)
+@riverpod
+class SelectedOption extends _$SelectedOption {
+  @override
+  String? build() {
+    return null;
+  }
+
+  void select(String optionId) {
+    state = optionId;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+/// "Wo haengts?" text input provider
+@riverpod
+class WoHaengtsInput extends _$WoHaengtsInput {
+  @override
+  String build() {
+    return '';
+  }
+
+  void setText(String text) {
+    state = text;
+  }
+
+  void clear() {
+    state = '';
+  }
+}
+
+/// Whether "Wo haengts?" section should be shown
+@riverpod
+class ShowWoHaengts extends _$ShowWoHaengts {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void show() {
+    state = true;
+  }
+
+  void hide() {
+    state = false;
+  }
+}

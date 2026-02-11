@@ -8,7 +8,7 @@ import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
-/// Live Feed Screen - Adaptive difficulty question stream
+/// Live Feed Screen - Adaptive difficulty question stream with queue system
 class LiveFeedScreen extends ConsumerStatefulWidget {
   const LiveFeedScreen({super.key});
 
@@ -18,15 +18,13 @@ class LiveFeedScreen extends ConsumerStatefulWidget {
 
 class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   final PageController _pageController = PageController();
-  bool _isGenerating = false;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    // Initialize by loading first question
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeQuestionBuffer();
+      _initializeQueue();
     });
   }
 
@@ -36,22 +34,23 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     super.dispose();
   }
 
-  Future<void> _initializeQuestionBuffer() async {
-    final buffer = ref.read(questionBufferProvider);
+  Future<void> _initializeQueue() async {
+    final queueState = ref.read(liveFeedQueueProvider);
 
-    // If buffer is empty, generate initial questions
-    if (buffer.isEmpty) {
-      await _generateQuestion();
-      // Load first question
-      _loadNextQuestion();
+    // If queue is empty, generate initial batch of questions
+    if (queueState.questions.isEmpty) {
+      await _generateQuestions();
     }
   }
 
-  Future<void> _generateQuestion() async {
-    if (_isGenerating) return;
+  Future<void> _generateQuestions() async {
+    final queue = ref.read(liveFeedQueueProvider.notifier);
 
+    // Prevent double generation
+    if (ref.read(liveFeedQueueProvider).isGenerating) return;
+
+    queue.setGenerating(true);
     setState(() {
-      _isGenerating = true;
       _errorMessage = null;
     });
 
@@ -67,7 +66,8 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
           : (aiConfig.geminiApiKey ?? '');
 
       // Get provider string for backend
-      final providerString = selectedProvider == AIProvider.claude ? 'claude' : 'gemini';
+      final providerString =
+          selectedProvider == AIProvider.claude ? 'claude' : 'gemini';
 
       // Check if API key is configured
       if (apiKey.isEmpty) {
@@ -76,13 +76,12 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         );
       }
 
-      // Create a simple question generation request
-      // In production, you'd call a dedicated /api/generate-single-question endpoint
-      // For now, we'll use the existing generateQuestions with a single question
+      // Generate a batch of questions via backend
       final session = await aiService.generateQuestions(
         apiKey: apiKey,
-        userId: ref.read(authStateChangesProvider).value?.uid ?? 'demo-user',
-        provider: providerString, // Add provider parameter
+        userId:
+            ref.read(authStateChangesProvider).value?.uid ?? 'demo-user',
+        provider: providerString,
         learningPlanItemId: 0,
         topics: [
           const TopicData(
@@ -99,86 +98,201 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       );
 
       if (session.questions.isNotEmpty) {
-        // Add first question to buffer
-        final question = session.questions.first.copyWith(
-          difficulty: difficulty.round(),
-        );
-        ref.read(questionBufferProvider.notifier).addQuestion(question);
+        // Adjust difficulty on all returned questions
+        final questions = session.questions.map((q) {
+          return q.copyWith(difficulty: difficulty.round());
+        }).toList();
 
-        // Check if buffer needs refill
-        if (ref.read(questionBufferProvider.notifier).needsRefill) {
-          // Generate more questions in background
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) _generateQuestion();
-          });
+        queue.addQuestions(questions);
+
+        // If this is the first load, set up the current question
+        final currentQuestion = ref.read(currentLiveFeedQuestionProvider);
+        if (currentQuestion == null) {
+          _loadNextFromQueue();
         }
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Fehler beim Generieren der Frage: ${e.toString()}';
+        _errorMessage = 'Fehler beim Generieren: ${e.toString()}';
       });
 
-      // Use demo question as fallback
-      _useDemoQuestion();
+      // Use demo questions as fallback
+      _useDemoQuestions();
     } finally {
-      if (mounted) {
-        setState(() {
-          _isGenerating = false;
-        });
-      }
+      queue.setGenerating(false);
     }
   }
 
-  void _useDemoQuestion() {
+  void _useDemoQuestions() {
     final difficulty = ref.read(liveFeedDifficultyProvider);
-    final demoQuestion = Question(
-      id: 'demo-${DateTime.now().millisecondsSinceEpoch}',
-      type: QuestionType.stepByStep,
-      difficulty: difficulty.round(),
-      topic: 'Algebra',
-      subtopic: 'Lineare Gleichungen',
-      question: r'Löse die Gleichung: $2x + 5 = 13$',
-      hints: const [
-        QuestionHint(level: 1, text: 'Subtrahiere 5 von beiden Seiten'),
-        QuestionHint(level: 2, text: 'Teile dann beide Seiten durch 2'),
-        QuestionHint(level: 3, text: 'Die Lösung ist x = 4'),
-      ],
-      solution: '4',
-      explanation: r'$2x + 5 = 13$\n$2x = 8$\n$x = 4$',
-    );
+    final queue = ref.read(liveFeedQueueProvider.notifier);
 
-    ref.read(questionBufferProvider.notifier).addQuestion(demoQuestion);
+    final demoQuestions = [
+      Question(
+        id: 'demo-${DateTime.now().millisecondsSinceEpoch}-1',
+        type: QuestionType.multipleChoice,
+        difficulty: difficulty.round(),
+        topic: 'Algebra',
+        subtopic: 'Lineare Gleichungen',
+        question: r'Loese die Gleichung: $2x + 5 = 13$',
+        options: const [
+          QuestionOption(id: 'A', text: 'x = 3', isCorrect: false),
+          QuestionOption(id: 'B', text: 'x = 4', isCorrect: true),
+          QuestionOption(id: 'C', text: 'x = 5', isCorrect: false),
+          QuestionOption(id: 'D', text: 'x = 6', isCorrect: false),
+        ],
+        hints: const [
+          QuestionHint(
+              level: 1, text: 'Subtrahiere 5 von beiden Seiten'),
+          QuestionHint(
+              level: 2, text: 'Teile dann beide Seiten durch 2'),
+          QuestionHint(level: 3, text: 'Die Loesung ist x = 4'),
+        ],
+        solution: '4',
+        explanation: r'$2x + 5 = 13$ -> $2x = 8$ -> $x = 4$',
+        correctFeedback:
+            'Sehr gut! Du hast die lineare Gleichung korrekt geloest.',
+        incorrectFeedback:
+            'Denke daran: Zuerst 5 von beiden Seiten abziehen, dann durch 2 teilen.',
+      ),
+      Question(
+        id: 'demo-${DateTime.now().millisecondsSinceEpoch}-2',
+        type: QuestionType.multipleChoice,
+        difficulty: difficulty.round(),
+        topic: 'Algebra',
+        subtopic: 'Quadratische Gleichungen',
+        question: r'Was ist die Loesung von $x^2 - 9 = 0$?',
+        options: const [
+          QuestionOption(
+              id: 'A', text: 'x = 3 oder x = -3', isCorrect: true),
+          QuestionOption(id: 'B', text: 'x = 9', isCorrect: false),
+          QuestionOption(
+              id: 'C', text: 'x = 3 oder x = 0', isCorrect: false),
+          QuestionOption(id: 'D', text: 'x = -9', isCorrect: false),
+        ],
+        hints: const [
+          QuestionHint(
+              level: 1,
+              text:
+                  'Denke an die dritte binomische Formel: a^2 - b^2 = (a-b)(a+b)'),
+          QuestionHint(
+              level: 2, text: 'x^2 - 9 = (x-3)(x+3) = 0'),
+          QuestionHint(level: 3, text: 'x = 3 oder x = -3'),
+        ],
+        solution: 'x = 3 oder x = -3',
+        explanation:
+            r'$x^2 - 9 = 0$ -> $(x-3)(x+3) = 0$ -> $x = 3$ oder $x = -3$',
+        correctFeedback:
+            'Perfekt! Du hast die dritte binomische Formel richtig angewandt.',
+        incorrectFeedback:
+            'Nutze die dritte binomische Formel: a^2 - b^2 = (a-b)(a+b)',
+      ),
+      Question(
+        id: 'demo-${DateTime.now().millisecondsSinceEpoch}-3',
+        type: QuestionType.multipleChoice,
+        difficulty: difficulty.round(),
+        topic: 'Analysis',
+        subtopic: 'Ableitungen',
+        question: r'Was ist die Ableitung von $f(x) = 3x^2 + 2x - 1$?',
+        options: const [
+          QuestionOption(
+              id: 'A', text: "f'(x) = 6x + 2", isCorrect: true),
+          QuestionOption(
+              id: 'B', text: "f'(x) = 3x + 2", isCorrect: false),
+          QuestionOption(
+              id: 'C', text: "f'(x) = 6x^2 + 2", isCorrect: false),
+          QuestionOption(
+              id: 'D', text: "f'(x) = 6x - 1", isCorrect: false),
+        ],
+        hints: const [
+          QuestionHint(
+              level: 1,
+              text:
+                  "Die Potenzregel lautet: (x^n)' = n * x^(n-1)"),
+          QuestionHint(
+              level: 2,
+              text:
+                  '3x^2 wird zu 6x, 2x wird zu 2, -1 wird zu 0'),
+          QuestionHint(
+              level: 3, text: "f'(x) = 6x + 2"),
+        ],
+        solution: "f'(x) = 6x + 2",
+        explanation:
+            r"Potenzregel: $f'(x) = 2 \cdot 3x^{2-1} + 1 \cdot 2x^{1-1} - 0 = 6x + 2$",
+        correctFeedback:
+            'Super! Du beherrschst die Potenzregel.',
+        incorrectFeedback:
+            'Wende die Potenzregel an: Exponent nach vorne, Exponent minus 1.',
+      ),
+    ];
+
+    queue.addQuestions(demoQuestions);
+
+    // Load first question if none loaded yet
+    final currentQuestion = ref.read(currentLiveFeedQuestionProvider);
+    if (currentQuestion == null) {
+      _loadNextFromQueue();
+    }
   }
 
-  void _loadNextQuestion() {
-    final nextQuestion = ref.read(questionBufferProvider.notifier).getNext();
-    if (nextQuestion != null) {
-      ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(nextQuestion);
+  void _loadNextFromQueue() {
+    final queueState = ref.read(liveFeedQueueProvider);
 
-      // Reset answer and hints
-      ref.read(liveFeedAnswerProvider.notifier).clear();
+    // Get current question from queue
+    final question = queueState.currentQuestion;
+    if (question != null) {
+      ref
+          .read(currentLiveFeedQuestionProvider.notifier)
+          .setQuestion(question);
+
+      // Reset card state
+      ref.read(selectedOptionProvider.notifier).clear();
       ref.read(liveFeedHintsUsedProvider.notifier).reset();
       ref.read(liveFeedShowFeedbackProvider.notifier).hide();
       ref.read(lastEvaluationResultProvider.notifier).clear();
+      ref.read(showWoHaengtsProvider.notifier).hide();
+      ref.read(woHaengtsInputProvider.notifier).clear();
+    }
 
-      // Refill buffer if needed
-      if (ref.read(questionBufferProvider.notifier).needsRefill) {
-        _generateQuestion();
-      }
-    } else {
-      // No questions available, generate new one
-      _generateQuestion();
+    // Check if we need to prefetch more questions
+    final queue = ref.read(liveFeedQueueProvider.notifier);
+    if (queue.needsMoreQuestions) {
+      _generateQuestions();
     }
   }
 
   void _handleAnswerSubmitted() {
-    // Answer evaluation is handled by FeedQuestionCard
-    // This is called after feedback is shown and auto-advance timer completes
+    // Advance to next question in queue
+    final nextQ = ref.read(liveFeedQueueProvider.notifier).nextQuestion();
 
-    // Load next question
-    _loadNextQuestion();
+    if (nextQ != null) {
+      // Reset and load new question
+      ref
+          .read(currentLiveFeedQuestionProvider.notifier)
+          .setQuestion(nextQ);
+      ref.read(selectedOptionProvider.notifier).clear();
+      ref.read(liveFeedHintsUsedProvider.notifier).reset();
+      ref.read(liveFeedShowFeedbackProvider.notifier).hide();
+      ref.read(lastEvaluationResultProvider.notifier).clear();
+      ref.read(showWoHaengtsProvider.notifier).hide();
+      ref.read(woHaengtsInputProvider.notifier).clear();
 
-    // Animate to next page if PageView is used for swipe
+      // Check if we need more questions
+      final queue = ref.read(liveFeedQueueProvider.notifier);
+      if (queue.needsMoreQuestions) {
+        _generateQuestions();
+      }
+    } else {
+      // Queue empty, generate more
+      ref.read(currentLiveFeedQuestionProvider.notifier).clear();
+      _generateQuestions().then((_) {
+        if (mounted) {
+          _loadNextFromQueue();
+        }
+      });
+    }
+
+    // Animate page transition if PageView is used
     if (_pageController.hasClients) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -192,6 +306,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     final currentQuestion = ref.watch(currentLiveFeedQuestionProvider);
     final questionsAnswered = ref.watch(liveFeedQuestionsAnsweredProvider);
     final correctAnswers = ref.watch(liveFeedCorrectAnswersProvider);
+    final queueState = ref.watch(liveFeedQueueProvider);
 
     // Calculate stats
     final correctPercentage = questionsAnswered > 0
@@ -204,7 +319,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         children: [
           // Question Area
           Expanded(
-            child: _buildQuestionArea(currentQuestion),
+            child: _buildQuestionArea(currentQuestion, queueState),
           ),
 
           // Stats Bar
@@ -214,12 +329,13 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     );
   }
 
-  Widget _buildQuestionArea(Question? currentQuestion) {
-    if (_errorMessage != null) {
+  Widget _buildQuestionArea(
+      Question? currentQuestion, LiveFeedQueueState queueState) {
+    if (_errorMessage != null && currentQuestion == null) {
       return _buildErrorView();
     }
 
-    if (_isGenerating && currentQuestion == null) {
+    if (queueState.isGenerating && currentQuestion == null) {
       return _buildLoadingView();
     }
 
@@ -227,19 +343,13 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       return _buildEmptyView();
     }
 
-    return PageView.builder(
-      controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(), // Disable manual swipe
-      itemCount: 1, // One question at a time
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: FeedQuestionCard(
-            question: currentQuestion,
-            onAnswerSubmitted: _handleAnswerSubmitted,
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: FeedQuestionCard(
+        key: ValueKey(currentQuestion.id),
+        question: currentQuestion,
+        onAnswerSubmitted: _handleAnswerSubmitted,
+      ),
     );
   }
 
@@ -251,8 +361,15 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
           const CircularProgressIndicator(),
           const SizedBox(height: 24),
           Text(
-            'Generiere Frage...',
+            'Generiere Fragen...',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Die KI erstellt personalisierte Fragen',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
@@ -289,15 +406,31 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
                   ),
             ),
             const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () {
-                setState(() {
-                  _errorMessage = null;
-                });
-                _generateQuestion();
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text('Erneut versuchen'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FilledButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _errorMessage = null;
+                    });
+                    _generateQuestions();
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Erneut versuchen'),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _errorMessage = null;
+                    });
+                    _useDemoQuestions();
+                  },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Demo-Fragen'),
+                ),
+              ],
             ),
           ],
         ),
@@ -324,23 +457,24 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Klicke auf "Frage generieren" um zu beginnen',
+            'Klicke auf "Fragen generieren" um zu beginnen',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: _generateQuestion,
+            onPressed: _generateQuestions,
             icon: const Icon(Icons.play_arrow),
-            label: const Text('Frage generieren'),
+            label: const Text('Fragen generieren'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatsBar(int questionsAnswered, int correctPercentage, int streak) {
+  Widget _buildStatsBar(
+      int questionsAnswered, int correctPercentage, int streak) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

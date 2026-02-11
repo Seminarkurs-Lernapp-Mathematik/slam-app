@@ -228,5 +228,77 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
+String _$liveFeedQueueHash() => r'54dd594b1642eed0295d71fd848c353896d63a30';
+
+/// Live Feed Queue Provider
+///
+/// Copied from [LiveFeedQueue].
+@ProviderFor(LiveFeedQueue)
+final liveFeedQueueProvider =
+    AutoDisposeNotifierProvider<LiveFeedQueue, LiveFeedQueueState>.internal(
+  LiveFeedQueue.new,
+  name: r'liveFeedQueueProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$liveFeedQueueHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LiveFeedQueue = AutoDisposeNotifier<LiveFeedQueueState>;
+String _$selectedOptionHash() => r'bae61e502fa7f1ed1a0cbffd2c7e33f40f967c59';
+
+/// Selected Option Provider (tracks which MCQ option was selected)
+///
+/// Copied from [SelectedOption].
+@ProviderFor(SelectedOption)
+final selectedOptionProvider =
+    AutoDisposeNotifierProvider<SelectedOption, String?>.internal(
+  SelectedOption.new,
+  name: r'selectedOptionProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$selectedOptionHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SelectedOption = AutoDisposeNotifier<String?>;
+String _$woHaengtsInputHash() => r'f53a82c7939dfefdaf4842f35554fd15906d06b5';
+
+/// "Wo haengts?" text input provider
+///
+/// Copied from [WoHaengtsInput].
+@ProviderFor(WoHaengtsInput)
+final woHaengtsInputProvider =
+    AutoDisposeNotifierProvider<WoHaengtsInput, String>.internal(
+  WoHaengtsInput.new,
+  name: r'woHaengtsInputProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$woHaengtsInputHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$WoHaengtsInput = AutoDisposeNotifier<String>;
+String _$showWoHaengtsHash() => r'8fb47338484fa4e64705f970096e6920e1b6e3c7';
+
+/// Whether "Wo haengts?" section should be shown
+///
+/// Copied from [ShowWoHaengts].
+@ProviderFor(ShowWoHaengts)
+final showWoHaengtsProvider =
+    AutoDisposeNotifierProvider<ShowWoHaengts, bool>.internal(
+  ShowWoHaengts.new,
+  name: r'showWoHaengtsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$showWoHaengtsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ShowWoHaengts = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

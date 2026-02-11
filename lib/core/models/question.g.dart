@@ -28,6 +28,10 @@ _$QuestionImpl _$$QuestionImplFromJson(Map<String, dynamic> json) =>
           : GeoGebraData.fromJson(json['geogebra'] as Map<String, dynamic>),
       hasGeoGebraVisualization:
           json['hasGeoGebraVisualization'] as bool? ?? false,
+      correctFeedback: json['correctFeedback'] as String?,
+      incorrectFeedback: json['incorrectFeedback'] as String?,
+      stepByStepData: _stepByStepDataFromJson(
+          json['stepByStepData'] as Map<String, dynamic>?),
     );
 
 Map<String, dynamic> _$$QuestionImplToJson(_$QuestionImpl instance) =>
@@ -44,6 +48,9 @@ Map<String, dynamic> _$$QuestionImplToJson(_$QuestionImpl instance) =>
       'explanation': instance.explanation,
       'geogebra': instance.geogebra,
       'hasGeoGebraVisualization': instance.hasGeoGebraVisualization,
+      'correctFeedback': instance.correctFeedback,
+      'incorrectFeedback': instance.incorrectFeedback,
+      'stepByStepData': _stepByStepDataToJson(instance.stepByStepData),
     };
 
 const _$QuestionTypeEnumMap = {

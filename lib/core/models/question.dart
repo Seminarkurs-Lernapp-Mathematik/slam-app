@@ -3,6 +3,52 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'question.freezed.dart';
 part 'question.g.dart';
 
+/// Step-by-step question data (non-Freezed for simplicity)
+class StepByStepData {
+  final String type; // 'next-action' or 'sort-steps'
+  final List<StepOption> steps;
+  final List<String> correctOrder;
+
+  StepByStepData({
+    required this.type,
+    required this.steps,
+    required this.correctOrder,
+  });
+
+  factory StepByStepData.fromJson(Map<String, dynamic> json) {
+    return StepByStepData(
+      type: json['type'] as String,
+      steps: (json['steps'] as List)
+          .map((s) => StepOption.fromJson(s as Map<String, dynamic>))
+          .toList(),
+      correctOrder: (json['correctOrder'] as List).cast<String>(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'steps': steps.map((s) => s.toJson()).toList(),
+        'correctOrder': correctOrder,
+      };
+}
+
+/// Individual step option
+class StepOption {
+  final String id;
+  final String text;
+
+  StepOption({required this.id, required this.text});
+
+  factory StepOption.fromJson(Map<String, dynamic> json) {
+    return StepOption(
+      id: json['id'] as String,
+      text: json['text'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'id': id, 'text': text};
+}
+
 /// Question Model
 ///
 /// Kompatibel mit React App Question Structure
@@ -23,11 +69,22 @@ class Question with _$Question {
     required String explanation,
     GeoGebraData? geogebra,
     @Default(false) bool hasGeoGebraVisualization,
+    String? correctFeedback, // Rewarding feedback for correct answer
+    String? incorrectFeedback, // Explanatory feedback for wrong answer
+    @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+    StepByStepData? stepByStepData, // Data for step-by-step questions
   }) = _Question;
 
   factory Question.fromJson(Map<String, dynamic> json) =>
       _$QuestionFromJson(json);
 }
+
+/// JSON helpers for StepByStepData (non-Freezed class in Freezed model)
+StepByStepData? _stepByStepDataFromJson(Map<String, dynamic>? json) =>
+    json != null ? StepByStepData.fromJson(json) : null;
+
+Map<String, dynamic>? _stepByStepDataToJson(StepByStepData? data) =>
+    data?.toJson();
 
 /// Question Type Enum
 @JsonEnum(valueField: 'value')

@@ -33,6 +33,12 @@ mixin _$Question {
   String get explanation => throw _privateConstructorUsedError;
   GeoGebraData? get geogebra => throw _privateConstructorUsedError;
   bool get hasGeoGebraVisualization => throw _privateConstructorUsedError;
+  String? get correctFeedback =>
+      throw _privateConstructorUsedError; // Rewarding feedback for correct answer
+  String? get incorrectFeedback =>
+      throw _privateConstructorUsedError; // Explanatory feedback for wrong answer
+  @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+  StepByStepData? get stepByStepData => throw _privateConstructorUsedError;
 
   /// Serializes this Question to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,7 +67,11 @@ abstract class $QuestionCopyWith<$Res> {
       String solution,
       String explanation,
       GeoGebraData? geogebra,
-      bool hasGeoGebraVisualization});
+      bool hasGeoGebraVisualization,
+      String? correctFeedback,
+      String? incorrectFeedback,
+      @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+      StepByStepData? stepByStepData});
 
   $GeoGebraDataCopyWith<$Res>? get geogebra;
 }
@@ -93,6 +103,9 @@ class _$QuestionCopyWithImpl<$Res, $Val extends Question>
     Object? explanation = null,
     Object? geogebra = freezed,
     Object? hasGeoGebraVisualization = null,
+    Object? correctFeedback = freezed,
+    Object? incorrectFeedback = freezed,
+    Object? stepByStepData = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -143,6 +156,18 @@ class _$QuestionCopyWithImpl<$Res, $Val extends Question>
           ? _value.hasGeoGebraVisualization
           : hasGeoGebraVisualization // ignore: cast_nullable_to_non_nullable
               as bool,
+      correctFeedback: freezed == correctFeedback
+          ? _value.correctFeedback
+          : correctFeedback // ignore: cast_nullable_to_non_nullable
+              as String?,
+      incorrectFeedback: freezed == incorrectFeedback
+          ? _value.incorrectFeedback
+          : incorrectFeedback // ignore: cast_nullable_to_non_nullable
+              as String?,
+      stepByStepData: freezed == stepByStepData
+          ? _value.stepByStepData
+          : stepByStepData // ignore: cast_nullable_to_non_nullable
+              as StepByStepData?,
     ) as $Val);
   }
 
@@ -181,7 +206,11 @@ abstract class _$$QuestionImplCopyWith<$Res>
       String solution,
       String explanation,
       GeoGebraData? geogebra,
-      bool hasGeoGebraVisualization});
+      bool hasGeoGebraVisualization,
+      String? correctFeedback,
+      String? incorrectFeedback,
+      @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+      StepByStepData? stepByStepData});
 
   @override
   $GeoGebraDataCopyWith<$Res>? get geogebra;
@@ -212,6 +241,9 @@ class __$$QuestionImplCopyWithImpl<$Res>
     Object? explanation = null,
     Object? geogebra = freezed,
     Object? hasGeoGebraVisualization = null,
+    Object? correctFeedback = freezed,
+    Object? incorrectFeedback = freezed,
+    Object? stepByStepData = freezed,
   }) {
     return _then(_$QuestionImpl(
       id: null == id
@@ -262,6 +294,18 @@ class __$$QuestionImplCopyWithImpl<$Res>
           ? _value.hasGeoGebraVisualization
           : hasGeoGebraVisualization // ignore: cast_nullable_to_non_nullable
               as bool,
+      correctFeedback: freezed == correctFeedback
+          ? _value.correctFeedback
+          : correctFeedback // ignore: cast_nullable_to_non_nullable
+              as String?,
+      incorrectFeedback: freezed == incorrectFeedback
+          ? _value.incorrectFeedback
+          : incorrectFeedback // ignore: cast_nullable_to_non_nullable
+              as String?,
+      stepByStepData: freezed == stepByStepData
+          ? _value.stepByStepData
+          : stepByStepData // ignore: cast_nullable_to_non_nullable
+              as StepByStepData?,
     ));
   }
 }
@@ -281,7 +325,11 @@ class _$QuestionImpl extends _Question {
       required this.solution,
       required this.explanation,
       this.geogebra,
-      this.hasGeoGebraVisualization = false})
+      this.hasGeoGebraVisualization = false,
+      this.correctFeedback,
+      this.incorrectFeedback,
+      @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+      this.stepByStepData})
       : _options = options,
         _hints = hints,
         super._();
@@ -334,10 +382,19 @@ class _$QuestionImpl extends _Question {
   @override
   @JsonKey()
   final bool hasGeoGebraVisualization;
+  @override
+  final String? correctFeedback;
+// Rewarding feedback for correct answer
+  @override
+  final String? incorrectFeedback;
+// Explanatory feedback for wrong answer
+  @override
+  @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+  final StepByStepData? stepByStepData;
 
   @override
   String toString() {
-    return 'Question(id: $id, type: $type, difficulty: $difficulty, topic: $topic, subtopic: $subtopic, question: $question, options: $options, hints: $hints, solution: $solution, explanation: $explanation, geogebra: $geogebra, hasGeoGebraVisualization: $hasGeoGebraVisualization)';
+    return 'Question(id: $id, type: $type, difficulty: $difficulty, topic: $topic, subtopic: $subtopic, question: $question, options: $options, hints: $hints, solution: $solution, explanation: $explanation, geogebra: $geogebra, hasGeoGebraVisualization: $hasGeoGebraVisualization, correctFeedback: $correctFeedback, incorrectFeedback: $incorrectFeedback, stepByStepData: $stepByStepData)';
   }
 
   @override
@@ -364,7 +421,13 @@ class _$QuestionImpl extends _Question {
                 other.geogebra == geogebra) &&
             (identical(
                     other.hasGeoGebraVisualization, hasGeoGebraVisualization) ||
-                other.hasGeoGebraVisualization == hasGeoGebraVisualization));
+                other.hasGeoGebraVisualization == hasGeoGebraVisualization) &&
+            (identical(other.correctFeedback, correctFeedback) ||
+                other.correctFeedback == correctFeedback) &&
+            (identical(other.incorrectFeedback, incorrectFeedback) ||
+                other.incorrectFeedback == incorrectFeedback) &&
+            (identical(other.stepByStepData, stepByStepData) ||
+                other.stepByStepData == stepByStepData));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -382,7 +445,10 @@ class _$QuestionImpl extends _Question {
       solution,
       explanation,
       geogebra,
-      hasGeoGebraVisualization);
+      hasGeoGebraVisualization,
+      correctFeedback,
+      incorrectFeedback,
+      stepByStepData);
 
   /// Create a copy of Question
   /// with the given fields replaced by the non-null parameter values.
@@ -413,7 +479,11 @@ abstract class _Question extends Question {
       required final String solution,
       required final String explanation,
       final GeoGebraData? geogebra,
-      final bool hasGeoGebraVisualization}) = _$QuestionImpl;
+      final bool hasGeoGebraVisualization,
+      final String? correctFeedback,
+      final String? incorrectFeedback,
+      @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+      final StepByStepData? stepByStepData}) = _$QuestionImpl;
   const _Question._() : super._();
 
   factory _Question.fromJson(Map<String, dynamic> json) =
@@ -443,6 +513,13 @@ abstract class _Question extends Question {
   GeoGebraData? get geogebra;
   @override
   bool get hasGeoGebraVisualization;
+  @override
+  String? get correctFeedback; // Rewarding feedback for correct answer
+  @override
+  String? get incorrectFeedback; // Explanatory feedback for wrong answer
+  @override
+  @JsonKey(fromJson: _stepByStepDataFromJson, toJson: _stepByStepDataToJson)
+  StepByStepData? get stepByStepData;
 
   /// Create a copy of Question
   /// with the given fields replaced by the non-null parameter values.
