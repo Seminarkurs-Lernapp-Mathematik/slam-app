@@ -89,3 +89,4 @@ After deployment completes, visit:
 **Backend Note:** The backend at `api.learn-smart.app` auto-deploys via Cloudflare's GitHub integration. No GitHub Actions needed for backend.
 
 **Need help?** Check [Cloudflare Pages Docs](https://developers.cloudflare.com/pages/)
+
