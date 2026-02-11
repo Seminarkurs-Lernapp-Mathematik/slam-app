@@ -33,7 +33,7 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
             color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -229,7 +229,7 @@ class _ContentCard extends StatelessWidget {
             // Icon/Thumbnail
             Expanded(
               child: Container(
-                color: _getTypeColor(content.type).withOpacity(0.1),
+                color: _getTypeColor(content.type).withValues(alpha: 0.1),
                 child: Center(
                   child: Icon(
                     _getTypeIcon(content.type),

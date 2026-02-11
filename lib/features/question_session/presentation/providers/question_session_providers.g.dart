@@ -6,26 +6,6 @@ part of 'question_session_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$demoQuestionsHash() => r'4135a6fd52ac2195633ab4c034789091348a0260';
-
-/// Demo Questions Provider - Sample questions with LaTeX
-///
-/// Copied from [demoQuestions].
-@ProviderFor(demoQuestions)
-final demoQuestionsProvider =
-    AutoDisposeProvider<List<Map<String, dynamic>>>.internal(
-  demoQuestions,
-  name: r'demoQuestionsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$demoQuestionsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef DemoQuestionsRef = AutoDisposeProviderRef<List<Map<String, dynamic>>>;
 String _$currentQuestionIndexHash() =>
     r'446da66f94d4279f27b6a54569deb0f54742adee';
 

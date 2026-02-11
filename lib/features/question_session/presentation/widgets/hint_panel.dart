@@ -3,18 +3,70 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/question_session_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
+import '../../../../core/services/ai_service.dart'; // New import
+import '../../../settings/presentation/providers/settings_providers.dart'; // New import
+import '../../../../core/services/auth_service.dart'; // New import for userId
+
+final customHintProvider = StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>((ref) {
+  return CustomHintNotifier(ref);
+});
+
+class CustomHintNotifier extends StateNotifier<AsyncValue<String?>> {
+  CustomHintNotifier(this.ref) : super(const AsyncValue.data(null));
+
+  final Ref ref;
+
+  Future<void> requestCustomHint({
+    required String questionText,
+    required String userAnswer,
+    required int hintsUsed,
+  }) async {
+    state = const AsyncValue.loading();
+
+    try {
+      final appSettings = ref.read(appSettingsNotifierProvider);
+      final aiProvider = appSettings.aiProvider;
+      final selectedModel = appSettings.getActiveModel();
+      final apiKey = aiProvider == 'claude'
+          ? appSettings.claudeApiKey
+          : appSettings.geminiApiKey;
+
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception(
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+        );
+      }
+
+      final hint = await ref.read(aiServiceProvider).getCustomHint(
+            questionText: questionText,
+            userAnswer: userAnswer,
+            hintsAlreadyUsed: hintsUsed,
+            apiKey: apiKey,
+            provider: aiProvider,
+            selectedModel: selectedModel,
+          );
+      state = AsyncValue.data(hint);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+}
 
 /// Hint Panel Widget - 3-level hint system
+///
+/// This panel displays progressive hints for a question.
+/// Hints are provided as a list of strings from the parent widget.
 class HintPanel extends ConsumerWidget {
-  const HintPanel({super.key});
+  final List<String> hints;
+
+  const HintPanel({
+    super.key,
+    this.hints = const [],
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentIndex = ref.watch(currentQuestionIndexProvider);
-    final demoQuestions = ref.watch(demoQuestionsProvider);
     final hintsUsed = ref.watch(hintsUsedProvider);
-    final currentQuestion = demoQuestions[currentIndex];
-    final hints = currentQuestion['hints'] as List<dynamic>? ?? [];
 
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
@@ -62,7 +114,7 @@ class HintPanel extends ConsumerWidget {
             // Hint Level 1
             _HintCard(
               level: 1,
-              hint: hints.isNotEmpty ? hints[0] as String : 'Überlege dir die Grundlagen',
+              hint: hints.isNotEmpty ? hints[0] : 'Überlege dir die Grundlagen',
               isRevealed: hintsUsed >= 1,
               onReveal: () => _revealHint(ref, 1),
             ),
@@ -72,7 +124,7 @@ class HintPanel extends ConsumerWidget {
             // Hint Level 2
             _HintCard(
               level: 2,
-              hint: hints.length > 1 ? hints[1] as String : 'Verwende eine passende Formel',
+              hint: hints.length > 1 ? hints[1] : 'Verwende eine passende Formel',
               isRevealed: hintsUsed >= 2,
               onReveal: () => _revealHint(ref, 2),
             ),
@@ -82,19 +134,15 @@ class HintPanel extends ConsumerWidget {
             // Hint Level 3
             _HintCard(
               level: 3,
-              hint: hints.length > 2 ? hints[2] as String : 'Schritt für Schritt vorgehen',
+              hint: hints.length > 2 ? hints[2] : 'Schritt für Schritt vorgehen',
               isRevealed: hintsUsed >= 3,
               onReveal: () => _revealHint(ref, 3),
             ),
 
             const SizedBox(height: 24),
 
-            // Custom Hint Button (TODO: Implement AI-powered hints)
-            OutlinedButton.icon(
-              onPressed: null, // TODO: Implement custom hint request
-              icon: const Icon(Icons.auto_awesome),
-              label: const Text('Individuelle Hilfe anfragen'),
-            ),
+            // Custom Hint Section
+            _CustomHintSection(hints: hints),
 
             const SizedBox(height: 16),
           ],
@@ -108,6 +156,84 @@ class HintPanel extends ConsumerWidget {
     if (currentHints < level) {
       ref.read(hintsUsedProvider.notifier).setLevel(level);
     }
+  }
+}
+
+class _CustomHintSection extends ConsumerWidget {
+  final List<String> hints;
+
+  const _CustomHintSection({required this.hints});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final customHintAsync = ref.watch(customHintProvider);
+    final currentQuestion = ref.watch(currentQuestionProvider);
+    final currentAnswer = ref.watch(currentAnswerProvider);
+    final hintsUsedCount = ref.watch(hintsUsedProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OutlinedButton.icon(
+          onPressed: customHintAsync.isLoading
+              ? null
+              : () {
+                  if (currentQuestion != null) {
+                    ref.read(customHintProvider.notifier).requestCustomHint(
+                          questionText: currentQuestion.questionText,
+                          userAnswer: currentAnswer,
+                          hintsUsed: hintsUsedCount,
+                        );
+                  }
+                },
+          icon: customHintAsync.isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.auto_awesome),
+          label: Text(
+            customHintAsync.isLoading
+                ? 'Individuelle Hilfe wird generiert...'
+                : 'Individuelle Hilfe anfragen',
+          ),
+        ),
+        if (customHintAsync.hasValue && customHintAsync.value != null) ...[
+          const SizedBox(height: 12),
+          GlassPanel(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'KI-Hilfe:',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    customHintAsync.value!,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+        if (customHintAsync.hasError) ...[
+          const SizedBox(height: 12),
+          Text(
+            'Fehler beim Abrufen der KI-Hilfe: ${customHintAsync.error}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+          ),
+        ],
+      ],
+    );
   }
 }
 

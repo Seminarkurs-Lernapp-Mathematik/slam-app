@@ -170,6 +170,9 @@ class AIService {
     required String questionText,
     required String userAnswer,
     required int hintsAlreadyUsed,
+    required String apiKey,
+    String provider = 'claude',
+    required String selectedModel, // Added required selectedModel
   }) async {
     try {
       final response = await _dio.post(
@@ -178,6 +181,9 @@ class AIService {
           'question': questionText,
           'userAnswer': userAnswer,
           'hintsUsed': hintsAlreadyUsed,
+          'apiKey': apiKey,
+          'provider': provider,
+          'selectedModel': selectedModel, // Pass selectedModel to backend
         },
       );
 
@@ -198,6 +204,9 @@ class AIService {
     required String questionText,
     required String topic,
     String? userPrompt,
+    required String apiKey,
+    required String selectedModel,
+    required String provider,
   }) async {
     try {
       final response = await _dio.post(
@@ -206,6 +215,9 @@ class AIService {
           'question': questionText,
           'topic': topic,
           'userPrompt': userPrompt,
+          'apiKey': apiKey,
+          'selectedModel': selectedModel,
+          'provider': provider,
         },
       );
 
@@ -253,13 +265,17 @@ class AIService {
   Future<GeneratedApp> generateMiniApp({
     required String description,
     required String selectedModel,
+    required String apiKey,
+    String provider = 'claude',
   }) async {
     try {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateMiniApp),
         data: {
           'description': description,
-          'model': selectedModel,
+          'selectedModel': selectedModel,
+          'apiKey': apiKey,
+          'provider': provider,
         },
       );
 
@@ -355,6 +371,37 @@ class AIService {
         },
       );
 
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
+  // ============================================================================
+  // PURCHASE ITEMS
+  // ============================================================================
+
+  /// Purchase an item (theme, streak freeze, etc.)
+  ///
+  /// POST /api/purchase
+  Future<Map<String, dynamic>> purchaseItem({
+    required String userId,
+    required String itemType, // e.g., 'theme', 'streakFreeze'
+    required String itemId,   // e.g., 'oceanBlue', 'streakFreeze'
+    required int cost,
+    String? apiKey, // for future expansion, if purchase affects AI usage
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.getFullUrl(ApiEndpoints.purchase),
+        data: {
+          'userId': userId,
+          'itemType': itemType,
+          'itemId': itemId,
+          'cost': cost,
+          'apiKey': apiKey,
+        },
+      );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);

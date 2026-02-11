@@ -131,9 +131,9 @@ class ProfilScreen extends ConsumerWidget {
         Expanded(
           child: _buildActionCard(
             context,
-            icon: Icons.dashboard_customize,
-            label: 'App Center',
-            onTap: () => _showCommandCenter(context),
+            icon: Icons.menu_book,
+            label: 'Lernplan',
+            onTap: () => context.go('/lernplan'),
           ),
         ),
         const SizedBox(width: 12),
@@ -185,14 +185,6 @@ class ProfilScreen extends ConsumerWidget {
     );
   }
 
-  void _showCommandCenter(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const _CommandCenterSheet(),
-    );
-  }
 }
 
 /// Embedded Progress Content (reuses Progress Screen content)
@@ -383,165 +375,3 @@ class _ProgressContent extends ConsumerWidget {
   }
 }
 
-/// Command Center Bottom Sheet
-class _CommandCenterSheet extends ConsumerWidget {
-  const _CommandCenterSheet();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final authService = ref.watch(authServiceProvider);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Drag Handle
-          Center(
-            child: Container(
-              width: 32,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Header
-          Row(
-            children: [
-              Icon(
-                Icons.dashboard_customize,
-                color: theme.colorScheme.primary,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'App Center',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Quick Actions Grid
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _buildActionButton(
-                context,
-                icon: Icons.auto_awesome,
-                label: 'Neue Lernsession',
-                color: theme.colorScheme.primary,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/learning-plan');
-                },
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.rss_feed,
-                label: 'Live Feed',
-                color: Colors.orange,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.extension,
-                label: 'Apps Hub',
-                color: Colors.purple,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.psychology,
-                label: 'KI-Labor',
-                color: Colors.cyan,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/apps/generative');
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Logout Button
-          FilledButton.tonalIcon(
-            onPressed: () async {
-              await authService.signOut();
-              if (context.mounted) {
-                Navigator.of(context).pop();
-                context.go('/login');
-              }
-            },
-            icon: const Icon(Icons.logout),
-            label: const Text('Abmelden'),
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.errorContainer,
-              foregroundColor: theme.colorScheme.onErrorContainer,
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: (MediaQuery.of(context).size.width - 72) / 2,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withValues(alpha: 0.3),
-            width: 2,
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

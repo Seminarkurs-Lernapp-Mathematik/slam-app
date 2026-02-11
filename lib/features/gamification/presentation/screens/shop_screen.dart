@@ -231,24 +231,32 @@ class _ThemesTab extends ConsumerWidget {
 
     if (confirmed == true && context.mounted) {
       try {
-        // Deduct coins
-        final updatedStats = stats.spendCoins(price, 'theme_${preset.name}');
-        await ref
-            .read(firestoreServiceProvider)
-            .updateUserStats(userId, updatedStats);
+        final aiService = ref.read(aiServiceProvider);
+        final response = await aiService.purchaseItem(
+          userId: userId,
+          itemType: 'theme',
+          itemId: preset.name,
+          cost: price,
+        );
 
-        // Unlock theme
-        await ref
-            .read(firestoreServiceProvider)
-            .unlockTheme(userId: userId, themeName: preset.name);
-
-        if (context.mounted) {
-          // Show success animation
-          PurchaseSuccessAnimation.show(
-            context,
-            itemName: ThemePricing.getName(preset),
-            icon: Icons.palette,
-          );
+        if (response['success'] == true) {
+          if (context.mounted) {
+            PurchaseSuccessAnimation.show(
+              context,
+              itemName: ThemePricing.getName(preset),
+              icon: Icons.palette,
+            );
+          }
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Fehler beim Kauf: ${response['message'] ?? 'Unbekannter Fehler'}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       } catch (e) {
         if (context.mounted) {
@@ -551,7 +559,62 @@ class _ItemsTab extends ConsumerWidget {
 
     if (confirmed == true && context.mounted) {
       try {
-        final updatedStats = stats.purchaseStreakFreezeWithCoins();
+        final aiService = ref.read(aiServiceProvider);
+        final response = await aiService.purchaseItem(
+          userId: userId,
+          itemType: 'streakFreeze',
+          itemId: 'streakFreeze', // Generic ID for streak freeze
+          cost: 50,
+        );
+
+        if (response['success'] == true) {
+          if (context.mounted) {
+            PurchaseSuccessAnimation.show(
+              context,
+              itemName: 'Streak Freeze',
+              icon: Icons.ac_unit,
+            );
+          }
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Fehler beim Kauf: ${response['message'] ?? 'Unbekannter Fehler'}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Fehler: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _purchaseStreakFreezeWithXP(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final confirmed = await _showPurchaseDialog(
+      context,
+      title: 'Streak Freeze kaufen?',
+      cost: '100 XP',
+      icon: Icons.star,
+      iconColor: Theme.of(context).colorScheme.primary,
+      warning: 'Achtung: Du verlierst 100 XP!',
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        final updatedStats = stats.purchaseStreakFreeze();
         await ref
             .read(firestoreServiceProvider)
             .updateUserStats(userId, updatedStats);
@@ -575,6 +638,146 @@ class _ItemsTab extends ConsumerWidget {
       }
     }
   }
+
+  Future<bool?> _showPurchaseDialog(
+    BuildContext context, {
+    required String title,
+    required String cost,
+    required IconData icon,
+    required Color iconColor,
+    String? warning,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: iconColor),
+                const SizedBox(width: 8),
+                Text(
+                  cost,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            if (warning != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                warning,
+                style: TextStyle(color: Colors.orange.shade700),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Kaufen'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Purchase Button Widget
+class _PurchaseButton extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  const _PurchaseButton({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.tonal(
+      onPressed: enabled ? onPressed : null,
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: enabled ? iconColor : null),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
+      ),
+    );
+  }
+}
+
+/// Info Row Widget
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _InfoRow({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(text, style: theme.textTheme.bodySmall),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Provider for Theme Unlocks Stream
+final themeUnlocksStreamProvider =
+    StreamProvider.autoDispose.family((ref, String userId) {
+  if (userId.isEmpty) {
+    return Stream.value(ThemeUnlocks.initial());
+  }
+
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return firestoreService.themeUnlocksStream(userId).map((data) {
+    final unlockedThemes = (data['unlockedThemes'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        ['sunsetOrange'];
+    return ThemeUnlocks(unlockedThemes: unlockedThemes);
+  });
+});
+
+/// Provider for User Stats Stream (reuse from progress_screen)
+final userStatsStreamProvider =
+    StreamProvider.autoDispose.family((ref, String userId) {
+  if (userId.isEmpty) {
+    return Stream.value(UserStats.initial());
+  }
+
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return firestoreService.userStatsStream(userId);
+});
+
 
   Future<void> _purchaseStreakFreezeWithXP(
     BuildContext context,

@@ -57,10 +57,25 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     });
 
     try {
+      final appSettings = ref.read(appSettingsNotifierProvider);
+      final aiProvider = appSettings.aiProvider;
+      final selectedModel = appSettings.getActiveModel(); // Use active model for generation
+      final apiKey = aiProvider == 'claude'
+          ? appSettings.claudeApiKey
+          : appSettings.geminiApiKey;
+
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception(
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+        );
+      }
+
       final app = await ref.read(
         generateMiniAppProvider(
           description: _promptController.text.trim(),
-          selectedModel: 'gpt-4',
+          selectedModel: selectedModel,
+          apiKey: apiKey,
+          provider: aiProvider,
         ).future,
       );
 
@@ -232,7 +247,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
             color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -373,7 +388,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),

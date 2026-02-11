@@ -23,6 +23,8 @@ class ModelSelectionPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    // Force refresh models every time this panel is shown
+    ref.invalidate(availableModelsProvider);
     final modelsAsync = ref.watch(availableModelsProvider);
     final settings = ref.watch(appSettingsNotifierProvider);
 
@@ -136,7 +138,7 @@ class ModelSelectionPanel extends ConsumerWidget {
             child: DropdownButton<String>(
               isExpanded: true,
               value: selectedModelId,
-              hint: const Text('Standard verwenden'),
+              hint: Text('Standard (${models.firstWhere((m) => m.id == settings.getActiveModel(), orElse: () => const ModelInfo(id: 'unknown', name: 'Unbekannt', provider: 'unknown', tier: 'unknown', description: '')).name})'),
               items: models.map((model) {
                 return DropdownMenuItem<String>(
                   value: model.id,

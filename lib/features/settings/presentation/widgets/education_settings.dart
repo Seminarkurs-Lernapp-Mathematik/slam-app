@@ -55,38 +55,43 @@ class EducationSettings extends ConsumerWidget {
               onChanged: (value) {
                 if (value != null) {
                   ref.read(educationConfigNotifierProvider.notifier).setGradeLevel(value);
+                  // Auto-reset course type for non-Oberstufe grades
+                  if (value != '11' && value != '12') {
+                    ref.read(educationConfigNotifierProvider.notifier).setCourseType(CourseType.grundkurs);
+                  }
                 }
               },
             ),
 
-            const SizedBox(height: 16),
-
-            // Course Type Dropdown
-            DropdownButtonFormField<CourseType>(
-              value: config.courseType,
-              decoration: InputDecoration(
-                labelText: 'Kursart',
-                prefixIcon: const Icon(Icons.menu_book),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            // Course Type Dropdown - only shown for Klasse 11 and 12
+            if (config.gradeLevel == '11' || config.gradeLevel == '12') ...[
+              const SizedBox(height: 16),
+              DropdownButtonFormField<CourseType>(
+                value: config.courseType,
+                decoration: InputDecoration(
+                  labelText: 'Kursart',
+                  prefixIcon: const Icon(Icons.menu_book),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
+                items: const [
+                  DropdownMenuItem(
+                    value: CourseType.grundkurs,
+                    child: Text('Grundkurs'),
+                  ),
+                  DropdownMenuItem(
+                    value: CourseType.leistungskurs,
+                    child: Text('Leistungskurs'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    ref.read(educationConfigNotifierProvider.notifier).setCourseType(value);
+                  }
+                },
               ),
-              items: const [
-                DropdownMenuItem(
-                  value: CourseType.grundkurs,
-                  child: Text('Grundkurs'),
-                ),
-                DropdownMenuItem(
-                  value: CourseType.leistungskurs,
-                  child: Text('Leistungskurs'),
-                ),
-              ],
-              onChanged: (value) {
-                if (value != null) {
-                  ref.read(educationConfigNotifierProvider.notifier).setCourseType(value);
-                }
-              },
-            ),
+            ],
           ],
         ),
       ),

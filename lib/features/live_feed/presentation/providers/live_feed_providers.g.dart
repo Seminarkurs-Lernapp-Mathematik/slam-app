@@ -228,6 +228,25 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
+String _$liveFeedQuestionGeneratorHash() =>
+    r'dfdd59e7c1aff22e1c1d8e3762413c1ac699c2d1';
+
+/// Live Feed Question Generator
+///
+/// Copied from [LiveFeedQuestionGenerator].
+@ProviderFor(LiveFeedQuestionGenerator)
+final liveFeedQuestionGeneratorProvider =
+    AutoDisposeNotifierProvider<LiveFeedQuestionGenerator, bool>.internal(
+  LiveFeedQuestionGenerator.new,
+  name: r'liveFeedQuestionGeneratorProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$liveFeedQuestionGeneratorHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
 String _$liveFeedQueueHash() => r'54dd594b1642eed0295d71fd848c353896d63a30';
 
 /// Live Feed Queue Provider
@@ -300,5 +319,24 @@ final showWoHaengtsProvider =
 );
 
 typedef _$ShowWoHaengts = AutoDisposeNotifier<bool>;
+String _$liveFeedEvaluatorHash() => r'c885b86c45af772e939d545cb6b7d001d17c757c';
+
+/// Live Feed Evaluator Provider
+/// This provider listens for new evaluation results and saves them to Firestore.
+///
+/// Copied from [LiveFeedEvaluator].
+@ProviderFor(LiveFeedEvaluator)
+final liveFeedEvaluatorProvider =
+    AutoDisposeNotifierProvider<LiveFeedEvaluator, void>.internal(
+  LiveFeedEvaluator.new,
+  name: r'liveFeedEvaluatorProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$liveFeedEvaluatorHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LiveFeedEvaluator = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

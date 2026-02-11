@@ -5,6 +5,7 @@ import '../models/user_stats.dart';
 import '../models/user_settings.dart';
 import '../models/question.dart';
 import '../models/topic.dart';
+import '../models/lernplan.dart'; // New import
 import '../constants/firebase_collections.dart';
 
 part 'firestore_service.g.dart';
@@ -49,9 +50,13 @@ class FirestoreService {
       },
       FirebaseCollections.stats: UserStats.initial().toJson(),
       FirebaseCollections.settings: UserSettings.initial().toJson(),
-      FirebaseCollections.learningPlan: {
-        'topics': [],
-      },
+      FirebaseCollections.learningPlan: Lernplan(
+        id: userId, // Lernplan ID same as User ID for single Lernplan per user
+        userId: userId,
+        topics: [],
+        createdAtTimestamp: now.millisecondsSinceEpoch,
+        updatedAtTimestamp: now.millisecondsSinceEpoch,
+      ).toJson(),
       FirebaseCollections.memories: [],
       FirebaseCollections.taskHistory: [],
     });
@@ -322,154 +327,148 @@ class FirestoreService {
   }
 
   // ============================================================================
-  // LEARNING SESSIONS
+  // QUESTION HISTORY
   // ============================================================================
 
-  /// Create learning session
-  Future<void> createLearningSession({
-    required String userId,
-    required LearningSession session,
-  }) async {
+  /// Save question result
+  Future<void> saveQuestionResult(String userId, QuestionResult result) async {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection(FirebaseCollections.learningSessions)
-        .doc(session.sessionId)
-        .set(session.toJson());
+        .collection(FirebaseCollections.questionHistory) // new subcollection
+        .add(result.toJson()); // add document with auto-generated ID
   }
 
-  /// Update learning session
-  Future<void> updateLearningSession({
-    required String userId,
-    required String sessionId,
-    required Map<String, dynamic> updates,
-  }) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection(FirebaseCollections.learningSessions)
-        .doc(sessionId)
-        .update(updates);
-  }
-
-  /// Complete learning session
-  Future<void> completeLearningSession({
-    required String userId,
-    required String sessionId,
-    required Map<String, dynamic> finalStats,
-  }) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection(FirebaseCollections.learningSessions)
-        .doc(sessionId)
-        .update({
-      ...finalStats,
-      'endedAt': Timestamp.fromDate(DateTime.now()),
-    });
-  }
-
-  /// Get recent learning sessions
-  Future<List<LearningSession>> getRecentLearningSessions({
-    required String userId,
-    int limit = 10,
-  }) async {
+  /// Get recent performance (last N results)
+  Future<List<QuestionResult>> getRecentPerformance(String userId,
+      {int limit = 10}) async {
     final querySnapshot = await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection(FirebaseCollections.learningSessions)
-        .orderBy('startedAt', descending: true)
+        .collection(FirebaseCollections.questionHistory)
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
 
     return querySnapshot.docs
-        .map((doc) => LearningSession.fromJson(doc.data()))
+        .map((doc) => QuestionResult.fromJson(doc.data()))
         .toList();
   }
 
   // ============================================================================
-  // LEARNING PLANS
+  // LERNPLAN
   // ============================================================================
 
-  /// Create learning plan
-  Future<void> createLearningPlan({
-    required String userId,
-    required Map<String, dynamic> planData,
-  }) async {
+  /// Save Lernplan (updates the Lernplan field on the user document)
+  Future<void> saveLernplan(String userId, Lernplan lernplan) async {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('learningPlans')
-        .doc(planData['id'] as String)
-        .set(planData);
+        .set({
+      FirebaseCollections.learningPlan: lernplan.toJson(),
+    }, SetOptions(merge: true));
   }
 
-  /// Update learning plan
-  Future<void> updateLearningPlan({
-    required String userId,
-    required String planId,
-    required Map<String, dynamic> updates,
-  }) async {
-    await _firestore
+  /// Get Lernplan stream (real-time updates for the Lernplan field on the user document)
+  Stream<Lernplan> getLernplanStream(String userId) {
+    return _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('learningPlans')
-        .doc(planId)
-        .update(updates);
+        .snapshots()
+        .map((snapshot) {
+      final data = snapshot.data();
+      if (data == null || !data.containsKey(FirebaseCollections.learningPlan)) {
+        return Lernplan(
+          id: userId,
+          userId: userId,
+          topics: [],
+          createdAtTimestamp: 0,
+          updatedAtTimestamp: 0,
+        ); // Return empty Lernplan if not found
+      }
+
+      final lernplanData =
+          data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+
+      return Lernplan.fromJson(lernplanData);
+    });
   }
 
-  /// Get learning plan
-  Future<Map<String, dynamic>?> getLearningPlan({
-    required String userId,
-    required String planId,
-  }) async {
-    final doc = await _firestore
+  /// Add topics to an existing Lernplan
+  Future<void> addTopicsToLernplan(String userId, List<LernplanTopic> newTopics) async {
+    final lernplanDoc = _firestore
         .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection('learningPlans')
-        .doc(planId)
-        .get();
+        .doc(userId);
 
-    return doc.data();
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(lernplanDoc);
+      final data = snapshot.data();
+
+      if (data == null || !data.containsKey(FirebaseCollections.learningPlan)) {
+        // Lernplan not found, create a new one with new topics
+        final now = DateTime.now();
+        final newLernplan = Lernplan(
+          id: userId,
+          userId: userId,
+          topics: newTopics,
+          createdAtTimestamp: now.millisecondsSinceEpoch,
+          updatedAtTimestamp: now.millisecondsSinceEpoch,
+        );
+        transaction.set(lernplanDoc, {FirebaseCollections.learningPlan: newLernplan.toJson()}, SetOptions(merge: true));
+      } else {
+        // Lernplan found, update it
+        final existingLernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+        final existingLernplan = Lernplan.fromJson(existingLernplanData);
+
+        // Filter out topics that already exist to avoid duplicates
+        final updatedTopics = List<LernplanTopic>.from(existingLernplan.topics);
+        final now = DateTime.now();
+        for (var newTopic in newTopics) {
+          if (!updatedTopics.any((t) =>
+              t.leitidee == newTopic.leitidee &&
+              t.thema == newTopic.thema &&
+              t.unterthema == newTopic.unterthema)) {
+            updatedTopics.add(newTopic.copyWith(addedAtTimestamp: now.millisecondsSinceEpoch));
+          }
+        }
+
+        final updatedLernplan = existingLernplan.copyWith(
+          topics: updatedTopics,
+          updatedAtTimestamp: now.millisecondsSinceEpoch,
+        );
+        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: updatedLernplan.toJson()});
+      }
+    });
   }
 
-  /// Get active learning plan
-  Future<Map<String, dynamic>?> getActiveLearningPlan(String userId) async {
-    final querySnapshot = await _firestore
+  /// Remove a topic from an existing Lernplan
+  Future<void> removeTopicFromLernplan(String userId, LernplanTopic topicToRemove) async {
+    final lernplanDoc = _firestore
         .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection('learningPlans')
-        .where('isActive', isEqualTo: true)
-        .limit(1)
-        .get();
+        .doc(userId);
 
-    if (querySnapshot.docs.isEmpty) return null;
-    return querySnapshot.docs.first.data();
-  }
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(lernplanDoc);
+      final data = snapshot.data();
 
-  /// Get all learning plans
-  Future<List<Map<String, dynamic>>> getAllLearningPlans(String userId) async {
-    final querySnapshot = await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection('learningPlans')
-        .orderBy('createdAt', descending: true)
-        .get();
+      if (data != null && data.containsKey(FirebaseCollections.learningPlan)) {
+        final existingLernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+        final existingLernplan = Lernplan.fromJson(existingLernplanData);
 
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
-  }
+        final updatedTopics = existingLernplan.topics
+            .where((t) =>
+                t.leitidee != topicToRemove.leitidee ||
+                t.thema != topicToRemove.thema ||
+                t.unterthema != topicToRemove.unterthema)
+            .toList();
 
-  /// Delete learning plan
-  Future<void> deleteLearningPlan({
-    required String userId,
-    required String planId,
-  }) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .collection('learningPlans')
-        .doc(planId)
-        .delete();
+        final updatedLernplan = existingLernplan.copyWith(
+          topics: updatedTopics,
+          updatedAtTimestamp: DateTime.now().millisecondsSinceEpoch,
+        );
+        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: updatedLernplan.toJson()});
+      }
+    });
   }
 
   // ============================================================================

@@ -59,7 +59,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                   'Developer / Debug Optionen',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange,
+                        color: Theme.of(context).colorScheme.tertiary,
                       ),
                 ),
               ],
@@ -288,7 +288,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
               },
               title: const Text('E-Mail-Verifizierung überspringen'),
               subtitle: const Text('Nur für Tests - nicht in Production!'),
-              secondary: const Icon(Icons.mail_outline, color: Colors.red),
+              secondary: Icon(Icons.mail_outline, color: Theme.of(context).colorScheme.error),
               contentPadding: EdgeInsets.zero,
             ),
 
@@ -320,8 +320,8 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
               label: const Text('Cache leeren'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
-                foregroundColor: Colors.orange,
-                side: const BorderSide(color: Colors.orange),
+                foregroundColor: Theme.of(context).colorScheme.tertiary,
+                side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
               ),
             ),
 
@@ -334,8 +334,8 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
               label: const Text('Auf Standardwerte zurücksetzen'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
+                foregroundColor: Theme.of(context).colorScheme.error,
+                side: BorderSide(color: Theme.of(context).colorScheme.error),
               ),
             ),
 
@@ -419,9 +419,9 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.green),
+              Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary),
               SizedBox(width: 8),
               Flexible(child: Text('Verbindung erfolgreich')),
             ],
@@ -464,23 +464,22 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Abbrechen'),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.orange,
-            ),
-            child: const Text('Cache leeren'),
-          ),
-        ],
+                      FilledButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.tertiary,
+                        ),
+                        child: const Text('Cache leeren'),
+                      ),        ],
       ),
     );
 
     if (confirmed == true && context.mounted) {
       // Clear cache logic would go here
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cache wurde geleert'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Cache wurde geleert'),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
         ),
       );
     }
@@ -500,14 +499,13 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Abbrechen'),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Zurücksetzen'),
-          ),
-        ],
+                      FilledButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        child: const Text('Zurücksetzen'),
+                      ),        ],
       ),
     );
 
@@ -518,9 +516,9 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
       _backendUrlController.text = 'https://learn-smart.app';
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debug-Einstellungen zurückgesetzt'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Debug-Einstellungen zurückgesetzt'),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
         ),
       );
     }

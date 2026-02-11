@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/settings_providers.dart';
+import '../../../../core/models/theme_unlock.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../../shared/widgets/glass_panel.dart';
+import '../../../gamification/presentation/screens/shop_screen.dart';
 
-/// Theme Selector Widget - 6 theme presets
+/// Theme Selector Widget - 6 theme presets with unlock enforcement
 class ThemeSelector extends ConsumerWidget {
   const ThemeSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTheme = ref.watch(selectedThemeProvider);
+    final currentUser = ref.watch(currentUserProvider);
+    final userId = currentUser?.uid ?? '';
+    final themeUnlocksAsync = ref.watch(themeUnlocksStreamProvider(userId));
 
     return GlassPanel(
       child: Padding(
@@ -31,28 +38,88 @@ class ThemeSelector extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final chipWidth = (constraints.maxWidth - 12) / 2;
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: AppThemePreset.values.map((theme) {
-                    final isSelected = selectedTheme == theme;
-                    return SizedBox(
-                      width: chipWidth,
-                      child: _ThemeChip(
-                        theme: theme,
-                        isSelected: isSelected,
-                        onTap: () => ref.read(selectedThemeProvider.notifier).setTheme(theme),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
+            themeUnlocksAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => _buildThemeGrid(
+                context,
+                ref,
+                selectedTheme,
+                ThemeUnlocks.initial(),
+              ),
+              data: (unlocks) => _buildThemeGrid(
+                context,
+                ref,
+                selectedTheme,
+                unlocks,
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildThemeGrid(
+    BuildContext context,
+    WidgetRef ref,
+    AppThemePreset selectedTheme,
+    ThemeUnlocks unlocks,
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final chipWidth = (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: AppThemePreset.values.map((theme) {
+            final isSelected = selectedTheme == theme;
+            final isUnlocked = unlocks.isUnlocked(theme);
+            final price = ThemePricing.getPrice(theme);
+            return SizedBox(
+              width: chipWidth,
+              child: _ThemeChip(
+                theme: theme,
+                isSelected: isSelected,
+                isUnlocked: isUnlocked,
+                price: price,
+                onTap: () {
+                  if (isUnlocked || price == 0) {
+                    ref
+                        .read(selectedThemeProvider.notifier)
+                        .setTheme(theme);
+                  } else {
+                    _showLockedThemeDialog(context);
+                  }
+                },
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  void _showLockedThemeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Theme gesperrt'),
+        content: const Text(
+          'Dieses Theme muss zuerst im Shop mit Münzen freigeschaltet werden.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/shop');
+            },
+            child: const Text('Zum Shop'),
+          ),
+        ],
       ),
     );
   }
@@ -61,24 +128,29 @@ class ThemeSelector extends ConsumerWidget {
 class _ThemeChip extends StatelessWidget {
   final AppThemePreset theme;
   final bool isSelected;
+  final bool isUnlocked;
+  final int price;
   final VoidCallback onTap;
 
   const _ThemeChip({
     required this.theme,
     required this.isSelected,
+    required this.isUnlocked,
+    required this.price,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final color = _getThemeColor(theme);
+    final isLocked = !isUnlocked && price > 0;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: isLocked ? 0.1 : 0.2),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.transparent,
@@ -92,18 +164,41 @@ class _ThemeChip extends StatelessWidget {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: color,
+                color: isLocked ? color.withValues(alpha: 0.4) : color,
                 shape: BoxShape.circle,
               ),
+              child: isLocked
+                  ? const Icon(Icons.lock, size: 12, color: Colors.white70)
+                  : null,
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: Text(
-                _getThemeName(theme),
-                style: TextStyle(
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _getThemeName(theme),
+                    style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isLocked
+                          ? Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                          : null,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (isLocked)
+                    Text(
+                      '$price Münzen',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.amber,
+                            fontSize: 10,
+                          ),
+                    ),
+                ],
               ),
             ),
           ],

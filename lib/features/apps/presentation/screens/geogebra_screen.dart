@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
+import '../../../../features/settings/presentation/providers/settings_providers.dart'; // New import
 import '../providers/apps_providers.dart';
 
 /// GeoGebra Visualization Screen
@@ -33,16 +34,29 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   void _initializeWebView() {
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (url) {
-            // Inject GeoGebra commands when page loads
-            if (_currentVisualization != null &&
-                _currentVisualization!.commands.isNotEmpty) {
-              _executeGeoGebraCommands(_currentVisualization!.commands);
-            }
+          onPageFinished: (url) async {
+            // Signal Flutter that GeoGebra applet is ready
+            await _webViewController!.runJavaScript('''
+              window.flutter_inappwebview.callHandler('geogebraReady');
+            ''');
+            debugPrint('GeoGebra WebView loaded and ready signal sent.');
           },
         ),
+      )
+      ..addJavaScriptChannel(
+        'GeoGebraFlutterChannel',
+        onMessageReceived: (message) {
+          if (message.message == 'geogebraReady') {
+            debugPrint('Received geogebraReady from WebView.');
+            // Now GeoGebra applet is ready, execute commands if available
+            if (_currentVisualization != null && _currentVisualization!.commands.isNotEmpty) {
+              _executeGeoGebraCommands(_currentVisualization!.commands);
+            }
+          }
+        },
       )
       ..loadHtmlString(_getInitialGeoGebraHTML());
   }
@@ -81,20 +95,28 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
             "showAlgebraInput": true,
             "showMenuBar": false,
             "enableShiftDragZoom": true,
-            "enableRightClick": false
+            "enableRightClick": false,
+            "material_id": "J8YgX6Xp" // Default material for basic graphing
         };
 
-        var applet = new GGBApplet(parameters, true);
+        var ggbApplet; // Global GeoGebra Applet object
+
         window.addEventListener("load", function() {
+            var applet = new GGBApplet(parameters, true);
             applet.inject('ggb-element');
+            ggbApplet = applet.getAppletObject(); // Store applet object globally
+
+            // Notify Flutter that GeoGebra is ready
+            if (window.GeoGebraFlutterChannel) {
+              window.GeoGebraFlutterChannel.postMessage('geogebraReady');
+            }
         });
 
         // Function to execute GeoGebra commands
         window.executeCommands = function(commands) {
-            var ggbApp = applet.getAppletObject();
-            if (ggbApp) {
+            if (ggbApplet) {
                 commands.forEach(function(cmd) {
-                    ggbApp.evalCommand(cmd);
+                    ggbApplet.evalCommand(cmd);
                 });
                 return "Commands executed successfully";
             }
@@ -129,9 +151,27 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     });
 
     try {
+      final appSettings = ref.read(appSettingsNotifierProvider);
+      final aiProvider = appSettings.aiProvider;
+      final selectedModel = appSettings.getActiveModel();
+      final apiKey = aiProvider == 'claude'
+          ? appSettings.claudeApiKey
+          : appSettings.geminiApiKey;
+
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception(
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+        );
+      }
+
       final visualization = await ref.read(
         generateGeogebraProvider(
-          prompt: _promptController.text.trim(),
+          questionText: _promptController.text.trim(),
+          topic: 'Mathematik', // A generic topic for now
+          userPrompt: _promptController.text.trim(),
+          apiKey: apiKey,
+          selectedModel: selectedModel,
+          provider: aiProvider,
         ).future,
       );
 
@@ -139,6 +179,9 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
         _currentVisualization = visualization;
         _isLoading = false;
       });
+
+      // Clear previous visualization if any
+      await _webViewController!.runJavaScript('if(ggbApplet) ggbApplet.reset();');
 
       // Execute commands
       if (visualization.commands.isNotEmpty) {
@@ -175,7 +218,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
             color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -272,7 +315,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
               color: Theme.of(context).colorScheme.surfaceContainer,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
@@ -325,7 +368,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                               color: Theme.of(context)
                                   .colorScheme
                                   .outline
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Text(

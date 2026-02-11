@@ -36,5 +36,10 @@
     "additionalDirectories": [
       "C:\\Users\\marco\\dev\\Seminarkurs\\slam-backend"
     ]
+  },
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://localhost:3000/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "NotImportant",
+    "ANTHROPIC_MODEL": "gemini-3-pro"
   }
 }
