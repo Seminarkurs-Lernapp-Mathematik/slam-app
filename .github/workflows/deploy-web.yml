@@ -61,6 +61,6 @@ jobs:
         if: success()
         run: |
           echo "✅ Flutter Web deployed successfully to Cloudflare Pages!"
-          echo "🌐 URL: https://learn-smart.app"
+          echo "🌐 Production URL: https://learn-smart.app"
           echo "📦 Built with Flutter ${{ env.FLUTTER_VERSION }}"
           echo "🔗 API Endpoint: https://api.learn-smart.app"
