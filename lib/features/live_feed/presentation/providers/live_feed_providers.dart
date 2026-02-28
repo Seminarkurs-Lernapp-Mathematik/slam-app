@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
@@ -5,7 +6,7 @@ import '../../../../core/models/topic.dart';
 import '../../../../core/models/question_result.dart'; // New import
 import '../../../../core/services/firestore_service.dart'; // New import
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
-import '../../settings/presentation/providers/settings_providers.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 
 part 'live_feed_providers.g.dart';
 
@@ -293,14 +294,14 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final session = await aiService.generateQuestions(
         apiKey: apiKey,
         userId: userId,
-        // learningPlanItemId: 123, // Not directly used in this context
+        learningPlanItemId: 0, // Live feed doesn't have a specific learning plan item
         topics: topicsForAI,
         selectedModel: appSettings.getActiveModel(), // Use active model for generation
         userContext: UserContext(
           gradeLevel: gradeLevel,
           courseType: courseType,
-          difficulty: currentDifficulty.round(), // Pass current difficulty
         ),
+        provider: appSettings.aiProvider, // Add required provider parameter
       );
 
       if (session.questions.isNotEmpty) {
@@ -473,12 +474,11 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
       return;
     }
 
-    // Extract topic info from the current question's metadata or assume a generic one
-    // For now, let's assume a generic one if not available directly in question.
-    // In a real scenario, question object would contain this.
-    final leitidee = currentQuestion.topics.isNotEmpty ? currentQuestion.topics.first.leitidee : 'Unknown';
-    final thema = currentQuestion.topics.isNotEmpty ? currentQuestion.topics.first.thema : 'Unknown';
-    final unterthema = currentQuestion.topics.isNotEmpty ? currentQuestion.topics.first.unterthema : 'Unknown';
+    // Extract topic info from the current question's metadata
+    // Question model has 'topic' and 'subtopic' fields, use those
+    final leitidee = 'Unknown'; // Not stored directly in Question
+    final thema = currentQuestion.topic;
+    final unterthema = currentQuestion.subtopic;
 
     final gradeLevel = appSettings.gradeLevel.replaceAll('Klasse_', '');
     final courseType = appSettings.courseType;
@@ -486,8 +486,8 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     final questionResult = QuestionResult(
       questionId: currentQuestion.id,
       userId: userId,
-      sessionId: currentQuestion.sessionId, // Assuming question has a sessionId
-      questionText: currentQuestion.questionText,
+      sessionId: 'live-feed-session', // Live feed questions don't have a real session
+      questionText: currentQuestion.question,
       correctAnswer: evaluationResult['correctAnswer'] ?? 'N/A',
       userAnswer: currentAnswer,
       isCorrect: evaluationResult['isCorrect'] ?? false,

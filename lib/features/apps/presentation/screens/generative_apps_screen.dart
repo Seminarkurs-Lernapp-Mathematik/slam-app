@@ -5,6 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/apps_providers.dart';
 import '../widgets/code_viewer.dart';
 

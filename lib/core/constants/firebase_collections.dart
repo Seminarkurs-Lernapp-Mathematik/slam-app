@@ -20,6 +20,7 @@ class FirebaseCollections {
   static const String inventory = 'inventory';
   static const String sentChallenges = 'sentChallenges';
   static const String receivedChallenges = 'receivedChallenges';
+  static const String questionHistory = 'questionHistory';
   static const String friends = 'friends';
 
   // Document IDs

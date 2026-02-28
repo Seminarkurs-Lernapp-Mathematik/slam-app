@@ -6,6 +6,7 @@ import '../models/user_settings.dart';
 import '../models/question.dart';
 import '../models/topic.dart';
 import '../models/lernplan.dart'; // New import
+import '../models/question_result.dart';
 import '../constants/firebase_collections.dart';
 
 part 'firestore_service.g.dart';

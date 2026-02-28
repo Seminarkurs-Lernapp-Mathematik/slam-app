@@ -138,7 +138,7 @@ class ModelSelectionPanel extends ConsumerWidget {
             child: DropdownButton<String>(
               isExpanded: true,
               value: selectedModelId,
-              hint: Text('Standard (${models.firstWhere((m) => m.id == settings.getActiveModel(), orElse: () => const ModelInfo(id: 'unknown', name: 'Unbekannt', provider: 'unknown', tier: 'unknown', description: '')).name})'),
+              hint: Text('Standard (${models.firstWhere((m) => m.id == settings.getActiveModel(), orElse: () => const ModelInfo(id: 'unknown', name: 'Unbekannt', tier: 'unknown', description: '', contextWindow: 0)).name})'),
               items: models.map((model) {
                 return DropdownMenuItem<String>(
                   value: model.id,

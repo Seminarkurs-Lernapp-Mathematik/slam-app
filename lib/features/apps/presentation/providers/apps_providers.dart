@@ -5,6 +5,7 @@ import '../../../../core/models/question.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 
 part 'apps_providers.g.dart';
 
@@ -173,12 +174,16 @@ Future<GeneratedApp> generateMiniApp(
   GenerateMiniAppRef ref, {
   required String description,
   required String selectedModel,
+  required String apiKey,
+  String provider = 'claude',
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
   final app = await aiService.generateMiniApp(
     description: description,
     selectedModel: selectedModel,
+    apiKey: apiKey,
+    provider: provider,
   );
 
   // Update state
@@ -194,6 +199,9 @@ Future<GeoGebraData> generateGeogebra(
   required String prompt,
   String? questionText,
   String? topic,
+  required String apiKey,
+  required String selectedModel,
+  required String provider,
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
@@ -201,6 +209,9 @@ Future<GeoGebraData> generateGeogebra(
     questionText: questionText ?? prompt,
     topic: topic ?? 'general',
     userPrompt: prompt,
+    apiKey: apiKey,
+    selectedModel: selectedModel,
+    provider: provider,
   );
 
   // Update state

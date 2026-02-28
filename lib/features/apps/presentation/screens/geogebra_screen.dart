@@ -166,9 +166,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
 
       final visualization = await ref.read(
         generateGeogebraProvider(
-          questionText: _promptController.text.trim(),
-          topic: 'Mathematik', // A generic topic for now
-          userPrompt: _promptController.text.trim(),
+          prompt: _promptController.text.trim(),
           apiKey: apiKey,
           selectedModel: selectedModel,
           provider: aiProvider,

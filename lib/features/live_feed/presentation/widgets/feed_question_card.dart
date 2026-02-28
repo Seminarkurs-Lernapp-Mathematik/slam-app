@@ -8,6 +8,7 @@ import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../features/gamification/presentation/widgets/xp_animation.dart';
+import '../../../../features/settings/presentation/providers/settings_providers.dart';
 import '../providers/live_feed_providers.dart';
 
 /// Feed Question Card - Single question display with MCQ options and inline feedback
@@ -214,11 +215,25 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     try {
       final aiService = ref.read(aiServiceProvider);
+      final appSettings = ref.read(appSettingsNotifierProvider);
+      
+      // Get the appropriate API key based on provider
+      final apiKey = appSettings.aiProvider == 'claude'
+          ? appSettings.claudeApiKey
+          : appSettings.geminiApiKey;
+      
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception('API key not configured. Please add your API key in settings.');
+      }
+      
       // Send the "Wo haengts?" text as a custom hint request
       final hint = await aiService.getCustomHint(
         questionText: widget.question.question,
         userAnswer: text,
         hintsAlreadyUsed: _hintsShown,
+        apiKey: apiKey,
+        provider: appSettings.aiProvider,
+        selectedModel: appSettings.getActiveModel(),
       );
 
       if (mounted) {

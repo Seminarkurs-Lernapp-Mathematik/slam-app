@@ -38,6 +38,9 @@ class ApiEndpoints {
   // Memories & Spaced Repetition
   static const String manageMemories = '/api/manage-memories';
 
+  // Shop/Purchases
+  static const String purchase = '/api/purchase';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

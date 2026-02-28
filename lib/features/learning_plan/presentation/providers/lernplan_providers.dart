@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/models/lernplan.dart';
 import '../../../../core/models/topic.dart';
+import '../../../../core/models/question.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 
@@ -43,7 +44,7 @@ class LernplanNotifier extends _$LernplanNotifier {
         updatedAtTimestamp: 0,
       );
     }
-    return ref.watch(lernplanStreamProvider).first;
+    return ref.watch(lernplanStreamProvider.future);
   }
 
   Future<void> addTopics(List<LernplanTopic> newTopics) async {
@@ -53,7 +54,7 @@ class LernplanNotifier extends _$LernplanNotifier {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(firestoreServiceProvider).addTopicsToLernplan(userId, newTopics);
-      return ref.read(lernplanStreamProvider).first;
+      return ref.read(lernplanStreamProvider.future);
     });
   }
 
@@ -64,7 +65,7 @@ class LernplanNotifier extends _$LernplanNotifier {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(firestoreServiceProvider).removeTopicFromLernplan(userId, topicToRemove);
-      return ref.read(lernplanStreamProvider).first;
+      return ref.read(lernplanStreamProvider.future);
     });
   }
 }

@@ -375,10 +375,14 @@ class GenerateMiniAppFamily extends Family<AsyncValue<GeneratedApp>> {
   GenerateMiniAppProvider call({
     required String description,
     required String selectedModel,
+    required String apiKey,
+    String provider = 'claude',
   }) {
     return GenerateMiniAppProvider(
       description: description,
       selectedModel: selectedModel,
+      apiKey: apiKey,
+      provider: provider,
     );
   }
 
@@ -389,6 +393,8 @@ class GenerateMiniAppFamily extends Family<AsyncValue<GeneratedApp>> {
     return call(
       description: provider.description,
       selectedModel: provider.selectedModel,
+      apiKey: provider.apiKey,
+      provider: provider.provider,
     );
   }
 
@@ -417,11 +423,15 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
   GenerateMiniAppProvider({
     required String description,
     required String selectedModel,
+    required String apiKey,
+    String provider = 'claude',
   }) : this._internal(
           (ref) => generateMiniApp(
             ref as GenerateMiniAppRef,
             description: description,
             selectedModel: selectedModel,
+            apiKey: apiKey,
+            provider: provider,
           ),
           from: generateMiniAppProvider,
           name: r'generateMiniAppProvider',
@@ -434,6 +444,8 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
               GenerateMiniAppFamily._allTransitiveDependencies,
           description: description,
           selectedModel: selectedModel,
+          apiKey: apiKey,
+          provider: provider,
         );
 
   GenerateMiniAppProvider._internal(
@@ -445,10 +457,14 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
     required super.from,
     required this.description,
     required this.selectedModel,
+    required this.apiKey,
+    required this.provider,
   }) : super.internal();
 
   final String description;
   final String selectedModel;
+  final String apiKey;
+  final String provider;
 
   @override
   Override overrideWith(
@@ -465,6 +481,8 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
         debugGetCreateSourceHash: null,
         description: description,
         selectedModel: selectedModel,
+        apiKey: apiKey,
+        provider: provider,
       ),
     );
   }
@@ -478,7 +496,9 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
   bool operator ==(Object other) {
     return other is GenerateMiniAppProvider &&
         other.description == description &&
-        other.selectedModel == selectedModel;
+        other.selectedModel == selectedModel &&
+        other.apiKey == apiKey &&
+        other.provider == provider;
   }
 
   @override
@@ -486,6 +506,8 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, description.hashCode);
     hash = _SystemHash.combine(hash, selectedModel.hashCode);
+    hash = _SystemHash.combine(hash, apiKey.hashCode);
+    hash = _SystemHash.combine(hash, provider.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -499,6 +521,12 @@ mixin GenerateMiniAppRef on AutoDisposeFutureProviderRef<GeneratedApp> {
 
   /// The parameter `selectedModel` of this provider.
   String get selectedModel;
+
+  /// The parameter `apiKey` of this provider.
+  String get apiKey;
+
+  /// The parameter `provider` of this provider.
+  String get provider;
 }
 
 class _GenerateMiniAppProviderElement
@@ -510,6 +538,10 @@ class _GenerateMiniAppProviderElement
   String get description => (origin as GenerateMiniAppProvider).description;
   @override
   String get selectedModel => (origin as GenerateMiniAppProvider).selectedModel;
+  @override
+  String get apiKey => (origin as GenerateMiniAppProvider).apiKey;
+  @override
+  String get provider => (origin as GenerateMiniAppProvider).provider;
 }
 
 String _$generateGeogebraHash() => r'032f444ea17824336ee653cddb906c35abe52418';
@@ -536,11 +568,17 @@ class GenerateGeogebraFamily extends Family<AsyncValue<GeoGebraData>> {
     required String prompt,
     String? questionText,
     String? topic,
+    required String apiKey,
+    required String selectedModel,
+    required String provider,
   }) {
     return GenerateGeogebraProvider(
       prompt: prompt,
       questionText: questionText,
       topic: topic,
+      apiKey: apiKey,
+      selectedModel: selectedModel,
+      provider: provider,
     );
   }
 
@@ -552,6 +590,9 @@ class GenerateGeogebraFamily extends Family<AsyncValue<GeoGebraData>> {
       prompt: provider.prompt,
       questionText: provider.questionText,
       topic: provider.topic,
+      apiKey: provider.apiKey,
+      selectedModel: provider.selectedModel,
+      provider: provider.provider,
     );
   }
 
@@ -581,12 +622,18 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     required String prompt,
     String? questionText,
     String? topic,
+    required String apiKey,
+    required String selectedModel,
+    required String provider,
   }) : this._internal(
           (ref) => generateGeogebra(
             ref as GenerateGeogebraRef,
             prompt: prompt,
             questionText: questionText,
             topic: topic,
+            apiKey: apiKey,
+            selectedModel: selectedModel,
+            provider: provider,
           ),
           from: generateGeogebraProvider,
           name: r'generateGeogebraProvider',
@@ -600,6 +647,9 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
           prompt: prompt,
           questionText: questionText,
           topic: topic,
+          apiKey: apiKey,
+          selectedModel: selectedModel,
+          provider: provider,
         );
 
   GenerateGeogebraProvider._internal(
@@ -612,11 +662,17 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     required this.prompt,
     required this.questionText,
     required this.topic,
+    required this.apiKey,
+    required this.selectedModel,
+    required this.provider,
   }) : super.internal();
 
   final String prompt;
   final String? questionText;
   final String? topic;
+  final String apiKey;
+  final String selectedModel;
+  final String provider;
 
   @override
   Override overrideWith(
@@ -634,6 +690,9 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
         prompt: prompt,
         questionText: questionText,
         topic: topic,
+        apiKey: apiKey,
+        selectedModel: selectedModel,
+        provider: provider,
       ),
     );
   }
@@ -648,7 +707,10 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     return other is GenerateGeogebraProvider &&
         other.prompt == prompt &&
         other.questionText == questionText &&
-        other.topic == topic;
+        other.topic == topic &&
+        other.apiKey == apiKey &&
+        other.selectedModel == selectedModel &&
+        other.provider == provider;
   }
 
   @override
@@ -657,6 +719,9 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     hash = _SystemHash.combine(hash, prompt.hashCode);
     hash = _SystemHash.combine(hash, questionText.hashCode);
     hash = _SystemHash.combine(hash, topic.hashCode);
+    hash = _SystemHash.combine(hash, apiKey.hashCode);
+    hash = _SystemHash.combine(hash, selectedModel.hashCode);
+    hash = _SystemHash.combine(hash, provider.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -673,6 +738,15 @@ mixin GenerateGeogebraRef on AutoDisposeFutureProviderRef<GeoGebraData> {
 
   /// The parameter `topic` of this provider.
   String? get topic;
+
+  /// The parameter `apiKey` of this provider.
+  String get apiKey;
+
+  /// The parameter `selectedModel` of this provider.
+  String get selectedModel;
+
+  /// The parameter `provider` of this provider.
+  String get provider;
 }
 
 class _GenerateGeogebraProviderElement
@@ -686,6 +760,12 @@ class _GenerateGeogebraProviderElement
   String? get questionText => (origin as GenerateGeogebraProvider).questionText;
   @override
   String? get topic => (origin as GenerateGeogebraProvider).topic;
+  @override
+  String get apiKey => (origin as GenerateGeogebraProvider).apiKey;
+  @override
+  String get selectedModel => (origin as GenerateGeogebraProvider).selectedModel;
+  @override
+  String get provider => (origin as GenerateGeogebraProvider).provider;
 }
 
 String _$contentTypeFilterHash() => r'8f2ba757c9c3c41da9d9c56767e50b08f6ff41f6';

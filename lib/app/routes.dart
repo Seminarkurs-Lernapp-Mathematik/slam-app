@@ -11,7 +11,6 @@ import '../features/auth/presentation/screens/password_reset_screen.dart';
 import '../features/gamification/presentation/screens/progress_screen.dart';
 import '../features/gamification/presentation/screens/shop_screen.dart';
 import '../features/home/presentation/widgets/main_navigation.dart';
-import '../features/learning_plan/presentation/screens/learning_plan_screen.dart';
 import '../features/learning_plan/presentation/screens/lernplan_screen.dart';
 import '../features/question_session/presentation/screens/question_session_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
