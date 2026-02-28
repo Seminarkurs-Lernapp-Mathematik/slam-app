@@ -47,6 +47,10 @@ class _ShopScreenState extends ConsumerState<ShopScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shop'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -241,11 +245,10 @@ class _ThemesTab extends ConsumerWidget {
       );
 
       try {
-        final aiService = ref.read(aiServiceProvider);
-        final response = await aiService.purchaseItem(
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final response = await firestoreService.purchaseTheme(
           userId: userId,
-          itemType: 'theme',
-          itemId: preset.name,
+          themeName: preset.name,
           cost: price,
         );
 
@@ -279,7 +282,7 @@ class _ThemesTab extends ConsumerWidget {
         if (context.mounted) {
           _showErrorSnackBar(
             context,
-            'Netzwerkfehler: Bitte überprüfe deine Internetverbindung',
+            'Fehler beim Kauf: ${e.toString()}',
           );
         }
       }
@@ -597,11 +600,9 @@ class _ItemsTabState extends ConsumerState<_ItemsTab> {
       setState(() => _isProcessing = true);
 
       try {
-        final aiService = ref.read(aiServiceProvider);
-        final response = await aiService.purchaseItem(
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final response = await firestoreService.purchaseStreakFreezeWithCoins(
           userId: widget.userId,
-          itemType: 'streakFreeze',
-          itemId: 'streakFreeze',
           cost: 50,
         );
 
@@ -629,7 +630,7 @@ class _ItemsTabState extends ConsumerState<_ItemsTab> {
         if (context.mounted) {
           _showErrorSnackBar(
             context,
-            'Netzwerkfehler: Bitte überprüfe deine Internetverbindung',
+            'Fehler beim Kauf: ${e.toString()}',
           );
         }
       }
@@ -650,19 +651,29 @@ class _ItemsTabState extends ConsumerState<_ItemsTab> {
       setState(() => _isProcessing = true);
 
       try {
-        final updatedStats = widget.stats.purchaseStreakFreeze();
-        await ref
-            .read(firestoreServiceProvider)
-            .updateUserStats(widget.userId, updatedStats);
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final response = await firestoreService.purchaseStreakFreezeWithXP(
+          userId: widget.userId,
+          xpCost: 100,
+        );
 
         setState(() => _isProcessing = false);
 
-        if (context.mounted) {
-          PurchaseSuccessAnimation.show(
-            context,
-            itemName: 'Streak Freeze',
-            icon: Icons.ac_unit,
-          );
+        if (response['success'] == true) {
+          if (context.mounted) {
+            PurchaseSuccessAnimation.show(
+              context,
+              itemName: 'Streak Freeze',
+              icon: Icons.ac_unit,
+            );
+          }
+        } else {
+          if (context.mounted) {
+            _showErrorSnackBar(
+              context,
+              response['message']?.toString() ?? 'Unbekannter Fehler beim Kauf',
+            );
+          }
         }
       } catch (e) {
         setState(() => _isProcessing = false);

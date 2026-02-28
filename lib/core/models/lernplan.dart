@@ -15,7 +15,30 @@ class Lernplan with _$Lernplan {
   }) = _Lernplan;
   const Lernplan._();
 
-  factory Lernplan.fromJson(Map<String, dynamic> json) => _$LernplanFromJson(json);
+  factory Lernplan.fromJson(Map<String, dynamic> json) {
+    // Handle Firestore timestamp formats
+    final createdAt = json['createdAt'] ?? json['createdAtTimestamp'] ?? 0;
+    final updatedAt = json['updatedAt'] ?? json['updatedAtTimestamp'] ?? 0;
+    
+    return Lernplan(
+      id: json['id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      topics: (json['topics'] as List<dynamic>?)
+              ?.map((e) => LernplanTopic.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      createdAtTimestamp: _parseTimestamp(createdAt),
+      updatedAtTimestamp: _parseTimestamp(updatedAt),
+    );
+  }
+
+  static int _parseTimestamp(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -43,7 +66,15 @@ class LernplanTopic with _$LernplanTopic {
   }) = _LernplanTopic;
   const LernplanTopic._();
 
-  factory LernplanTopic.fromJson(Map<String, dynamic> json) => _$LernplanTopicFromJson(json);
+  factory LernplanTopic.fromJson(Map<String, dynamic> json) {
+    return LernplanTopic(
+      leitidee: json['leitidee']?.toString() ?? '',
+      thema: json['thema']?.toString() ?? '',
+      unterthema: json['unterthema']?.toString() ?? '',
+      addedAtTimestamp: Lernplan._parseTimestamp(json['addedAt'] ?? json['addedAtTimestamp']),
+      source: json['source']?.toString() ?? 'manual',
+    );
+  }
 
   @override
   bool operator ==(Object other) =>

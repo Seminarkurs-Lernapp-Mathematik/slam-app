@@ -710,6 +710,175 @@ class FirestoreService {
       return themeUnlocks ?? {'unlockedThemes': ['sunsetOrange']};
     });
   }
+
+  // ============================================================================
+  // SHOP / PURCHASES
+  // ============================================================================
+
+  /// Purchase a theme with coins
+  Future<Map<String, dynamic>> purchaseTheme({
+    required String userId,
+    required String themeName,
+    required int cost,
+  }) async {
+    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+
+    return await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+
+      if (!snapshot.exists) {
+        throw Exception('User document does not exist');
+      }
+
+      final data = snapshot.data() ?? {};
+      final stats = data['stats'] as Map<String, dynamic>? ?? {};
+      final coins = (stats['coins'] as num?)?.toInt() ?? 0;
+      final themeUnlocks = data['themeUnlocks'] as Map<String, dynamic>? ?? {};
+      final unlockedThemes = List<String>.from(themeUnlocks['unlockedThemes'] ?? ['sunsetOrange']);
+
+      // Check if user has enough coins
+      if (coins < cost) {
+        return {
+          'success': false,
+          'message': 'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
+        };
+      }
+
+      // Check if theme is already unlocked
+      if (unlockedThemes.contains(themeName)) {
+        return {
+          'success': false,
+          'message': 'Theme bereits freigeschaltet',
+        };
+      }
+
+      // Perform purchase
+      unlockedThemes.add(themeName);
+      final newCoins = coins - cost;
+
+      transaction.update(userRef, {
+        'stats.coins': newCoins,
+        'themeUnlocks.unlockedThemes': unlockedThemes,
+      });
+
+      return {
+        'success': true,
+        'message': 'Theme erfolgreich gekauft',
+        'newBalance': newCoins,
+        'unlockedThemes': unlockedThemes,
+      };
+    });
+  }
+
+  /// Purchase a streak freeze with coins
+  Future<Map<String, dynamic>> purchaseStreakFreezeWithCoins({
+    required String userId,
+    required int cost,
+  }) async {
+    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+
+    return await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+
+      if (!snapshot.exists) {
+        throw Exception('User document does not exist');
+      }
+
+      final data = snapshot.data() ?? {};
+      final stats = data['stats'] as Map<String, dynamic>? ?? {};
+      final coins = (stats['coins'] as num?)?.toInt() ?? 0;
+      final streakFreezes = (stats['streakFreezes'] as num?)?.toInt() ?? 0;
+
+      const maxStreakFreezes = 5;
+
+      // Check if user has enough coins
+      if (coins < cost) {
+        return {
+          'success': false,
+          'message': 'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
+        };
+      }
+
+      // Check if max streak freezes reached
+      if (streakFreezes >= maxStreakFreezes) {
+        return {
+          'success': false,
+          'message': 'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
+        };
+      }
+
+      // Perform purchase
+      final newCoins = coins - cost;
+      final newStreakFreezes = streakFreezes + 1;
+
+      transaction.update(userRef, {
+        'stats.coins': newCoins,
+        'stats.streakFreezes': newStreakFreezes,
+      });
+
+      return {
+        'success': true,
+        'message': 'Streak Freeze erfolgreich gekauft',
+        'newBalance': newCoins,
+        'streakFreezes': newStreakFreezes,
+      };
+    });
+  }
+
+  /// Purchase a streak freeze with XP
+  Future<Map<String, dynamic>> purchaseStreakFreezeWithXP({
+    required String userId,
+    required int xpCost,
+  }) async {
+    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+
+    return await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+
+      if (!snapshot.exists) {
+        throw Exception('User document does not exist');
+      }
+
+      final data = snapshot.data() ?? {};
+      final stats = data['stats'] as Map<String, dynamic>? ?? {};
+      final totalXp = (stats['totalXp'] as num?)?.toInt() ?? 0;
+      final streakFreezes = (stats['streakFreezes'] as num?)?.toInt() ?? 0;
+
+      const maxStreakFreezes = 5;
+
+      // Check if user has enough XP
+      if (totalXp < xpCost) {
+        return {
+          'success': false,
+          'message': 'Nicht genügend XP. Benötigt: $xpCost, Vorhanden: $totalXp',
+        };
+      }
+
+      // Check if max streak freezes reached
+      if (streakFreezes >= maxStreakFreezes) {
+        return {
+          'success': false,
+          'message': 'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
+        };
+      }
+
+      // Perform purchase
+      final newTotalXp = totalXp - xpCost;
+      final newStreakFreezes = streakFreezes + 1;
+
+      transaction.update(userRef, {
+        'stats.totalXp': newTotalXp,
+        'stats.streakFreezes': newStreakFreezes,
+      });
+
+      return {
+        'success': true,
+        'message': 'Streak Freeze erfolgreich gekauft',
+        'newTotalXp': newTotalXp,
+        'streakFreezes': newStreakFreezes,
+      };
+    });
+  }
 }
 
 /// Firestore Service Provider

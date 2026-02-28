@@ -22,6 +22,10 @@ class LernplanScreen extends ConsumerWidget {
         title: const Text('Lernplan'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: lernplanAsync.when(
         data: (lernplan) {
