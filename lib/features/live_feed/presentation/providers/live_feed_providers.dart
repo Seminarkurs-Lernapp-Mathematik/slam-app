@@ -3,8 +3,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/topic.dart';
-import '../../../../core/models/question_result.dart'; // New import
-import '../../../../core/services/firestore_service.dart'; // New import
+import '../../../../core/models/question_result.dart';
+import '../../../../core/services/firestore_service.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 
