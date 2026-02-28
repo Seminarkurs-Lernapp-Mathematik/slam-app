@@ -169,7 +169,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
           prompt: _promptController.text.trim(),
           apiKey: apiKey,
           selectedModel: selectedModel,
-          provider: aiProvider,
+          aiProvider: aiProvider,
         ).future,
       );
 

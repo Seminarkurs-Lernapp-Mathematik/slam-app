@@ -72,18 +72,21 @@ class LernplanNotifier extends _$LernplanNotifier {
 
 /// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
 @riverpod
-List<TopicData> lernplanTopicsAsTopicDataProvider(LernplanTopicsAsTopicDataProviderRef ref) {
-  final lernplanAsync = ref.watch(lernplanStreamProvider);
+class LernplanTopicsAsTopicData extends _$LernplanTopicsAsTopicData {
+  @override
+  List<TopicData> build() {
+    final lernplanAsync = ref.watch(lernplanStreamProvider);
 
-  return lernplanAsync.when(
-    data: (lernplan) {
-      return lernplan.topics.map((lernplanTopic) => TopicData(
-        leitidee: lernplanTopic.leitidee,
-        thema: lernplanTopic.thema,
-        unterthema: lernplanTopic.unterthema,
-      )).toList();
-    },
-    loading: () => [], // Return empty list while loading
-    error: (err, stack) => [], // Return empty list on error
-  );
+    return lernplanAsync.when(
+      data: (lernplan) {
+        return lernplan.topics.map((lernplanTopic) => TopicData(
+          leitidee: lernplanTopic.leitidee,
+          thema: lernplanTopic.thema,
+          unterthema: lernplanTopic.unterthema,
+        )).toList();
+      },
+      loading: () => [], // Return empty list while loading
+      error: (err, stack) => [], // Return empty list on error
+    );
+  }
 }

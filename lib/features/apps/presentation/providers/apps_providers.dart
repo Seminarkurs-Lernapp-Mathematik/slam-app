@@ -175,7 +175,7 @@ Future<GeneratedApp> generateMiniApp(
   required String description,
   required String selectedModel,
   required String apiKey,
-  String provider = 'claude',
+  String aiProvider = 'claude',
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
@@ -183,7 +183,7 @@ Future<GeneratedApp> generateMiniApp(
     description: description,
     selectedModel: selectedModel,
     apiKey: apiKey,
-    provider: provider,
+    provider: aiProvider,
   );
 
   // Update state
@@ -201,7 +201,7 @@ Future<GeoGebraData> generateGeogebra(
   String? topic,
   required String apiKey,
   required String selectedModel,
-  required String provider,
+  required String aiProvider,
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
@@ -211,7 +211,7 @@ Future<GeoGebraData> generateGeogebra(
     userPrompt: prompt,
     apiKey: apiKey,
     selectedModel: selectedModel,
-    provider: provider,
+    provider: aiProvider,
   );
 
   // Update state

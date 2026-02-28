@@ -76,7 +76,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
           description: _promptController.text.trim(),
           selectedModel: selectedModel,
           apiKey: apiKey,
-          provider: aiProvider,
+          aiProvider: aiProvider,
         ).future,
       );
 

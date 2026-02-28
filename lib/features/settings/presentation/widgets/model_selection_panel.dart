@@ -97,6 +97,7 @@ class ModelSelectionPanel extends ConsumerWidget {
                     taskName: taskName,
                     models: models.cast<ModelInfo>(),
                     selectedModelId: selectedModelId,
+                    settings: settings,
                   ),
                 );
               }).toList(),
@@ -115,6 +116,7 @@ class ModelSelectionPanel extends ConsumerWidget {
     required String taskName,
     required List<ModelInfo> models,
     required String? selectedModelId,
+    required dynamic settings,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +140,7 @@ class ModelSelectionPanel extends ConsumerWidget {
             child: DropdownButton<String>(
               isExpanded: true,
               value: selectedModelId,
-              hint: Text('Standard (${models.firstWhere((m) => m.id == settings.getActiveModel(), orElse: () => const ModelInfo(id: 'unknown', name: 'Unbekannt', tier: 'unknown', description: '', contextWindow: 0)).name})'),
+              hint: Text('Standard (${models.firstWhere((m) => m.id == settings.getActiveModel(), orElse: () => ModelInfo(id: 'unknown', name: 'Unbekannt', tier: 'unknown', description: '', contextWindow: 0)).name})'),
               items: models.map((model) {
                 return DropdownMenuItem<String>(
                   value: model.id,

@@ -26,28 +26,29 @@ final lernplanStreamProvider = AutoDisposeStreamProvider<Lernplan>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LernplanStreamRef = AutoDisposeStreamProviderRef<Lernplan>;
-String _$lernplanTopicsAsTopicDataProviderHash() =>
+String _$lernplanTopicsAsTopicDataHash() =>
     r'9f346697c485776d9725b569c3cbeead90f87d2e';
 
 /// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
 ///
-/// Copied from [lernplanTopicsAsTopicDataProvider].
-@ProviderFor(lernplanTopicsAsTopicDataProvider)
-final lernplanTopicsAsTopicDataProviderProvider =
-    AutoDisposeProvider<List<TopicData>>.internal(
-  lernplanTopicsAsTopicDataProvider,
-  name: r'lernplanTopicsAsTopicDataProviderProvider',
+/// Copied from [LernplanTopicsAsTopicData].
+@ProviderFor(LernplanTopicsAsTopicData)
+final lernplanTopicsAsTopicDataProvider =
+    AutoDisposeNotifierProvider<LernplanTopicsAsTopicData, List<TopicData>>
+        .internal(
+  () => LernplanTopicsAsTopicData(),
+  name: r'lernplanTopicsAsTopicDataProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$lernplanTopicsAsTopicDataProviderHash,
+      : _$lernplanTopicsAsTopicDataHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef LernplanTopicsAsTopicDataProviderRef
-    = AutoDisposeProviderRef<List<TopicData>>;
+typedef _$LernplanTopicsAsTopicData
+    = AutoDisposeNotifier<List<TopicData>>;
 String _$lernplanNotifierHash() => r'ad9459956385b963e13416c9a3d9b26181aef61a';
 
 /// Notifier to manage the user's Lernplan.
