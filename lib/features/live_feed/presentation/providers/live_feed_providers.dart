@@ -252,11 +252,14 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
     try {
       final aiService = ref.read(aiServiceProvider);
       final appSettings = ref.read(appSettingsNotifierProvider);
-      final userId = ref.read(currentUserProvider)?.uid;
+      // Watch auth state to ensure we have the latest user
+      final user = ref.watch(currentUserProvider);
+      final userId = user?.uid;
       final lernplanTopics = ref.read(lernplanTopicsAsTopicDataProvider);
 
-      if (userId == null) {
+      if (userId == null || userId.isEmpty) {
         debugPrint('❌ LiveFeedQuestionGenerator: User not logged in.');
+        state = false;
         return;
       }
 
