@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.0
+  sdk: '>=3.6.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -67,6 +67,12 @@ dev_dependencies:
   riverpod_generator: ^2.5.0
   freezed: ^2.4.7
   json_serializable: ^6.7.0
+
+# Dependency overrides to fix analyzer compatibility with Dart SDK
+# The analyzer package is used by build_runner and code generators.
+# This ensures compatibility with the latest Dart SDK version.
+dependency_overrides:
+  analyzer: ^7.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
