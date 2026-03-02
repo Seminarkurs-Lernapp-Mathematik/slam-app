@@ -6,6 +6,8 @@ import '../../../gamification/presentation/screens/progress_screen.dart';
 import '../../../gamification/presentation/widgets/level_progress_circle.dart';
 import '../../../gamification/presentation/widgets/xp_stats_card.dart';
 import '../../../gamification/presentation/widgets/streak_calendar.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../gamification/presentation/screens/progress_screen.dart' show userStatsStreamProvider;
 import '../../../../core/services/auth_service.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
@@ -16,6 +18,9 @@ class ProfilScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
+    final settings = ref.watch(appSettingsNotifierProvider);
+    final userId = currentUser?.uid ?? '';
+    final userStatsAsync = ref.watch(userStatsStreamProvider(userId));
 
     return Scaffold(
       body: CustomScrollView(
@@ -31,6 +36,24 @@ class ProfilScreen extends ConsumerWidget {
                   _buildProfileHeader(context, currentUser?.displayName ?? currentUser?.email ?? 'Benutzer'),
 
                   const SizedBox(height: 16),
+
+                  // Streak risk warning & exam countdown
+                  userStatsAsync.whenData((stats) {
+                    final today = DateTime.now().toIso8601String().substring(0, 10);
+                    final atRisk = stats.streak > 0 && stats.isStreakAtRisk(today);
+                    return Column(
+                      children: [
+                        if (atRisk) ...[
+                          _StreakRiskBanner(streak: stats.streak),
+                          const SizedBox(height: 12),
+                        ],
+                        if (settings.examDate != null) ...[
+                          _ExamCountdownCard(examDate: settings.examDate!),
+                          const SizedBox(height: 12),
+                        ],
+                      ],
+                    );
+                  }).value ?? const SizedBox.shrink(),
 
                   // Quick Action Buttons
                   _buildQuickActions(context),
@@ -126,24 +149,36 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _buildActionCard(
-            context,
-            icon: Icons.menu_book,
-            label: 'Lernplan',
-            onTap: () => context.go('/lernplan'),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                context,
+                icon: Icons.menu_book,
+                label: 'Lernplan',
+                onTap: () => context.go('/lernplan'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionCard(
+                context,
+                icon: Icons.settings,
+                label: 'Einstellungen',
+                onTap: () => context.go('/settings'),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionCard(
-            context,
-            icon: Icons.settings,
-            label: 'Einstellungen',
-            onTap: () => context.go('/settings'),
-          ),
+        const SizedBox(height: 12),
+        _buildActionCard(
+          context,
+          icon: Icons.bolt,
+          label: '5 Fragen – Jetzt üben!',
+          onTap: () => context.go('/feed'),
+          highlight: true,
         ),
       ],
     );
@@ -154,8 +189,21 @@ class ProfilScreen extends ConsumerWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    bool highlight = false,
   }) {
     final theme = Theme.of(context);
+
+    if (highlight) {
+      return FilledButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon),
+        label: Text(label),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(double.infinity, 52),
+          textStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      );
+    }
 
     return GlassPanel(
       child: InkWell(
@@ -375,3 +423,139 @@ class _ProgressContent extends ConsumerWidget {
   }
 }
 
+
+// ============================================================================
+// STREAK RISK BANNER
+// ============================================================================
+
+class _StreakRiskBanner extends StatelessWidget {
+  final int streak;
+
+  const _StreakRiskBanner({required this.streak});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.local_fire_department, color: Colors.orange, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Streak in Gefahr! 🔥',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange.shade800,
+                  ),
+                ),
+                Text(
+                  '$streak-Tage-Streak – beantworte heute noch eine Frage!',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.orange.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// EXAM COUNTDOWN CARD
+// ============================================================================
+
+class _ExamCountdownCard extends StatelessWidget {
+  final DateTime examDate;
+
+  const _ExamCountdownCard({required this.examDate});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final diff = examDate.difference(DateTime(now.year, now.month, now.day));
+    final days = diff.inDays;
+
+    if (days < 0) return const SizedBox.shrink(); // Past date
+
+    Color cardColor;
+    String urgencyText;
+    if (days <= 7) {
+      cardColor = Colors.red;
+      urgencyText = 'Letzte Chance zum Üben!';
+    } else if (days <= 30) {
+      cardColor = Colors.orange;
+      urgencyText = 'Jetzt intensiv üben!';
+    } else {
+      cardColor = theme.colorScheme.primary;
+      urgencyText = 'Bleib dran!';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: cardColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: cardColor.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: cardColor.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.event, color: cardColor, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  days == 0
+                      ? 'Prüfung: Heute!'
+                      : days == 1
+                          ? 'Prüfung: Morgen!'
+                          : 'Noch $days Tage bis zur Prüfung',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: cardColor,
+                  ),
+                ),
+                Text(
+                  urgencyText,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: cardColor.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$days',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: cardColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

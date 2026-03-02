@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 import 'model_selection_panel.dart';
+import 'dev_stats_editor.dart';
 
 /// Debug Panel - API Keys, Backend URL, Developer Options
 class DebugPanel extends ConsumerStatefulWidget {
@@ -290,6 +291,26 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
             ),
             const SizedBox(height: 16),
             const ModelSelectionPanel(),
+
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
+
+            // User Stats Editor
+            Text(
+              'Stats-Editor',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            Text(
+              'XP, Coins und Streak direkt bearbeiten',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            const DevStatsEditor(),
 
             const SizedBox(height: 24),
             const Divider(),

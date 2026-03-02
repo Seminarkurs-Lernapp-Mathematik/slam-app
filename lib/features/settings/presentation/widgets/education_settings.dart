@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/settings_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
-/// Education Settings - Grade Level, Course Type
+/// Education Settings - Grade Level, Course Type, Exam Date
 class EducationSettings extends ConsumerWidget {
   const EducationSettings({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(educationConfigNotifierProvider);
+    final settings = ref.watch(appSettingsNotifierProvider);
 
     return GlassPanel(
       child: Padding(
@@ -55,7 +56,6 @@ class EducationSettings extends ConsumerWidget {
               onChanged: (value) {
                 if (value != null) {
                   ref.read(educationConfigNotifierProvider.notifier).setGradeLevel(value);
-                  // Auto-reset course type for non-Oberstufe grades
                   if (value != '11' && value != '12') {
                     ref.read(educationConfigNotifierProvider.notifier).setCourseType(CourseType.grundkurs);
                   }
@@ -92,9 +92,108 @@ class EducationSettings extends ConsumerWidget {
                 },
               ),
             ],
+
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 12),
+
+            // Exam Date
+            Row(
+              children: [
+                const Icon(Icons.event, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Prüfungsdatum',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Wird als Countdown auf deinem Profil angezeigt',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: settings.examDate ?? DateTime.now().add(const Duration(days: 30)),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 730)),
+                        helpText: 'Prüfungsdatum wählen',
+                        confirmText: 'Auswählen',
+                        cancelText: 'Abbrechen',
+                      );
+                      if (picked != null) {
+                        ref.read(appSettingsNotifierProvider.notifier).setExamDate(picked);
+                      }
+                    },
+                    icon: const Icon(Icons.calendar_today, size: 18),
+                    label: Text(
+                      settings.examDate != null
+                          ? _formatDate(settings.examDate!)
+                          : 'Datum wählen',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 44),
+                    ),
+                  ),
+                ),
+                if (settings.examDate != null) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Datum entfernen',
+                    onPressed: () {
+                      ref.read(appSettingsNotifierProvider.notifier).setExamDate(null);
+                    },
+                  ),
+                ],
+              ],
+            ),
+            if (settings.examDate != null) ...[
+              const SizedBox(height: 8),
+              Builder(builder: (context) {
+                final days = settings.examDate!
+                    .difference(DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                    ))
+                    .inDays;
+                final color = days <= 7
+                    ? Colors.red
+                    : days <= 30
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.primary;
+                return Text(
+                  days < 0
+                      ? 'Prüfung bereits vorbei'
+                      : days == 0
+                          ? '🎯 Prüfung ist HEUTE!'
+                          : 'Noch $days Tage',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                );
+              }),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}';
   }
 }

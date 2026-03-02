@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/settings_providers.dart';
+import '../widgets/theme_selector.dart';
 import '../../../../core/services/auth_service.dart';
 
 /// Modern Settings Screen - Unified, performant, beautiful
@@ -101,7 +102,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   color: colorScheme.tertiary,
                 ),
                 const SizedBox(height: 12),
-                const _ThemeSelector(),
+                const ThemeSelector(),
                 const SizedBox(height: 24),
                 
                 // Education Section
@@ -364,79 +365,6 @@ class _ModelModeSelector extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-// ============================================================================
-// THEME SELECTOR
-// ============================================================================
-
-class _ThemeSelector extends ConsumerWidget {
-  const _ThemeSelector();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appSettingsNotifierProvider);
-    
-    final themes = [
-      (preset: AppThemePreset.sunsetOrange, name: 'Sunset', color: const Color(0xFFF97316)),
-      (preset: AppThemePreset.oceanBlue, name: 'Ocean', color: const Color(0xFF3B82F6)),
-      (preset: AppThemePreset.forestGreen, name: 'Forest', color: const Color(0xFF22C55E)),
-      (preset: AppThemePreset.lavenderPurple, name: 'Lavender', color: const Color(0xFFA855F7)),
-      (preset: AppThemePreset.cherryRed, name: 'Cherry', color: const Color(0xFFEF4444)),
-    ];
-    
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: themes.map((theme) {
-        final isSelected = settings.theme.name.toLowerCase() == 
-            theme.name.toLowerCase();
-        return GestureDetector(
-          onTap: () => ref.read(appSettingsNotifierProvider.notifier)
-              .setTheme(theme.preset),
-          child: Container(
-            width: 64,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isSelected ? theme.color.withValues(alpha: 0.2) : null,
-              border: Border.all(
-                color: isSelected ? theme.color : Colors.transparent,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: theme.color,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.color.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  theme.name,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : null,
-                  ),
-                ),
-              ],
             ),
           ),
         );

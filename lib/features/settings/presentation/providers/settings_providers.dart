@@ -217,6 +217,7 @@ class AppSettings {
   final String gradeLevel; // 'Klasse_11', 'Klasse_12', etc.
   final ThemeConfig theme;
   final Map<String, String> taskModels;
+  final DateTime? examDate; // Optional exam/test date for countdown
 
   // OpenRouter free models
   static const String openrouterFastModel = 'google/gemini-2.0-flash-exp:free';
@@ -240,6 +241,7 @@ class AppSettings {
     this.gradeLevel = 'Klasse_11',
     required this.theme,
     this.taskModels = const {},
+    this.examDate,
   });
 
   factory AppSettings.initial() {
@@ -266,6 +268,7 @@ class AppSettings {
         'gradeLevel': gradeLevel,
         'theme': theme.toJson(),
         'taskModels': taskModels,
+        'examDate': examDate?.toIso8601String(),
       };
 
   /// Create from Firebase JSON
@@ -293,6 +296,9 @@ class AppSettings {
       taskModels: json['taskModels'] != null
           ? Map<String, String>.from(json['taskModels'] as Map)
           : {},
+      examDate: json['examDate'] != null
+          ? DateTime.tryParse(json['examDate'] as String)
+          : null,
     );
   }
 
@@ -313,6 +319,8 @@ class AppSettings {
     String? gradeLevel,
     ThemeConfig? theme,
     Map<String, String>? taskModels,
+    DateTime? examDate,
+    bool clearExamDate = false,
   }) {
     return AppSettings(
       aiModel: aiModel ?? this.aiModel,
@@ -331,6 +339,7 @@ class AppSettings {
       gradeLevel: gradeLevel ?? this.gradeLevel,
       theme: theme ?? this.theme,
       taskModels: taskModels ?? this.taskModels,
+      examDate: clearExamDate ? null : (examDate ?? this.examDate),
     );
   }
 
@@ -491,6 +500,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     final courseType = prefs.getString('course_type') ?? 'Leistungsfach';
     final gradeLevel = prefs.getString('grade_level') ?? 'Klasse_11';
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
+    final examDateStr = prefs.getString('exam_date');
+    final examDate = examDateStr != null ? DateTime.tryParse(examDateStr) : null;
 
     debugPrint('📱 Loaded from local - provider: $providerStr, Claude Key: ${claudeApiKey?.substring(0, 10) ?? "null"}...');
 
@@ -515,6 +526,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       courseType: courseType,
       gradeLevel: gradeLevel,
       theme: ThemeConfig.fromPreset(AppThemePreset.values[themeIndex.clamp(0, 4)]),
+      examDate: examDate,
     );
   }
 
@@ -544,6 +556,11 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     await prefs.setString('course_type', state.courseType);
     await prefs.setString('grade_level', state.gradeLevel);
     await prefs.setInt('selected_theme', state.theme.toPreset().index);
+    if (state.examDate != null) {
+      await prefs.setString('exam_date', state.examDate!.toIso8601String());
+    } else {
+      await prefs.remove('exam_date');
+    }
   }
 
   Future<void> _syncToFirebase() async {
@@ -669,6 +686,14 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         temperature: 0.7,
       ),
     );
+    _saveSettings();
+  }
+
+  // Exam date
+  void setExamDate(DateTime? date) {
+    state = date != null
+        ? state.copyWith(examDate: date)
+        : state.copyWith(clearExamDate: true);
     _saveSettings();
   }
 
