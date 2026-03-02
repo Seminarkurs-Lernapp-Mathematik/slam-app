@@ -34,7 +34,7 @@ class EducationSettings extends ConsumerWidget {
 
             // Grade Level Dropdown
             DropdownButtonFormField<String>(
-              value: config.gradeLevel,
+              initialValue: config.gradeLevel,
               decoration: InputDecoration(
                 labelText: 'Klassenstufe',
                 prefixIcon: const Icon(Icons.person),
@@ -67,7 +67,7 @@ class EducationSettings extends ConsumerWidget {
             if (config.gradeLevel == '11' || config.gradeLevel == '12') ...[
               const SizedBox(height: 16),
               DropdownButtonFormField<CourseType>(
-                value: config.courseType,
+                initialValue: config.courseType,
                 decoration: InputDecoration(
                   labelText: 'Kursart',
                   prefixIcon: const Icon(Icons.menu_book),

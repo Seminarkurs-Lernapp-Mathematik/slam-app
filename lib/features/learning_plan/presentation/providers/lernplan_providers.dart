@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/models/lernplan.dart';
-import '../../../../core/models/topic.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
@@ -15,15 +14,7 @@ Stream<Lernplan> lernplanStream(LernplanStreamRef ref) {
   final userId = ref.watch(currentUserProvider)?.uid;
 
   if (userId == null) {
-    return Stream.value(
-      const Lernplan(
-        id: 'empty',
-        userId: 'empty',
-        topics: [],
-        createdAtTimestamp: 0,
-        updatedAtTimestamp: 0,
-      ),
-    );
+    return Stream.value(Lernplan.empty('empty'));
   }
   return ref.watch(firestoreServiceProvider).getLernplanStream(userId);
 }
@@ -36,13 +27,7 @@ class LernplanNotifier extends _$LernplanNotifier {
   Future<Lernplan> build() async {
     final userId = ref.watch(currentUserProvider)?.uid;
     if (userId == null) {
-      return const Lernplan(
-        id: 'empty',
-        userId: 'empty',
-        topics: [],
-        createdAtTimestamp: 0,
-        updatedAtTimestamp: 0,
-      );
+      return Lernplan.empty('empty');
     }
     return ref.watch(lernplanStreamProvider.future);
   }

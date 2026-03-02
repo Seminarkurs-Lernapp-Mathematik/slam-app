@@ -1,7 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/timestamp_converter.dart';
 
 part 'lernplan.freezed.dart';
+part 'lernplan.g.dart';
 
 @freezed
 class Lernplan with _$Lernplan {
@@ -9,48 +11,22 @@ class Lernplan with _$Lernplan {
     required String id,
     required String userId,
     required List<LernplanTopic> topics,
-    @Default(0) int createdAtTimestamp,
-    @Default(0) int updatedAtTimestamp,
+    @TimestampConverter() required DateTime createdAt,
+    @TimestampConverter() required DateTime updatedAt,
   }) = _Lernplan;
   const Lernplan._();
 
-  /// Custom fromJson that handles Firestore type variations
-  factory Lernplan.fromJson(Map<String, dynamic> json) {
-    return Lernplan(
-      id: _parseString(json['id']),
-      userId: _parseString(json['userId']),
-      topics: (json['topics'] as List<dynamic>?)
-              ?.map((e) => LernplanTopic.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      createdAtTimestamp: _parseTimestamp(json['createdAt'] ?? json['createdAtTimestamp']),
-      updatedAtTimestamp: _parseTimestamp(json['updatedAt'] ?? json['updatedAtTimestamp']),
-    );
-  }
+  factory Lernplan.fromJson(Map<String, dynamic> json) =>
+      _$LernplanFromJson(json);
 
-  /// Custom toJson for Firestore serialization
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'topics': topics.map((t) => t.toJson()).toList(),
-      'createdAt': createdAtTimestamp,
-      'updatedAt': updatedAtTimestamp,
-    };
-  }
-
-  static String _parseString(dynamic value) {
-    if (value == null) return '';
-    return value.toString();
-  }
-
-  static int _parseTimestamp(dynamic value) {
-    if (value == null) return 0;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    if (value is String) return int.tryParse(value) ?? 0;
-    return 0;
-  }
+  /// Create an empty Lernplan for a user
+  factory Lernplan.empty(String userId) => Lernplan(
+        id: userId,
+        userId: userId,
+        topics: [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
 }
 
 @freezed
@@ -59,30 +35,14 @@ class LernplanTopic with _$LernplanTopic {
     required String leitidee,
     required String thema,
     required String unterthema,
-    @Default(0) int addedAtTimestamp,
-    required String source,
+    @TimestampConverter() required DateTime addedAt,
+    @Default('manual') String source,
   }) = _LernplanTopic;
   const LernplanTopic._();
 
-  /// Custom fromJson that handles Firestore type variations
-  factory LernplanTopic.fromJson(Map<String, dynamic> json) {
-    return LernplanTopic(
-      leitidee: Lernplan._parseString(json['leitidee']),
-      thema: Lernplan._parseString(json['thema']),
-      unterthema: Lernplan._parseString(json['unterthema']),
-      addedAtTimestamp: Lernplan._parseTimestamp(json['addedAt'] ?? json['addedAtTimestamp']),
-      source: Lernplan._parseString(json['source'] ?? 'manual'),
-    );
-  }
+  factory LernplanTopic.fromJson(Map<String, dynamic> json) =>
+      _$LernplanTopicFromJson(json);
 
-  /// Custom toJson for Firestore serialization
-  Map<String, dynamic> toJson() {
-    return {
-      'leitidee': leitidee,
-      'thema': thema,
-      'unterthema': unterthema,
-      'addedAt': addedAtTimestamp,
-      'source': source,
-    };
-  }
+  /// Create a unique key for this topic
+  String get uniqueKey => '${leitidee}_${thema}_$unterthema${addedAt.millisecondsSinceEpoch}';
 }

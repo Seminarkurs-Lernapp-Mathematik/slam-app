@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
-import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/user_stats.dart';
 import '../../../../core/models/theme_unlock.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';

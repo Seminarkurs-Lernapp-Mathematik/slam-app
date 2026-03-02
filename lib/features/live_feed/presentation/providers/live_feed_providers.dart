@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
-import '../../../../core/models/topic.dart';
 import '../../../../core/models/question_result.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../core/services/auth_service.dart';
@@ -269,9 +268,6 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         return;
       }
 
-      final currentDifficulty = ref.read(liveFeedDifficultyProvider);
-      final existingQuestions = ref.read(liveFeedQueueProvider).questions;
-
       // Extract only topics without addedAtTimestamp or source from LernplanTopic
       final topicsForAI = lernplanTopics.map((topic) => TopicData(
         leitidee: topic.leitidee,
@@ -283,10 +279,8 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final gradeLevel = appSettings.gradeLevel.replaceAll('Klasse_', '');
       final courseType = appSettings.courseType; // e.g., 'Leistungskurs' or 'Grundkurs'
 
-      // Get API Key
-      final String? apiKey = appSettings.aiProvider == 'claude'
-          ? appSettings.claudeApiKey
-          : appSettings.geminiApiKey;
+      // Get API Key for current provider
+      final String? apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {
         debugPrint('❌ LiveFeedQuestionGenerator: API key not configured. Cannot generate questions.');

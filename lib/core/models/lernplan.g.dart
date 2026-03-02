@@ -13,8 +13,8 @@ _$LernplanImpl _$$LernplanImplFromJson(Map<String, dynamic> json) =>
       topics: (json['topics'] as List<dynamic>)
           .map((e) => LernplanTopic.fromJson(e as Map<String, dynamic>))
           .toList(),
-      createdAtTimestamp: (json['createdAt'] as num?)?.toInt() ?? 0,
-      updatedAtTimestamp: (json['updatedAt'] as num?)?.toInt() ?? 0,
+      createdAt: const TimestampConverter().fromJson(json['createdAt']),
+      updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
     );
 
 Map<String, dynamic> _$$LernplanImplToJson(_$LernplanImpl instance) =>
@@ -22,8 +22,8 @@ Map<String, dynamic> _$$LernplanImplToJson(_$LernplanImpl instance) =>
       'id': instance.id,
       'userId': instance.userId,
       'topics': instance.topics,
-      'createdAt': instance.createdAtTimestamp,
-      'updatedAt': instance.updatedAtTimestamp,
+      'createdAt': const TimestampConverter().toJson(instance.createdAt),
+      'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
     };
 
 _$LernplanTopicImpl _$$LernplanTopicImplFromJson(Map<String, dynamic> json) =>
@@ -31,8 +31,8 @@ _$LernplanTopicImpl _$$LernplanTopicImplFromJson(Map<String, dynamic> json) =>
       leitidee: json['leitidee'] as String,
       thema: json['thema'] as String,
       unterthema: json['unterthema'] as String,
-      addedAtTimestamp: (json['addedAt'] as num?)?.toInt() ?? 0,
-      source: json['source'] as String,
+      addedAt: const TimestampConverter().fromJson(json['addedAt']),
+      source: json['source'] as String? ?? 'manual',
     );
 
 Map<String, dynamic> _$$LernplanTopicImplToJson(_$LernplanTopicImpl instance) =>
@@ -40,6 +40,6 @@ Map<String, dynamic> _$$LernplanTopicImplToJson(_$LernplanTopicImpl instance) =>
       'leitidee': instance.leitidee,
       'thema': instance.thema,
       'unterthema': instance.unterthema,
-      'addedAt': instance.addedAtTimestamp,
+      'addedAt': const TimestampConverter().toJson(instance.addedAt),
       'source': instance.source,
     };

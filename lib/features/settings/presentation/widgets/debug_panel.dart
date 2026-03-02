@@ -16,10 +16,12 @@ class DebugPanel extends ConsumerStatefulWidget {
 class _DebugPanelState extends ConsumerState<DebugPanel> {
   final _claudeApiKeyController = TextEditingController();
   final _geminiApiKeyController = TextEditingController();
+  final _openrouterApiKeyController = TextEditingController();
   final _backendUrlController = TextEditingController();
 
   bool _claudeKeyVisible = false;
   bool _geminiKeyVisible = false;
+  bool _openrouterKeyVisible = false;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
     final debugConfig = ref.read(debugConfigNotifierProvider);
     _claudeApiKeyController.text = appSettings.claudeApiKey ?? '';
     _geminiApiKeyController.text = appSettings.geminiApiKey ?? '';
+    _openrouterApiKeyController.text = appSettings.openrouterApiKey ?? '';
     _backendUrlController.text = debugConfig.backendUrl;
   }
 
@@ -36,6 +39,7 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
   void dispose() {
     _claudeApiKeyController.dispose();
     _geminiApiKeyController.dispose();
+    _openrouterApiKeyController.dispose();
     _backendUrlController.dispose();
     super.dispose();
   }
@@ -219,6 +223,50 @@ class _DebugPanelState extends ConsumerState<DebugPanel> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Gemini API Key in Firebase gespeichert')),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // OpenRouter API Key
+            TextField(
+              controller: _openrouterApiKeyController,
+              obscureText: !_openrouterKeyVisible,
+              decoration: InputDecoration(
+                labelText: 'OpenRouter API Key',
+                hintText: 'sk-or-...',
+                prefixIcon: const Icon(Icons.key),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _openrouterKeyVisible ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _openrouterKeyVisible = !_openrouterKeyVisible;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.save),
+                      onPressed: () async {
+                        ref
+                            .read(appSettingsNotifierProvider.notifier)
+                            .setOpenrouterApiKey(_openrouterApiKeyController.text);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('OpenRouter API Key gespeichert')),
                           );
                         }
                       },

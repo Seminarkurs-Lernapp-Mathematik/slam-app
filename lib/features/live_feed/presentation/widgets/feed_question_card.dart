@@ -217,13 +217,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       final aiService = ref.read(aiServiceProvider);
       final appSettings = ref.read(appSettingsNotifierProvider);
       
-      // Get the appropriate API key based on provider
-      final apiKey = appSettings.aiProvider == 'claude'
-          ? appSettings.claudeApiKey
-          : appSettings.geminiApiKey;
-      
+      // Get API key for current provider
+      final apiKey = appSettings.getApiKey();
       if (apiKey == null || apiKey.isEmpty) {
-        throw Exception('API key not configured. Please add your API key in settings.');
+        throw Exception('Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.');
       }
       
       // Send the "Wo haengts?" text as a custom hint request

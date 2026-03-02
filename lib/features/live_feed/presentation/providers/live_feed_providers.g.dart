@@ -229,7 +229,7 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
 String _$liveFeedQuestionGeneratorHash() =>
-    r'dfdd59e7c1aff22e1c1d8e3762413c1ac699c2d1';
+    r'78738712afc3ed5c77a0060548059fe94e62f805';
 
 /// Live Feed Question Generator
 ///
@@ -319,7 +319,7 @@ final showWoHaengtsProvider =
 );
 
 typedef _$ShowWoHaengts = AutoDisposeNotifier<bool>;
-String _$liveFeedEvaluatorHash() => r'c885b86c45af772e939d545cb6b7d001d17c757c';
+String _$liveFeedEvaluatorHash() => r'b7c6ffaa61c1ed87234daf1bcdf5a6dc6cebf436';
 
 /// Live Feed Evaluator Provider
 /// This provider listens for new evaluation results and saves them to Firestore.

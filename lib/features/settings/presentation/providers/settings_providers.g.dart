@@ -6,7 +6,7 @@ part of 'settings_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$availableModelsHash() => r'81f1008bd41e51b6f86979e9a89a5b0f7def3364';
+String _$availableModelsHash() => r'135f3f4e946b1920a7939cab10dd2c4751fcc6c5';
 
 /// Available models from backend based on current provider
 ///
@@ -27,7 +27,7 @@ final availableModelsProvider =
 // ignore: unused_element
 typedef AvailableModelsRef = AutoDisposeFutureProviderRef<List<dynamic>>;
 String _$appSettingsNotifierHash() =>
-    r'90061f4241f04afc785b9f5965a707975b5dc708';
+    r'1e51c7404f903d92da58ef7d116a05e2d1afd958';
 
 /// See also [AppSettingsNotifier].
 @ProviderFor(AppSettingsNotifier)
@@ -61,7 +61,7 @@ final selectedThemeProvider =
 );
 
 typedef _$SelectedTheme = AutoDisposeNotifier<AppThemePreset>;
-String _$aIConfigNotifierHash() => r'2d5344399353fadc5d3a3da5e17588b41da21899';
+String _$aIConfigNotifierHash() => r'1f79cc70372d4d4b32f958e04bfde64babb8d148';
 
 /// AI Config Provider (legacy wrapper)
 ///
@@ -99,7 +99,7 @@ final educationConfigNotifierProvider = AutoDisposeNotifierProvider<
 
 typedef _$EducationConfigNotifier = AutoDisposeNotifier<EducationConfig>;
 String _$debugConfigNotifierHash() =>
-    r'09916d2384057a33a7a95d0e77d1e021332876cb';
+    r'975ca8f5a862cf5ca95e9b773ad129bd48bbadec';
 
 /// Debug Configuration Provider with SharedPreferences persistence
 ///

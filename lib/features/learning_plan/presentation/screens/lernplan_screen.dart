@@ -100,13 +100,52 @@ class LernplanScreen extends ConsumerWidget {
       );
     }
 
+    // Filter out corrupted topics (with all empty fields) and auto-delete them
+    final validTopics = topics.where((topic) {
+      final isValid = topic.leitidee.isNotEmpty || 
+                      topic.thema.isNotEmpty || 
+                      topic.unterthema.isNotEmpty;
+      if (!isValid) {
+        // Auto-delete corrupted topic
+        ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
+        debugPrint('Auto-deleted corrupted topic with empty fields');
+      }
+      return isValid;
+    }).toList();
+
+    if (validTopics.isEmpty && topics.isNotEmpty) {
+      // All topics were corrupted and deleted
+      return GlassPanel(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Icon(Icons.cleaning_services,
+                size: 48, color: theme.colorScheme.primary),
+            const SizedBox(height: 16),
+            Text(
+              'Korrupte Daten bereinigt',
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Ungültige Themen wurden automatisch entfernt.',
+              style: theme.textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return GlassPanel(
       padding: EdgeInsets.zero,
       child: Column(
-        children: topics.map((topic) {
+        children: validTopics.map((topic) {
+          // Use unique key based on all topic fields plus timestamp
+          final uniqueKey = 'topic_${topic.uniqueKey}_${topic.hashCode}';
           return Dismissible(
-            key: ValueKey(
-                '${topic.leitidee}-${topic.thema}-${topic.unterthema}'),
+            key: ValueKey(uniqueKey),
             direction: DismissDirection.endToStart,
             background: Container(
               alignment: Alignment.centerRight,
@@ -217,7 +256,7 @@ class LernplanScreen extends ConsumerWidget {
           thema: thema.name,
           unterthema: unterthema,
           source: 'manual',
-          addedAtTimestamp: 0, // Will be set by Firestore service
+          addedAt: DateTime.now(), // Will be set by Firestore service
         );
         final isSelected = currentLernplanTopics.any((t) =>
             t.leitidee == topic.leitidee &&

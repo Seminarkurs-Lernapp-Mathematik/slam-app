@@ -1,6 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
-import '../../features/settings/presentation/providers/settings_providers.dart'; // For CourseType and GradeLevel
+
+// Note: Using String for gradeLevel and courseType to avoid circular dependency
+// Valid values for gradeLevel: 'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13'
+// Valid values for courseType: 'Grundkurs', 'Leistungskurs', 'Leistungsfach'
 
 part 'question_result.freezed.dart';
 part 'question_result.g.dart';

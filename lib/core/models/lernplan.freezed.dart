@@ -23,10 +23,10 @@ mixin _$Lernplan {
   String get id => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   List<LernplanTopic> get topics => throw _privateConstructorUsedError;
-  @JsonKey(name: 'createdAt')
-  int get createdAtTimestamp => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updatedAt')
-  int get updatedAtTimestamp => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Lernplan to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,8 +47,8 @@ abstract class $LernplanCopyWith<$Res> {
       {String id,
       String userId,
       List<LernplanTopic> topics,
-      @JsonKey(name: 'createdAt') int createdAtTimestamp,
-      @JsonKey(name: 'updatedAt') int updatedAtTimestamp});
+      @TimestampConverter() DateTime createdAt,
+      @TimestampConverter() DateTime updatedAt});
 }
 
 /// @nodoc
@@ -69,8 +69,8 @@ class _$LernplanCopyWithImpl<$Res, $Val extends Lernplan>
     Object? id = null,
     Object? userId = null,
     Object? topics = null,
-    Object? createdAtTimestamp = null,
-    Object? updatedAtTimestamp = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -85,14 +85,14 @@ class _$LernplanCopyWithImpl<$Res, $Val extends Lernplan>
           ? _value.topics
           : topics // ignore: cast_nullable_to_non_nullable
               as List<LernplanTopic>,
-      createdAtTimestamp: null == createdAtTimestamp
-          ? _value.createdAtTimestamp
-          : createdAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAtTimestamp: null == updatedAtTimestamp
-          ? _value.updatedAtTimestamp
-          : updatedAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -109,8 +109,8 @@ abstract class _$$LernplanImplCopyWith<$Res>
       {String id,
       String userId,
       List<LernplanTopic> topics,
-      @JsonKey(name: 'createdAt') int createdAtTimestamp,
-      @JsonKey(name: 'updatedAt') int updatedAtTimestamp});
+      @TimestampConverter() DateTime createdAt,
+      @TimestampConverter() DateTime updatedAt});
 }
 
 /// @nodoc
@@ -129,8 +129,8 @@ class __$$LernplanImplCopyWithImpl<$Res>
     Object? id = null,
     Object? userId = null,
     Object? topics = null,
-    Object? createdAtTimestamp = null,
-    Object? updatedAtTimestamp = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_$LernplanImpl(
       id: null == id
@@ -145,14 +145,14 @@ class __$$LernplanImplCopyWithImpl<$Res>
           ? _value._topics
           : topics // ignore: cast_nullable_to_non_nullable
               as List<LernplanTopic>,
-      createdAtTimestamp: null == createdAtTimestamp
-          ? _value.createdAtTimestamp
-          : createdAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAtTimestamp: null == updatedAtTimestamp
-          ? _value.updatedAtTimestamp
-          : updatedAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -164,8 +164,8 @@ class _$LernplanImpl extends _Lernplan with DiagnosticableTreeMixin {
       {required this.id,
       required this.userId,
       required final List<LernplanTopic> topics,
-      @JsonKey(name: 'createdAt') this.createdAtTimestamp = 0,
-      @JsonKey(name: 'updatedAt') this.updatedAtTimestamp = 0})
+      @TimestampConverter() required this.createdAt,
+      @TimestampConverter() required this.updatedAt})
       : _topics = topics,
         super._();
 
@@ -185,15 +185,15 @@ class _$LernplanImpl extends _Lernplan with DiagnosticableTreeMixin {
   }
 
   @override
-  @JsonKey(name: 'createdAt')
-  final int createdAtTimestamp;
+  @TimestampConverter()
+  final DateTime createdAt;
   @override
-  @JsonKey(name: 'updatedAt')
-  final int updatedAtTimestamp;
+  @TimestampConverter()
+  final DateTime updatedAt;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Lernplan(id: $id, userId: $userId, topics: $topics, createdAtTimestamp: $createdAtTimestamp, updatedAtTimestamp: $updatedAtTimestamp)';
+    return 'Lernplan(id: $id, userId: $userId, topics: $topics, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -204,9 +204,28 @@ class _$LernplanImpl extends _Lernplan with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('userId', userId))
       ..add(DiagnosticsProperty('topics', topics))
-      ..add(DiagnosticsProperty('createdAtTimestamp', createdAtTimestamp))
-      ..add(DiagnosticsProperty('updatedAtTimestamp', updatedAtTimestamp));
+      ..add(DiagnosticsProperty('createdAt', createdAt))
+      ..add(DiagnosticsProperty('updatedAt', updatedAt));
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LernplanImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            const DeepCollectionEquality().equals(other._topics, _topics) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, userId,
+      const DeepCollectionEquality().hash(_topics), createdAt, updatedAt);
 
   /// Create a copy of Lernplan
   /// with the given fields replaced by the non-null parameter values.
@@ -229,8 +248,8 @@ abstract class _Lernplan extends Lernplan {
           {required final String id,
           required final String userId,
           required final List<LernplanTopic> topics,
-          @JsonKey(name: 'createdAt') final int createdAtTimestamp,
-          @JsonKey(name: 'updatedAt') final int updatedAtTimestamp}) =
+          @TimestampConverter() required final DateTime createdAt,
+          @TimestampConverter() required final DateTime updatedAt}) =
       _$LernplanImpl;
   const _Lernplan._() : super._();
 
@@ -244,11 +263,11 @@ abstract class _Lernplan extends Lernplan {
   @override
   List<LernplanTopic> get topics;
   @override
-  @JsonKey(name: 'createdAt')
-  int get createdAtTimestamp;
+  @TimestampConverter()
+  DateTime get createdAt;
   @override
-  @JsonKey(name: 'updatedAt')
-  int get updatedAtTimestamp;
+  @TimestampConverter()
+  DateTime get updatedAt;
 
   /// Create a copy of Lernplan
   /// with the given fields replaced by the non-null parameter values.
@@ -267,8 +286,8 @@ mixin _$LernplanTopic {
   String get leitidee => throw _privateConstructorUsedError;
   String get thema => throw _privateConstructorUsedError;
   String get unterthema => throw _privateConstructorUsedError;
-  @JsonKey(name: 'addedAt')
-  int get addedAtTimestamp => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  DateTime get addedAt => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
 
   /// Serializes this LernplanTopic to a JSON map.
@@ -291,7 +310,7 @@ abstract class $LernplanTopicCopyWith<$Res> {
       {String leitidee,
       String thema,
       String unterthema,
-      @JsonKey(name: 'addedAt') int addedAtTimestamp,
+      @TimestampConverter() DateTime addedAt,
       String source});
 }
 
@@ -313,7 +332,7 @@ class _$LernplanTopicCopyWithImpl<$Res, $Val extends LernplanTopic>
     Object? leitidee = null,
     Object? thema = null,
     Object? unterthema = null,
-    Object? addedAtTimestamp = null,
+    Object? addedAt = null,
     Object? source = null,
   }) {
     return _then(_value.copyWith(
@@ -329,10 +348,10 @@ class _$LernplanTopicCopyWithImpl<$Res, $Val extends LernplanTopic>
           ? _value.unterthema
           : unterthema // ignore: cast_nullable_to_non_nullable
               as String,
-      addedAtTimestamp: null == addedAtTimestamp
-          ? _value.addedAtTimestamp
-          : addedAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
+      addedAt: null == addedAt
+          ? _value.addedAt
+          : addedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       source: null == source
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
@@ -353,7 +372,7 @@ abstract class _$$LernplanTopicImplCopyWith<$Res>
       {String leitidee,
       String thema,
       String unterthema,
-      @JsonKey(name: 'addedAt') int addedAtTimestamp,
+      @TimestampConverter() DateTime addedAt,
       String source});
 }
 
@@ -373,7 +392,7 @@ class __$$LernplanTopicImplCopyWithImpl<$Res>
     Object? leitidee = null,
     Object? thema = null,
     Object? unterthema = null,
-    Object? addedAtTimestamp = null,
+    Object? addedAt = null,
     Object? source = null,
   }) {
     return _then(_$LernplanTopicImpl(
@@ -389,10 +408,10 @@ class __$$LernplanTopicImplCopyWithImpl<$Res>
           ? _value.unterthema
           : unterthema // ignore: cast_nullable_to_non_nullable
               as String,
-      addedAtTimestamp: null == addedAtTimestamp
-          ? _value.addedAtTimestamp
-          : addedAtTimestamp // ignore: cast_nullable_to_non_nullable
-              as int,
+      addedAt: null == addedAt
+          ? _value.addedAt
+          : addedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       source: null == source
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
@@ -408,8 +427,8 @@ class _$LernplanTopicImpl extends _LernplanTopic with DiagnosticableTreeMixin {
       {required this.leitidee,
       required this.thema,
       required this.unterthema,
-      @JsonKey(name: 'addedAt') this.addedAtTimestamp = 0,
-      required this.source})
+      @TimestampConverter() required this.addedAt,
+      this.source = 'manual'})
       : super._();
 
   factory _$LernplanTopicImpl.fromJson(Map<String, dynamic> json) =>
@@ -422,14 +441,15 @@ class _$LernplanTopicImpl extends _LernplanTopic with DiagnosticableTreeMixin {
   @override
   final String unterthema;
   @override
-  @JsonKey(name: 'addedAt')
-  final int addedAtTimestamp;
+  @TimestampConverter()
+  final DateTime addedAt;
   @override
+  @JsonKey()
   final String source;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'LernplanTopic(leitidee: $leitidee, thema: $thema, unterthema: $unterthema, addedAtTimestamp: $addedAtTimestamp, source: $source)';
+    return 'LernplanTopic(leitidee: $leitidee, thema: $thema, unterthema: $unterthema, addedAt: $addedAt, source: $source)';
   }
 
   @override
@@ -440,9 +460,28 @@ class _$LernplanTopicImpl extends _LernplanTopic with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('leitidee', leitidee))
       ..add(DiagnosticsProperty('thema', thema))
       ..add(DiagnosticsProperty('unterthema', unterthema))
-      ..add(DiagnosticsProperty('addedAtTimestamp', addedAtTimestamp))
+      ..add(DiagnosticsProperty('addedAt', addedAt))
       ..add(DiagnosticsProperty('source', source));
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LernplanTopicImpl &&
+            (identical(other.leitidee, leitidee) ||
+                other.leitidee == leitidee) &&
+            (identical(other.thema, thema) || other.thema == thema) &&
+            (identical(other.unterthema, unterthema) ||
+                other.unterthema == unterthema) &&
+            (identical(other.addedAt, addedAt) || other.addedAt == addedAt) &&
+            (identical(other.source, source) || other.source == source));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, leitidee, thema, unterthema, addedAt, source);
 
   /// Create a copy of LernplanTopic
   /// with the given fields replaced by the non-null parameter values.
@@ -465,8 +504,8 @@ abstract class _LernplanTopic extends LernplanTopic {
       {required final String leitidee,
       required final String thema,
       required final String unterthema,
-      @JsonKey(name: 'addedAt') final int addedAtTimestamp,
-      required final String source}) = _$LernplanTopicImpl;
+      @TimestampConverter() required final DateTime addedAt,
+      final String source}) = _$LernplanTopicImpl;
   const _LernplanTopic._() : super._();
 
   factory _LernplanTopic.fromJson(Map<String, dynamic> json) =
@@ -479,8 +518,8 @@ abstract class _LernplanTopic extends LernplanTopic {
   @override
   String get unterthema;
   @override
-  @JsonKey(name: 'addedAt')
-  int get addedAtTimestamp;
+  @TimestampConverter()
+  DateTime get addedAt;
   @override
   String get source;
 

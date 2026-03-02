@@ -5,7 +5,6 @@ import '../providers/question_session_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 import '../../../../core/services/ai_service.dart'; // New import
 import '../../../settings/presentation/providers/settings_providers.dart'; // New import
-import '../../../../core/services/auth_service.dart'; // New import for userId
 
 final customHintProvider = StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>((ref) {
   return CustomHintNotifier(ref);
@@ -27,13 +26,11 @@ class CustomHintNotifier extends StateNotifier<AsyncValue<String?>> {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
       final selectedModel = appSettings.getActiveModel();
-      final apiKey = aiProvider == 'claude'
-          ? appSettings.claudeApiKey
-          : appSettings.geminiApiKey;
+      final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {
         throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
         );
       }
 
@@ -58,10 +55,12 @@ class CustomHintNotifier extends StateNotifier<AsyncValue<String?>> {
 /// Hints are provided as a list of strings from the parent widget.
 class HintPanel extends ConsumerWidget {
   final List<String> hints;
+  final String? questionText;
 
   const HintPanel({
     super.key,
     this.hints = const [],
+    this.questionText,
   });
 
   @override
@@ -142,7 +141,7 @@ class HintPanel extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Custom Hint Section
-            _CustomHintSection(hints: hints),
+            _CustomHintSection(hints: hints, questionText: questionText),
 
             const SizedBox(height: 16),
           ],
@@ -161,13 +160,13 @@ class HintPanel extends ConsumerWidget {
 
 class _CustomHintSection extends ConsumerWidget {
   final List<String> hints;
+  final String? questionText;
 
-  const _CustomHintSection({required this.hints});
+  const _CustomHintSection({required this.hints, this.questionText});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final customHintAsync = ref.watch(customHintProvider);
-    final currentQuestion = ref.watch(currentQuestionProvider);
     final currentAnswer = ref.watch(currentAnswerProvider);
     final hintsUsedCount = ref.watch(hintsUsedProvider);
 
@@ -178,9 +177,9 @@ class _CustomHintSection extends ConsumerWidget {
           onPressed: customHintAsync.isLoading
               ? null
               : () {
-                  if (currentQuestion != null) {
+                  if (questionText != null) {
                     ref.read(customHintProvider.notifier).requestCustomHint(
-                          questionText: currentQuestion.questionText,
+                          questionText: questionText!,
                           userAnswer: currentAnswer,
                           hintsUsed: hintsUsedCount,
                         );

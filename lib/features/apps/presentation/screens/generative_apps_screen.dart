@@ -60,14 +60,12 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     try {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getActiveModel(); // Use active model for generation
-      final apiKey = aiProvider == 'claude'
-          ? appSettings.claudeApiKey
-          : appSettings.geminiApiKey;
+      final selectedModel = appSettings.getActiveModel();
+      final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {
         throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
         );
       }
 

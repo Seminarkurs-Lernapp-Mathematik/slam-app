@@ -55,10 +55,9 @@ class FirestoreService {
         id: userId, // Lernplan ID same as User ID for single Lernplan per user
         userId: userId,
         topics: [],
-        createdAtTimestamp: now.millisecondsSinceEpoch,
-        updatedAtTimestamp: now.millisecondsSinceEpoch,
+        createdAt: now,
+        updatedAt: now,
       ).toJson(),
-      FirebaseCollections.memories: [],
       FirebaseCollections.taskHistory: [],
     });
   }
@@ -379,13 +378,7 @@ class FirestoreService {
         .map((snapshot) {
       final data = snapshot.data();
       if (data == null || !data.containsKey(FirebaseCollections.learningPlan)) {
-        return Lernplan(
-          id: userId,
-          userId: userId,
-          topics: [],
-          createdAtTimestamp: 0,
-          updatedAtTimestamp: 0,
-        ); // Return empty Lernplan if not found
+        return Lernplan.empty(userId); // Return empty Lernplan if not found
       }
 
       final lernplanData =
@@ -411,11 +404,13 @@ class FirestoreService {
         final newLernplan = Lernplan(
           id: userId,
           userId: userId,
-          topics: newTopics,
-          createdAtTimestamp: now.millisecondsSinceEpoch,
-          updatedAtTimestamp: now.millisecondsSinceEpoch,
+          topics: newTopics.map((t) => t.copyWith(addedAt: now)).toList(),
+          createdAt: now,
+          updatedAt: now,
         );
-        transaction.set(lernplanDoc, {FirebaseCollections.learningPlan: newLernplan.toJson()}, SetOptions(merge: true));
+        // Manually serialize to ensure proper JSON conversion
+        final jsonData = _lernplanToJson(newLernplan);
+        transaction.set(lernplanDoc, {FirebaseCollections.learningPlan: jsonData}, SetOptions(merge: true));
       } else {
         // Lernplan found, update it
         final existingLernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
@@ -429,15 +424,17 @@ class FirestoreService {
               t.leitidee == newTopic.leitidee &&
               t.thema == newTopic.thema &&
               t.unterthema == newTopic.unterthema)) {
-            updatedTopics.add(newTopic.copyWith(addedAtTimestamp: now.millisecondsSinceEpoch));
+            updatedTopics.add(newTopic.copyWith(addedAt: now));
           }
         }
 
         final updatedLernplan = existingLernplan.copyWith(
           topics: updatedTopics,
-          updatedAtTimestamp: now.millisecondsSinceEpoch,
+          updatedAt: now,
         );
-        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: updatedLernplan.toJson()});
+        // Manually serialize to ensure proper JSON conversion
+        final jsonData = _lernplanToJson(updatedLernplan);
+        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
       }
     });
   }
@@ -465,11 +462,39 @@ class FirestoreService {
 
         final updatedLernplan = existingLernplan.copyWith(
           topics: updatedTopics,
-          updatedAtTimestamp: DateTime.now().millisecondsSinceEpoch,
+          updatedAt: DateTime.now(),
         );
-        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: updatedLernplan.toJson()});
+        // Manually serialize to ensure proper JSON conversion
+        final jsonData = _lernplanToJson(updatedLernplan);
+        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
       }
     });
+  }
+
+  // ============================================================================
+  // LERNPLAN SERIALIZATION HELPERS
+  // ============================================================================
+
+  /// Convert Lernplan to JSON with proper nested serialization
+  Map<String, dynamic> _lernplanToJson(Lernplan lernplan) {
+    return {
+      'id': lernplan.id,
+      'userId': lernplan.userId,
+      'topics': lernplan.topics.map((t) => _lernplanTopicToJson(t)).toList(),
+      'createdAt': Timestamp.fromDate(lernplan.createdAt),
+      'updatedAt': Timestamp.fromDate(lernplan.updatedAt),
+    };
+  }
+
+  /// Convert LernplanTopic to JSON
+  Map<String, dynamic> _lernplanTopicToJson(LernplanTopic topic) {
+    return {
+      'leitidee': topic.leitidee,
+      'thema': topic.thema,
+      'unterthema': topic.unterthema,
+      'addedAt': Timestamp.fromDate(topic.addedAt),
+      'source': topic.source,
+    };
   }
 
   // ============================================================================
@@ -484,7 +509,7 @@ class FirestoreService {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories')
+        .collection(FirebaseCollections.memories)
         .doc(memoryData['id'] as String)
         .set(memoryData);
   }
@@ -498,7 +523,7 @@ class FirestoreService {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories')
+        .collection(FirebaseCollections.memories)
         .doc(memoryId)
         .update(updates);
   }
@@ -511,7 +536,7 @@ class FirestoreService {
     final doc = await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories')
+        .collection(FirebaseCollections.memories)
         .doc(memoryId)
         .get();
 
@@ -524,7 +549,7 @@ class FirestoreService {
     final querySnapshot = await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories')
+        .collection(FirebaseCollections.memories)
         .where('nextReviewAt', isLessThanOrEqualTo: now)
         .where('isArchived', isEqualTo: false)
         .orderBy('nextReviewAt')
@@ -541,7 +566,7 @@ class FirestoreService {
     var query = _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories');
+        .collection(FirebaseCollections.memories);
 
     if (includeArchived == false) {
       query = query.where('isArchived', isEqualTo: false) as CollectionReference<Map<String, dynamic>>;
@@ -562,7 +587,7 @@ class FirestoreService {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('memories')
+        .collection(FirebaseCollections.memories)
         .doc(memoryId)
         .delete();
   }
@@ -579,7 +604,7 @@ class FirestoreService {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('savedContent')
+        .collection(FirebaseCollections.savedContent)
         .doc(contentData['id'] as String)
         .set(contentData);
   }
@@ -592,7 +617,7 @@ class FirestoreService {
     final doc = await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('savedContent')
+        .collection(FirebaseCollections.savedContent)
         .doc(contentId)
         .get();
 
@@ -607,7 +632,7 @@ class FirestoreService {
     var query = _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('savedContent');
+        .collection(FirebaseCollections.savedContent);
 
     if (type != null) {
       query = query.where('type', isEqualTo: type) as CollectionReference<Map<String, dynamic>>;
@@ -628,7 +653,7 @@ class FirestoreService {
     await _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('savedContent')
+        .collection(FirebaseCollections.savedContent)
         .doc(contentId)
         .delete();
   }
@@ -638,7 +663,7 @@ class FirestoreService {
     return _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
-        .collection('savedContent')
+        .collection(FirebaseCollections.savedContent)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -878,6 +903,244 @@ class FirestoreService {
         'streakFreezes': newStreakFreezes,
       };
     });
+  }
+
+  // ============================================================================
+  // SOFT DELETE PATTERN
+  // ============================================================================
+
+  /// Soft delete a document (marks as deleted instead of removing)
+  Future<void> softDeleteDocument({
+    required String userId,
+    required String collection,
+    required String docId,
+    String deletedBy = 'user',
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(collection)
+        .doc(docId)
+        .update({
+      'isDeleted': true,
+      'deletedAt': Timestamp.now(),
+      'deletedBy': deletedBy,
+    });
+  }
+
+  /// Restore a soft-deleted document
+  Future<void> restoreDocument({
+    required String userId,
+    required String collection,
+    required String docId,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(collection)
+        .doc(docId)
+        .update({
+      'isDeleted': false,
+      'restoredAt': Timestamp.now(),
+    });
+  }
+
+  /// Get documents with soft delete filtering
+  Future<List<Map<String, dynamic>>> getDocuments({
+    required String userId,
+    required String collection,
+    bool includeDeleted = false,
+    int limit = 100,
+  }) async {
+    var query = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(collection)
+        .orderBy('createdAt', descending: true)
+        .limit(limit);
+
+    if (!includeDeleted) {
+      query = query.where('isDeleted', isEqualTo: false);
+    }
+
+    final snapshot = await query.get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  // ============================================================================
+  // FRIENDS & SOCIAL (UNUSED COLLECTIONS IMPLEMENTATION)
+  // ============================================================================
+
+  /// Send friend request
+  Future<void> sendFriendRequest({
+    required String userId,
+    required String friendId,
+    required String friendEmail,
+  }) async {
+    final requestData = {
+      'userId': userId,
+      'friendId': friendId,
+      'friendEmail': friendEmail,
+      'status': 'pending',
+      'createdAt': Timestamp.now(),
+      'updatedAt': Timestamp.now(),
+    };
+
+    // Add to sentChallenges (reusing for friend requests)
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.sentChallenges)
+        .doc(friendId)
+        .set(requestData);
+
+    // Add to receivedChallenges of friend
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(friendId)
+        .collection(FirebaseCollections.receivedChallenges)
+        .doc(userId)
+        .set({
+      ...requestData,
+      'senderId': userId,
+    });
+  }
+
+  /// Get friends list
+  Stream<List<Map<String, dynamic>>> friendsStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.friends)
+        .where('status', isEqualTo: 'accepted')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  /// Get pending friend requests
+  Stream<List<Map<String, dynamic>>> pendingFriendRequestsStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.receivedChallenges)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  // ============================================================================
+  // LEARNING SESSIONS (UNUSED COLLECTIONS IMPLEMENTATION)
+  // ============================================================================
+
+  /// Create a learning session
+  Future<void> createLearningSession({
+    required String userId,
+    required String sessionId,
+    required Map<String, dynamic> sessionData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.learningSessions)
+        .doc(sessionId)
+        .set({
+      ...sessionData,
+      'createdAt': Timestamp.now(),
+      'updatedAt': Timestamp.now(),
+    });
+  }
+
+  /// Update learning session
+  Future<void> updateLearningSession({
+    required String userId,
+    required String sessionId,
+    required Map<String, dynamic> updates,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.learningSessions)
+        .doc(sessionId)
+        .update({
+      ...updates,
+      'updatedAt': Timestamp.now(),
+    });
+  }
+
+  /// Get learning sessions stream
+  Stream<List<Map<String, dynamic>>> learningSessionsStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.learningSessions)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  // ============================================================================
+  // INVENTORY (UNUSED COLLECTIONS IMPLEMENTATION)
+  // ============================================================================
+
+  /// Add item to inventory
+  Future<void> addInventoryItem({
+    required String userId,
+    required String itemId,
+    required Map<String, dynamic> itemData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.inventory)
+        .doc(itemId)
+        .set({
+      ...itemData,
+      'acquiredAt': Timestamp.now(),
+    });
+  }
+
+  /// Get inventory items
+  Stream<List<Map<String, dynamic>>> inventoryStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.inventory)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  // ============================================================================
+  // REVIEW QUEUE (UNUSED COLLECTIONS IMPLEMENTATION)
+  // ============================================================================
+
+  /// Add to review queue
+  Future<void> addToReviewQueue({
+    required String userId,
+    required String itemId,
+    required Map<String, dynamic> reviewData,
+  }) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.reviewQueue)
+        .doc(itemId)
+        .set({
+      ...reviewData,
+      'addedAt': Timestamp.now(),
+      'isDeleted': false,
+    });
+  }
+
+  /// Get review queue
+  Stream<List<Map<String, dynamic>>> reviewQueueStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.reviewQueue)
+        .where('isDeleted', isEqualTo: false)
+        .orderBy('nextReviewDate')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 }
 

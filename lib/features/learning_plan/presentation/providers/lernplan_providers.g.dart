@@ -6,7 +6,7 @@ part of 'lernplan_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lernplanStreamHash() => r'db5cf25c9077070d808f433a86403585b0291d66';
+String _$lernplanStreamHash() => r'e18f264da3371066a5ed27bc9361e3ae1a55608a';
 
 /// Provides the current user's Lernplan in real-time.
 /// Returns an empty Lernplan if no user is logged in or if the Lernplan doesn't exist.
@@ -26,30 +26,7 @@ final lernplanStreamProvider = AutoDisposeStreamProvider<Lernplan>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LernplanStreamRef = AutoDisposeStreamProviderRef<Lernplan>;
-String _$lernplanTopicsAsTopicDataHash() =>
-    r'9f346697c485776d9725b569c3cbeead90f87d2e';
-
-/// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
-///
-/// Copied from [LernplanTopicsAsTopicData].
-@ProviderFor(LernplanTopicsAsTopicData)
-final lernplanTopicsAsTopicDataProvider =
-    AutoDisposeNotifierProvider<LernplanTopicsAsTopicData, List<TopicData>>
-        .internal(
-  () => LernplanTopicsAsTopicData(),
-  name: r'lernplanTopicsAsTopicDataProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$lernplanTopicsAsTopicDataHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef _$LernplanTopicsAsTopicData
-    = AutoDisposeNotifier<List<TopicData>>;
-String _$lernplanNotifierHash() => r'ad9459956385b963e13416c9a3d9b26181aef61a';
+String _$lernplanNotifierHash() => r'32a269f9a7d0962f8a6200876c7da232aae70a88';
 
 /// Notifier to manage the user's Lernplan.
 /// Allows adding and removing topics, persisting changes to Firestore.
@@ -68,5 +45,24 @@ final lernplanNotifierProvider =
 );
 
 typedef _$LernplanNotifier = AutoDisposeAsyncNotifier<Lernplan>;
+String _$lernplanTopicsAsTopicDataHash() =>
+    r'7e2c7443701fbdf97da101bfd00e98a2975ca9f9';
+
+/// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
+///
+/// Copied from [LernplanTopicsAsTopicData].
+@ProviderFor(LernplanTopicsAsTopicData)
+final lernplanTopicsAsTopicDataProvider = AutoDisposeNotifierProvider<
+    LernplanTopicsAsTopicData, List<TopicData>>.internal(
+  LernplanTopicsAsTopicData.new,
+  name: r'lernplanTopicsAsTopicDataProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$lernplanTopicsAsTopicDataHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LernplanTopicsAsTopicData = AutoDisposeNotifier<List<TopicData>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

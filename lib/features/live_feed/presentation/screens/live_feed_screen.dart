@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/question.dart';
-import '../../../../core/services/ai_service.dart';
-import '../../../../core/services/auth_service.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
@@ -46,8 +43,6 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Future<void> _generateQuestions() async {
-    final queue = ref.read(liveFeedQueueProvider.notifier);
-
     // Prevent double generation
     if (ref.read(liveFeedQuestionGeneratorProvider)) return; // Check if generator is active
 

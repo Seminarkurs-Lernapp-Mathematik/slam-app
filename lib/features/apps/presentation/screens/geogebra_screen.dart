@@ -154,13 +154,11 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
       final selectedModel = appSettings.getActiveModel();
-      final apiKey = aiProvider == 'claude'
-          ? appSettings.claudeApiKey
-          : appSettings.geminiApiKey;
+      final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {
         throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${aiProvider == 'claude' ? 'Claude' : 'Gemini'} API-Key in den Einstellungen (Debug Panel).',
+          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
         );
       }
 
