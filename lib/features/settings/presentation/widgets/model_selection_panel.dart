@@ -23,8 +23,7 @@ class ModelSelectionPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    // Force refresh models every time this panel is shown
-    ref.invalidate(availableModelsProvider);
+    // Models are re-fetched automatically when provider/apiKey changes
     final modelsAsync = ref.watch(availableModelsProvider);
     final settings = ref.watch(appSettingsNotifierProvider);
 

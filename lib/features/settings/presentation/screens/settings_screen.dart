@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/settings_providers.dart';
 import '../widgets/theme_selector.dart';
+import '../widgets/model_selection_panel.dart';
 import '../../../../core/services/auth_service.dart';
 
 /// Modern Settings Screen - Unified, performant, beautiful
@@ -93,7 +94,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const SizedBox(height: 12),
                 const _ModelModeSelector(),
                 const SizedBox(height: 24),
-                
+
+                // Per-Task Model Selection
+                _SectionHeader(
+                  icon: Icons.tune,
+                  title: 'Modellauswahl',
+                  subtitle: 'Spezifisches Modell pro Aufgabentyp',
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(height: 12),
+                const _ModelSelector(),
+                const SizedBox(height: 24),
+
                 // Theme Section
                 _SectionHeader(
                   icon: Icons.palette,
@@ -369,6 +381,67 @@ class _ModelModeSelector extends ConsumerWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+// ============================================================================
+// MODEL SELECTOR (per task)
+// ============================================================================
+
+class _ModelSelector extends ConsumerWidget {
+  const _ModelSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsNotifierProvider);
+    final apiKey = settings.getApiKey();
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (apiKey == null || apiKey.isEmpty)
+            _NoKeyHint(provider: settings.getProviderName())
+          else
+            const ModelSelectionPanel(),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoKeyHint extends StatelessWidget {
+  final String provider;
+  const _NoKeyHint({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline,
+              size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Kein $provider API-Key konfiguriert. '
+              'Trage deinen Key im Abschnitt "API-Schlüssel" ein, '
+              'um verfügbare Modelle zu laden.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
