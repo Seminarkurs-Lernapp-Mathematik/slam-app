@@ -445,8 +445,19 @@ class AIService {
       final data = e.response!.data;
 
       String message = 'API Error';
-      if (data is Map<String, dynamic> && data.containsKey('error')) {
-        message = data['error'] as String;
+      if (data is Map<String, dynamic>) {
+        // Prefer the detailed 'error' field; fall back to 'message' for extra detail
+        final errorField = data['error'];
+        final messageField = data['message'];
+        if (errorField is String && errorField.isNotEmpty) {
+          message = errorField;
+          // Append the more detailed message if it differs and adds useful info
+          if (messageField is String && messageField.isNotEmpty && messageField != errorField) {
+            message = '$errorField\n$messageField';
+          }
+        } else if (messageField is String && messageField.isNotEmpty) {
+          message = messageField;
+        }
       }
 
       return AIException(

@@ -78,9 +78,8 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         ).future,
       );
 
-      // _loadAppInWebView sets _webViewController and calls setState internally
       setState(() => _isLoading = false);
-      _loadAppInWebView(app);
+      _loadAppInWebView(app); // sets _currentApp + _webViewController
     } on AIException catch (e) {
       setState(() {
         _error = e.message;
@@ -95,22 +94,13 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   }
 
   void _loadAppInWebView(GeneratedApp app) {
-    // The backend returns a complete HTML document — use it directly.
-    // Create the controller first so the widget tree can mount the WebView,
-    // then load content in the post-frame callback once it's attached.
-    final controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
-
+    // Build the full HTML first so we can load it immediately on creation
+    final html = _getHtml(app);
     setState(() {
       _currentApp = app;
-      _webViewController = controller;
-    });
-
-    // Load after the WebViewWidget is mounted in the tree
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        controller.loadHtmlString(_getHtml(app));
-      }
+      _webViewController = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadHtmlString(html);
     });
   }
 

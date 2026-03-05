@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/question.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
@@ -24,6 +25,16 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeQueue();
+      // Also listen for when the user logs in (handles auth timing on web)
+      ref.listenManual(currentUserProvider, (previous, next) {
+        if (previous == null && next != null) {
+          // User just became authenticated — try generating if queue is still empty
+          if (ref.read(liveFeedQueueProvider).questions.isEmpty &&
+              !ref.read(liveFeedQuestionGeneratorProvider)) {
+            _generateQuestions();
+          }
+        }
+      });
     });
   }
 
