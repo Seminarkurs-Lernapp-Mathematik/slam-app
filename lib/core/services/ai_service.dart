@@ -417,12 +417,14 @@ class AIService {
   /// GET /api/get-models?provider=claude
   Future<List<ModelInfo>> getAvailableModels({
     required String provider,
+    String? apiKey,
   }) async {
     try {
       final response = await _dio.get(
         ApiEndpoints.getFullUrl('/api/get-models'),
         queryParameters: {
           'provider': provider,
+          if (apiKey != null && apiKey.isNotEmpty) 'apiKey': apiKey,
         },
       );
 

@@ -1056,7 +1056,8 @@ class DebugConfigNotifier extends _$DebugConfigNotifier {
 // AVAILABLE MODELS PROVIDER
 // ============================================================================
 
-/// Available models from backend based on current provider
+/// Available models from backend — live-fetched using the user's API key.
+/// Falls back to the backend's curated list if no key is configured.
 @riverpod
 Future<List<dynamic>> availableModels(
   AvailableModelsRef ref,
@@ -1065,5 +1066,10 @@ Future<List<dynamic>> availableModels(
   final aiService = ref.watch(aiServiceProvider);
 
   final provider = settings.aiProvider; // 'claude', 'gemini', or 'openrouter'
-  return await aiService.getAvailableModels(provider: provider);
+  final apiKey = settings.getApiKey();
+
+  return await aiService.getAvailableModels(
+    provider: provider,
+    apiKey: apiKey,
+  );
 }
