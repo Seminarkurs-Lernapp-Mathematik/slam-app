@@ -153,7 +153,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     try {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getActiveModel();
+      final selectedModel = appSettings.getModelForTask('geogebraGeneration');
       final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {

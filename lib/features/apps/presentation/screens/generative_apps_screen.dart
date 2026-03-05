@@ -60,7 +60,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     try {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getActiveModel();
+      final selectedModel = appSettings.getModelForTask('miniAppGeneration');
       final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {

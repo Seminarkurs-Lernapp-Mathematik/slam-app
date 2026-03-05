@@ -230,7 +230,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         hintsAlreadyUsed: _hintsShown,
         apiKey: apiKey,
         provider: appSettings.aiProvider,
-        selectedModel: appSettings.getActiveModel(),
+        selectedModel: appSettings.getModelForTask('customHints'),
       );
 
       if (mounted) {

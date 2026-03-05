@@ -25,7 +25,7 @@ class CustomHintNotifier extends StateNotifier<AsyncValue<String?>> {
     try {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getActiveModel();
+      final selectedModel = appSettings.getModelForTask('customHints');
       final apiKey = appSettings.getApiKey();
 
       if (apiKey == null || apiKey.isEmpty) {

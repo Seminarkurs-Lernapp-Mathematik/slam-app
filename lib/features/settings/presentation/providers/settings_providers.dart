@@ -232,7 +232,7 @@ class AppSettings {
     this.openrouterApiKey,
     this.geminiFastModel = 'gemini-2.0-flash-lite',
     this.geminiModel = 'gemini-2.0-flash',
-    this.geminiSmartModel = 'gemini-2.5-pro-preview-05-06',
+    this.geminiSmartModel = 'gemini-2.5-pro',
     this.openrouterModel = 'google/gemini-2.0-flash-exp:free',
     this.modelMode = 'fast',
     this.selectedModel = 'gemini-2.0-flash-lite',
@@ -281,21 +281,19 @@ class AppSettings {
       claudeApiKey: json['claudeApiKey'],
       geminiApiKey: json['geminiApiKey'],
       openrouterApiKey: json['openrouterApiKey'],
-      geminiFastModel: json['geminiFastModel'] ?? 'gemini-2.0-flash-lite',
-      geminiModel: json['geminiModel'] ?? 'gemini-2.0-flash',
-      geminiSmartModel: json['geminiSmartModel'] ?? 'gemini-2.5-pro-preview-05-06',
+      geminiFastModel: _migrateGeminiModel(json['geminiFastModel'], 'gemini-2.0-flash-lite'),
+      geminiModel: _migrateGeminiModel(json['geminiModel'], 'gemini-2.0-flash'),
+      geminiSmartModel: _migrateGeminiModel(json['geminiSmartModel'], 'gemini-2.5-pro'),
       openrouterModel: json['openrouterModel'] ?? 'google/gemini-2.0-flash-exp:free',
       modelMode: json['modelMode'] ?? 'fast',
-      selectedModel: json['selectedModel'] ?? 'gemini-2.0-flash-lite',
+      selectedModel: _migrateGeminiModel(json['selectedModel'], 'gemini-2.0-flash-lite'),
       showAiAssessments: json['showAiAssessments'] ?? false,
       courseType: json['courseType'] ?? 'Leistungsfach',
       gradeLevel: json['gradeLevel'] ?? 'Klasse_11',
       theme: json['theme'] != null
           ? ThemeConfig.fromJson(json['theme'] as Map<String, dynamic>)
           : ThemeConfig.fromPreset(AppThemePreset.sunsetOrange),
-      taskModels: json['taskModels'] != null
-          ? Map<String, String>.from(json['taskModels'] as Map)
-          : {},
+      taskModels: _migrateTaskModels(json['taskModels']),
       examDate: json['examDate'] != null
           ? DateTime.tryParse(json['examDate'] as String)
           : null,
@@ -343,9 +341,20 @@ class AppSettings {
     );
   }
 
-  /// Get model for specific task
-  String? getModelForTask(String taskName) {
-    return taskModels[taskName];
+  /// Known stale/deprecated Gemini model IDs that no longer work.
+  static const _staleGeminiModels = {
+    'gemini-2.5-pro-preview-05-06',
+    'gemini-exp-1206',
+    'gemini-exp-1121',
+    'gemini-2.0-flash-exp',
+  };
+
+  /// Get the active model for a specific task, respecting per-task overrides.
+  /// Falls back to the global getActiveModel() if no override is set.
+  String getModelForTask(String taskName) {
+    final override = taskModels[taskName];
+    if (override != null && override.isNotEmpty) return override;
+    return getActiveModel();
   }
 
   /// Get API key for the currently selected provider
@@ -374,44 +383,69 @@ class AppSettings {
     }
   }
 
-  /// Get current model name based on provider and mode
+  /// Get current model name based on provider and mode.
+  /// Sanitizes any stale/deprecated model IDs before returning.
   String getActiveModel() {
+    String model;
     switch (aiProvider) {
       case 'claude':
         switch (modelMode) {
           case 'fast':
-            return 'claude-haiku-4-5-20251001';
+            model = 'claude-haiku-4-5-20251001';
           case 'standard':
           case 'smart':
-            return 'claude-sonnet-4-5-20250929';
           default:
-            return 'claude-sonnet-4-5-20250929';
+            model = 'claude-sonnet-4-5-20250929';
         }
       case 'openrouter':
         switch (modelMode) {
           case 'fast':
-            return openrouterFastModel;
+            model = openrouterFastModel;
           case 'standard':
-            return openrouterStandardModel;
+            model = openrouterStandardModel;
           case 'smart':
-            return openrouterSmartModel;
+            model = openrouterSmartModel;
           default:
-            return openrouterModel;
+            model = openrouterModel;
         }
       case 'gemini':
       default:
         switch (modelMode) {
           case 'fast':
-            return geminiFastModel;
+            model = geminiFastModel;
           case 'standard':
-            return geminiModel;
+            model = geminiModel;
           case 'smart':
-            return geminiSmartModel;
+            model = _migrateGeminiModel(geminiSmartModel, 'gemini-2.5-pro');
           default:
-            return geminiModel;
+            model = geminiModel;
         }
     }
+    return model;
   }
+}
+
+/// Migrates per-task model overrides stored in Firebase, removing stale entries.
+Map<String, String> _migrateTaskModels(dynamic raw) {
+  if (raw == null) return {};
+  final result = <String, String>{};
+  (raw as Map).forEach((k, v) {
+    final migrated = _migrateGeminiModel(v, '');
+    if (migrated.isNotEmpty) result[k.toString()] = migrated;
+  });
+  return result;
+}
+
+/// Replaces deprecated/invalid Gemini model IDs with a safe fallback.
+/// Called when loading settings from Firebase or SharedPreferences.
+String _migrateGeminiModel(dynamic stored, String fallback) {
+  if (stored == null || stored is! String || stored.isEmpty) return fallback;
+  const deprecated = {
+    'gemini-2.5-pro-preview-05-06',
+    'gemini-exp-1206',
+    'gemini-exp-1121',
+  };
+  return deprecated.contains(stored) ? fallback : stored;
 }
 
 // ============================================================================
@@ -755,7 +789,7 @@ class AIConfig {
     this.geminiApiKey,
     this.geminiFastModel = 'gemini-2.0-flash-lite',
     this.geminiModel = 'gemini-2.0-flash',
-    this.geminiSmartModel = 'gemini-2.5-pro-preview-05-06',
+    this.geminiSmartModel = 'gemini-2.5-pro',
     this.modelMode = 'fast',
     this.showAiAssessments = false,
   });

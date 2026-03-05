@@ -294,7 +294,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         userId: userId,
         learningPlanItemId: 0, // Live feed doesn't have a specific learning plan item
         topics: topicsForAI,
-        selectedModel: appSettings.getActiveModel(), // Use active model for generation
+        selectedModel: appSettings.getModelForTask('questionGeneration'),
         userContext: UserContext(
           gradeLevel: gradeLevel,
           courseType: courseType,
