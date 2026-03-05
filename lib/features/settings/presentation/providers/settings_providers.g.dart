@@ -6,9 +6,10 @@ part of 'settings_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$availableModelsHash() => r'135f3f4e946b1920a7939cab10dd2c4751fcc6c5';
+String _$availableModelsHash() => r'a43b05f41a57c9674e60017b89045f0a79b13d0e';
 
-/// Available models from backend based on current provider
+/// Available models from backend — live-fetched using the user's API key.
+/// Falls back to the backend's curated list if no key is configured.
 ///
 /// Copied from [availableModels].
 @ProviderFor(availableModels)
@@ -27,7 +28,7 @@ final availableModelsProvider =
 // ignore: unused_element
 typedef AvailableModelsRef = AutoDisposeFutureProviderRef<List<dynamic>>;
 String _$appSettingsNotifierHash() =>
-    r'1e51c7404f903d92da58ef7d116a05e2d1afd958';
+    r'ddd47502936a778cd2756d7693fdbdce48b82f7f';
 
 /// See also [AppSettingsNotifier].
 @ProviderFor(AppSettingsNotifier)

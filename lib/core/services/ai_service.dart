@@ -63,7 +63,8 @@ class AIService {
     required List<TopicData> topics,
     required String selectedModel,
     required UserContext userContext,
-    required String provider, // claude or gemini
+    required String provider,
+    int questionCount = 20,
     Map<String, dynamic>? autoModeAssessment,
     List<Map<String, dynamic>>? recentMemories,
     Map<String, dynamic>? recentPerformance,
@@ -78,7 +79,8 @@ class AIService {
           'topics': topics.map((t) => t.toJson()).toList(),
           'selectedModel': selectedModel,
           'userContext': userContext.toJson(),
-          'provider': provider, // Add provider field
+          'provider': provider,
+          'questionCount': questionCount,
           'autoModeAssessment': autoModeAssessment,
           'recentMemories': recentMemories,
           'recentPerformance': recentPerformance,
@@ -86,46 +88,6 @@ class AIService {
       );
 
       return QuestionSession.fromJson(response.data);
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    }
-  }
-
-  // ============================================================================
-  // ANSWER EVALUATION
-  // ============================================================================
-
-  /// Evaluate answer
-  ///
-  /// POST /api/evaluate-answer
-  Future<AnswerEvaluation> evaluateAnswer({
-    required String questionId,
-    required String userAnswer,
-    required String correctAnswer,
-    required QuestionType questionType,
-    required int difficulty,
-    required int hintsUsed,
-    required int timeSpentSeconds,
-    required int correctStreak,
-    bool isFirstQuestionToday = false,
-  }) async {
-    try {
-      final response = await _dio.post(
-        ApiEndpoints.getFullUrl(ApiEndpoints.evaluateAnswer),
-        data: {
-          'questionId': questionId,
-          'userAnswer': userAnswer,
-          'correctAnswer': correctAnswer,
-          'questionType': questionType.value,
-          'difficulty': difficulty,
-          'hintsUsed': hintsUsed,
-          'timeSpent': timeSpentSeconds,
-          'correctStreak': correctStreak,
-          'isFirstQuestionToday': isFirstQuestionToday,
-        },
-      );
-
-      return AnswerEvaluation.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
     }
@@ -487,63 +449,6 @@ class AIService {
 // RESPONSE MODELS
 // ============================================================================
 
-/// Answer Evaluation Response
-class AnswerEvaluation {
-  final bool success;
-  final bool isCorrect;
-  final String feedback;
-  final List<Misconception>? misconceptions;
-  final int xpEarned;
-  final int coinsEarned;
-  final XPBreakdown? xpBreakdown;
-
-  AnswerEvaluation({
-    required this.success,
-    required this.isCorrect,
-    required this.feedback,
-    this.misconceptions,
-    required this.xpEarned,
-    required this.coinsEarned,
-    this.xpBreakdown,
-  });
-
-  factory AnswerEvaluation.fromJson(Map<String, dynamic> json) {
-    return AnswerEvaluation(
-      success: json['success'] as bool,
-      isCorrect: json['isCorrect'] as bool,
-      feedback: json['feedback'] as String,
-      misconceptions: (json['misconceptions'] as List?)
-          ?.map((m) => Misconception.fromJson(m))
-          .toList(),
-      xpEarned: json['xpEarned'] as int? ?? 0,
-      coinsEarned: json['coinsEarned'] as int? ?? 0,
-      xpBreakdown: json['xpBreakdown'] != null
-          ? XPBreakdown.fromJson(json['xpBreakdown'])
-          : null,
-    );
-  }
-}
-
-/// Misconception
-class Misconception {
-  final String id;
-  final String name;
-  final String hint;
-
-  Misconception({
-    required this.id,
-    required this.name,
-    required this.hint,
-  });
-
-  factory Misconception.fromJson(Map<String, dynamic> json) {
-    return Misconception(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      hint: json['hint'] as String,
-    );
-  }
-}
 
 /// Canvas Response
 class CanvasResponse {

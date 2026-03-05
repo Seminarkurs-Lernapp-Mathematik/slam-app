@@ -539,6 +539,42 @@ flutter build ios --release
 
 ---
 
+## 🤝 AI Agent Collaboration
+
+In addition to Claude Code, you have access to the following AI coding agents that can be invoked from the terminal for collaboration or to parallelize work:
+
+| Agent | Command | Model | Best Used For |
+|---|---|---|---|
+| **Gemini CLI** | `gemini --yolo` | Gemini 3.1 Pro | Large context tasks, codebase analysis, long file reads |
+| **Kimi Code** | `kimi --yolo` | Kimi K2.5 | Code generation, refactoring, alternative implementations |
+
+### When to Delegate to Other Agents
+
+- **Parallelize independent tasks**: Launch Gemini or Kimi on one part of the codebase while working on another
+- **Second opinion**: Ask another agent to review a complex architecture decision
+- **Large context**: Gemini 3.1 Pro has a very large context window — useful for analyzing many files at once
+- **Alternative approach**: If stuck, delegate to Kimi for a different implementation strategy
+
+### Example Usage
+
+```bash
+# Delegate a backend task to Gemini while working on frontend
+gemini --yolo "Read all files in slam-backend/src/api/ and add OpenRouter support to every endpoint"
+
+# Use Kimi for a specific refactor
+kimi --yolo "Refactor lib/features/live_feed/presentation/providers/live_feed_providers.dart to use a cleaner state machine pattern"
+
+# Use Gemini to analyze the full codebase for issues
+gemini --yolo "Analyze the entire slam-app/lib/ directory and report all potential bugs, unused code, and performance issues"
+```
+
+### Coordination Notes
+- Avoid having multiple agents edit the **same file simultaneously**
+- Agents run with `--yolo` flag bypass confirmation prompts — use for trusted, well-scoped tasks
+- Always review agent output before committing; verify with `flutter analyze` and a build
+
+---
+
 ## 🤖 Working with Claude Code
 
 ### Tips for Effective Collaboration

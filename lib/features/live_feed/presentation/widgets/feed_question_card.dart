@@ -109,82 +109,54 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   }
 
   Future<void> _processAnswer(bool isCorrect, String userAnswer) async {
-    try {
-      final aiService = ref.read(aiServiceProvider);
-      final currentStreak = ref.read(consecutiveCorrectProvider);
+    // Local XP/coins calculation — no API call needed
+    final difficulty = widget.question.difficulty;
+    final xpBase = isCorrect ? (difficulty * 10).clamp(10, 100) : 0;
+    final xpPenalty = _hintsShown * 5;
+    final xpEarned = (xpBase - xpPenalty).clamp(0, 100);
+    final coinsEarned = isCorrect ? difficulty : 0;
 
-      // Evaluate answer via API
-      final evaluation = await aiService.evaluateAnswer(
-        questionId: widget.question.id,
-        userAnswer: userAnswer,
-        correctAnswer: widget.question.solution,
-        questionType: widget.question.type,
-        difficulty: widget.question.difficulty,
-        hintsUsed: _hintsShown,
-        timeSpentSeconds: _timeSpentSeconds,
-        correctStreak: currentStreak,
-      );
+    final feedback = isCorrect
+        ? (widget.question.correctFeedback ?? 'Richtig! Gut gemacht.')
+        : (widget.question.incorrectFeedback ?? 'Nicht ganz richtig.');
 
-      // Store evaluation result
-      ref.read(lastEvaluationResultProvider.notifier).setResult({
-        'isCorrect': evaluation.isCorrect,
-        'feedback': evaluation.feedback,
-        'xpEarned': evaluation.xpEarned,
-        'coinsEarned': evaluation.coinsEarned,
-        'xpBreakdown': evaluation.xpBreakdown,
-        'misconceptions': evaluation.misconceptions,
-      });
+    // Store result for feedback display
+    ref.read(lastEvaluationResultProvider.notifier).setResult({
+      'isCorrect': isCorrect,
+      'feedback': feedback,
+      'xpEarned': xpEarned,
+      'coinsEarned': coinsEarned,
+    });
 
-      // Update stats
-      _updateStats(
-          evaluation.isCorrect, evaluation.xpEarned, evaluation.coinsEarned);
+    // Update in-session stats and Firestore
+    _updateStats(isCorrect, xpEarned, coinsEarned);
+    _updateAdaptiveDifficulty(isCorrect);
 
-      // Update adaptive difficulty
-      _updateAdaptiveDifficulty(evaluation.isCorrect);
+    // Show XP animation if correct
+    if (isCorrect && mounted) {
+      XPAnimation.show(context, xpAmount: xpEarned);
+    }
 
-      // Show XP animation if correct
-      if (evaluation.isCorrect && mounted) {
-        XPAnimation.show(
-          context,
-          xpAmount: evaluation.xpEarned,
-        );
-      }
+    // Save progress to Firestore
+    _saveProgress(isCorrect, xpEarned, coinsEarned, userAnswer: userAnswer);
 
-      // Save progress to Firestore
-      _saveProgress(
-          evaluation.isCorrect, evaluation.xpEarned, evaluation.coinsEarned,
-          userAnswer: userAnswer);
-
-      // If wrong, show "Wo haengts?" after a delay
-      if (!isCorrect) {
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
-            setState(() {
-              _showWoHaengtsInput = true;
-            });
-            ref.read(showWoHaengtsProvider.notifier).show();
-          }
-        });
-      }
-
-      // Auto-advance after delay (longer for wrong answers to allow "Wo haengts?" input)
-      _autoAdvanceTimer = Timer(
-        Duration(seconds: isCorrect ? 3 : 8),
-        () {
-          if (mounted) {
-            widget.onAnswerSubmitted();
-          }
-        },
-      );
-    } catch (e) {
-      _showSnackBar('Fehler beim Evaluieren: ${e.toString()}');
-      // Still allow advancing even on error
-      _autoAdvanceTimer = Timer(const Duration(seconds: 3), () {
+    // If wrong, show "Wo hängts?" after a delay
+    if (!isCorrect) {
+      Future.delayed(const Duration(milliseconds: 800), () {
         if (mounted) {
-          widget.onAnswerSubmitted();
+          setState(() => _showWoHaengtsInput = true);
+          ref.read(showWoHaengtsProvider.notifier).show();
         }
       });
     }
+
+    // Auto-advance (longer for wrong so user can read feedback / use "Wo hängts?")
+    _autoAdvanceTimer = Timer(
+      Duration(seconds: isCorrect ? 3 : 8),
+      () {
+        if (mounted) widget.onAnswerSubmitted();
+      },
+    );
   }
 
   void _revealHint() {
@@ -288,7 +260,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     if (isCorrect && consecutiveCorrect >= 2) {
       ref.read(liveFeedDifficultyProvider.notifier).increase();
-      _showSnackBar('Schwierigkeitsgrad erhoht!', icon: Icons.trending_up);
+      _showSnackBar('Schwierigkeitsgrad erhöht!', icon: Icons.trending_up);
     } else if (!isCorrect && consecutiveWrong >= 2) {
       ref.read(liveFeedDifficultyProvider.notifier).decrease();
       _showSnackBar('Schwierigkeitsgrad angepasst', icon: Icons.trending_down);
@@ -445,25 +417,14 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     // Split by $ to handle mixed text and LaTeX
     final parts = questionText.split(r'$');
     if (parts.length <= 1) {
-      // No LaTeX delimiters, try rendering as-is
-      try {
-        return Math.tex(
-          questionText,
-          textStyle: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-          ),
-          mathStyle: MathStyle.display,
-        );
-      } catch (e) {
-        return Text(
-          questionText,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-          ),
-        );
-      }
+      // No LaTeX delimiters — render as plain text (Math.tex strips whitespace)
+      return Text(
+        questionText,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+          height: 1.5,
+        ),
+      );
     }
 
     // Mixed text and LaTeX
@@ -505,6 +466,29 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     );
   }
 
+  /// Renders a string that may contain inline LaTeX ($...$) mixed with plain text.
+  Widget _buildMixedText(String text, TextStyle style) {
+    final parts = text.split(r'$');
+    if (parts.length <= 1) {
+      return Text(text, style: style);
+    }
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: List.generate(parts.length, (index) {
+        final part = parts[index];
+        if (part.isEmpty) return const SizedBox.shrink();
+        if (index % 2 == 1) {
+          try {
+            return Math.tex(part, textStyle: style, mathStyle: MathStyle.text);
+          } catch (_) {
+            return Text(part, style: style);
+          }
+        }
+        return Text(part, style: style);
+      }),
+    );
+  }
+
   // ============================================================================
   // MULTIPLE CHOICE OPTIONS
   // ============================================================================
@@ -513,7 +497,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final options = widget.question.options;
     if (options == null || options.isEmpty) {
       return Text(
-        'Keine Antwortoptionen verfuegbar',
+        'Keine Antwortoptionen verfügbar',
         style: theme.textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
@@ -809,7 +793,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
               _processAnswer(_isCorrect, _stepOrder.join(','));
             },
             icon: const Icon(Icons.check),
-            label: const Text('Reihenfolge pruefen'),
+            label: const Text('Reihenfolge prüfen'),
           ),
         ],
       ],
@@ -834,7 +818,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Was ist der naechste Schritt?',
+          'Was ist der nächste Schritt?',
           style: theme.textTheme.titleSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
@@ -983,6 +967,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       Icons.school,
@@ -991,12 +976,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
-                        'Loesung: ${widget.question.solution}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
-                        ),
+                      child: _buildMixedText(
+                        'Lösung: ${widget.question.solution}',
+                        theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                            ) ??
+                            const TextStyle(),
                       ),
                     ),
                   ],
@@ -1114,7 +1100,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Wo haengts?',
+                  'Wo hängts?',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.tertiary,
@@ -1194,7 +1180,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           child: FilledButton.icon(
             onPressed: _skipToNext,
             icon: const Icon(Icons.arrow_forward),
-            label: const Text('Naechste Frage'),
+            label: const Text('Nächste Frage'),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

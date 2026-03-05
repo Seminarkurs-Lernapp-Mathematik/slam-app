@@ -278,17 +278,26 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
           .map((t) => TopicData(leitidee: t.leitidee, thema: t.thema, unterthema: t.unterthema))
           .toList();
 
+      // Pass recent performance so the AI can adapt difficulty
+      final questionsAnswered = ref.read(liveFeedQuestionsAnsweredProvider);
+      final correctAnswers = ref.read(liveFeedCorrectAnswersProvider);
+      final correctRate = questionsAnswered > 0 ? correctAnswers / questionsAnswered : 0.5;
+
       final session = await aiService.generateQuestions(
         apiKey: apiKey,
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
         selectedModel: appSettings.getModelForTask('questionGeneration'),
+        questionCount: 10, // Smaller batch = faster background prefetch
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
           courseType: appSettings.courseType,
         ),
         provider: appSettings.aiProvider,
+        recentPerformance: questionsAnswered > 0
+            ? {'averageScore': correctRate, 'totalAnswered': questionsAnswered}
+            : null,
       );
 
       if (session.questions.isNotEmpty) {
@@ -389,8 +398,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   /// Get remaining question count
   int get remainingCount => state.remainingCount;
 
-  /// Whether more questions should be generated
-  bool get needsMoreQuestions => state.remainingCount <= 2;
+  /// Whether more questions should be generated (prefetch at 10 remaining)
+  bool get needsMoreQuestions => state.remainingCount <= 10;
 }
 
 /// Selected Option Provider (tracks which MCQ option was selected)

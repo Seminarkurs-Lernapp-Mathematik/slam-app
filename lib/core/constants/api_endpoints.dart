@@ -12,9 +12,8 @@ class ApiEndpoints {
     defaultValue: 'https://api.learn-smart.app',
   );
 
-  // Question Generation & Evaluation
+  // Question Generation
   static const String generateQuestions = '/api/generate-questions';
-  static const String evaluateAnswer = '/api/evaluate-answer';
   static const String updateAutoMode = '/api/update-auto-mode';
 
   // Hint System
