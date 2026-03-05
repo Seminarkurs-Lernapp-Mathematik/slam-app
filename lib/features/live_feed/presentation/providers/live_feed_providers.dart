@@ -244,75 +244,72 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
   }
 
   Future<void> generateQuestions({bool force = false}) async {
-    if (state && !force) return; // Already generating, prevent re-entry
+    if (state && !force) return;
 
-    state = true; // Set generating state to true
+    state = true;
+    ref.read(liveFeedQueueProvider.notifier).setGenerating(true);
 
     try {
       final aiService = ref.read(aiServiceProvider);
       final appSettings = ref.read(appSettingsNotifierProvider);
-      // Watch auth state to ensure we have the latest user
-      final user = ref.watch(currentUserProvider);
+      final user = ref.read(currentUserProvider); // ref.read — not ref.watch
       final userId = user?.uid;
       final lernplanTopics = ref.read(lernplanTopicsAsTopicDataProvider);
 
       if (userId == null || userId.isEmpty) {
-        debugPrint('❌ LiveFeedQuestionGenerator: User not logged in.');
-        state = false;
+        debugPrint('❌ LiveFeed: User not logged in');
         return;
       }
 
       if (lernplanTopics.isEmpty) {
-        debugPrint('⚠️ LiveFeedQuestionGenerator: Lernplan topics are empty. Cannot generate questions.');
-        // Optionally, show a message to the user via a different provider/snack bar
+        debugPrint('⚠️ LiveFeed: Lernplan is empty, cannot generate');
         return;
       }
 
-      // Extract only topics without addedAtTimestamp or source from LernplanTopic
-      final topicsForAI = lernplanTopics.map((topic) => TopicData(
-        leitidee: topic.leitidee,
-        thema: topic.thema,
-        unterthema: topic.unterthema,
-      )).toList();
-
-      // Read education settings
-      final gradeLevel = appSettings.gradeLevel.replaceAll('Klasse_', '');
-      final courseType = appSettings.courseType; // e.g., 'Leistungskurs' or 'Grundkurs'
-
-      // Get API Key for current provider
       final String? apiKey = appSettings.getApiKey();
-
       if (apiKey == null || apiKey.isEmpty) {
-        debugPrint('❌ LiveFeedQuestionGenerator: API key not configured. Cannot generate questions.');
-        // Notify user about missing API key
+        debugPrint('❌ LiveFeed: No API key configured for ${appSettings.getProviderName()}');
         return;
       }
 
-      // Call AI service to generate questions
+      debugPrint('🔄 LiveFeed: Generating questions via ${appSettings.aiProvider}…');
+
+      final topicsForAI = lernplanTopics
+          .map((t) => TopicData(leitidee: t.leitidee, thema: t.thema, unterthema: t.unterthema))
+          .toList();
+
       final session = await aiService.generateQuestions(
         apiKey: apiKey,
         userId: userId,
-        learningPlanItemId: 0, // Live feed doesn't have a specific learning plan item
+        learningPlanItemId: 0,
         topics: topicsForAI,
         selectedModel: appSettings.getModelForTask('questionGeneration'),
         userContext: UserContext(
-          gradeLevel: gradeLevel,
-          courseType: courseType,
+          gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
+          courseType: appSettings.courseType,
         ),
-        provider: appSettings.aiProvider, // Add required provider parameter
+        provider: appSettings.aiProvider,
       );
 
       if (session.questions.isNotEmpty) {
         ref.read(liveFeedQueueProvider.notifier).addQuestions(session.questions);
-        debugPrint('✅ Generated ${session.questions.length} questions and added to queue.');
+        debugPrint('✅ LiveFeed: ${session.questions.length} questions added to queue');
+
+        // Automatically load the first question if nothing is showing yet
+        if (ref.read(currentLiveFeedQuestionProvider) == null) {
+          final first = ref.read(liveFeedQueueProvider).currentQuestion;
+          if (first != null) {
+            ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(first);
+          }
+        }
       } else {
-        debugPrint('⚠️ AI Service returned no questions.');
+        debugPrint('⚠️ LiveFeed: AI returned no questions');
       }
     } catch (e, st) {
-      debugPrint('❌ Error generating questions: $e\n$st');
-      // Handle error, e.g., show a snackbar to the user
+      debugPrint('❌ LiveFeed: Error generating questions: $e\n$st');
     } finally {
-      state = false; // Reset generating state
+      state = false;
+      ref.read(liveFeedQueueProvider.notifier).setGenerating(false);
     }
   }
 }

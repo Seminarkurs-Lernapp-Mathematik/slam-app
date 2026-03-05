@@ -78,12 +78,8 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         ).future,
       );
 
-      setState(() {
-        _currentApp = app;
-        _isLoading = false;
-      });
-
-      // Load app in WebView
+      // _loadAppInWebView sets _webViewController and calls setState internally
+      setState(() => _isLoading = false);
       _loadAppInWebView(app);
     } on AIException catch (e) {
       setState(() {
@@ -99,41 +95,48 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   }
 
   void _loadAppInWebView(GeneratedApp app) {
-    final html = _buildFullHTML(app);
+    // The backend returns a complete HTML document — use it directly.
+    // Create the controller first so the widget tree can mount the WebView,
+    // then load content in the post-frame callback once it's attached.
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
 
-    _webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadHtmlString(html);
+    setState(() {
+      _currentApp = app;
+      _webViewController = controller;
+    });
 
-    setState(() {});
+    // Load after the WebViewWidget is mounted in the tree
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        controller.loadHtmlString(_getHtml(app));
+      }
+    });
   }
 
-  String _buildFullHTML(GeneratedApp app) {
-    return '''
-<!DOCTYPE html>
+  String _getHtml(GeneratedApp app) {
+    final html = app.html.trim();
+    // If the backend returned a full document, use it as-is
+    if (html.toLowerCase().startsWith('<!doctype') ||
+        html.toLowerCase().startsWith('<html')) {
+      return html;
+    }
+    // Otherwise wrap the snippet
+    return '''<!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            padding: 16px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        ${app.css ?? ''}
-    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    ${app.css ?? ''}
+  </style>
 </head>
 <body>
-    ${app.html}
-    <script>
-        ${app.javascript ?? ''}
-    </script>
+  $html
+  <script>${app.javascript ?? ''}</script>
 </body>
-</html>
-    ''';
+</html>''';
   }
 
   Future<void> _saveApp() async {

@@ -34,101 +34,44 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Future<void> _initializeQueue() async {
-    final queueState = ref.read(liveFeedQueueProvider);
-
-    // If queue is empty, generate initial batch of questions
-    if (queueState.questions.isEmpty) {
+    // Auto-generate on first open if queue is empty
+    if (ref.read(liveFeedQueueProvider).questions.isEmpty) {
       await _generateQuestions();
     }
   }
 
   Future<void> _generateQuestions() async {
-    // Prevent double generation
-    if (ref.read(liveFeedQuestionGeneratorProvider)) return; // Check if generator is active
-
-    setState(() {
-      _errorMessage = null;
-    });
-
+    // Generator handles its own re-entry guard; just delegate
+    setState(() => _errorMessage = null);
     try {
       await ref.read(liveFeedQuestionGeneratorProvider.notifier).generateQuestions();
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Fehler beim Generieren: ${e.toString()}';
-      });
-    } finally {
-      // The generator provider handles its own state
-      // We only need to check if we can load the next question
-      final currentQuestion = ref.read(currentLiveFeedQuestionProvider);
-      if (currentQuestion == null && ref.read(liveFeedQueueProvider).currentQuestion != null) {
-        _loadNextFromQueue();
+      if (mounted) {
+        setState(() => _errorMessage = 'Fehler beim Generieren: ${e.toString()}');
       }
-    }
-  }
-
-  void _loadNextFromQueue() {
-    final queueState = ref.read(liveFeedQueueProvider);
-
-    // Get current question from queue
-    final question = queueState.currentQuestion;
-    if (question != null) {
-      ref
-          .read(currentLiveFeedQuestionProvider.notifier)
-          .setQuestion(question);
-
-      // Reset card state
-      ref.read(selectedOptionProvider.notifier).clear();
-      ref.read(liveFeedHintsUsedProvider.notifier).reset();
-      ref.read(liveFeedShowFeedbackProvider.notifier).hide();
-      ref.read(lastEvaluationResultProvider.notifier).clear();
-      ref.read(showWoHaengtsProvider.notifier).hide();
-      ref.read(woHaengtsInputProvider.notifier).clear();
-    }
-
-    // Check if we need to prefetch more questions
-    final queue = ref.read(liveFeedQueueProvider.notifier);
-    if (queue.needsMoreQuestions) {
-      _generateQuestions();
     }
   }
 
   void _handleAnswerSubmitted() {
-    // Advance to next question in queue
     final nextQ = ref.read(liveFeedQueueProvider.notifier).nextQuestion();
 
     if (nextQ != null) {
-      // Reset and load new question
-      ref
-          .read(currentLiveFeedQuestionProvider.notifier)
-          .setQuestion(nextQ);
-      ref.read(selectedOptionProvider.notifier).clear();
-      ref.read(liveFeedHintsUsedProvider.notifier).reset();
-      ref.read(liveFeedShowFeedbackProvider.notifier).hide();
-      ref.read(lastEvaluationResultProvider.notifier).clear();
-      ref.read(showWoHaengtsProvider.notifier).hide();
-      ref.read(woHaengtsInputProvider.notifier).clear();
-
-      // Check if we need more questions
-      final queue = ref.read(liveFeedQueueProvider.notifier);
-      if (queue.needsMoreQuestions) {
-        _generateQuestions();
-      }
+      ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(nextQ);
     } else {
-      // Queue empty, generate more
       ref.read(currentLiveFeedQuestionProvider.notifier).clear();
-      _generateQuestions().then((_) {
-        if (mounted) {
-          _loadNextFromQueue();
-        }
-      });
     }
 
-    // Animate page transition if PageView is used
-    if (_pageController.hasClients) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+    // Reset card state
+    ref.read(selectedOptionProvider.notifier).clear();
+    ref.read(liveFeedHintsUsedProvider.notifier).reset();
+    ref.read(liveFeedShowFeedbackProvider.notifier).hide();
+    ref.read(lastEvaluationResultProvider.notifier).clear();
+    ref.read(showWoHaengtsProvider.notifier).hide();
+    ref.read(woHaengtsInputProvider.notifier).clear();
+
+    // Prefetch more if queue is running low
+    if (ref.read(liveFeedQueueProvider.notifier).needsMoreQuestions) {
+      _generateQuestions();
     }
   }
 
