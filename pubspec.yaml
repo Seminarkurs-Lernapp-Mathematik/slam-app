@@ -45,6 +45,7 @@ dependencies:
   webview_flutter: ^4.13.1
   webview_flutter_android: ^4.10.11
   webview_flutter_wkwebview: ^3.23.5
+  webview_flutter_web: ^0.2.3+4
   google_fonts: ^6.2.1
   hive_flutter: ^1.1.0
   shared_preferences: ^2.5.3
