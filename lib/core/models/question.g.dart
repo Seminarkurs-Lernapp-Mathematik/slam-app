@@ -75,12 +75,14 @@ Map<String, dynamic> _$$QuestionOptionImplToJson(
 
 _$QuestionHintImpl _$$QuestionHintImplFromJson(Map<String, dynamic> json) =>
     _$QuestionHintImpl(
-      level: (json['level'] as num).toInt(),
+      id: json['id'] as String?,
+      level: (json['level'] as num?)?.toInt() ?? 0,
       text: json['text'] as String,
     );
 
 Map<String, dynamic> _$$QuestionHintImplToJson(_$QuestionHintImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'level': instance.level,
       'text': instance.text,
     };

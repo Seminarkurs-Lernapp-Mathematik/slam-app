@@ -1062,7 +1062,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hinweis ${hint.level}',
+                        'Hinweis ${hint.effectiveLevel}',
                         style: theme.textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,

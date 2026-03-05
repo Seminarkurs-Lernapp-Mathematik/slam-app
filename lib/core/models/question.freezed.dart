@@ -726,7 +726,10 @@ QuestionHint _$QuestionHintFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$QuestionHint {
-  int get level => throw _privateConstructorUsedError; // 1, 2, 3
+  String? get id =>
+      throw _privateConstructorUsedError; // "h1", "h2", "h3" — sent by backend
+  int get level =>
+      throw _privateConstructorUsedError; // 1, 2, 3 — optional, legacy field
   String get text => throw _privateConstructorUsedError;
 
   /// Serializes this QuestionHint to a JSON map.
@@ -745,7 +748,7 @@ abstract class $QuestionHintCopyWith<$Res> {
           QuestionHint value, $Res Function(QuestionHint) then) =
       _$QuestionHintCopyWithImpl<$Res, QuestionHint>;
   @useResult
-  $Res call({int level, String text});
+  $Res call({String? id, int level, String text});
 }
 
 /// @nodoc
@@ -763,10 +766,15 @@ class _$QuestionHintCopyWithImpl<$Res, $Val extends QuestionHint>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = freezed,
     Object? level = null,
     Object? text = null,
   }) {
     return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
       level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
@@ -787,7 +795,7 @@ abstract class _$$QuestionHintImplCopyWith<$Res>
       __$$QuestionHintImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int level, String text});
+  $Res call({String? id, int level, String text});
 }
 
 /// @nodoc
@@ -803,10 +811,15 @@ class __$$QuestionHintImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = freezed,
     Object? level = null,
     Object? text = null,
   }) {
     return _then(_$QuestionHintImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
       level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
@@ -822,21 +835,25 @@ class __$$QuestionHintImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$QuestionHintImpl extends _QuestionHint {
-  const _$QuestionHintImpl({required this.level, required this.text})
+  const _$QuestionHintImpl({this.id, this.level = 0, required this.text})
       : super._();
 
   factory _$QuestionHintImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuestionHintImplFromJson(json);
 
   @override
+  final String? id;
+// "h1", "h2", "h3" — sent by backend
+  @override
+  @JsonKey()
   final int level;
-// 1, 2, 3
+// 1, 2, 3 — optional, legacy field
   @override
   final String text;
 
   @override
   String toString() {
-    return 'QuestionHint(level: $level, text: $text)';
+    return 'QuestionHint(id: $id, level: $level, text: $text)';
   }
 
   @override
@@ -844,13 +861,14 @@ class _$QuestionHintImpl extends _QuestionHint {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$QuestionHintImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.level, level) || other.level == level) &&
             (identical(other.text, text) || other.text == text));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, level, text);
+  int get hashCode => Object.hash(runtimeType, id, level, text);
 
   /// Create a copy of QuestionHint
   /// with the given fields replaced by the non-null parameter values.
@@ -870,7 +888,8 @@ class _$QuestionHintImpl extends _QuestionHint {
 
 abstract class _QuestionHint extends QuestionHint {
   const factory _QuestionHint(
-      {required final int level,
+      {final String? id,
+      final int level,
       required final String text}) = _$QuestionHintImpl;
   const _QuestionHint._() : super._();
 
@@ -878,7 +897,9 @@ abstract class _QuestionHint extends QuestionHint {
       _$QuestionHintImpl.fromJson;
 
   @override
-  int get level; // 1, 2, 3
+  String? get id; // "h1", "h2", "h3" — sent by backend
+  @override
+  int get level; // 1, 2, 3 — optional, legacy field
   @override
   String get text;
 

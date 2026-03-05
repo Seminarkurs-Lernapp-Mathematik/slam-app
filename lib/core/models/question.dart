@@ -117,12 +117,23 @@ class QuestionHint with _$QuestionHint {
   const QuestionHint._();
 
   const factory QuestionHint({
-    required int level, // 1, 2, 3
+    String? id, // "h1", "h2", "h3" — sent by backend
+    @Default(0) int level, // 1, 2, 3 — optional, legacy field
     required String text,
   }) = _QuestionHint;
 
   factory QuestionHint.fromJson(Map<String, dynamic> json) =>
       _$QuestionHintFromJson(json);
+
+  /// Resolved hint number: from explicit level, or parsed from id ("h2" → 2)
+  int get effectiveLevel {
+    if (level > 0) return level;
+    if (id != null) {
+      final n = int.tryParse(id!.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (n != null && n > 0) return n;
+    }
+    return 1;
+  }
 }
 
 /// GeoGebra Data
