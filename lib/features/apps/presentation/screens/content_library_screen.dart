@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/models/saved_content.dart';
+import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../providers/apps_providers.dart';
 import '../widgets/code_viewer.dart';
 
@@ -389,22 +389,6 @@ class _ContentViewer extends StatefulWidget {
 }
 
 class _ContentViewerState extends State<_ContentViewer> {
-  late WebViewController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeWebView();
-  }
-
-  void _initializeWebView() {
-    final html = _buildFullHTML();
-
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadHtmlString(html);
-  }
-
   String _buildFullHTML() {
     return '''
 <!DOCTYPE html>
@@ -455,7 +439,12 @@ class _ContentViewerState extends State<_ContentViewer> {
           ),
         ],
       ),
-      body: WebViewWidget(controller: _controller),
+      body: CrossPlatformWebView(
+        htmlContent: _buildFullHTML(),
+        onPageFinished: () {
+          debugPrint('✅ Content loaded: ${widget.content.title}');
+        },
+      ),
     );
   }
 }

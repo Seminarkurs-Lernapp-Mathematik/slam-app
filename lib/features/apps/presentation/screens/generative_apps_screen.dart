@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/models/saved_content.dart';
+import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
@@ -22,7 +22,6 @@ class GenerativeAppsScreen extends ConsumerStatefulWidget {
 
 class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   final _promptController = TextEditingController();
-  WebViewController? _webViewController;
   bool _isLoading = false;
   String? _error;
   GeneratedApp? _currentApp;
@@ -78,8 +77,10 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         ).future,
       );
 
-      setState(() => _isLoading = false);
-      _loadAppInWebView(app); // sets _currentApp + _webViewController
+      setState(() {
+        _isLoading = false;
+        _currentApp = app;
+      });
     } on AIException catch (e) {
       setState(() {
         _error = e.message;
@@ -93,15 +94,9 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     }
   }
 
-  void _loadAppInWebView(GeneratedApp app) {
-    // Build the full HTML first so we can load it immediately on creation
-    final html = _getHtml(app);
-    setState(() {
-      _currentApp = app;
-      _webViewController = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadHtmlString(html);
-    });
+  String? _getCurrentHtml() {
+    if (_currentApp == null) return null;
+    return _getHtml(_currentApp!);
   }
 
   String _getHtml(GeneratedApp app) {
@@ -367,9 +362,12 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                     ],
                   ),
                 )
-              : _webViewController == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : WebViewWidget(controller: _webViewController!),
+              : CrossPlatformWebView(
+                  htmlContent: _getCurrentHtml()!,
+                  onPageFinished: () {
+                    debugPrint('✅ Mini-App loaded successfully');
+                  },
+                ),
         ),
 
         // Action buttons

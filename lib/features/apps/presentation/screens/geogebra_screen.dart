@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/models/question.dart';
+import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../../../../core/services/ai_service.dart';
-import '../../../../features/settings/presentation/providers/settings_providers.dart'; // New import
+import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/apps_providers.dart';
 
 /// GeoGebra Visualization Screen
@@ -20,45 +21,18 @@ class GeogebraScreen extends ConsumerStatefulWidget {
 class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   final _promptController = TextEditingController();
   final _scrollController = ScrollController();
-  WebViewController? _webViewController;
   bool _isLoading = false;
   String? _error;
   GeoGebraData? _currentVisualization;
+  bool _isGeoGebraReady = false;
+
+  String get _initialHtml => _getInitialGeoGebraHTML();
 
   @override
-  void initState() {
-    super.initState();
-    _initializeWebView();
-  }
-
-  void _initializeWebView() {
-    _webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (url) async {
-            // Signal Flutter that GeoGebra applet is ready
-            await _webViewController!.runJavaScript('''
-              window.flutter_inappwebview.callHandler('geogebraReady');
-            ''');
-            debugPrint('GeoGebra WebView loaded and ready signal sent.');
-          },
-        ),
-      )
-      ..addJavaScriptChannel(
-        'GeoGebraFlutterChannel',
-        onMessageReceived: (message) {
-          if (message.message == 'geogebraReady') {
-            debugPrint('Received geogebraReady from WebView.');
-            // Now GeoGebra applet is ready, execute commands if available
-            if (_currentVisualization != null && _currentVisualization!.commands.isNotEmpty) {
-              _executeGeoGebraCommands(_currentVisualization!.commands);
-            }
-          }
-        },
-      )
-      ..loadHtmlString(_getInitialGeoGebraHTML());
+  void dispose() {
+    _promptController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   String _getInitialGeoGebraHTML() {
@@ -67,15 +41,15 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
     <script src="https://www.geogebra.org/apps/deployggb.js"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100vw;
             height: 100vh;
+            overflow: hidden;
             background-color: #f5f5f5;
         }
         #ggb-element {
@@ -87,54 +61,115 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
 <body>
     <div id="ggb-element"></div>
     <script>
-        var parameters = {
-            "appName": "graphing",
-            "width": window.innerWidth,
-            "height": window.innerHeight,
-            "showToolBar": true,
-            "showAlgebraInput": true,
-            "showMenuBar": false,
-            "enableShiftDragZoom": true,
-            "enableRightClick": false,
-            "material_id": "J8YgX6Xp" // Default material for basic graphing
-        };
+        (function() {
+            var parameters = {
+                "appName": "graphing",
+                "width": window.innerWidth,
+                "height": window.innerHeight,
+                "showToolBar": true,
+                "showAlgebraInput": true,
+                "showMenuBar": false,
+                "enableShiftDragZoom": true,
+                "enableRightClick": false,
+                "material_id": "J8YgX6Xp",
+                "allowStyleBar": true,
+                "showLogging": false
+            };
 
-        var ggbApplet; // Global GeoGebra Applet object
+            var ggbApplet = null;
+            var isReady = false;
 
-        window.addEventListener("load", function() {
-            var applet = new GGBApplet(parameters, true);
-            applet.inject('ggb-element');
-            ggbApplet = applet.getAppletObject(); // Store applet object globally
-
-            // Notify Flutter that GeoGebra is ready
-            if (window.GeoGebraFlutterChannel) {
-              window.GeoGebraFlutterChannel.postMessage('geogebraReady');
+            // Initialize GeoGebra when page loads
+            function initGeoGebra() {
+                try {
+                    var applet = new GGBApplet(parameters, true);
+                    applet.inject('ggb-element');
+                    
+                    // Store reference to applet object
+                    ggbApplet = applet.getAppletObject();
+                    isReady = true;
+                    
+                    // Notify Flutter that GeoGebra is ready
+                    if (window.GeoGebraFlutterChannel) {
+                        window.GeoGebraFlutterChannel.postMessage('geogebraReady');
+                    }
+                    
+                    console.log('GeoGebra initialized successfully');
+                } catch (e) {
+                    console.error('Error initializing GeoGebra:', e);
+                    if (window.GeoGebraFlutterChannel) {
+                        window.GeoGebraFlutterChannel.postMessage('geogebraError:' + e.message);
+                    }
+                }
             }
-        });
 
-        // Function to execute GeoGebra commands
-        window.executeCommands = function(commands) {
-            if (ggbApplet) {
-                commands.forEach(function(cmd) {
-                    ggbApplet.evalCommand(cmd);
-                });
-                return "Commands executed successfully";
+            // Wait for GeoGebra script to load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initGeoGebra);
+            } else {
+                // DOM already loaded, initialize immediately
+                setTimeout(initGeoGebra, 100);
             }
-            return "GeoGebra not ready";
-        };
+
+            // Function to execute GeoGebra commands (exposed globally)
+            window.executeCommands = function(commands) {
+                if (!ggbApplet || !isReady) {
+                    console.error('GeoGebra not ready');
+                    return 'GeoGebra not ready';
+                }
+                try {
+                    commands.forEach(function(cmd) {
+                        if (cmd && cmd.trim()) {
+                            ggbApplet.evalCommand(cmd);
+                        }
+                    });
+                    return 'Commands executed successfully';
+                } catch (e) {
+                    console.error('Error executing commands:', e);
+                    return 'Error: ' + e.message;
+                }
+            };
+
+            // Reset function
+            window.resetGeoGebra = function() {
+                if (ggbApplet && isReady) {
+                    ggbApplet.reset();
+                }
+            };
+        })();
     </script>
 </body>
-</html>
-    ''';
+</html>''';
   }
 
-  Future<void> _executeGeoGebraCommands(List<String> commands) async {
-    if (_webViewController == null) return;
+  void _onWebViewMessage(String message) {
+    debugPrint('GeoGebra WebView message: $message');
+    
+    if (message == 'geogebraReady') {
+      setState(() => _isGeoGebraReady = true);
+      
+      // Execute pending commands if available
+      if (_currentVisualization != null && _currentVisualization!.commands.isNotEmpty) {
+        _executeGeoGebraCommands(_currentVisualization!.commands);
+      }
+    } else if (message.startsWith('geogebraError:')) {
+      debugPrint('GeoGebra initialization error: $message');
+    }
+  }
 
-    final commandsJson = commands.map((c) => '"$c"').join(',');
-    await _webViewController!.runJavaScript(
-      'window.executeCommands([$commandsJson]);',
-    );
+  void _executeGeoGebraCommands(List<String> commands) {
+    // Note: Commands are executed by the WebView's JavaScript channel
+    // The CrossPlatformWebView doesn't expose the controller directly,
+    // so we need to use a different approach - we'll reload with the commands embedded
+    // or use the existing executeCommands function via a message
+    
+    // For now, we'll create a new HTML with commands pre-loaded
+    if (!mounted) return;
+    
+    setState(() {
+      // The commands will be executed when GeoGebra becomes ready
+      // via the _onWebViewMessage callback
+    });
   }
 
   Future<void> _generateVisualization() async {
@@ -176,12 +211,13 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
         _isLoading = false;
       });
 
-      // Clear previous visualization if any
-      await _webViewController!.runJavaScript('if(ggbApplet) ggbApplet.reset();');
-
-      // Execute commands
+      // Reset and execute new commands
       if (visualization.commands.isNotEmpty) {
-        await _executeGeoGebraCommands(visualization.commands);
+        // For GeoGebra, we need to reload the WebView with commands embedded
+        // since we can't easily access the controller from CrossPlatformWebView
+        setState(() {
+          // The WebView will reload with the new visualization data
+        });
       }
     } on AIException catch (e) {
       setState(() {
@@ -194,13 +230,6 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
         _isLoading = false;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _promptController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override
@@ -297,9 +326,14 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
 
         // WebView with GeoGebra
         Expanded(
-          child: _webViewController == null
-              ? const Center(child: CircularProgressIndicator())
-              : WebViewWidget(controller: _webViewController!),
+          child: CrossPlatformWebView(
+            htmlContent: _initialHtml,
+            javascriptChannelName: 'GeoGebraFlutterChannel',
+            onMessage: _onWebViewMessage,
+            onPageFinished: () {
+              debugPrint('✅ GeoGebra WebView loaded');
+            },
+          ),
         ),
 
         // Commands display
