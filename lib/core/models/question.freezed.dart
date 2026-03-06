@@ -22,7 +22,8 @@ Question _$QuestionFromJson(Map<String, dynamic> json) {
 mixin _$Question {
   String get id => throw _privateConstructorUsedError;
   QuestionType get type => throw _privateConstructorUsedError;
-  int get difficulty => throw _privateConstructorUsedError; // 1-10
+  int get difficulty =>
+      throw _privateConstructorUsedError; // 1-10, defaults to 5 if backend returns null
   String get topic => throw _privateConstructorUsedError;
   String get subtopic => throw _privateConstructorUsedError;
   String get question => throw _privateConstructorUsedError; // LaTeX formatted
@@ -316,7 +317,7 @@ class _$QuestionImpl extends _Question {
   const _$QuestionImpl(
       {required this.id,
       required this.type,
-      required this.difficulty,
+      this.difficulty = 5,
       required this.topic,
       required this.subtopic,
       required this.question,
@@ -342,8 +343,9 @@ class _$QuestionImpl extends _Question {
   @override
   final QuestionType type;
   @override
+  @JsonKey()
   final int difficulty;
-// 1-10
+// 1-10, defaults to 5 if backend returns null
   @override
   final String topic;
   @override
@@ -470,7 +472,7 @@ abstract class _Question extends Question {
   const factory _Question(
       {required final String id,
       required final QuestionType type,
-      required final int difficulty,
+      final int difficulty,
       required final String topic,
       required final String subtopic,
       required final String question,
@@ -494,7 +496,7 @@ abstract class _Question extends Question {
   @override
   QuestionType get type;
   @override
-  int get difficulty; // 1-10
+  int get difficulty; // 1-10, defaults to 5 if backend returns null
   @override
   String get topic;
   @override
@@ -2176,7 +2178,7 @@ class _$QuestionProgressImpl extends _QuestionProgress {
       this.xpEarned = 0,
       this.xpBreakdown,
       required this.topic,
-      required this.difficulty})
+      this.difficulty = 5})
       : _hintsUsedDetails = hintsUsedDetails,
         super._();
 
@@ -2223,6 +2225,7 @@ class _$QuestionProgressImpl extends _QuestionProgress {
   @override
   final String topic;
   @override
+  @JsonKey()
   final int difficulty;
 
   @override
@@ -2314,7 +2317,7 @@ abstract class _QuestionProgress extends QuestionProgress {
       final int xpEarned,
       final XPBreakdown? xpBreakdown,
       required final String topic,
-      required final int difficulty}) = _$QuestionProgressImpl;
+      final int difficulty}) = _$QuestionProgressImpl;
   const _QuestionProgress._() : super._();
 
   factory _QuestionProgress.fromJson(Map<String, dynamic> json) =

@@ -59,7 +59,7 @@ class Question with _$Question {
   const factory Question({
     required String id,
     required QuestionType type,
-    required int difficulty, // 1-10
+    @Default(5) int difficulty, // 1-10, defaults to 5 if backend returns null
     required String topic,
     required String subtopic,
     required String question, // LaTeX formatted
@@ -226,7 +226,7 @@ class QuestionProgress with _$QuestionProgress {
     @Default(0) int xpEarned,
     XPBreakdown? xpBreakdown,
     required String topic,
-    required int difficulty,
+    @Default(5) int difficulty, // defaults to 5 if backend returns null
   }) = _QuestionProgress;
 
   factory QuestionProgress.fromJson(Map<String, dynamic> json) =>

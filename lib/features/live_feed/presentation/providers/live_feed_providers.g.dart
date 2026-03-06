@@ -229,7 +229,7 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
 String _$liveFeedQuestionGeneratorHash() =>
-    r'26b63ef73f43ce6e062462913a01dcbdc496c3d0';
+    r'fea19ba8a8061346d2288507b07231a07ad477be';
 
 /// Live Feed Question Generator
 ///
@@ -247,7 +247,7 @@ final liveFeedQuestionGeneratorProvider =
 );
 
 typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
-String _$liveFeedQueueHash() => r'54dd594b1642eed0295d71fd848c353896d63a30';
+String _$liveFeedQueueHash() => r'adbe1c9b650411b5ae35f83e52ea7f7e7db88678';
 
 /// Live Feed Queue Provider
 ///

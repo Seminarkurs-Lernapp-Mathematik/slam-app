@@ -10,7 +10,7 @@ _$QuestionImpl _$$QuestionImplFromJson(Map<String, dynamic> json) =>
     _$QuestionImpl(
       id: json['id'] as String,
       type: $enumDecode(_$QuestionTypeEnumMap, json['type']),
-      difficulty: (json['difficulty'] as num).toInt(),
+      difficulty: (json['difficulty'] as num?)?.toInt() ?? 5,
       topic: json['topic'] as String,
       subtopic: json['subtopic'] as String,
       question: json['question'] as String,
@@ -192,7 +192,7 @@ _$QuestionProgressImpl _$$QuestionProgressImplFromJson(
           ? null
           : XPBreakdown.fromJson(json['xpBreakdown'] as Map<String, dynamic>),
       topic: json['topic'] as String,
-      difficulty: (json['difficulty'] as num).toInt(),
+      difficulty: (json['difficulty'] as num?)?.toInt() ?? 5,
     );
 
 Map<String, dynamic> _$$QuestionProgressImplToJson(
