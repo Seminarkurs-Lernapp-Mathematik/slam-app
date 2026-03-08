@@ -172,14 +172,7 @@ class ProfilScreen extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        _buildActionCard(
-          context,
-          icon: Icons.bolt,
-          label: '5 Fragen – Jetzt üben!',
-          onTap: () => context.go('/feed'),
-          highlight: true,
-        ),
+
       ],
     );
   }

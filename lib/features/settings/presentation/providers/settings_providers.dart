@@ -16,11 +16,10 @@ enum AppThemePreset {
   cherryRed,
 }
 
-/// AI Provider
+/// AI Provider (backend-managed)
 enum AIProvider {
   claude,
   gemini,
-  openrouter,
 }
 
 /// Course Type
@@ -202,7 +201,7 @@ class AIModelConfig {
 /// users/{userId}/settings
 class AppSettings {
   final AIModelConfig aiModel;
-  final String aiProvider; // 'claude', 'gemini', or 'openrouter'
+  final String aiProvider; // 'claude' or 'gemini'
   final String? claudeApiKey;
   final String? geminiApiKey;
   final String? openrouterApiKey;
@@ -797,7 +796,6 @@ class AIConfig {
   factory AIConfig.fromAppSettings(AppSettings settings) {
     final provider = switch (settings.aiProvider) {
       'claude' => AIProvider.claude,
-      'openrouter' => AIProvider.openrouter,
       _ => AIProvider.gemini,
     };
     return AIConfig(
@@ -856,7 +854,6 @@ class AIConfigNotifier extends _$AIConfigNotifier {
     final providerString = switch (provider) {
       AIProvider.claude => 'claude',
       AIProvider.gemini => 'gemini',
-      AIProvider.openrouter => 'openrouter',
     };
     ref.read(appSettingsNotifierProvider.notifier).setAIProvider(providerString);
   }
@@ -1099,7 +1096,7 @@ Future<List<dynamic>> availableModels(
   final settings = ref.watch(appSettingsNotifierProvider);
   final aiService = ref.watch(aiServiceProvider);
 
-  final provider = settings.aiProvider; // 'claude', 'gemini', or 'openrouter'
+  final provider = settings.aiProvider; // 'claude' or 'gemini'
   final apiKey = settings.getApiKey();
 
   return await aiService.getAvailableModels(

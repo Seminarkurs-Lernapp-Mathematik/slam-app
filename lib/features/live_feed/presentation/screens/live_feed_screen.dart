@@ -257,35 +257,41 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Widget _buildEmptyView() {
+    // Auto-trigger generation when showing empty view
+    // This ensures questions are always generated automatically
+    final isGenerating = ref.read(liveFeedQuestionGeneratorProvider);
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !isGenerating && _errorMessage == null) {
+        _generateQuestions();
+      }
+    });
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.rss_feed,
+            Icons.psychology,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
-            'Bereit zum Starten?',
+            'Fragen werden generiert...',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
-            'Klicke auf "Fragen generieren" um zu beginnen',
+            'Die KI erstellt personalisierte Fragen für dich',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: _generateQuestions,
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('Fragen generieren'),
-          ),
+          const SizedBox(height: 32),
+          const CircularProgressIndicator(),
         ],
       ),
     );

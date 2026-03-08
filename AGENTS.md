@@ -25,7 +25,31 @@ SLAM (Smart Learning Adaptive Math) is an AI-powered adaptive learning platform 
 * **Frontend:** Flutter 3.27+, Material 3 Design
 * **State Management:** Riverpod 2.6+ (with `riverpod_annotation`), Freezed for immutable models
 * **Routing:** GoRouter with custom expressive animations (400ms fade + scale)
-* **Backend:** Firebase Auth, Cloud Firestore, Cloud Functions
+* **Backend:** Firebase Auth, Cloud Firestore, Cloudflare Workers
+
+---
+
+## 🚀 Production Configuration
+
+### AI Configuration (Backend-Managed)
+AI models and API keys are now fully managed by the backend. Users cannot select providers, models, or modes.
+
+**Backend configuration:**
+- Edit `slam-backend/config/models.json` to change which models are used for each task
+- Each task specifies its provider (gemini/claude) and model ID directly
+- API keys are set via environment variables:
+  - `GEMINI_API_KEY` - Google Gemini API key
+  - `ANTHROPIC_API_KEY` - Anthropic Claude API key
+
+### Removed from Settings UI
+The following have been removed from the Settings screen:
+- AI Provider selection (Gemini/Claude/OpenRouter)
+- Model Mode selection (Fast/Standard/Smart)
+- Per-task Model selection
+- API Key management
+- Debug/Developer options
+
+The Settings screen now only shows: Theme, Education (grade/course), and Account.
 
 ---
 
