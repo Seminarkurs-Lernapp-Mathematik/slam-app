@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../../../core/services/auth_service.dart';
-import '../../../../core/services/ai_service.dart';
 
 part 'settings_providers.g.dart';
 
@@ -14,12 +13,6 @@ enum AppThemePreset {
   forestGreen,
   lavenderPurple,
   cherryRed,
-}
-
-/// AI Provider (backend-managed)
-enum AIProvider {
-  claude,
-  gemini,
 }
 
 /// Course Type
@@ -137,10 +130,12 @@ class ThemeConfig {
 }
 
 // ============================================================================
-// AI MODEL CONFIGURATION
+// AI MODEL CONFIGURATION (AUTO mode preferences only)
 // ============================================================================
 
-/// AI Model settings (nested in Firebase as settings.aiModel)
+/// AI Model settings for AUTO mode behavior (nested in Firebase as settings.aiModel)
+/// These are user preferences for AI behavior, not provider/model selection
+/// which is now managed by the backend via models.json
 class AIModelConfig {
   final bool autoMode;
   final int detailLevel;
@@ -199,47 +194,19 @@ class AIModelConfig {
 
 /// Complete settings model matching Firebase structure:
 /// users/{userId}/settings
+/// AI provider/model selection is now backend-managed via models.json
 class AppSettings {
   final AIModelConfig aiModel;
-  final String aiProvider; // 'claude' or 'gemini'
-  final String? claudeApiKey;
-  final String? geminiApiKey;
-  final String? openrouterApiKey;
-  final String geminiFastModel;
-  final String geminiModel;
-  final String geminiSmartModel;
-  final String openrouterModel;
-  final String modelMode; // 'fast', 'standard', 'smart'
-  final String selectedModel;
-  final bool showAiAssessments;
   final String courseType; // 'Leistungsfach' or 'Grundkurs'
   final String gradeLevel; // 'Klasse_11', 'Klasse_12', etc.
   final ThemeConfig theme;
-  final Map<String, String> taskModels;
   final DateTime? examDate; // Optional exam/test date for countdown
-
-  // OpenRouter free models
-  static const String openrouterFastModel = 'google/gemini-2.0-flash-exp:free';
-  static const String openrouterStandardModel = 'google/gemini-2.0-flash-thinking-exp:free';
-  static const String openrouterSmartModel = 'deepseek/deepseek-r1:free';
 
   const AppSettings({
     this.aiModel = const AIModelConfig(),
-    this.aiProvider = 'gemini',
-    this.claudeApiKey,
-    this.geminiApiKey,
-    this.openrouterApiKey,
-    this.geminiFastModel = 'gemini-2.0-flash-lite',
-    this.geminiModel = 'gemini-2.0-flash',
-    this.geminiSmartModel = 'gemini-2.5-pro',
-    this.openrouterModel = 'google/gemini-2.0-flash-exp:free',
-    this.modelMode = 'fast',
-    this.selectedModel = 'gemini-2.0-flash-lite',
-    this.showAiAssessments = false,
     this.courseType = 'Leistungsfach',
     this.gradeLevel = 'Klasse_11',
     required this.theme,
-    this.taskModels = const {},
     this.examDate,
   });
 
@@ -252,21 +219,9 @@ class AppSettings {
   /// Convert to Firebase JSON structure
   Map<String, dynamic> toJson() => {
         'aiModel': aiModel.toJson(),
-        'aiProvider': aiProvider,
-        'claudeApiKey': claudeApiKey,
-        'geminiApiKey': geminiApiKey,
-        'openrouterApiKey': openrouterApiKey,
-        'geminiFastModel': geminiFastModel,
-        'geminiModel': geminiModel,
-        'geminiSmartModel': geminiSmartModel,
-        'openrouterModel': openrouterModel,
-        'modelMode': modelMode,
-        'selectedModel': selectedModel,
-        'showAiAssessments': showAiAssessments,
         'courseType': courseType,
         'gradeLevel': gradeLevel,
         'theme': theme.toJson(),
-        'taskModels': taskModels,
         'examDate': examDate?.toIso8601String(),
       };
 
@@ -276,23 +231,11 @@ class AppSettings {
 
     return AppSettings(
       aiModel: AIModelConfig.fromJson(json['aiModel'] as Map<String, dynamic>?),
-      aiProvider: json['aiProvider'] ?? 'gemini',
-      claudeApiKey: json['claudeApiKey'],
-      geminiApiKey: json['geminiApiKey'],
-      openrouterApiKey: json['openrouterApiKey'],
-      geminiFastModel: _migrateGeminiModel(json['geminiFastModel'], 'gemini-2.0-flash-lite'),
-      geminiModel: _migrateGeminiModel(json['geminiModel'], 'gemini-2.0-flash'),
-      geminiSmartModel: _migrateGeminiModel(json['geminiSmartModel'], 'gemini-2.5-pro'),
-      openrouterModel: json['openrouterModel'] ?? 'google/gemini-2.0-flash-exp:free',
-      modelMode: json['modelMode'] ?? 'fast',
-      selectedModel: _migrateGeminiModel(json['selectedModel'], 'gemini-2.0-flash-lite'),
-      showAiAssessments: json['showAiAssessments'] ?? false,
       courseType: json['courseType'] ?? 'Leistungsfach',
       gradeLevel: json['gradeLevel'] ?? 'Klasse_11',
       theme: json['theme'] != null
           ? ThemeConfig.fromJson(json['theme'] as Map<String, dynamic>)
           : ThemeConfig.fromPreset(AppThemePreset.sunsetOrange),
-      taskModels: _migrateTaskModels(json['taskModels']),
       examDate: json['examDate'] != null
           ? DateTime.tryParse(json['examDate'] as String)
           : null,
@@ -301,150 +244,20 @@ class AppSettings {
 
   AppSettings copyWith({
     AIModelConfig? aiModel,
-    String? aiProvider,
-    String? claudeApiKey,
-    String? geminiApiKey,
-    String? openrouterApiKey,
-    String? geminiFastModel,
-    String? geminiModel,
-    String? geminiSmartModel,
-    String? openrouterModel,
-    String? modelMode,
-    String? selectedModel,
-    bool? showAiAssessments,
     String? courseType,
     String? gradeLevel,
     ThemeConfig? theme,
-    Map<String, String>? taskModels,
     DateTime? examDate,
     bool clearExamDate = false,
   }) {
     return AppSettings(
       aiModel: aiModel ?? this.aiModel,
-      aiProvider: aiProvider ?? this.aiProvider,
-      claudeApiKey: claudeApiKey ?? this.claudeApiKey,
-      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
-      openrouterApiKey: openrouterApiKey ?? this.openrouterApiKey,
-      geminiFastModel: geminiFastModel ?? this.geminiFastModel,
-      geminiModel: geminiModel ?? this.geminiModel,
-      geminiSmartModel: geminiSmartModel ?? this.geminiSmartModel,
-      openrouterModel: openrouterModel ?? this.openrouterModel,
-      modelMode: modelMode ?? this.modelMode,
-      selectedModel: selectedModel ?? this.selectedModel,
-      showAiAssessments: showAiAssessments ?? this.showAiAssessments,
       courseType: courseType ?? this.courseType,
       gradeLevel: gradeLevel ?? this.gradeLevel,
       theme: theme ?? this.theme,
-      taskModels: taskModels ?? this.taskModels,
       examDate: clearExamDate ? null : (examDate ?? this.examDate),
     );
   }
-
-  /// Known stale/deprecated Gemini model IDs that no longer work.
-  static const _staleGeminiModels = {
-    'gemini-2.5-pro-preview-05-06',
-    'gemini-exp-1206',
-    'gemini-exp-1121',
-    'gemini-2.0-flash-exp',
-  };
-
-  /// Get the active model for a specific task, respecting per-task overrides.
-  /// Falls back to the global getActiveModel() if no override is set.
-  String getModelForTask(String taskName) {
-    final override = taskModels[taskName];
-    if (override != null && override.isNotEmpty) return override;
-    return getActiveModel();
-  }
-
-  /// Get API key for the currently selected provider
-  String? getApiKey() {
-    switch (aiProvider) {
-      case 'claude':
-        return claudeApiKey;
-      case 'openrouter':
-        return openrouterApiKey;
-      case 'gemini':
-      default:
-        return geminiApiKey;
-    }
-  }
-
-  /// Get human-readable provider name
-  String getProviderName() {
-    switch (aiProvider) {
-      case 'claude':
-        return 'Claude';
-      case 'openrouter':
-        return 'OpenRouter';
-      case 'gemini':
-      default:
-        return 'Gemini';
-    }
-  }
-
-  /// Get current model name based on provider and mode.
-  /// Sanitizes any stale/deprecated model IDs before returning.
-  String getActiveModel() {
-    String model;
-    switch (aiProvider) {
-      case 'claude':
-        switch (modelMode) {
-          case 'fast':
-            model = 'claude-haiku-4-5-20251001';
-          case 'standard':
-          case 'smart':
-          default:
-            model = 'claude-sonnet-4-5-20250929';
-        }
-      case 'openrouter':
-        switch (modelMode) {
-          case 'fast':
-            model = openrouterFastModel;
-          case 'standard':
-            model = openrouterStandardModel;
-          case 'smart':
-            model = openrouterSmartModel;
-          default:
-            model = openrouterModel;
-        }
-      case 'gemini':
-      default:
-        switch (modelMode) {
-          case 'fast':
-            model = geminiFastModel;
-          case 'standard':
-            model = geminiModel;
-          case 'smart':
-            model = _migrateGeminiModel(geminiSmartModel, 'gemini-2.5-pro');
-          default:
-            model = geminiModel;
-        }
-    }
-    return model;
-  }
-}
-
-/// Migrates per-task model overrides stored in Firebase, removing stale entries.
-Map<String, String> _migrateTaskModels(dynamic raw) {
-  if (raw == null) return {};
-  final result = <String, String>{};
-  (raw as Map).forEach((k, v) {
-    final migrated = _migrateGeminiModel(v, '');
-    if (migrated.isNotEmpty) result[k.toString()] = migrated;
-  });
-  return result;
-}
-
-/// Replaces deprecated/invalid Gemini model IDs with a safe fallback.
-/// Called when loading settings from Firebase or SharedPreferences.
-String _migrateGeminiModel(dynamic stored, String fallback) {
-  if (stored == null || stored is! String || stored.isEmpty) return fallback;
-  const deprecated = {
-    'gemini-2.5-pro-preview-05-06',
-    'gemini-exp-1206',
-    'gemini-exp-1121',
-  };
-  return deprecated.contains(stored) ? fallback : stored;
 }
 
 // ============================================================================
@@ -491,7 +304,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
 
           if (settings != null) {
             state = AppSettings.fromJson(settings);
-            debugPrint('✅ Loaded from Firebase - Claude Key: ${state.claudeApiKey?.substring(0, 10)}..., Gemini Key: ${state.geminiApiKey?.substring(0, 10)}...');
+            debugPrint('✅ Loaded from Firebase');
             await _saveToLocalStorage();
             _isLoading = false;
             return;
@@ -515,28 +328,15 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
   Future<void> _loadFromLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final providerStr = prefs.getString('ai_provider_str') ??
-        (prefs.getInt('ai_provider') == 0 ? 'claude' : 'gemini');
     final detailLevel = (prefs.getInt('ai_detail_level') ?? 5).clamp(1, 10);
     final temperature = (prefs.getDouble('ai_temperature') ?? 0.7).clamp(0.0, 1.0);
     final helpfulness = (prefs.getInt('ai_helpfulness') ?? 7).clamp(1, 10);
     final autoMode = prefs.getBool('ai_auto_mode') ?? true;
-    final claudeApiKey = prefs.getString('ai_claude_api_key');
-    final geminiApiKey = prefs.getString('ai_gemini_api_key');
-    final openrouterApiKey = prefs.getString('ai_openrouter_api_key');
-    final geminiFastModel = prefs.getString('ai_gemini_fast_model') ?? 'gemini-2.0-flash-lite';
-    final geminiModel = prefs.getString('ai_gemini_model') ?? 'gemini-2.0-flash';
-    final geminiSmartModel = prefs.getString('ai_gemini_smart_model') ?? 'gemini-2.5-pro-preview-05-06';
-    final openrouterModel = prefs.getString('ai_openrouter_model') ?? AppSettings.openrouterFastModel;
-    final modelMode = prefs.getString('ai_model_mode') ?? 'fast';
-    final showAiAssessments = prefs.getBool('ai_show_assessments') ?? false;
     final courseType = prefs.getString('course_type') ?? 'Leistungsfach';
     final gradeLevel = prefs.getString('grade_level') ?? 'Klasse_11';
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
     final examDateStr = prefs.getString('exam_date');
     final examDate = examDateStr != null ? DateTime.tryParse(examDateStr) : null;
-
-    debugPrint('📱 Loaded from local - provider: $providerStr, Claude Key: ${claudeApiKey?.substring(0, 10) ?? "null"}...');
 
     state = AppSettings(
       aiModel: AIModelConfig(
@@ -545,17 +345,6 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         helpfulness: helpfulness,
         temperature: temperature,
       ),
-      aiProvider: providerStr,
-      claudeApiKey: claudeApiKey,
-      geminiApiKey: geminiApiKey,
-      openrouterApiKey: openrouterApiKey,
-      geminiFastModel: geminiFastModel,
-      geminiModel: geminiModel,
-      geminiSmartModel: geminiSmartModel,
-      openrouterModel: openrouterModel,
-      modelMode: modelMode,
-      selectedModel: '',
-      showAiAssessments: showAiAssessments,
       courseType: courseType,
       gradeLevel: gradeLevel,
       theme: ThemeConfig.fromPreset(AppThemePreset.values[themeIndex.clamp(0, 4)]),
@@ -566,26 +355,10 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
   Future<void> _saveToLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
 
-    await prefs.setString('ai_provider_str', state.aiProvider);
     await prefs.setInt('ai_detail_level', state.aiModel.detailLevel);
     await prefs.setDouble('ai_temperature', state.aiModel.temperature);
     await prefs.setInt('ai_helpfulness', state.aiModel.helpfulness);
     await prefs.setBool('ai_auto_mode', state.aiModel.autoMode);
-    if (state.claudeApiKey != null) {
-      await prefs.setString('ai_claude_api_key', state.claudeApiKey!);
-    }
-    if (state.geminiApiKey != null) {
-      await prefs.setString('ai_gemini_api_key', state.geminiApiKey!);
-    }
-    if (state.openrouterApiKey != null) {
-      await prefs.setString('ai_openrouter_api_key', state.openrouterApiKey!);
-    }
-    await prefs.setString('ai_gemini_fast_model', state.geminiFastModel);
-    await prefs.setString('ai_gemini_model', state.geminiModel);
-    await prefs.setString('ai_gemini_smart_model', state.geminiSmartModel);
-    await prefs.setString('ai_openrouter_model', state.openrouterModel);
-    await prefs.setString('ai_model_mode', state.modelMode);
-    await prefs.setBool('ai_show_assessments', state.showAiAssessments);
     await prefs.setString('course_type', state.courseType);
     await prefs.setString('grade_level', state.gradeLevel);
     await prefs.setInt('selected_theme', state.theme.toPreset().index);
@@ -600,17 +373,12 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     if (_userId == null || _userId!.isEmpty) return;
 
     try {
-      // Update with selected model
-      final settingsWithModel = state.copyWith(
-        selectedModel: state.getActiveModel(),
-      );
-
       // Use set with merge to create document if it doesn't exist
       await FirebaseFirestore.instance
           .collection('users')
           .doc(_userId)
           .set({
-        'settings': settingsWithModel.toJson()
+        'settings': state.toJson()
       }, SetOptions(merge: true));
 
       debugPrint('✅ Settings synced to Firebase successfully');
@@ -624,13 +392,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     await _syncToFirebase();
   }
 
-  // AI Provider
-  void setAIProvider(String provider) {
-    state = state.copyWith(aiProvider: provider);
-    _saveSettings();
-  }
-
-  // AI Model settings
+  // AI Model settings (AUTO mode preferences only)
   void setDetailLevel(int level) {
     state = state.copyWith(
       aiModel: state.aiModel.copyWith(detailLevel: level.clamp(1, 10)),
@@ -656,39 +418,6 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     state = state.copyWith(
       aiModel: state.aiModel.copyWith(autoMode: enabled),
     );
-    _saveSettings();
-  }
-
-  // API Keys
-  void setClaudeApiKey(String? key) {
-    debugPrint('🔑 Setting Claude API Key: ${key?.substring(0, 10)}...');
-    state = state.copyWith(claudeApiKey: key);
-    _saveSettings();
-    debugPrint('✅ Claude API Key saved to state');
-  }
-
-  void setGeminiApiKey(String? key) {
-    debugPrint('🔑 Setting Gemini API Key: ${key?.substring(0, 10)}...');
-    state = state.copyWith(geminiApiKey: key);
-    _saveSettings();
-    debugPrint('✅ Gemini API Key saved to state');
-  }
-
-  void setOpenrouterApiKey(String? key) {
-    debugPrint('🔑 Setting OpenRouter API Key: ${key?.substring(0, 10)}...');
-    state = state.copyWith(openrouterApiKey: key);
-    _saveSettings();
-    debugPrint('✅ OpenRouter API Key saved to state');
-  }
-
-  // Model mode
-  void setModelMode(String mode) {
-    state = state.copyWith(modelMode: mode);
-    _saveSettings();
-  }
-
-  void setShowAiAssessments(bool show) {
-    state = state.copyWith(showAiAssessments: show);
     _saveSettings();
   }
 
@@ -730,14 +459,6 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     _saveSettings();
   }
 
-  // Task Models
-  void setTaskModel(String taskName, String modelId) {
-    state = state.copyWith(
-      taskModels: {...state.taskModels, taskName: modelId},
-    );
-    _saveSettings();
-  }
-
   // Force reload from Firebase
   Future<void> reloadFromFirebase() async {
     _isLoading = false;
@@ -760,138 +481,6 @@ class SelectedTheme extends _$SelectedTheme {
 
   void setTheme(AppThemePreset theme) {
     ref.read(appSettingsNotifierProvider.notifier).setTheme(theme);
-  }
-}
-
-/// AI Configuration Model (legacy - for compatibility)
-class AIConfig {
-  final AIProvider provider;
-  final int detailLevel;
-  final double temperature;
-  final int helpfulness;
-  final bool autoMode;
-  final String? claudeApiKey;
-  final String? geminiApiKey;
-  final String geminiFastModel;
-  final String geminiModel;
-  final String geminiSmartModel;
-  final String modelMode;
-  final bool showAiAssessments;
-
-  const AIConfig({
-    required this.provider,
-    required this.detailLevel,
-    required this.temperature,
-    required this.helpfulness,
-    this.autoMode = true,
-    this.claudeApiKey,
-    this.geminiApiKey,
-    this.geminiFastModel = 'gemini-2.0-flash-lite',
-    this.geminiModel = 'gemini-2.0-flash',
-    this.geminiSmartModel = 'gemini-2.5-pro',
-    this.modelMode = 'fast',
-    this.showAiAssessments = false,
-  });
-
-  factory AIConfig.fromAppSettings(AppSettings settings) {
-    final provider = switch (settings.aiProvider) {
-      'claude' => AIProvider.claude,
-      _ => AIProvider.gemini,
-    };
-    return AIConfig(
-      provider: provider,
-      detailLevel: settings.aiModel.detailLevel,
-      temperature: settings.aiModel.temperature,
-      helpfulness: settings.aiModel.helpfulness,
-      autoMode: settings.aiModel.autoMode,
-      claudeApiKey: settings.claudeApiKey,
-      geminiApiKey: settings.geminiApiKey,
-      geminiFastModel: settings.geminiFastModel,
-      geminiModel: settings.geminiModel,
-      geminiSmartModel: settings.geminiSmartModel,
-      modelMode: settings.modelMode,
-      showAiAssessments: settings.showAiAssessments,
-    );
-  }
-
-  String getModelName() {
-    if (provider == AIProvider.claude) {
-      switch (modelMode) {
-        case 'fast':
-          return 'claude-haiku-4-5-20251001';
-        case 'standard':
-          return 'claude-sonnet-4-5-20250929';
-        case 'smart':
-          return 'claude-sonnet-4-5-20250929';
-        default:
-          return 'claude-sonnet-4-5-20250929';
-      }
-    } else {
-      switch (modelMode) {
-        case 'fast':
-          return geminiFastModel;
-        case 'standard':
-          return geminiModel;
-        case 'smart':
-          return geminiSmartModel;
-        default:
-          return geminiModel;
-      }
-    }
-  }
-}
-
-/// AI Config Provider (legacy wrapper)
-@riverpod
-class AIConfigNotifier extends _$AIConfigNotifier {
-  @override
-  AIConfig build() {
-    final settings = ref.watch(appSettingsNotifierProvider);
-    return AIConfig.fromAppSettings(settings);
-  }
-
-  void setProvider(AIProvider provider) {
-    final providerString = switch (provider) {
-      AIProvider.claude => 'claude',
-      AIProvider.gemini => 'gemini',
-    };
-    ref.read(appSettingsNotifierProvider.notifier).setAIProvider(providerString);
-  }
-
-  void setDetailLevel(int level) {
-    ref.read(appSettingsNotifierProvider.notifier).setDetailLevel(level);
-  }
-
-  void setTemperature(double temp) {
-    ref.read(appSettingsNotifierProvider.notifier).setTemperature(temp);
-  }
-
-  void setHelpfulness(int level) {
-    ref.read(appSettingsNotifierProvider.notifier).setHelpfulness(level);
-  }
-
-  void setAutoMode(bool enabled) {
-    ref.read(appSettingsNotifierProvider.notifier).setAutoMode(enabled);
-  }
-
-  void setClaudeApiKey(String? key) {
-    ref.read(appSettingsNotifierProvider.notifier).setClaudeApiKey(key);
-  }
-
-  void setGeminiApiKey(String? key) {
-    ref.read(appSettingsNotifierProvider.notifier).setGeminiApiKey(key);
-  }
-
-  void setOpenrouterApiKey(String? key) {
-    ref.read(appSettingsNotifierProvider.notifier).setOpenrouterApiKey(key);
-  }
-
-  void setModelMode(String mode) {
-    ref.read(appSettingsNotifierProvider.notifier).setModelMode(mode);
-  }
-
-  void setShowAiAssessments(bool show) {
-    ref.read(appSettingsNotifierProvider.notifier).setShowAiAssessments(show);
   }
 }
 
@@ -939,168 +528,4 @@ class EducationConfigNotifier extends _$EducationConfigNotifier {
           type == CourseType.grundkurs ? 'Grundkurs' : 'Leistungsfach',
         );
   }
-}
-
-/// Debug Configuration Model (local only - not synced to Firebase)
-class DebugConfig {
-  final String claudeApiKey;
-  final String geminiApiKey;
-  final String openrouterApiKey;
-  final String backendUrl;
-  final bool mockMode;
-  final bool verboseLogging;
-  final bool skipEmailVerification;
-
-  const DebugConfig({
-    required this.claudeApiKey,
-    required this.geminiApiKey,
-    required this.openrouterApiKey,
-    required this.backendUrl,
-    required this.mockMode,
-    required this.verboseLogging,
-    required this.skipEmailVerification,
-  });
-
-  DebugConfig copyWith({
-    String? claudeApiKey,
-    String? geminiApiKey,
-    String? openrouterApiKey,
-    String? backendUrl,
-    bool? mockMode,
-    bool? verboseLogging,
-    bool? skipEmailVerification,
-  }) {
-    return DebugConfig(
-      claudeApiKey: claudeApiKey ?? this.claudeApiKey,
-      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
-      openrouterApiKey: openrouterApiKey ?? this.openrouterApiKey,
-      backendUrl: backendUrl ?? this.backendUrl,
-      mockMode: mockMode ?? this.mockMode,
-      verboseLogging: verboseLogging ?? this.verboseLogging,
-      skipEmailVerification: skipEmailVerification ?? this.skipEmailVerification,
-    );
-  }
-}
-
-/// Debug Configuration Provider with SharedPreferences persistence
-@riverpod
-class DebugConfigNotifier extends _$DebugConfigNotifier {
-  static const String _keyClaudeApiKey = 'debug_claude_api_key';
-  static const String _keyGeminiApiKey = 'debug_gemini_api_key';
-  static const String _keyOpenrouterApiKey = 'debug_openrouter_api_key';
-  static const String _keyBackendUrl = 'debug_backend_url';
-  static const String _keyMockMode = 'debug_mock_mode';
-  static const String _keyVerboseLogging = 'debug_verbose_logging';
-  static const String _keySkipEmailVerification = 'debug_skip_email_verification';
-
-  @override
-  DebugConfig build() {
-    // Load from SharedPreferences asynchronously
-    _loadFromPreferences();
-
-    return const DebugConfig(
-      claudeApiKey: '',
-      geminiApiKey: '',
-      openrouterApiKey: '',
-      backendUrl: 'https://api.learn-smart.app',
-      mockMode: false,
-      verboseLogging: false,
-      skipEmailVerification: false,
-    );
-  }
-
-  Future<void> _loadFromPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    state = DebugConfig(
-      claudeApiKey: prefs.getString(_keyClaudeApiKey) ?? '',
-      geminiApiKey: prefs.getString(_keyGeminiApiKey) ?? '',
-      openrouterApiKey: prefs.getString(_keyOpenrouterApiKey) ?? '',
-      backendUrl: prefs.getString(_keyBackendUrl) ?? 'https://api.learn-smart.app',
-      mockMode: prefs.getBool(_keyMockMode) ?? false,
-      verboseLogging: prefs.getBool(_keyVerboseLogging) ?? false,
-      skipEmailVerification: prefs.getBool(_keySkipEmailVerification) ?? false,
-    );
-  }
-
-  Future<void> _saveToPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyClaudeApiKey, state.claudeApiKey);
-    await prefs.setString(_keyGeminiApiKey, state.geminiApiKey);
-    await prefs.setString(_keyOpenrouterApiKey, state.openrouterApiKey);
-    await prefs.setString(_keyBackendUrl, state.backendUrl);
-    await prefs.setBool(_keyMockMode, state.mockMode);
-    await prefs.setBool(_keyVerboseLogging, state.verboseLogging);
-    await prefs.setBool(_keySkipEmailVerification, state.skipEmailVerification);
-  }
-
-  Future<void> setClaudeApiKey(String key) async {
-    state = state.copyWith(claudeApiKey: key);
-    await _saveToPreferences();
-  }
-
-  Future<void> setGeminiApiKey(String key) async {
-    state = state.copyWith(geminiApiKey: key);
-    await _saveToPreferences();
-  }
-
-  Future<void> setOpenrouterApiKey(String key) async {
-    state = state.copyWith(openrouterApiKey: key);
-    await _saveToPreferences();
-  }
-
-  Future<void> setBackendUrl(String url) async {
-    state = state.copyWith(backendUrl: url);
-    await _saveToPreferences();
-  }
-
-  Future<void> setMockMode(bool enabled) async {
-    state = state.copyWith(mockMode: enabled);
-    await _saveToPreferences();
-  }
-
-  Future<void> setVerboseLogging(bool enabled) async {
-    state = state.copyWith(verboseLogging: enabled);
-    await _saveToPreferences();
-  }
-
-  Future<void> setSkipEmailVerification(bool enabled) async {
-    state = state.copyWith(skipEmailVerification: enabled);
-    await _saveToPreferences();
-  }
-
-  Future<void> reset() async {
-    state = const DebugConfig(
-      claudeApiKey: '',
-      geminiApiKey: '',
-      openrouterApiKey: '',
-      backendUrl: 'https://api.learn-smart.app',
-      mockMode: false,
-      verboseLogging: false,
-      skipEmailVerification: false,
-    );
-    await _saveToPreferences();
-  }
-}
-
-// ============================================================================
-// AVAILABLE MODELS PROVIDER
-// ============================================================================
-
-/// Available models from backend — live-fetched using the user's API key.
-/// Falls back to the backend's curated list if no key is configured.
-@riverpod
-Future<List<dynamic>> availableModels(
-  AvailableModelsRef ref,
-) async {
-  final settings = ref.watch(appSettingsNotifierProvider);
-  final aiService = ref.watch(aiServiceProvider);
-
-  final provider = settings.aiProvider; // 'claude' or 'gemini'
-  final apiKey = settings.getApiKey();
-
-  return await aiService.getAvailableModels(
-    provider: provider,
-    apiKey: apiKey,
-  );
 }

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/question_session_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 import '../../../../core/services/ai_service.dart'; // New import
-import '../../../settings/presentation/providers/settings_providers.dart'; // New import
 
 final customHintProvider = StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>((ref) {
   return CustomHintNotifier(ref);
@@ -23,24 +22,10 @@ class CustomHintNotifier extends StateNotifier<AsyncValue<String?>> {
     state = const AsyncValue.loading();
 
     try {
-      final appSettings = ref.read(appSettingsNotifierProvider);
-      final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getModelForTask('customHints');
-      final apiKey = appSettings.getApiKey();
-
-      if (apiKey == null || apiKey.isEmpty) {
-        throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
-        );
-      }
-
       final hint = await ref.read(aiServiceProvider).getCustomHint(
             questionText: questionText,
             userAnswer: userAnswer,
             hintsAlreadyUsed: hintsUsed,
-            apiKey: apiKey,
-            provider: aiProvider,
-            selectedModel: selectedModel,
           );
       state = AsyncValue.data(hint);
     } catch (e, st) {

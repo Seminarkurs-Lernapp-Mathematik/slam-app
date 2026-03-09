@@ -5,7 +5,6 @@ import '../../../../core/models/saved_content.dart';
 import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/apps_providers.dart';
 import '../widgets/code_viewer.dart';
 
@@ -57,23 +56,9 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     });
 
     try {
-      final appSettings = ref.read(appSettingsNotifierProvider);
-      final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getModelForTask('miniAppGeneration');
-      final apiKey = appSettings.getApiKey();
-
-      if (apiKey == null || apiKey.isEmpty) {
-        throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
-        );
-      }
-
       final app = await ref.read(
         generateMiniAppProvider(
           description: _promptController.text.trim(),
-          selectedModel: selectedModel,
-          apiKey: apiKey,
-          aiProvider: aiProvider,
         ).future,
       );
 

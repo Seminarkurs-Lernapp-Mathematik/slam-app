@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../constants/api_endpoints.dart';
 import '../models/question.dart';
-import '../models/user_settings.dart';
 
 part 'ai_service.g.dart';
 
@@ -57,13 +56,10 @@ class AIService {
   ///
   /// POST /api/generate-questions
   Future<QuestionSession> generateQuestions({
-    required String apiKey,
     required String userId,
     required int learningPlanItemId,
     required List<TopicData> topics,
-    required String selectedModel,
     required UserContext userContext,
-    required String provider,
     int questionCount = 20,
     Map<String, dynamic>? autoModeAssessment,
     List<Map<String, dynamic>>? recentMemories,
@@ -73,13 +69,10 @@ class AIService {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateQuestions),
         data: {
-          'apiKey': apiKey,
           'userId': userId,
           'learningPlanItemId': learningPlanItemId,
           'topics': topics.map((t) => t.toJson()).toList(),
-          'selectedModel': selectedModel,
           'userContext': userContext.toJson(),
-          'provider': provider,
           'questionCount': questionCount,
           'autoModeAssessment': autoModeAssessment,
           'recentMemories': recentMemories,
@@ -100,9 +93,9 @@ class AIService {
   /// Update AUTO mode parameters
   ///
   /// POST /api/update-auto-mode
-  Future<AIModelSettings> updateAutoMode({
+  /// Returns the updated auto mode assessment from the backend
+  Future<Map<String, dynamic>> updateAutoMode({
     required String userId,
-    required AIModelSettings currentSettings,
     required List<Map<String, dynamic>> recentPerformance,
   }) async {
     try {
@@ -110,12 +103,11 @@ class AIService {
         ApiEndpoints.getFullUrl(ApiEndpoints.updateAutoMode),
         data: {
           'userId': userId,
-          'currentSettings': currentSettings.toJson(),
           'recentPerformance': recentPerformance,
         },
       );
 
-      return AIModelSettings.fromJson(response.data);
+      return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);
     }
@@ -132,9 +124,6 @@ class AIService {
     required String questionText,
     required String userAnswer,
     required int hintsAlreadyUsed,
-    required String apiKey,
-    String provider = 'claude',
-    required String selectedModel, // Added required selectedModel
   }) async {
     try {
       final response = await _dio.post(
@@ -143,9 +132,6 @@ class AIService {
           'question': questionText,
           'userAnswer': userAnswer,
           'hintsUsed': hintsAlreadyUsed,
-          'apiKey': apiKey,
-          'provider': provider,
-          'selectedModel': selectedModel, // Pass selectedModel to backend
         },
       );
 
@@ -166,9 +152,6 @@ class AIService {
     required String questionText,
     required String topic,
     String? userPrompt,
-    required String apiKey,
-    required String selectedModel,
-    required String provider,
   }) async {
     try {
       final response = await _dio.post(
@@ -177,9 +160,6 @@ class AIService {
           'question': questionText,
           'topic': topic,
           'userPrompt': userPrompt,
-          'apiKey': apiKey,
-          'selectedModel': selectedModel,
-          'provider': provider,
         },
       );
 
@@ -226,18 +206,12 @@ class AIService {
   /// POST /api/generate-mini-app
   Future<GeneratedApp> generateMiniApp({
     required String description,
-    required String selectedModel,
-    required String apiKey,
-    String provider = 'claude',
   }) async {
     try {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateMiniApp),
         data: {
           'description': description,
-          'selectedModel': selectedModel,
-          'apiKey': apiKey,
-          'provider': provider,
         },
       );
 
@@ -287,7 +261,6 @@ class AIService {
     required String userId,
     String? planId,
     Map<String, dynamic>? planData,
-    String? apiKey,
   }) async {
     try {
       final response = await _dio.post(
@@ -297,7 +270,6 @@ class AIService {
           'userId': userId,
           'planId': planId,
           'planData': planData,
-          'apiKey': apiKey,
         },
       );
 
@@ -351,7 +323,6 @@ class AIService {
     required String itemType, // e.g., 'theme', 'streakFreeze'
     required String itemId,   // e.g., 'oceanBlue', 'streakFreeze'
     required int cost,
-    String? apiKey, // for future expansion, if purchase affects AI usage
   }) async {
     try {
       final response = await _dio.post(
@@ -361,7 +332,6 @@ class AIService {
           'itemType': itemType,
           'itemId': itemId,
           'cost': cost,
-          'apiKey': apiKey,
         },
       );
       return response.data as Map<String, dynamic>;
@@ -376,18 +346,12 @@ class AIService {
 
   /// Get available models for provider
   ///
-  /// GET /api/get-models?provider=claude
-  Future<List<ModelInfo>> getAvailableModels({
-    required String provider,
-    String? apiKey,
-  }) async {
+  /// GET /api/get-models
+  /// Note: Backend now manages all AI configuration via models.json
+  Future<List<ModelInfo>> getAvailableModels() async {
     try {
       final response = await _dio.get(
         ApiEndpoints.getFullUrl('/api/get-models'),
-        queryParameters: {
-          'provider': provider,
-          if (apiKey != null && apiKey.isNotEmpty) 'apiKey': apiKey,
-        },
       );
 
       final List<dynamic> models = response.data['models'] as List<dynamic>;
@@ -558,16 +522,9 @@ class AIException implements Exception {
 /// AI Service Provider
 @riverpod
 AIService aiService(AiServiceRef ref) {
-  // Get backend URL from debug settings, fallback to default
-  String baseUrl = ApiEndpoints.baseUrl;
-
-  // Note: If you want to use the debug config's backend URL, uncomment:
-  // final debugConfig = ref.watch(debugConfigNotifierProvider);
-  // baseUrl = debugConfig.backendUrl;
-
   final dio = Dio(
     BaseOptions(
-      baseUrl: baseUrl,
+      baseUrl: ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 60),
       headers: {

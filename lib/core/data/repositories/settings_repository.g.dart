@@ -94,7 +94,7 @@ final remoteDataSourceProvider = AutoDisposeProvider<RemoteDataSource>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef RemoteDataSourceRef = AutoDisposeProviderRef<RemoteDataSource>;
-String _$settingsNotifierHash() => r'3729e0a0390d00d1ab06bf6b422cbadf730aa458';
+String _$settingsNotifierHash() => r'4617d22790c48a64203b01e7068430dddf52e323';
 
 /// See also [SettingsNotifier].
 @ProviderFor(SettingsNotifier)

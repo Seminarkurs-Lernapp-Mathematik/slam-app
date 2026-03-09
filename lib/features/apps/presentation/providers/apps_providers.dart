@@ -172,17 +172,11 @@ Future<void> deleteContent(
 Future<GeneratedApp> generateMiniApp(
   GenerateMiniAppRef ref, {
   required String description,
-  required String selectedModel,
-  required String apiKey,
-  String aiProvider = 'claude',
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
   final app = await aiService.generateMiniApp(
     description: description,
-    selectedModel: selectedModel,
-    apiKey: apiKey,
-    provider: aiProvider,
   );
 
   // Update state
@@ -198,9 +192,6 @@ Future<GeoGebraData> generateGeogebra(
   required String prompt,
   String? questionText,
   String? topic,
-  required String apiKey,
-  required String selectedModel,
-  required String aiProvider,
 }) async {
   final aiService = ref.read(aiServiceProvider);
 
@@ -208,9 +199,6 @@ Future<GeoGebraData> generateGeogebra(
     questionText: questionText ?? prompt,
     topic: topic ?? 'general',
     userPrompt: prompt,
-    apiKey: apiKey,
-    selectedModel: selectedModel,
-    provider: aiProvider,
   );
 
   // Update state

@@ -21,7 +21,6 @@ UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UserSettings {
   ThemeSettings get theme => throw _privateConstructorUsedError;
-  AIModelSettings get aiModel => throw _privateConstructorUsedError;
   String get gradeLevel => throw _privateConstructorUsedError;
   String get courseType => throw _privateConstructorUsedError;
 
@@ -41,14 +40,9 @@ abstract class $UserSettingsCopyWith<$Res> {
           UserSettings value, $Res Function(UserSettings) then) =
       _$UserSettingsCopyWithImpl<$Res, UserSettings>;
   @useResult
-  $Res call(
-      {ThemeSettings theme,
-      AIModelSettings aiModel,
-      String gradeLevel,
-      String courseType});
+  $Res call({ThemeSettings theme, String gradeLevel, String courseType});
 
   $ThemeSettingsCopyWith<$Res> get theme;
-  $AIModelSettingsCopyWith<$Res> get aiModel;
 }
 
 /// @nodoc
@@ -67,7 +61,6 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
   @override
   $Res call({
     Object? theme = null,
-    Object? aiModel = null,
     Object? gradeLevel = null,
     Object? courseType = null,
   }) {
@@ -76,10 +69,6 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
           ? _value.theme
           : theme // ignore: cast_nullable_to_non_nullable
               as ThemeSettings,
-      aiModel: null == aiModel
-          ? _value.aiModel
-          : aiModel // ignore: cast_nullable_to_non_nullable
-              as AIModelSettings,
       gradeLevel: null == gradeLevel
           ? _value.gradeLevel
           : gradeLevel // ignore: cast_nullable_to_non_nullable
@@ -100,16 +89,6 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
       return _then(_value.copyWith(theme: value) as $Val);
     });
   }
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AIModelSettingsCopyWith<$Res> get aiModel {
-    return $AIModelSettingsCopyWith<$Res>(_value.aiModel, (value) {
-      return _then(_value.copyWith(aiModel: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -120,16 +99,10 @@ abstract class _$$UserSettingsImplCopyWith<$Res>
       __$$UserSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {ThemeSettings theme,
-      AIModelSettings aiModel,
-      String gradeLevel,
-      String courseType});
+  $Res call({ThemeSettings theme, String gradeLevel, String courseType});
 
   @override
   $ThemeSettingsCopyWith<$Res> get theme;
-  @override
-  $AIModelSettingsCopyWith<$Res> get aiModel;
 }
 
 /// @nodoc
@@ -146,7 +119,6 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? theme = null,
-    Object? aiModel = null,
     Object? gradeLevel = null,
     Object? courseType = null,
   }) {
@@ -155,10 +127,6 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
           ? _value.theme
           : theme // ignore: cast_nullable_to_non_nullable
               as ThemeSettings,
-      aiModel: null == aiModel
-          ? _value.aiModel
-          : aiModel // ignore: cast_nullable_to_non_nullable
-              as AIModelSettings,
       gradeLevel: null == gradeLevel
           ? _value.gradeLevel
           : gradeLevel // ignore: cast_nullable_to_non_nullable
@@ -176,7 +144,6 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
 class _$UserSettingsImpl extends _UserSettings {
   const _$UserSettingsImpl(
       {required this.theme,
-      required this.aiModel,
       this.gradeLevel = 'Klasse_11',
       this.courseType = 'Leistungsfach'})
       : super._();
@@ -187,8 +154,6 @@ class _$UserSettingsImpl extends _UserSettings {
   @override
   final ThemeSettings theme;
   @override
-  final AIModelSettings aiModel;
-  @override
   @JsonKey()
   final String gradeLevel;
   @override
@@ -197,7 +162,7 @@ class _$UserSettingsImpl extends _UserSettings {
 
   @override
   String toString() {
-    return 'UserSettings(theme: $theme, aiModel: $aiModel, gradeLevel: $gradeLevel, courseType: $courseType)';
+    return 'UserSettings(theme: $theme, gradeLevel: $gradeLevel, courseType: $courseType)';
   }
 
   @override
@@ -206,7 +171,6 @@ class _$UserSettingsImpl extends _UserSettings {
         (other.runtimeType == runtimeType &&
             other is _$UserSettingsImpl &&
             (identical(other.theme, theme) || other.theme == theme) &&
-            (identical(other.aiModel, aiModel) || other.aiModel == aiModel) &&
             (identical(other.gradeLevel, gradeLevel) ||
                 other.gradeLevel == gradeLevel) &&
             (identical(other.courseType, courseType) ||
@@ -215,8 +179,7 @@ class _$UserSettingsImpl extends _UserSettings {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, theme, aiModel, gradeLevel, courseType);
+  int get hashCode => Object.hash(runtimeType, theme, gradeLevel, courseType);
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -237,7 +200,6 @@ class _$UserSettingsImpl extends _UserSettings {
 abstract class _UserSettings extends UserSettings {
   const factory _UserSettings(
       {required final ThemeSettings theme,
-      required final AIModelSettings aiModel,
       final String gradeLevel,
       final String courseType}) = _$UserSettingsImpl;
   const _UserSettings._() : super._();
@@ -247,8 +209,6 @@ abstract class _UserSettings extends UserSettings {
 
   @override
   ThemeSettings get theme;
-  @override
-  AIModelSettings get aiModel;
   @override
   String get gradeLevel;
   @override
@@ -518,448 +478,5 @@ abstract class _ThemeSettings extends ThemeSettings {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ThemeSettingsImplCopyWith<_$ThemeSettingsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-AIModelSettings _$AIModelSettingsFromJson(Map<String, dynamic> json) {
-  return _AIModelSettings.fromJson(json);
-}
-
-/// @nodoc
-mixin _$AIModelSettings {
-  int get detailLevel => throw _privateConstructorUsedError; // 1-10
-  double get temperature => throw _privateConstructorUsedError; // 0-1
-  int get helpfulness => throw _privateConstructorUsedError; // 1-10
-  bool get autoMode => throw _privateConstructorUsedError;
-  String get aiProvider =>
-      throw _privateConstructorUsedError; // 'claude' or 'gemini'
-  String? get claudeApiKey => throw _privateConstructorUsedError;
-  String? get geminiApiKey => throw _privateConstructorUsedError;
-  String get geminiFastModel => throw _privateConstructorUsedError;
-  String get geminiModel => throw _privateConstructorUsedError;
-  String get geminiSmartModel => throw _privateConstructorUsedError;
-  String get modelMode =>
-      throw _privateConstructorUsedError; // 'fast', 'standard', 'smart'
-  String? get selectedModel =>
-      throw _privateConstructorUsedError; // Current active model (derived from provider + mode)
-  bool get showAiAssessments => throw _privateConstructorUsedError;
-
-  /// Serializes this AIModelSettings to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $AIModelSettingsCopyWith<AIModelSettings> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $AIModelSettingsCopyWith<$Res> {
-  factory $AIModelSettingsCopyWith(
-          AIModelSettings value, $Res Function(AIModelSettings) then) =
-      _$AIModelSettingsCopyWithImpl<$Res, AIModelSettings>;
-  @useResult
-  $Res call(
-      {int detailLevel,
-      double temperature,
-      int helpfulness,
-      bool autoMode,
-      String aiProvider,
-      String? claudeApiKey,
-      String? geminiApiKey,
-      String geminiFastModel,
-      String geminiModel,
-      String geminiSmartModel,
-      String modelMode,
-      String? selectedModel,
-      bool showAiAssessments});
-}
-
-/// @nodoc
-class _$AIModelSettingsCopyWithImpl<$Res, $Val extends AIModelSettings>
-    implements $AIModelSettingsCopyWith<$Res> {
-  _$AIModelSettingsCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? detailLevel = null,
-    Object? temperature = null,
-    Object? helpfulness = null,
-    Object? autoMode = null,
-    Object? aiProvider = null,
-    Object? claudeApiKey = freezed,
-    Object? geminiApiKey = freezed,
-    Object? geminiFastModel = null,
-    Object? geminiModel = null,
-    Object? geminiSmartModel = null,
-    Object? modelMode = null,
-    Object? selectedModel = freezed,
-    Object? showAiAssessments = null,
-  }) {
-    return _then(_value.copyWith(
-      detailLevel: null == detailLevel
-          ? _value.detailLevel
-          : detailLevel // ignore: cast_nullable_to_non_nullable
-              as int,
-      temperature: null == temperature
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
-      helpfulness: null == helpfulness
-          ? _value.helpfulness
-          : helpfulness // ignore: cast_nullable_to_non_nullable
-              as int,
-      autoMode: null == autoMode
-          ? _value.autoMode
-          : autoMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      aiProvider: null == aiProvider
-          ? _value.aiProvider
-          : aiProvider // ignore: cast_nullable_to_non_nullable
-              as String,
-      claudeApiKey: freezed == claudeApiKey
-          ? _value.claudeApiKey
-          : claudeApiKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      geminiApiKey: freezed == geminiApiKey
-          ? _value.geminiApiKey
-          : geminiApiKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      geminiFastModel: null == geminiFastModel
-          ? _value.geminiFastModel
-          : geminiFastModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      geminiModel: null == geminiModel
-          ? _value.geminiModel
-          : geminiModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      geminiSmartModel: null == geminiSmartModel
-          ? _value.geminiSmartModel
-          : geminiSmartModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      modelMode: null == modelMode
-          ? _value.modelMode
-          : modelMode // ignore: cast_nullable_to_non_nullable
-              as String,
-      selectedModel: freezed == selectedModel
-          ? _value.selectedModel
-          : selectedModel // ignore: cast_nullable_to_non_nullable
-              as String?,
-      showAiAssessments: null == showAiAssessments
-          ? _value.showAiAssessments
-          : showAiAssessments // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$AIModelSettingsImplCopyWith<$Res>
-    implements $AIModelSettingsCopyWith<$Res> {
-  factory _$$AIModelSettingsImplCopyWith(_$AIModelSettingsImpl value,
-          $Res Function(_$AIModelSettingsImpl) then) =
-      __$$AIModelSettingsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int detailLevel,
-      double temperature,
-      int helpfulness,
-      bool autoMode,
-      String aiProvider,
-      String? claudeApiKey,
-      String? geminiApiKey,
-      String geminiFastModel,
-      String geminiModel,
-      String geminiSmartModel,
-      String modelMode,
-      String? selectedModel,
-      bool showAiAssessments});
-}
-
-/// @nodoc
-class __$$AIModelSettingsImplCopyWithImpl<$Res>
-    extends _$AIModelSettingsCopyWithImpl<$Res, _$AIModelSettingsImpl>
-    implements _$$AIModelSettingsImplCopyWith<$Res> {
-  __$$AIModelSettingsImplCopyWithImpl(
-      _$AIModelSettingsImpl _value, $Res Function(_$AIModelSettingsImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? detailLevel = null,
-    Object? temperature = null,
-    Object? helpfulness = null,
-    Object? autoMode = null,
-    Object? aiProvider = null,
-    Object? claudeApiKey = freezed,
-    Object? geminiApiKey = freezed,
-    Object? geminiFastModel = null,
-    Object? geminiModel = null,
-    Object? geminiSmartModel = null,
-    Object? modelMode = null,
-    Object? selectedModel = freezed,
-    Object? showAiAssessments = null,
-  }) {
-    return _then(_$AIModelSettingsImpl(
-      detailLevel: null == detailLevel
-          ? _value.detailLevel
-          : detailLevel // ignore: cast_nullable_to_non_nullable
-              as int,
-      temperature: null == temperature
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
-      helpfulness: null == helpfulness
-          ? _value.helpfulness
-          : helpfulness // ignore: cast_nullable_to_non_nullable
-              as int,
-      autoMode: null == autoMode
-          ? _value.autoMode
-          : autoMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      aiProvider: null == aiProvider
-          ? _value.aiProvider
-          : aiProvider // ignore: cast_nullable_to_non_nullable
-              as String,
-      claudeApiKey: freezed == claudeApiKey
-          ? _value.claudeApiKey
-          : claudeApiKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      geminiApiKey: freezed == geminiApiKey
-          ? _value.geminiApiKey
-          : geminiApiKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      geminiFastModel: null == geminiFastModel
-          ? _value.geminiFastModel
-          : geminiFastModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      geminiModel: null == geminiModel
-          ? _value.geminiModel
-          : geminiModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      geminiSmartModel: null == geminiSmartModel
-          ? _value.geminiSmartModel
-          : geminiSmartModel // ignore: cast_nullable_to_non_nullable
-              as String,
-      modelMode: null == modelMode
-          ? _value.modelMode
-          : modelMode // ignore: cast_nullable_to_non_nullable
-              as String,
-      selectedModel: freezed == selectedModel
-          ? _value.selectedModel
-          : selectedModel // ignore: cast_nullable_to_non_nullable
-              as String?,
-      showAiAssessments: null == showAiAssessments
-          ? _value.showAiAssessments
-          : showAiAssessments // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$AIModelSettingsImpl extends _AIModelSettings {
-  const _$AIModelSettingsImpl(
-      {this.detailLevel = 5,
-      this.temperature = 0.7,
-      this.helpfulness = 7,
-      this.autoMode = true,
-      this.aiProvider = 'gemini',
-      this.claudeApiKey,
-      this.geminiApiKey,
-      this.geminiFastModel = 'gemini-2.0-flash-lite',
-      this.geminiModel = 'gemini-2.0-flash',
-      this.geminiSmartModel = 'gemini-2.5-pro-preview-05-06',
-      this.modelMode = 'fast',
-      this.selectedModel,
-      this.showAiAssessments = false})
-      : super._();
-
-  factory _$AIModelSettingsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AIModelSettingsImplFromJson(json);
-
-  @override
-  @JsonKey()
-  final int detailLevel;
-// 1-10
-  @override
-  @JsonKey()
-  final double temperature;
-// 0-1
-  @override
-  @JsonKey()
-  final int helpfulness;
-// 1-10
-  @override
-  @JsonKey()
-  final bool autoMode;
-  @override
-  @JsonKey()
-  final String aiProvider;
-// 'claude' or 'gemini'
-  @override
-  final String? claudeApiKey;
-  @override
-  final String? geminiApiKey;
-  @override
-  @JsonKey()
-  final String geminiFastModel;
-  @override
-  @JsonKey()
-  final String geminiModel;
-  @override
-  @JsonKey()
-  final String geminiSmartModel;
-  @override
-  @JsonKey()
-  final String modelMode;
-// 'fast', 'standard', 'smart'
-  @override
-  final String? selectedModel;
-// Current active model (derived from provider + mode)
-  @override
-  @JsonKey()
-  final bool showAiAssessments;
-
-  @override
-  String toString() {
-    return 'AIModelSettings(detailLevel: $detailLevel, temperature: $temperature, helpfulness: $helpfulness, autoMode: $autoMode, aiProvider: $aiProvider, claudeApiKey: $claudeApiKey, geminiApiKey: $geminiApiKey, geminiFastModel: $geminiFastModel, geminiModel: $geminiModel, geminiSmartModel: $geminiSmartModel, modelMode: $modelMode, selectedModel: $selectedModel, showAiAssessments: $showAiAssessments)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AIModelSettingsImpl &&
-            (identical(other.detailLevel, detailLevel) ||
-                other.detailLevel == detailLevel) &&
-            (identical(other.temperature, temperature) ||
-                other.temperature == temperature) &&
-            (identical(other.helpfulness, helpfulness) ||
-                other.helpfulness == helpfulness) &&
-            (identical(other.autoMode, autoMode) ||
-                other.autoMode == autoMode) &&
-            (identical(other.aiProvider, aiProvider) ||
-                other.aiProvider == aiProvider) &&
-            (identical(other.claudeApiKey, claudeApiKey) ||
-                other.claudeApiKey == claudeApiKey) &&
-            (identical(other.geminiApiKey, geminiApiKey) ||
-                other.geminiApiKey == geminiApiKey) &&
-            (identical(other.geminiFastModel, geminiFastModel) ||
-                other.geminiFastModel == geminiFastModel) &&
-            (identical(other.geminiModel, geminiModel) ||
-                other.geminiModel == geminiModel) &&
-            (identical(other.geminiSmartModel, geminiSmartModel) ||
-                other.geminiSmartModel == geminiSmartModel) &&
-            (identical(other.modelMode, modelMode) ||
-                other.modelMode == modelMode) &&
-            (identical(other.selectedModel, selectedModel) ||
-                other.selectedModel == selectedModel) &&
-            (identical(other.showAiAssessments, showAiAssessments) ||
-                other.showAiAssessments == showAiAssessments));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      detailLevel,
-      temperature,
-      helpfulness,
-      autoMode,
-      aiProvider,
-      claudeApiKey,
-      geminiApiKey,
-      geminiFastModel,
-      geminiModel,
-      geminiSmartModel,
-      modelMode,
-      selectedModel,
-      showAiAssessments);
-
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AIModelSettingsImplCopyWith<_$AIModelSettingsImpl> get copyWith =>
-      __$$AIModelSettingsImplCopyWithImpl<_$AIModelSettingsImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$AIModelSettingsImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _AIModelSettings extends AIModelSettings {
-  const factory _AIModelSettings(
-      {final int detailLevel,
-      final double temperature,
-      final int helpfulness,
-      final bool autoMode,
-      final String aiProvider,
-      final String? claudeApiKey,
-      final String? geminiApiKey,
-      final String geminiFastModel,
-      final String geminiModel,
-      final String geminiSmartModel,
-      final String modelMode,
-      final String? selectedModel,
-      final bool showAiAssessments}) = _$AIModelSettingsImpl;
-  const _AIModelSettings._() : super._();
-
-  factory _AIModelSettings.fromJson(Map<String, dynamic> json) =
-      _$AIModelSettingsImpl.fromJson;
-
-  @override
-  int get detailLevel; // 1-10
-  @override
-  double get temperature; // 0-1
-  @override
-  int get helpfulness; // 1-10
-  @override
-  bool get autoMode;
-  @override
-  String get aiProvider; // 'claude' or 'gemini'
-  @override
-  String? get claudeApiKey;
-  @override
-  String? get geminiApiKey;
-  @override
-  String get geminiFastModel;
-  @override
-  String get geminiModel;
-  @override
-  String get geminiSmartModel;
-  @override
-  String get modelMode; // 'fast', 'standard', 'smart'
-  @override
-  String?
-      get selectedModel; // Current active model (derived from provider + mode)
-  @override
-  bool get showAiAssessments;
-
-  /// Create a copy of AIModelSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AIModelSettingsImplCopyWith<_$AIModelSettingsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -352,7 +352,7 @@ class _DeleteContentProviderElement
   String get contentId => (origin as DeleteContentProvider).contentId;
 }
 
-String _$generateMiniAppHash() => r'3c81cddaca9cbc782c4253d0d7b9d584ce58250f';
+String _$generateMiniAppHash() => r'82acc0f052b4ba52de3c39e899bbb97079038954';
 
 /// Generate mini app
 ///
@@ -374,15 +374,9 @@ class GenerateMiniAppFamily extends Family<AsyncValue<GeneratedApp>> {
   /// Copied from [generateMiniApp].
   GenerateMiniAppProvider call({
     required String description,
-    required String selectedModel,
-    required String apiKey,
-    String aiProvider = 'claude',
   }) {
     return GenerateMiniAppProvider(
       description: description,
-      selectedModel: selectedModel,
-      apiKey: apiKey,
-      aiProvider: aiProvider,
     );
   }
 
@@ -392,9 +386,6 @@ class GenerateMiniAppFamily extends Family<AsyncValue<GeneratedApp>> {
   ) {
     return call(
       description: provider.description,
-      selectedModel: provider.selectedModel,
-      apiKey: provider.apiKey,
-      aiProvider: provider.aiProvider,
     );
   }
 
@@ -422,16 +413,10 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
   /// Copied from [generateMiniApp].
   GenerateMiniAppProvider({
     required String description,
-    required String selectedModel,
-    required String apiKey,
-    String aiProvider = 'claude',
   }) : this._internal(
           (ref) => generateMiniApp(
             ref as GenerateMiniAppRef,
             description: description,
-            selectedModel: selectedModel,
-            apiKey: apiKey,
-            aiProvider: aiProvider,
           ),
           from: generateMiniAppProvider,
           name: r'generateMiniAppProvider',
@@ -443,9 +428,6 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
           allTransitiveDependencies:
               GenerateMiniAppFamily._allTransitiveDependencies,
           description: description,
-          selectedModel: selectedModel,
-          apiKey: apiKey,
-          aiProvider: aiProvider,
         );
 
   GenerateMiniAppProvider._internal(
@@ -456,15 +438,9 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.description,
-    required this.selectedModel,
-    required this.apiKey,
-    required this.aiProvider,
   }) : super.internal();
 
   final String description;
-  final String selectedModel;
-  final String apiKey;
-  final String aiProvider;
 
   @override
   Override overrideWith(
@@ -480,9 +456,6 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         description: description,
-        selectedModel: selectedModel,
-        apiKey: apiKey,
-        aiProvider: aiProvider,
       ),
     );
   }
@@ -494,20 +467,13 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
 
   @override
   bool operator ==(Object other) {
-    return other is GenerateMiniAppProvider &&
-        other.description == description &&
-        other.selectedModel == selectedModel &&
-        other.apiKey == apiKey &&
-        other.aiProvider == aiProvider;
+    return other is GenerateMiniAppProvider && other.description == description;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, description.hashCode);
-    hash = _SystemHash.combine(hash, selectedModel.hashCode);
-    hash = _SystemHash.combine(hash, apiKey.hashCode);
-    hash = _SystemHash.combine(hash, aiProvider.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -518,15 +484,6 @@ class GenerateMiniAppProvider extends AutoDisposeFutureProvider<GeneratedApp> {
 mixin GenerateMiniAppRef on AutoDisposeFutureProviderRef<GeneratedApp> {
   /// The parameter `description` of this provider.
   String get description;
-
-  /// The parameter `selectedModel` of this provider.
-  String get selectedModel;
-
-  /// The parameter `apiKey` of this provider.
-  String get apiKey;
-
-  /// The parameter `aiProvider` of this provider.
-  String get aiProvider;
 }
 
 class _GenerateMiniAppProviderElement
@@ -536,15 +493,9 @@ class _GenerateMiniAppProviderElement
 
   @override
   String get description => (origin as GenerateMiniAppProvider).description;
-  @override
-  String get selectedModel => (origin as GenerateMiniAppProvider).selectedModel;
-  @override
-  String get apiKey => (origin as GenerateMiniAppProvider).apiKey;
-  @override
-  String get aiProvider => (origin as GenerateMiniAppProvider).aiProvider;
 }
 
-String _$generateGeogebraHash() => r'6787419877a0735cc661b53bb6d204546333efc8';
+String _$generateGeogebraHash() => r'032f444ea17824336ee653cddb906c35abe52418';
 
 /// Generate GeoGebra visualization
 ///
@@ -568,17 +519,11 @@ class GenerateGeogebraFamily extends Family<AsyncValue<GeoGebraData>> {
     required String prompt,
     String? questionText,
     String? topic,
-    required String apiKey,
-    required String selectedModel,
-    required String aiProvider,
   }) {
     return GenerateGeogebraProvider(
       prompt: prompt,
       questionText: questionText,
       topic: topic,
-      apiKey: apiKey,
-      selectedModel: selectedModel,
-      aiProvider: aiProvider,
     );
   }
 
@@ -590,9 +535,6 @@ class GenerateGeogebraFamily extends Family<AsyncValue<GeoGebraData>> {
       prompt: provider.prompt,
       questionText: provider.questionText,
       topic: provider.topic,
-      apiKey: provider.apiKey,
-      selectedModel: provider.selectedModel,
-      aiProvider: provider.aiProvider,
     );
   }
 
@@ -622,18 +564,12 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     required String prompt,
     String? questionText,
     String? topic,
-    required String apiKey,
-    required String selectedModel,
-    required String aiProvider,
   }) : this._internal(
           (ref) => generateGeogebra(
             ref as GenerateGeogebraRef,
             prompt: prompt,
             questionText: questionText,
             topic: topic,
-            apiKey: apiKey,
-            selectedModel: selectedModel,
-            aiProvider: aiProvider,
           ),
           from: generateGeogebraProvider,
           name: r'generateGeogebraProvider',
@@ -647,9 +583,6 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
           prompt: prompt,
           questionText: questionText,
           topic: topic,
-          apiKey: apiKey,
-          selectedModel: selectedModel,
-          aiProvider: aiProvider,
         );
 
   GenerateGeogebraProvider._internal(
@@ -662,17 +595,11 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     required this.prompt,
     required this.questionText,
     required this.topic,
-    required this.apiKey,
-    required this.selectedModel,
-    required this.aiProvider,
   }) : super.internal();
 
   final String prompt;
   final String? questionText;
   final String? topic;
-  final String apiKey;
-  final String selectedModel;
-  final String aiProvider;
 
   @override
   Override overrideWith(
@@ -690,9 +617,6 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
         prompt: prompt,
         questionText: questionText,
         topic: topic,
-        apiKey: apiKey,
-        selectedModel: selectedModel,
-        aiProvider: aiProvider,
       ),
     );
   }
@@ -707,10 +631,7 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     return other is GenerateGeogebraProvider &&
         other.prompt == prompt &&
         other.questionText == questionText &&
-        other.topic == topic &&
-        other.apiKey == apiKey &&
-        other.selectedModel == selectedModel &&
-        other.aiProvider == aiProvider;
+        other.topic == topic;
   }
 
   @override
@@ -719,9 +640,6 @@ class GenerateGeogebraProvider extends AutoDisposeFutureProvider<GeoGebraData> {
     hash = _SystemHash.combine(hash, prompt.hashCode);
     hash = _SystemHash.combine(hash, questionText.hashCode);
     hash = _SystemHash.combine(hash, topic.hashCode);
-    hash = _SystemHash.combine(hash, apiKey.hashCode);
-    hash = _SystemHash.combine(hash, selectedModel.hashCode);
-    hash = _SystemHash.combine(hash, aiProvider.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -738,15 +656,6 @@ mixin GenerateGeogebraRef on AutoDisposeFutureProviderRef<GeoGebraData> {
 
   /// The parameter `topic` of this provider.
   String? get topic;
-
-  /// The parameter `apiKey` of this provider.
-  String get apiKey;
-
-  /// The parameter `selectedModel` of this provider.
-  String get selectedModel;
-
-  /// The parameter `aiProvider` of this provider.
-  String get aiProvider;
 }
 
 class _GenerateGeogebraProviderElement
@@ -760,13 +669,6 @@ class _GenerateGeogebraProviderElement
   String? get questionText => (origin as GenerateGeogebraProvider).questionText;
   @override
   String? get topic => (origin as GenerateGeogebraProvider).topic;
-  @override
-  String get apiKey => (origin as GenerateGeogebraProvider).apiKey;
-  @override
-  String get selectedModel =>
-      (origin as GenerateGeogebraProvider).selectedModel;
-  @override
-  String get aiProvider => (origin as GenerateGeogebraProvider).aiProvider;
 }
 
 String _$contentTypeFilterHash() => r'8f2ba757c9c3c41da9d9c56767e50b08f6ff41f6';

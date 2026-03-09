@@ -252,7 +252,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
     try {
       final aiService = ref.read(aiServiceProvider);
       final appSettings = ref.read(appSettingsNotifierProvider);
-      final user = ref.read(currentUserProvider); // ref.read — not ref.watch
+      final user = ref.read(currentUserProvider);
       final userId = user?.uid;
       final lernplanTopics = ref.read(lernplanTopicsAsTopicDataProvider);
 
@@ -266,13 +266,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         return;
       }
 
-      final String? apiKey = appSettings.getApiKey();
-      if (apiKey == null || apiKey.isEmpty) {
-        debugPrint('❌ LiveFeed: No API key configured for ${appSettings.getProviderName()}');
-        return;
-      }
-
-      debugPrint('🔄 LiveFeed: Generating questions via ${appSettings.aiProvider}…');
+      debugPrint('🔄 LiveFeed: Generating questions via backend-managed AI...');
 
       final topicsForAI = lernplanTopics
           .map((t) => TopicData(leitidee: t.leitidee, thema: t.thema, unterthema: t.unterthema))
@@ -284,17 +278,14 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final correctRate = questionsAnswered > 0 ? correctAnswers / questionsAnswered : 0.5;
 
       final session = await aiService.generateQuestions(
-        apiKey: apiKey,
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
-        selectedModel: appSettings.getModelForTask('questionGeneration'),
         questionCount: 10, // Smaller batch = faster background prefetch
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
           courseType: appSettings.courseType,
         ),
-        provider: appSettings.aiProvider,
         recentPerformance: questionsAnswered > 0
             ? {'averageScore': correctRate, 'totalAnswered': questionsAnswered}
             : null,

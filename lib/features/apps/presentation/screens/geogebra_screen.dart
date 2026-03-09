@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../../../../core/services/ai_service.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/apps_providers.dart';
 
 /// GeoGebra Visualization Screen
@@ -186,23 +185,9 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     });
 
     try {
-      final appSettings = ref.read(appSettingsNotifierProvider);
-      final aiProvider = appSettings.aiProvider;
-      final selectedModel = appSettings.getModelForTask('geogebraGeneration');
-      final apiKey = appSettings.getApiKey();
-
-      if (apiKey == null || apiKey.isEmpty) {
-        throw Exception(
-          'Kein API-Key konfiguriert. Bitte konfiguriere einen ${appSettings.getProviderName()} API-Key in den Einstellungen.',
-        );
-      }
-
       final visualization = await ref.read(
         generateGeogebraProvider(
           prompt: _promptController.text.trim(),
-          apiKey: apiKey,
-          selectedModel: selectedModel,
-          aiProvider: aiProvider,
         ).future,
       );
 

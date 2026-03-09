@@ -12,22 +12,6 @@ part 'settings_repository.g.dart';
 /// Unified settings model containing all user preferences
 @immutable
 class UserSettings {
-  // AI Settings
-  final String aiProvider;
-  final String modelMode;
-  final String? selectedModel;
-  
-  // API Keys (stored locally only)
-  final String? claudeApiKey;
-  final String? geminiApiKey;
-  final String? openrouterApiKey;
-  
-  // AI Model Config
-  final int detailLevel;
-  final int helpfulness;
-  final double temperature;
-  final bool autoMode;
-  
   // Education
   final String gradeLevel;
   final String courseType;
@@ -36,30 +20,16 @@ class UserSettings {
   final String themeName;
   final String primaryColor;
   
-  // Flags
-  final bool showAiAssessments;
-  
   // Timestamps
   final DateTime? lastSyncedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   UserSettings({
-    this.aiProvider = 'gemini',
-    this.modelMode = 'fast',
-    this.selectedModel,
-    this.claudeApiKey,
-    this.geminiApiKey,
-    this.openrouterApiKey,
-    this.detailLevel = 5,
-    this.helpfulness = 7,
-    this.temperature = 0.7,
-    this.autoMode = true,
     this.gradeLevel = 'Klasse_11',
     this.courseType = 'Leistungsfach',
     this.themeName = 'Sunset',
     this.primaryColor = '#f97316',
-    this.showAiAssessments = false,
     this.lastSyncedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -68,18 +38,10 @@ class UserSettings {
 
   factory UserSettings.fromJson(Map<String, dynamic> json) {
     return UserSettings(
-      aiProvider: json['aiProvider'] ?? 'gemini',
-      modelMode: json['modelMode'] ?? 'fast',
-      selectedModel: json['selectedModel'],
-      detailLevel: json['detailLevel'] ?? 5,
-      helpfulness: json['helpfulness'] ?? 7,
-      temperature: (json['temperature'] ?? 0.7).toDouble(),
-      autoMode: json['autoMode'] ?? true,
       gradeLevel: json['gradeLevel'] ?? 'Klasse_11',
       courseType: json['courseType'] ?? 'Leistungsfach',
       themeName: json['themeName'] ?? 'Sunset',
       primaryColor: json['primaryColor'] ?? '#f97316',
-      showAiAssessments: json['showAiAssessments'] ?? false,
       lastSyncedAt: json['lastSyncedAt'] != null 
           ? DateTime.parse(json['lastSyncedAt']) 
           : null,
@@ -93,76 +55,36 @@ class UserSettings {
   }
 
   Map<String, dynamic> toJson() => {
-    'aiProvider': aiProvider,
-    'modelMode': modelMode,
-    'selectedModel': selectedModel,
-    'detailLevel': detailLevel,
-    'helpfulness': helpfulness,
-    'temperature': temperature,
-    'autoMode': autoMode,
     'gradeLevel': gradeLevel,
     'courseType': courseType,
     'themeName': themeName,
     'primaryColor': primaryColor,
-    'showAiAssessments': showAiAssessments,
     'lastSyncedAt': lastSyncedAt?.toIso8601String(),
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': DateTime.now().toIso8601String(),
   };
 
   Map<String, dynamic> toRemoteJson() => {
-    'aiModel': {
-      'autoMode': autoMode,
-      'detailLevel': detailLevel,
-      'helpfulness': helpfulness,
-      'temperature': temperature,
-    },
-    'aiProvider': aiProvider,
-    'modelMode': modelMode,
-    'selectedModel': selectedModel,
     'gradeLevel': gradeLevel,
     'courseType': courseType,
     'theme': {
       'name': themeName,
       'primary': primaryColor,
     },
-    'showAiAssessments': showAiAssessments,
   };
 
   UserSettings copyWith({
-    String? aiProvider,
-    String? modelMode,
-    String? selectedModel,
-    String? claudeApiKey,
-    String? geminiApiKey,
-    String? openrouterApiKey,
-    int? detailLevel,
-    int? helpfulness,
-    double? temperature,
-    bool? autoMode,
     String? gradeLevel,
     String? courseType,
     String? themeName,
     String? primaryColor,
-    bool? showAiAssessments,
     DateTime? lastSyncedAt,
   }) {
     return UserSettings(
-      aiProvider: aiProvider ?? this.aiProvider,
-      modelMode: modelMode ?? this.modelMode,
-      selectedModel: selectedModel ?? this.selectedModel,
-      claudeApiKey: claudeApiKey ?? this.claudeApiKey,
-      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
-      openrouterApiKey: openrouterApiKey ?? this.openrouterApiKey,
-      detailLevel: detailLevel ?? this.detailLevel,
-      helpfulness: helpfulness ?? this.helpfulness,
-      temperature: temperature ?? this.temperature,
-      autoMode: autoMode ?? this.autoMode,
       gradeLevel: gradeLevel ?? this.gradeLevel,
       courseType: courseType ?? this.courseType,
       themeName: themeName ?? this.themeName,
       primaryColor: primaryColor ?? this.primaryColor,
-      showAiAssessments: showAiAssessments ?? this.showAiAssessments,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
@@ -252,87 +174,22 @@ class SettingsRepository with RepositoryCache<UserSettings, String> {
   }
 
   Future<Result<void, AppError>> updateSettings({
-    String? aiProvider,
-    String? modelMode,
-    String? selectedModel,
-    int? detailLevel,
-    int? helpfulness,
-    double? temperature,
-    bool? autoMode,
     String? gradeLevel,
     String? courseType,
     String? themeName,
     String? primaryColor,
-    bool? showAiAssessments,
   }) async {
     final currentResult = await getSettings();
     
     return currentResult.map(
       success: (current) async {
         final updated = current.copyWith(
-          aiProvider: aiProvider,
-          modelMode: modelMode,
-          selectedModel: selectedModel,
-          detailLevel: detailLevel,
-          helpfulness: helpfulness,
-          temperature: temperature,
-          autoMode: autoMode,
           gradeLevel: gradeLevel,
           courseType: courseType,
           themeName: themeName,
           primaryColor: primaryColor,
-          showAiAssessments: showAiAssessments,
         );
         return (await saveSettings(updated)).mapSuccess((_) => null);
-      },
-      failure: (error) => Failure(error),
-    );
-  }
-
-  // ============================================================================
-  // API KEYS (Local only, never synced to cloud)
-  // ============================================================================
-
-  Future<Result<void, AppError>> saveApiKey(String provider, String? key) async {
-    final currentResult = await getSettings();
-    
-    return currentResult.map(
-      success: (current) async {
-        UserSettings updated;
-        switch (provider) {
-          case 'claude':
-            updated = current.copyWith(claudeApiKey: key);
-            break;
-          case 'gemini':
-            updated = current.copyWith(geminiApiKey: key);
-            break;
-          case 'openrouter':
-            updated = current.copyWith(openrouterApiKey: key);
-            break;
-          default:
-            return const Failure(ValidationError('Unknown provider'));
-        }
-        
-        // Save locally only
-        await _local.cacheSettings(_userId, updated.toJson());
-        putInCache(_userId, updated);
-        return const Success(null);
-      },
-      failure: (error) => Failure(error),
-    );
-  }
-
-  Future<Result<String?, AppError>> getApiKey(String provider) async {
-    final result = await getSettings();
-    return result.map(
-      success: (settings) {
-        final key = switch (provider) {
-          'claude' => settings.claudeApiKey,
-          'gemini' => settings.geminiApiKey,
-          'openrouter' => settings.openrouterApiKey,
-          _ => null,
-        };
-        return Success(key);
       },
       failure: (error) => Failure(error),
     );
@@ -424,35 +281,19 @@ class SettingsNotifier extends _$SettingsNotifier {
   }
 
   Future<void> updateSettingsFields({
-    String? aiProvider,
-    String? modelMode,
-    String? selectedModel,
-    int? detailLevel,
-    int? helpfulness,
-    double? temperature,
-    bool? autoMode,
     String? gradeLevel,
     String? courseType,
     String? themeName,
     String? primaryColor,
-    bool? showAiAssessments,
   }) async {
     state = const AsyncValue.loading();
 
     final repository = ref.read(settingsRepositoryProvider);
     final result = await repository.updateSettings(
-      aiProvider: aiProvider,
-      modelMode: modelMode,
-      selectedModel: selectedModel,
-      detailLevel: detailLevel,
-      helpfulness: helpfulness,
-      temperature: temperature,
-      autoMode: autoMode,
       gradeLevel: gradeLevel,
       courseType: courseType,
       themeName: themeName,
       primaryColor: primaryColor,
-      showAiAssessments: showAiAssessments,
     );
 
     // After update, reload settings
@@ -462,11 +303,6 @@ class SettingsNotifier extends _$SettingsNotifier {
     } else if (result.isFailure) {
       state = AsyncValue.error(result.failureOrNull!, StackTrace.current);
     }
-  }
-
-  Future<void> saveApiKey(String provider, String? key) async {
-    final repository = ref.read(settingsRepositoryProvider);
-    await repository.saveApiKey(provider, key);
   }
 
   Future<void> sync() async {
