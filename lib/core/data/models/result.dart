@@ -1,15 +1,17 @@
-/// Result type for handling success/failure operations
-/// Similar to Either in functional programming
-/// 
+/// Result type for handling success/failure operations.
+///
+/// Similar to Either in functional programming.
+///
 /// Usage:
 /// ```dart
 /// Result<User, AuthError> result = await authRepository.signIn();
-/// 
+///
 /// result.when(
 ///   success: (user) => print('Welcome ${user.name}'),
 ///   failure: (error) => print('Error: $error'),
 /// );
 /// ```
+library;
 
 sealed class Result<S, F> {
   const Result();
@@ -27,7 +29,6 @@ sealed class Result<S, F> {
     return switch (this) {
       Success<S, F>(value: final v) => success(v),
       Failure<S, F>(error: final e) => failure(e),
-      _ => throw StateError('Invalid Result state'),
     };
   }
 

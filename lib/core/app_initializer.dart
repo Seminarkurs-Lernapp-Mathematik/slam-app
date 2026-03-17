@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +7,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../firebase_options.dart';
 import 'data/datasources/local_datasource.dart';
 import 'data/datasources/remote_datasource.dart';
-import 'services/auth_service.dart';
-import 'services/firestore_service.dart';
 import 'utils/error_handler.dart';
 import 'utils/logger.dart';
 
@@ -135,12 +132,4 @@ final localDataSourceProvider = Provider<LocalDataSource>((ref) {
   final ds = LocalDataSource();
   ds.initialize();
   return ds;
-});
-
-final firestoreServiceProvider = Provider<FirestoreService>((ref) {
-  return FirestoreService(FirebaseFirestore.instance);
-});
-
-final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService(FirebaseAuth.instance);
 });

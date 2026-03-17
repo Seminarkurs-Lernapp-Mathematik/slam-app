@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/question_result.dart';
@@ -9,6 +11,14 @@ import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 
 part 'live_feed_providers.g.dart';
+
+// ============================================================================
+// QUESTION QUEUE CACHE KEYS
+// ============================================================================
+const String _kQuestionQueueKey = 'live_feed_question_queue';
+const String _kQueueIndexKey = 'live_feed_queue_index';
+const String _kQueueTimestampKey = 'live_feed_queue_timestamp';
+const Duration _kCacheValidityDuration = Duration(hours: 24); // Cache valid for 24 hours
 
 /// Current Difficulty Level Provider (1-10)
 @riverpod
@@ -103,11 +113,6 @@ class ConsecutiveCorrect extends _$ConsecutiveCorrect {
 
   void increment() {
     state++;
-    // Auto-increase difficulty after 2 correct in a row
-    if (state >= 2) {
-      // Trigger difficulty increase
-      state = 0;
-    }
   }
 
   void reset() {
@@ -125,11 +130,6 @@ class ConsecutiveWrong extends _$ConsecutiveWrong {
 
   void increment() {
     state++;
-    // Auto-decrease difficulty after 2 wrong in a row
-    if (state >= 2) {
-      // Trigger difficulty decrease
-      state = 0;
-    }
   }
 
   void reset() {
@@ -348,12 +348,89 @@ class LiveFeedQueueState {
   bool get hasNext => currentIndex + 1 < questions.length;
 }
 
-/// Live Feed Queue Provider
+/// Live Feed Queue Provider with Caching
 @riverpod
 class LiveFeedQueue extends _$LiveFeedQueue {
+  SharedPreferences? _prefs;
+  
   @override
   LiveFeedQueueState build() {
+    // Initialize and try to load cached questions
+    _initializeCache();
     return LiveFeedQueueState();
+  }
+  
+  Future<void> _initializeCache() async {
+    try {
+      _prefs = await SharedPreferences.getInstance();
+      await _loadCachedQuestions();
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error initializing cache: $e');
+    }
+  }
+  
+  /// Load cached questions from local storage
+  Future<void> _loadCachedQuestions() async {
+    if (_prefs == null) return;
+    
+    try {
+      final cachedJson = _prefs!.getString(_kQuestionQueueKey);
+      final cachedIndex = _prefs!.getInt(_kQueueIndexKey) ?? 0;
+      final cachedTimestamp = _prefs!.getInt(_kQueueTimestampKey) ?? 0;
+      
+      // Check if cache is still valid
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final cacheAge = Duration(milliseconds: now - cachedTimestamp);
+      
+      if (cachedJson != null && cacheAge < _kCacheValidityDuration) {
+        final List<dynamic> decoded = jsonDecode(cachedJson);
+        final questions = decoded
+            .map((q) => Question.fromJson(q as Map<String, dynamic>))
+            .toList();
+        
+        if (questions.isNotEmpty) {
+          // Restore the queue state
+          state = state.copyWith(
+            questions: questions,
+            currentIndex: cachedIndex.clamp(0, questions.length - 1),
+          );
+          debugPrint('✅ LiveFeedQueue: Loaded ${questions.length} cached questions (index: $cachedIndex)');
+        }
+      } else if (cachedJson != null) {
+        // Cache expired, clear it
+        debugPrint('🗑️ LiveFeedQueue: Cache expired, clearing');
+        await _clearCache();
+      }
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error loading cached questions: $e');
+    }
+  }
+  
+  /// Save current queue to local storage
+  Future<void> _saveCache() async {
+    if (_prefs == null) return;
+    
+    try {
+      final questionsJson = state.questions.map((q) => q.toJson()).toList();
+      await _prefs!.setString(_kQuestionQueueKey, jsonEncode(questionsJson));
+      await _prefs!.setInt(_kQueueIndexKey, state.currentIndex);
+      await _prefs!.setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error saving cache: $e');
+    }
+  }
+  
+  /// Clear the cache
+  Future<void> _clearCache() async {
+    if (_prefs == null) return;
+    
+    try {
+      await _prefs!.remove(_kQuestionQueueKey);
+      await _prefs!.remove(_kQueueIndexKey);
+      await _prefs!.remove(_kQueueTimestampKey);
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error clearing cache: $e');
+    }
   }
 
   /// Add a batch of questions to the queue
@@ -361,19 +438,29 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     state = state.copyWith(
       questions: [...state.questions, ...newQuestions],
     );
+    // Persist to cache
+    _saveCache();
+    debugPrint('💾 LiveFeedQueue: Saved ${state.questions.length} questions to cache');
   }
 
   /// Move to the next question in the queue
   Question? nextQuestion() {
-    if (!state.hasNext) return null;
+    if (!state.hasNext) {
+      // No more questions, clear cache
+      _clearCache();
+      return null;
+    }
     final nextIndex = state.currentIndex + 1;
     state = state.copyWith(currentIndex: nextIndex);
+    // Update cache with new index
+    _saveCache();
     return state.currentQuestion;
   }
 
   /// Set the current question (first question load)
   void setCurrentIndex(int index) {
     state = state.copyWith(currentIndex: index);
+    _saveCache();
   }
 
   /// Set generating state
@@ -384,6 +471,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   /// Clear the queue and reset
   void clear() {
     state = LiveFeedQueueState();
+    _clearCache();
+    debugPrint('🗑️ LiveFeedQueue: Queue cleared and cache removed');
   }
 
   /// Get remaining question count
@@ -391,6 +480,9 @@ class LiveFeedQueue extends _$LiveFeedQueue {
 
   /// Whether more questions should be generated (prefetch at 10 remaining)
   bool get needsMoreQuestions => state.remainingCount <= 10;
+  
+  /// Check if there are cached questions available
+  bool get hasCachedQuestions => state.questions.isNotEmpty && state.currentIndex < state.questions.length;
 }
 
 /// Selected Option Provider (tracks which MCQ option was selected)

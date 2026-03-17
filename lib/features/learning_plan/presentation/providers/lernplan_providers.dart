@@ -55,7 +55,7 @@ class LernplanNotifier extends _$LernplanNotifier {
   }
 }
 
-/// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
+/// Converts the Lernplan's topics into a `List<TopicData>` for use with AI services.
 @riverpod
 class LernplanTopicsAsTopicData extends _$LernplanTopicsAsTopicData {
   @override

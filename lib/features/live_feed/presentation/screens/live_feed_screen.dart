@@ -45,8 +45,30 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Future<void> _initializeQueue() async {
-    // Auto-generate on first open if queue is empty
-    if (ref.read(liveFeedQueueProvider).questions.isEmpty) {
+    final queueNotifier = ref.read(liveFeedQueueProvider.notifier);
+    
+    // Wait for cache to be loaded (give it a moment)
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    // Check if we have cached questions
+    if (queueNotifier.hasCachedQuestions) {
+      debugPrint('✅ LiveFeed: Using ${queueNotifier.remainingCount} cached questions');
+      
+      // Set the current question from cache if none is showing
+      if (ref.read(currentLiveFeedQuestionProvider) == null) {
+        final currentQ = ref.read(liveFeedQueueProvider).currentQuestion;
+        if (currentQ != null) {
+          ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(currentQ);
+        }
+      }
+      
+      // Still prefetch more if running low
+      if (queueNotifier.needsMoreQuestions) {
+        _generateQuestions();
+      }
+    } else {
+      // No cached questions, generate new ones
+      debugPrint('🔄 LiveFeed: No cached questions, generating new ones');
       await _generateQuestions();
     }
   }

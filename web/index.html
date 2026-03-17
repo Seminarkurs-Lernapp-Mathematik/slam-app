@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- SLAM Learning App - Production Build -->
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -19,21 +18,115 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="SLAM Learning App - Flutter Version für iOS & Android">
+  <meta name="description" content="SLAM Learning App - Smarte Lern-App für Mathematik">
 
   <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="slam_app_flutter">
+  <meta name="apple-mobile-web-app-title" content="SLAM Learning">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>slam_app_flutter</title>
+  <title>SLAM Learning</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Preconnect to Firebase and API domains for faster loading -->
+  <link rel="preconnect" href="https://firebaseinstallations.googleapis.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://api.learn-smart.app">
+
+  <style>
+    /* Loading spinner styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+    }
+    
+    #loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    #loading-container.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(249, 115, 22, 0.3);
+      border-top-color: #f97316;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      margin-top: 20px;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .loading-subtext {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
+  <!-- Loading indicator shown while Flutter initializes -->
+  <div id="loading-container">
+    <div class="spinner"></div>
+    <div class="loading-text">SLAM Learning</div>
+    <div class="loading-subtext">Wird geladen...</div>
+  </div>
+
+  <!-- Flutter bootstrap script with loading indicator management -->
+  <script>
+    // Hide loading indicator when Flutter is ready
+    window.addEventListener('flutter-first-frame', function() {
+      var loader = document.getElementById('loading-container');
+      if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(function() {
+          loader.style.display = 'none';
+        }, 500);
+      }
+    });
+    
+    // Fallback: hide loader after 10 seconds even if Flutter doesn't signal ready
+    setTimeout(function() {
+      var loader = document.getElementById('loading-container');
+      if (loader && loader.style.display !== 'none') {
+        loader.classList.add('hidden');
+        setTimeout(function() {
+          loader.style.display = 'none';
+        }, 500);
+      }
+    }, 10000);
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

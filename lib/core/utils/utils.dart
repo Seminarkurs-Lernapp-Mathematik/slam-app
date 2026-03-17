@@ -1,7 +1,8 @@
-/// Core utilities barrel file
+/// Core utilities barrel file.
 ///
 /// This file exports all utility classes for convenient importing.
-/// Use: import 'package:slam_app/core/utils/utils.dart';
+/// Use: `import 'package:slam_app/core/utils/utils.dart';`
+library;
 
 // Error handling
 export 'error_handler.dart';

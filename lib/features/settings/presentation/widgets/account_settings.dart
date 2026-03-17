@@ -97,15 +97,17 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
             const SizedBox(height: 16),
 
             // Email (read-only)
-            TextField(
-              controller: TextEditingController(text: user.email),
-              enabled: false,
+            InputDecorator(
               decoration: InputDecoration(
                 labelText: 'E-Mail',
                 prefixIcon: const Icon(Icons.email),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+              ),
+              child: Text(
+                user.email ?? '',
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
 
@@ -160,6 +162,8 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
   }
 
   Future<void> _showChangePasswordDialog(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
@@ -281,7 +285,7 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
             );
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             const SnackBar(
               content: Text('Passwort erfolgreich geändert'),
               backgroundColor: Colors.green,
@@ -290,10 +294,10 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
               content: Text('Fehler: ${e.toString()}'),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: errorColor,
             ),
           );
         }
@@ -306,6 +310,7 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
   }
 
   Future<void> _saveDisplayName() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       final newName = _displayNameController.text.trim();
       if (newName.isEmpty) return;
@@ -314,13 +319,13 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
       await authService.updateDisplayName(newName);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Anzeigename aktualisiert')),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Fehler: ${e.toString()}')),
         );
       }
@@ -328,18 +333,19 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
   }
 
   Future<void> _handleLogout(BuildContext context) async {
+    final router = GoRouter.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Abmelden'),
         content: const Text('Möchtest du dich wirklich abmelden?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('Abbrechen'),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('Abmelden'),
           ),
         ],
@@ -349,15 +355,18 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
     if (confirmed == true && mounted) {
       await ref.read(authServiceProvider).signOut();
       if (mounted) {
-        context.go('/login');
+        router.go('/login');
       }
     }
   }
 
   Future<void> _handleDeleteAccount(BuildContext context) async {
+    final router = GoRouter.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Account löschen'),
         content: const Text(
           'Möchtest du deinen Account wirklich dauerhaft löschen? '
@@ -365,13 +374,13 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('Abbrechen'),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: errorColor,
             ),
             child: const Text('Löschen'),
           ),
@@ -383,14 +392,14 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
       try {
         await ref.read(authServiceProvider).deleteAccount();
         if (mounted) {
-          context.go('/login');
+          router.go('/login');
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
               content: Text('Fehler beim Löschen: ${e.toString()}'),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: errorColor,
             ),
           );
         }

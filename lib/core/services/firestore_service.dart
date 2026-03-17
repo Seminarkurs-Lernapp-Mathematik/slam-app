@@ -563,13 +563,15 @@ class FirestoreService {
     required String userId,
     bool? includeArchived,
   }) async {
-    var query = _firestore
+    final collectionRef = _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
         .collection(FirebaseCollections.memories);
 
+    Query<Map<String, dynamic>> query = collectionRef;
+
     if (includeArchived == false) {
-      query = query.where('isArchived', isEqualTo: false) as CollectionReference<Map<String, dynamic>>;
+      query = query.where('isArchived', isEqualTo: false);
     }
 
     final querySnapshot = await query
@@ -629,13 +631,15 @@ class FirestoreService {
     required String userId,
     String? type,
   }) async {
-    var query = _firestore
+    final collectionRef = _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)
         .collection(FirebaseCollections.savedContent);
 
+    Query<Map<String, dynamic>> query = collectionRef;
+
     if (type != null) {
-      query = query.where('type', isEqualTo: type) as CollectionReference<Map<String, dynamic>>;
+      query = query.where('type', isEqualTo: type);
     }
 
     final querySnapshot = await query

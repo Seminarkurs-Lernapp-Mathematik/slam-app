@@ -249,9 +249,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     if (isCorrect && consecutiveCorrect >= 2) {
       ref.read(liveFeedDifficultyProvider.notifier).increase();
+      ref.read(consecutiveCorrectProvider.notifier).reset();
       _showSnackBar('Schwierigkeitsgrad erhöht!', icon: Icons.trending_up);
     } else if (!isCorrect && consecutiveWrong >= 2) {
       ref.read(liveFeedDifficultyProvider.notifier).decrease();
+      ref.read(consecutiveWrongProvider.notifier).reset();
       _showSnackBar('Schwierigkeitsgrad angepasst', icon: Icons.trending_down);
     }
   }

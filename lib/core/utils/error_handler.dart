@@ -111,7 +111,6 @@ class ErrorHandler {
       DatabaseError() => 'Datenbankfehler. Bitte versuche es später erneut.',
       CacheError() => 'Cache-Fehler. Die Daten werden neu geladen.',
       UnknownError() => 'Ein unerwarteter Fehler ist aufgetreten.',
-      _ => 'Ein Fehler ist aufgetreten.',
     };
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +22,6 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   bool _isLoading = false;
   String? _error;
   GeoGebraData? _currentVisualization;
-  bool _isGeoGebraReady = false;
 
   String get _initialHtml => _getInitialGeoGebraHTML();
 
@@ -145,8 +143,6 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     debugPrint('GeoGebra WebView message: $message');
     
     if (message == 'geogebraReady') {
-      setState(() => _isGeoGebraReady = true);
-      
       // Execute pending commands if available
       if (_currentVisualization != null && _currentVisualization!.commands.isNotEmpty) {
         _executeGeoGebraCommands(_currentVisualization!.commands);

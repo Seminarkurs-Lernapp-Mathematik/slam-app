@@ -163,7 +163,7 @@ class _EducationSettings extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: settings.gradeLevel,
+                  initialValue: settings.gradeLevel,
                   decoration: const InputDecoration(
                     labelText: 'Klassenstufe',
                     border: InputBorder.none,
@@ -188,7 +188,7 @@ class _EducationSettings extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: settings.courseType,
+                  initialValue: settings.courseType,
                   decoration: const InputDecoration(
                     labelText: 'Kursart',
                     border: InputBorder.none,
@@ -244,25 +244,26 @@ class _AccountActions extends ConsumerWidget {
   }
 
   void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Account löschen?'),
         content: const Text(
           'Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten werden permanent gelöscht.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Abbrechen'),
           ),
           FilledButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               try {
                 await ref.read(authServiceProvider).deleteAccount();
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(content: Text('Fehler: $e')),
                 );
               }

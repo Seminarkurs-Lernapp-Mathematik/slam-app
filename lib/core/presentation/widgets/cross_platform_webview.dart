@@ -1,13 +1,16 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+// Platform-specific implementations
+import 'cross_platform_webview_stub.dart'
+    if (dart.library.html) 'cross_platform_webview_web.dart';
+
 /// A cross-platform WebView widget that works on Web, Android, and iOS
 ///
 /// Handles platform differences:
-/// - Web: Uses data URI with base64 encoding
-/// - Mobile: Uses standard loadHtmlString
+/// - Web: Uses HtmlElementView with iframe
+/// - Mobile: Uses webview_flutter package
 class CrossPlatformWebView extends StatefulWidget {
   final String htmlContent;
   final String? baseUrl;
@@ -29,20 +32,21 @@ class CrossPlatformWebView extends StatefulWidget {
 }
 
 class _CrossPlatformWebViewState extends State<CrossPlatformWebView> {
-  WebViewController? _controller;
+  WebViewController? _mobileController;
 
   @override
   void initState() {
     super.initState();
-    _initWebView();
+    if (!kIsWeb) {
+      _initMobileWebView();
+    }
   }
 
-  void _initWebView() {
+  void _initMobileWebView() {
     final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.transparent);
 
-    // Add navigation delegate for page finished callback
     controller.setNavigationDelegate(
       NavigationDelegate(
         onPageFinished: (url) {
@@ -51,7 +55,6 @@ class _CrossPlatformWebViewState extends State<CrossPlatformWebView> {
       ),
     );
 
-    // Add JavaScript channel if requested
     if (widget.javascriptChannelName != null && widget.onMessage != null) {
       controller.addJavaScriptChannel(
         widget.javascriptChannelName!,
@@ -61,50 +64,40 @@ class _CrossPlatformWebViewState extends State<CrossPlatformWebView> {
       );
     }
 
-    // Load content based on platform
-    _loadContent(controller);
-
-    _controller = controller;
-  }
-
-  void _loadContent(WebViewController controller) {
-    final html = widget.htmlContent;
-
-    if (kIsWeb) {
-      // On web platform, use data URI with base64 encoding
-      // This is the only reliable way to load HTML in iframe
-      final bytes = utf8.encode(html);
-      final base64Str = base64Encode(bytes);
-      final dataUri = 'data:text/html;base64,$base64Str';
-      controller.loadRequest(Uri.parse(dataUri));
-    } else {
-      // On mobile, use loadHtmlString directly
-      controller.loadHtmlString(html, baseUrl: widget.baseUrl);
-    }
+    controller.loadHtmlString(widget.htmlContent, baseUrl: widget.baseUrl);
+    _mobileController = controller;
   }
 
   @override
   void didUpdateWidget(CrossPlatformWebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.htmlContent != widget.htmlContent) {
-      if (_controller != null) {
-        _loadContent(_controller!);
+      if (!kIsWeb && _mobileController != null) {
+        _mobileController!.loadHtmlString(widget.htmlContent, baseUrl: widget.baseUrl);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null) {
-      return const Center(child: CircularProgressIndicator());
+    if (kIsWeb) {
+      return buildWebView(
+        htmlContent: widget.htmlContent,
+        onPageFinished: widget.onPageFinished,
+        onMessage: widget.onMessage,
+        javascriptChannelName: widget.javascriptChannelName,
+      );
+    } else {
+      if (_mobileController == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return WebViewWidget(controller: _mobileController!);
     }
-    return WebViewWidget(controller: _controller!);
   }
 }
 
 /// Extension to help with WebView operations
 extension WebViewControllerExtension on WebViewController {
-  /// Execute JavaScript safely across platforms
   Future<void> runJavaScriptSafe(String script) async {
     try {
       await runJavaScript(script);
