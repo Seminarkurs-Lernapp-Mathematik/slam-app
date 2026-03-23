@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,24 +27,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Wait a bit for splash animation
+    // Show the splash screen for a minimum of 500 ms.
     await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
     final authService = ref.read(authServiceProvider);
-    final user = authService.currentUser;
 
-    if (user != null) {
-      if (user.emailVerified) {
-        // User is authenticated and verified
-        if (mounted) context.go('/home');
+    // On web, Firebase Auth restores a persisted session asynchronously.
+    // Waiting for the first event of authStateChanges guarantees we get the
+    // real auth state instead of the initial `null` that currentUser returns
+    // before the session is restored.
+    try {
+      final user = await authService.authStateChanges
+          .timeout(const Duration(seconds: 10))
+          .first;
+
+      if (!mounted) return;
+
+      if (user != null && user.emailVerified) {
+        context.go('/home');
+      } else if (user != null) {
+        context.go('/verify-email');
       } else {
-        // User exists but email not verified
-        if (mounted) context.go('/verify-email');
+        context.go('/login');
       }
-    } else {
-      // No user - go to login
+    } on TimeoutException {
+      // Firebase took too long — fall back to the synchronous value (may be null).
+      if (!mounted) return;
+      final user = authService.currentUser;
+      if (user != null && user.emailVerified) {
+        context.go('/home');
+      } else if (user != null) {
+        context.go('/verify-email');
+      } else {
+        context.go('/login');
+      }
+    } catch (_) {
       if (mounted) context.go('/login');
     }
   }

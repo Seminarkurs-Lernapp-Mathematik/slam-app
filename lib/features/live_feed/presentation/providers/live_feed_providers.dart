@@ -363,31 +363,62 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   Future<void> _initializeCache() async {
     try {
       _prefs = await SharedPreferences.getInstance();
-      await _loadCachedQuestions();
+
+      // Firebase is the primary cache source (cross-device / cross-session).
+      // Fall back to SharedPreferences when the user is not yet authenticated
+      // or when Firebase is unavailable.
+      final userId = ref.read(currentUserProvider)?.uid;
+      if (userId != null && userId.isNotEmpty) {
+        await _loadFromFirebase(userId);
+      } else {
+        await _loadCachedQuestions();
+      }
     } catch (e) {
       debugPrint('❌ LiveFeedQueue: Error initializing cache: $e');
     }
   }
-  
-  /// Load cached questions from local storage
+
+  /// Load cached questions from Firebase.
+  /// Falls back to SharedPreferences if Firebase returns nothing.
+  Future<void> _loadFromFirebase(String userId) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      final questions = await firestoreService.loadQuestionQueueCache(userId);
+
+      if (questions != null && questions.isNotEmpty) {
+        state = state.copyWith(questions: questions, currentIndex: 0);
+        debugPrint(
+          '✅ LiveFeedQueue: Loaded ${questions.length} questions from Firebase',
+        );
+        return;
+      }
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error loading from Firebase: $e');
+    }
+
+    // Nothing in Firebase — try the local cache as a last resort.
+    await _loadCachedQuestions();
+  }
+
+  /// Load cached questions from local SharedPreferences storage
   Future<void> _loadCachedQuestions() async {
     if (_prefs == null) return;
-    
+
     try {
       final cachedJson = _prefs!.getString(_kQuestionQueueKey);
       final cachedIndex = _prefs!.getInt(_kQueueIndexKey) ?? 0;
       final cachedTimestamp = _prefs!.getInt(_kQueueTimestampKey) ?? 0;
-      
+
       // Check if cache is still valid
       final now = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = Duration(milliseconds: now - cachedTimestamp);
-      
+
       if (cachedJson != null && cacheAge < _kCacheValidityDuration) {
         final List<dynamic> decoded = jsonDecode(cachedJson);
         final questions = decoded
             .map((q) => Question.fromJson(q as Map<String, dynamic>))
             .toList();
-        
+
         if (questions.isNotEmpty) {
           // Restore the queue state
           state = state.copyWith(
@@ -405,31 +436,59 @@ class LiveFeedQueue extends _$LiveFeedQueue {
       debugPrint('❌ LiveFeedQueue: Error loading cached questions: $e');
     }
   }
-  
-  /// Save current queue to local storage
+
+  /// Save current queue to local storage and Firebase
   Future<void> _saveCache() async {
-    if (_prefs == null) return;
-    
-    try {
-      final questionsJson = state.questions.map((q) => q.toJson()).toList();
-      await _prefs!.setString(_kQuestionQueueKey, jsonEncode(questionsJson));
-      await _prefs!.setInt(_kQueueIndexKey, state.currentIndex);
-      await _prefs!.setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      debugPrint('❌ LiveFeedQueue: Error saving cache: $e');
+    // Local cache (SharedPreferences)
+    if (_prefs != null) {
+      try {
+        final questionsJson = state.questions.map((q) => q.toJson()).toList();
+        await _prefs!.setString(_kQuestionQueueKey, jsonEncode(questionsJson));
+        await _prefs!.setInt(_kQueueIndexKey, state.currentIndex);
+        await _prefs!.setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
+      } catch (e) {
+        debugPrint('❌ LiveFeedQueue: Error saving local cache: $e');
+      }
+    }
+
+    // Firebase cache (primary — survives browser refreshes and new devices)
+    final userId = ref.read(currentUserProvider)?.uid;
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        final firestoreService = ref.read(firestoreServiceProvider);
+        await firestoreService.saveQuestionQueueCache(
+          userId: userId,
+          questions: state.questions,
+          currentIndex: state.currentIndex,
+        );
+      } catch (e) {
+        debugPrint('❌ LiveFeedQueue: Error saving to Firebase: $e');
+      }
     }
   }
-  
-  /// Clear the cache
+
+  /// Clear the cache (local + Firebase)
   Future<void> _clearCache() async {
-    if (_prefs == null) return;
-    
-    try {
-      await _prefs!.remove(_kQuestionQueueKey);
-      await _prefs!.remove(_kQueueIndexKey);
-      await _prefs!.remove(_kQueueTimestampKey);
-    } catch (e) {
-      debugPrint('❌ LiveFeedQueue: Error clearing cache: $e');
+    // Clear local cache
+    if (_prefs != null) {
+      try {
+        await _prefs!.remove(_kQuestionQueueKey);
+        await _prefs!.remove(_kQueueIndexKey);
+        await _prefs!.remove(_kQueueTimestampKey);
+      } catch (e) {
+        debugPrint('❌ LiveFeedQueue: Error clearing local cache: $e');
+      }
+    }
+
+    // Clear Firebase cache
+    final userId = ref.read(currentUserProvider)?.uid;
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        final firestoreService = ref.read(firestoreServiceProvider);
+        await firestoreService.clearQuestionQueueCache(userId);
+      } catch (e) {
+        debugPrint('❌ LiveFeedQueue: Error clearing Firebase cache: $e');
+      }
     }
   }
 
