@@ -327,6 +327,78 @@ class FirestoreService {
   }
 
   // ============================================================================
+  // QUESTION QUEUE CACHE
+  // ============================================================================
+
+  /// Save the remaining question queue to Firebase so it survives session restarts.
+  /// Only persists the un-answered questions (from currentIndex onwards).
+  /// Limited to 20 questions to stay within Firestore's 1 MB document limit.
+  Future<void> saveQuestionQueueCache({
+    required String userId,
+    required List<Question> questions,
+    required int currentIndex,
+  }) async {
+    final cacheRef = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.questionQueueCache)
+        .doc('current');
+
+    final remaining = questions.skip(currentIndex).take(20).toList();
+
+    if (remaining.isEmpty) {
+      await cacheRef.delete();
+      return;
+    }
+
+    final now = DateTime.now();
+    await cacheRef.set({
+      'questions': remaining.map((q) => q.toJson()).toList(),
+      'savedAt': Timestamp.fromDate(now),
+      'expiresAt': Timestamp.fromDate(now.add(const Duration(hours: 24))),
+    });
+  }
+
+  /// Load the cached question queue from Firebase.
+  /// Returns null if no cache exists or the cache has expired.
+  Future<List<Question>?> loadQuestionQueueCache(String userId) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.questionQueueCache)
+        .doc('current')
+        .get();
+
+    if (!doc.exists) return null;
+
+    final data = doc.data();
+    if (data == null) return null;
+
+    final expiresAt = (data['expiresAt'] as Timestamp?)?.toDate();
+    if (expiresAt != null && DateTime.now().isAfter(expiresAt)) {
+      await doc.reference.delete();
+      return null;
+    }
+
+    final questionsJson = data['questions'] as List<dynamic>?;
+    if (questionsJson == null || questionsJson.isEmpty) return null;
+
+    return questionsJson
+        .map((q) => Question.fromJson(q as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Delete the question queue cache (e.g. when the queue is exhausted).
+  Future<void> clearQuestionQueueCache(String userId) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.questionQueueCache)
+        .doc('current')
+        .delete();
+  }
+
+  // ============================================================================
   // QUESTION HISTORY
   // ============================================================================
 

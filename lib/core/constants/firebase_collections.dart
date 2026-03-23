@@ -23,6 +23,7 @@ class FirebaseCollections {
   static const String questionHistory = 'questionHistory';
   static const String friends = 'friends';
   static const String savedContent = 'savedContent';
+  static const String questionQueueCache = 'questionQueueCache';
   // Note: 'memories' is also used as a subcollection name (same as field name)
 
   // Document IDs

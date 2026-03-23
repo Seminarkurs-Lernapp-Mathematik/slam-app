@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,25 @@ import '../features/settings/presentation/screens/settings_screen.dart';
 import '../core/services/auth_service.dart';
 
 part 'routes.g.dart';
+
+/// A [ChangeNotifier] that listens to a [Stream] and notifies GoRouter
+/// to re-evaluate its redirect whenever the stream emits a new value.
+///
+/// Used so GoRouter automatically re-checks the auth guard when Firebase
+/// Auth finishes restoring a persisted session (important on web).
+class GoRouterRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _subscription;
+
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.listen((_) => notifyListeners());
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 /// Material 3 Expressive Page Transition
 /// Uses emphasized easing curves for smooth, physics-based motion
@@ -61,9 +82,16 @@ CustomTransitionPage<void> buildPageWithExpressiveTransition({
 GoRouter router(Ref ref) {
   final authService = ref.watch(authServiceProvider);
 
+  // Notify GoRouter to re-run its redirect whenever Firebase Auth emits a
+  // new auth state.  Without this, the router would keep showing the login
+  // page on web even after Firebase asynchronously restores a persisted session.
+  final refreshNotifier = GoRouterRefreshStream(authService.authStateChanges);
+  ref.onDispose(refreshNotifier.dispose);
+
   return GoRouter(
     initialLocation: '/',
     debugLogDiagnostics: true,
+    refreshListenable: refreshNotifier,
     redirect: (BuildContext context, GoRouterState state) {
       final user = authService.currentUser;
       final isAuthenticated = user != null && user.emailVerified;
