@@ -312,6 +312,8 @@ class _ContentCard extends StatelessWidget {
         return Icons.functions;
       case ContentType.simulation:
         return Icons.science;
+      case ContentType.chat:
+        return Icons.chat_bubble_outline;
     }
   }
 
@@ -323,6 +325,8 @@ class _ContentCard extends StatelessWidget {
         return Colors.blue;
       case ContentType.simulation:
         return Colors.green;
+      case ContentType.chat:
+        return Colors.teal;
     }
   }
 
