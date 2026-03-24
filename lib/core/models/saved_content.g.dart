@@ -44,4 +44,5 @@ const _$ContentTypeEnumMap = {
   ContentType.miniApp: 'mini-app',
   ContentType.geogebra: 'geogebra',
   ContentType.simulation: 'simulation',
+  ContentType.chat: 'chat',
 };
