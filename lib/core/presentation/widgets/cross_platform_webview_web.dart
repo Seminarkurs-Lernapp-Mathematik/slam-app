@@ -22,10 +22,13 @@ Widget buildWebView({
       ..style.height = '100%'
       ..style.border = 'none'
       ..style.overflow = 'hidden'
-      ..setAttribute('sandbox', 'allow-scripts allow-same-origin')
+      ..setAttribute(
+        'sandbox',
+        'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-pointer-lock allow-modals',
+      )
       ..allowFullscreen = true;
 
-    // Create blob URL from HTML content for better security and functionality
+    // Create blob URL from HTML content
     final blob = html.Blob([htmlContent], 'text/html');
     final url = html.Url.createObjectUrlFromBlob(blob);
     iframe.src = url;
@@ -33,7 +36,6 @@ Widget buildWebView({
     // Listen for load events
     iframe.onLoad.listen((_) {
       onPageFinished?.call();
-      // Revoke blob URL after load - content is already in the iframe
       html.Url.revokeObjectUrl(url);
     });
 

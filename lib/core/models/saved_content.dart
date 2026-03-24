@@ -6,7 +6,8 @@ part 'saved_content.g.dart';
 
 /// Saved Content Model
 ///
-/// Represents user-generated content saved from KI-Labor or GeoGebra
+/// Represents user-generated content saved from KI-Labor, GeoGebra,
+/// or "Wo h\u00e4ngts?" chat sessions.
 /// Firestore: users/{userId}/savedContent/{contentId}
 @freezed
 class SavedContent with _$SavedContent {
@@ -74,7 +75,8 @@ class SavedContent with _$SavedContent {
 enum ContentType {
   miniApp('mini-app'),
   geogebra('geogebra'),
-  simulation('simulation');
+  simulation('simulation'),
+  chat('chat');
 
   const ContentType(this.value);
   final String value;
@@ -87,6 +89,8 @@ enum ContentType {
         return ContentType.geogebra;
       case 'simulation':
         return ContentType.simulation;
+      case 'chat':
+        return ContentType.chat;
       default:
         return ContentType.miniApp;
     }
@@ -100,6 +104,8 @@ enum ContentType {
         return 'GeoGebra';
       case ContentType.simulation:
         return 'Simulation';
+      case ContentType.chat:
+        return 'KI-Chat';
     }
   }
 }
