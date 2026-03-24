@@ -11,7 +11,7 @@ class ModelInfo {
   final String id;
   final String name;
   final String description;
-  final String tier; // 'fast', 'standard', or 'smart'
+  final String tier;
   final int contextWindow;
 
   ModelInfo({
@@ -34,15 +34,6 @@ class ModelInfo {
 }
 
 /// AI Service
-///
-/// Handles all Cloudflare Workers API calls for:
-/// - Question generation
-/// - Answer evaluation
-/// - AUTO mode updates
-/// - Hints
-/// - GeoGebra generation
-/// - Canvas collaboration
-/// - Generative apps
 class AIService {
   final Dio _dio;
 
@@ -52,9 +43,6 @@ class AIService {
   // QUESTION GENERATION
   // ============================================================================
 
-  /// Generate questions
-  ///
-  /// POST /api/generate-questions
   Future<QuestionSession> generateQuestions({
     required String userId,
     required int learningPlanItemId,
@@ -79,7 +67,6 @@ class AIService {
           'recentPerformance': recentPerformance,
         },
       );
-
       return QuestionSession.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -90,10 +77,6 @@ class AIService {
   // AUTO MODE
   // ============================================================================
 
-  /// Update AUTO mode parameters
-  ///
-  /// POST /api/update-auto-mode
-  /// Returns the updated auto mode assessment from the backend
   Future<Map<String, dynamic>> updateAutoMode({
     required String userId,
     required List<Map<String, dynamic>> recentPerformance,
@@ -106,7 +89,6 @@ class AIService {
           'recentPerformance': recentPerformance,
         },
       );
-
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -117,9 +99,7 @@ class AIService {
   // HINTS
   // ============================================================================
 
-  /// Get custom hint
-  ///
-  /// POST /api/custom-hint
+  /// Get a single hint (legacy, used by hint panel)
   Future<String> getCustomHint({
     required String questionText,
     required String userAnswer,
@@ -134,7 +114,30 @@ class AIService {
           'hintsUsed': hintsAlreadyUsed,
         },
       );
+      return response.data['hint'] as String;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
 
+  /// Get a chat-style hint with full conversation history.
+  ///
+  /// Used by the "Wo h\u00e4ngts?" chat popover to support multi-turn dialogue.
+  Future<String> getChatHint({
+    required String questionText,
+    required String userMessage,
+    required List<Map<String, dynamic>> chatHistory,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.getFullUrl(ApiEndpoints.customHint),
+        data: {
+          'question': questionText,
+          'userAnswer': userMessage,
+          'hintsUsed': chatHistory.length,
+          'chatHistory': chatHistory,
+        },
+      );
       return response.data['hint'] as String;
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -145,9 +148,6 @@ class AIService {
   // GEOGEBRA
   // ============================================================================
 
-  /// Generate GeoGebra visualization
-  ///
-  /// POST /api/generate-geogebra
   Future<GeoGebraData> generateGeoGebra({
     required String questionText,
     required String topic,
@@ -162,7 +162,6 @@ class AIService {
           'userPrompt': userPrompt,
         },
       );
-
       return GeoGebraData.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -173,9 +172,6 @@ class AIService {
   // CANVAS COLLABORATION
   // ============================================================================
 
-  /// Collaborative canvas (Lasso → AI)
-  ///
-  /// POST /api/collaborative-canvas (multipart/form-data)
   Future<CanvasResponse> collaborativeCanvas({
     required List<int> imageBytes,
     required String question,
@@ -185,12 +181,10 @@ class AIService {
         'image': MultipartFile.fromBytes(imageBytes, filename: 'canvas.png'),
         'question': question,
       });
-
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.collaborativeCanvas),
         data: formData,
       );
-
       return CanvasResponse.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -201,20 +195,14 @@ class AIService {
   // GENERATIVE APPS (KI-Labor)
   // ============================================================================
 
-  /// Generate mini app
-  ///
-  /// POST /api/generate-mini-app
   Future<GeneratedApp> generateMiniApp({
     required String description,
   }) async {
     try {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateMiniApp),
-        data: {
-          'description': description,
-        },
+        data: {'description': description},
       );
-
       return GeneratedApp.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -225,24 +213,19 @@ class AIService {
   // IMAGE ANALYSIS
   // ============================================================================
 
-  /// Analyze image (for topic extraction from exam papers)
-  ///
-  /// POST /api/analyze-image (multipart/form-data)
   Future<ImageAnalysisResult> analyzeImage({
     required List<int> imageBytes,
-    required String analysisType, // 'topic-extraction', 'question-generation', etc.
+    required String analysisType,
   }) async {
     try {
       final formData = FormData.fromMap({
         'image': MultipartFile.fromBytes(imageBytes, filename: 'image.jpg'),
         'type': analysisType,
       });
-
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.analyzeImage),
         data: formData,
       );
-
       return ImageAnalysisResult.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -253,11 +236,8 @@ class AIService {
   // LEARNING PLAN MANAGEMENT
   // ============================================================================
 
-  /// Manage learning plan
-  ///
-  /// POST /api/manage-learning-plan
   Future<Map<String, dynamic>> manageLearningPlan({
-    required String action, // 'create', 'update', 'prioritize', etc.
+    required String action,
     required String userId,
     String? planId,
     Map<String, dynamic>? planData,
@@ -272,7 +252,6 @@ class AIService {
           'planData': planData,
         },
       );
-
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -283,15 +262,12 @@ class AIService {
   // MEMORIES & SPACED REPETITION
   // ============================================================================
 
-  /// Manage memories (spaced repetition)
-  ///
-  /// POST /api/manage-memories
   Future<Map<String, dynamic>> manageMemories({
-    required String action, // 'create', 'review', 'get-due', 'get-stats'
+    required String action,
     required String userId,
     String? memoryId,
     Map<String, dynamic>? memoryData,
-    int? quality, // 0-5 for SM-2 algorithm
+    int? quality,
   }) async {
     try {
       final response = await _dio.post(
@@ -304,7 +280,6 @@ class AIService {
           'quality': quality,
         },
       );
-
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -312,16 +287,13 @@ class AIService {
   }
 
   // ============================================================================
-  // PURCHASE ITEMS
+  // PURCHASE
   // ============================================================================
 
-  /// Purchase an item (theme, streak freeze, etc.)
-  ///
-  /// POST /api/purchase
   Future<Map<String, dynamic>> purchaseItem({
     required String userId,
-    required String itemType, // e.g., 'theme', 'streakFreeze'
-    required String itemId,   // e.g., 'oceanBlue', 'streakFreeze'
+    required String itemType,
+    required String itemId,
     required int cost,
   }) async {
     try {
@@ -344,16 +316,11 @@ class AIService {
   // MODEL SELECTION
   // ============================================================================
 
-  /// Get available models for provider
-  ///
-  /// GET /api/get-models
-  /// Note: Backend now manages all AI configuration via models.json
   Future<List<ModelInfo>> getAvailableModels() async {
     try {
       final response = await _dio.get(
         ApiEndpoints.getFullUrl('/api/get-models'),
       );
-
       final List<dynamic> models = response.data['models'] as List<dynamic>;
       return models.map((m) => ModelInfo.fromJson(m as Map<String, dynamic>)).toList();
     } catch (e) {
@@ -369,15 +336,12 @@ class AIService {
     if (e.response != null) {
       final statusCode = e.response!.statusCode;
       final data = e.response!.data;
-
       String message = 'API Error';
       if (data is Map<String, dynamic>) {
-        // Prefer the detailed 'error' field; fall back to 'message' for extra detail
         final errorField = data['error'];
         final messageField = data['message'];
         if (errorField is String && errorField.isNotEmpty) {
           message = errorField;
-          // Append the more detailed message if it differs and adds useful info
           if (messageField is String && messageField.isNotEmpty && messageField != errorField) {
             message = '$errorField\n$messageField';
           }
@@ -385,11 +349,7 @@ class AIService {
           message = messageField;
         }
       }
-
-      return AIException(
-        statusCode: statusCode,
-        message: message,
-      );
+      return AIException(statusCode: statusCode, message: message);
     } else if (e.type == DioExceptionType.connectionTimeout) {
       return AIException(
         statusCode: 408,
@@ -413,66 +373,44 @@ class AIService {
 // RESPONSE MODELS
 // ============================================================================
 
-
-/// Canvas Response
 class CanvasResponse {
   final String textResponse;
   final List<Drawing>? drawings;
   final List<String>? geogebraCommands;
 
-  CanvasResponse({
-    required this.textResponse,
-    this.drawings,
-    this.geogebraCommands,
-  });
+  CanvasResponse({required this.textResponse, this.drawings, this.geogebraCommands});
 
   factory CanvasResponse.fromJson(Map<String, dynamic> json) {
     return CanvasResponse(
       textResponse: json['text'] as String,
-      drawings: (json['drawings'] as List?)
-          ?.map((d) => Drawing.fromJson(d))
-          .toList(),
-      geogebraCommands: (json['geogebraCommands'] as List?)
-          ?.map((c) => c as String)
-          .toList(),
+      drawings: (json['drawings'] as List?)?.map((d) => Drawing.fromJson(d)).toList(),
+      geogebraCommands: (json['geogebraCommands'] as List?)?.map((c) => c as String).toList(),
     );
   }
 }
 
-/// Drawing
 class Drawing {
   final String type;
   final List<Map<String, dynamic>> points;
   final String color;
 
-  Drawing({
-    required this.type,
-    required this.points,
-    required this.color,
-  });
+  Drawing({required this.type, required this.points, required this.color});
 
   factory Drawing.fromJson(Map<String, dynamic> json) {
     return Drawing(
       type: json['type'] as String,
-      points: (json['points'] as List)
-          .map((p) => p as Map<String, dynamic>)
-          .toList(),
+      points: (json['points'] as List).map((p) => p as Map<String, dynamic>).toList(),
       color: json['color'] as String,
     );
   }
 }
 
-/// Generated App
 class GeneratedApp {
   final String html;
   final String? css;
   final String? javascript;
 
-  GeneratedApp({
-    required this.html,
-    this.css,
-    this.javascript,
-  });
+  GeneratedApp({required this.html, this.css, this.javascript});
 
   factory GeneratedApp.fromJson(Map<String, dynamic> json) {
     return GeneratedApp(
@@ -483,17 +421,12 @@ class GeneratedApp {
   }
 }
 
-/// Image Analysis Result
 class ImageAnalysisResult {
   final List<String> topics;
   final String summary;
   final Map<String, dynamic>? additionalData;
 
-  ImageAnalysisResult({
-    required this.topics,
-    required this.summary,
-    this.additionalData,
-  });
+  ImageAnalysisResult({required this.topics, required this.summary, this.additionalData});
 
   factory ImageAnalysisResult.fromJson(Map<String, dynamic> json) {
     return ImageAnalysisResult(
@@ -504,7 +437,6 @@ class ImageAnalysisResult {
   }
 }
 
-/// AI Exception
 class AIException implements Exception {
   final int? statusCode;
   final String message;
@@ -519,7 +451,6 @@ class AIException implements Exception {
 // PROVIDERS
 // ============================================================================
 
-/// AI Service Provider
 @riverpod
 AIService aiService(AiServiceRef ref) {
   final dio = Dio(
@@ -527,11 +458,8 @@ AIService aiService(AiServiceRef ref) {
       baseUrl: ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 60),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     ),
   );
-
   return AIService(dio);
 }
