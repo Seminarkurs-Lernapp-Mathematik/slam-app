@@ -1,0 +1,79 @@
+name: Build Flutter Android APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'android/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/build-android.yml'
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.38.9'
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Android APK (release, debug-signed)
+        run: |
+          flutter build apk \
+            --release \
+            --dart-define=API_BASE_URL=https://api.learn-smart.app \
+            --dart-define=ENVIRONMENT=production
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slam-app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+
+      - name: Build Android App Bundle (AAB)
+        run: |
+          flutter build appbundle \
+            --release \
+            --dart-define=API_BASE_URL=https://api.learn-smart.app \
+            --dart-define=ENVIRONMENT=production
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slam-app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 14
+
+      - name: Post-build summary
+        if: success()
+        run: |
+          echo "✅ Android build successful!"
+          echo "📦 APK: build/app/outputs/flutter-apk/app-release.apk"
+          echo "📦 AAB: build/app/outputs/bundle/release/app-release.aab"

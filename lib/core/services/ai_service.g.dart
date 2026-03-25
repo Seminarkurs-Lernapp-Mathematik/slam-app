@@ -8,9 +8,7 @@ part of 'ai_service.dart';
 
 String _$aiServiceHash() => r'340dcf4ad9c2d7a26fd997cdff21ff8856c6306b';
 
-/// AI Service Provider
-///
-/// Copied from [aiService].
+/// See also [aiService].
 @ProviderFor(aiService)
 final aiServiceProvider = AutoDisposeProvider<AIService>.internal(
   aiService,

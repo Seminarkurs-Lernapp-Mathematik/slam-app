@@ -921,7 +921,9 @@ GeoGebraData _$GeoGebraDataFromJson(Map<String, dynamic> json) {
 mixin _$GeoGebraData {
   String? get appletId => throw _privateConstructorUsedError;
   List<String> get commands => throw _privateConstructorUsedError;
+  @JsonKey(name: 'explanation')
   String get description => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
 
   /// Serializes this GeoGebraData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -939,7 +941,11 @@ abstract class $GeoGebraDataCopyWith<$Res> {
           GeoGebraData value, $Res Function(GeoGebraData) then) =
       _$GeoGebraDataCopyWithImpl<$Res, GeoGebraData>;
   @useResult
-  $Res call({String? appletId, List<String> commands, String description});
+  $Res call(
+      {String? appletId,
+      List<String> commands,
+      @JsonKey(name: 'explanation') String description,
+      String title});
 }
 
 /// @nodoc
@@ -960,6 +966,7 @@ class _$GeoGebraDataCopyWithImpl<$Res, $Val extends GeoGebraData>
     Object? appletId = freezed,
     Object? commands = null,
     Object? description = null,
+    Object? title = null,
   }) {
     return _then(_value.copyWith(
       appletId: freezed == appletId
@@ -974,6 +981,10 @@ class _$GeoGebraDataCopyWithImpl<$Res, $Val extends GeoGebraData>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -986,7 +997,11 @@ abstract class _$$GeoGebraDataImplCopyWith<$Res>
       __$$GeoGebraDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? appletId, List<String> commands, String description});
+  $Res call(
+      {String? appletId,
+      List<String> commands,
+      @JsonKey(name: 'explanation') String description,
+      String title});
 }
 
 /// @nodoc
@@ -1005,6 +1020,7 @@ class __$$GeoGebraDataImplCopyWithImpl<$Res>
     Object? appletId = freezed,
     Object? commands = null,
     Object? description = null,
+    Object? title = null,
   }) {
     return _then(_$GeoGebraDataImpl(
       appletId: freezed == appletId
@@ -1019,6 +1035,10 @@ class __$$GeoGebraDataImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1029,7 +1049,8 @@ class _$GeoGebraDataImpl extends _GeoGebraData {
   const _$GeoGebraDataImpl(
       {this.appletId,
       final List<String> commands = const [],
-      this.description = ''})
+      @JsonKey(name: 'explanation') this.description = '',
+      this.title = 'GeoGebra Visualisierung'})
       : _commands = commands,
         super._();
 
@@ -1048,12 +1069,15 @@ class _$GeoGebraDataImpl extends _GeoGebraData {
   }
 
   @override
-  @JsonKey()
+  @JsonKey(name: 'explanation')
   final String description;
+  @override
+  @JsonKey()
+  final String title;
 
   @override
   String toString() {
-    return 'GeoGebraData(appletId: $appletId, commands: $commands, description: $description)';
+    return 'GeoGebraData(appletId: $appletId, commands: $commands, description: $description, title: $title)';
   }
 
   @override
@@ -1065,13 +1089,14 @@ class _$GeoGebraDataImpl extends _GeoGebraData {
                 other.appletId == appletId) &&
             const DeepCollectionEquality().equals(other._commands, _commands) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.title, title) || other.title == title));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, appletId,
-      const DeepCollectionEquality().hash(_commands), description);
+      const DeepCollectionEquality().hash(_commands), description, title);
 
   /// Create a copy of GeoGebraData
   /// with the given fields replaced by the non-null parameter values.
@@ -1093,7 +1118,8 @@ abstract class _GeoGebraData extends GeoGebraData {
   const factory _GeoGebraData(
       {final String? appletId,
       final List<String> commands,
-      final String description}) = _$GeoGebraDataImpl;
+      @JsonKey(name: 'explanation') final String description,
+      final String title}) = _$GeoGebraDataImpl;
   const _GeoGebraData._() : super._();
 
   factory _GeoGebraData.fromJson(Map<String, dynamic> json) =
@@ -1104,7 +1130,10 @@ abstract class _GeoGebraData extends GeoGebraData {
   @override
   List<String> get commands;
   @override
+  @JsonKey(name: 'explanation')
   String get description;
+  @override
+  String get title;
 
   /// Create a copy of GeoGebraData
   /// with the given fields replaced by the non-null parameter values.

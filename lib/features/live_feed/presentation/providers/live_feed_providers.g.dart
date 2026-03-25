@@ -81,7 +81,7 @@ final liveFeedAnswerProvider =
 
 typedef _$LiveFeedAnswer = AutoDisposeNotifier<String>;
 String _$consecutiveCorrectHash() =>
-    r'2d0b2ce3d9e26b28e58406f61f773af525dd31e8';
+    r'7d5f78493d841605bfeb1a446611cac0ac9c1a80';
 
 /// Consecutive Correct Answers Counter
 ///
@@ -99,7 +99,7 @@ final consecutiveCorrectProvider =
 );
 
 typedef _$ConsecutiveCorrect = AutoDisposeNotifier<int>;
-String _$consecutiveWrongHash() => r'75328f71fca559e6d2fecc946c0e05228383e142';
+String _$consecutiveWrongHash() => r'403a9bbc965a7f769fd06f10ecffaffaba0c8c72';
 
 /// Consecutive Wrong Answers Counter
 ///
@@ -247,7 +247,7 @@ final liveFeedQuestionGeneratorProvider =
 );
 
 typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
-String _$liveFeedQueueHash() => r'426be73d286a71345bb5c2497c46121cecce857a';
+String _$liveFeedQueueHash() => r'461a6bed5bdb7946a236b8bf6a40851e44de14d4';
 
 /// Live Feed Queue Provider with Caching
 ///

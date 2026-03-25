@@ -144,7 +144,8 @@ class GeoGebraData with _$GeoGebraData {
   const factory GeoGebraData({
     String? appletId,
     @Default([]) List<String> commands,
-    @Default('') String description,
+    @JsonKey(name: 'explanation') @Default('') String description,
+    @Default('GeoGebra Visualisierung') String title,
   }) = _GeoGebraData;
 
   factory GeoGebraData.fromJson(Map<String, dynamic> json) =>

@@ -1,0 +1,67 @@
+name: Build Flutter iOS IPA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'ios/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/build-ios.yml'
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.38.9'
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build iOS (no code signing — CI build)
+        run: |
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --dart-define=API_BASE_URL=https://api.learn-smart.app \
+            --dart-define=ENVIRONMENT=production
+
+      - name: Create IPA archive (unsigned)
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r slam-app-unsigned.ipa Payload
+          rm -rf Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slam-app-unsigned-ipa
+          path: slam-app-unsigned.ipa
+          retention-days: 14
+
+      - name: Post-build summary
+        if: success()
+        run: |
+          echo "✅ iOS build successful!"
+          echo "📦 IPA (unsigned): slam-app-unsigned.ipa"
+          echo "ℹ️  To distribute, sign with your Apple Developer certificate."

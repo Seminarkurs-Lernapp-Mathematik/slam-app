@@ -9,6 +9,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../features/gamification/presentation/widgets/xp_animation.dart';
 import '../providers/live_feed_providers.dart';
+import 'wo_haengts_chat_sheet.dart';
 
 /// Feed Question Card - Single question display with MCQ options and inline feedback
 class FeedQuestionCard extends ConsumerStatefulWidget {
@@ -35,8 +36,6 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   bool _answered = false;
   bool _isCorrect = false;
   bool _showWoHaengtsInput = false;
-  final TextEditingController _woHaengtsController = TextEditingController();
-  bool _woHaengtsSent = false;
 
   // Step-by-step state
   List<String> _stepOrder = [];
@@ -60,7 +59,6 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   void dispose() {
     _autoAdvanceTimer?.cancel();
     _questionTimer?.cancel();
-    _woHaengtsController.dispose();
     super.dispose();
   }
 
@@ -149,13 +147,16 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       });
     }
 
-    // Auto-advance (longer for wrong so user can read feedback / use "Wo hängts?")
-    _autoAdvanceTimer = Timer(
-      Duration(seconds: isCorrect ? 3 : 8),
-      () {
-        if (mounted) widget.onAnswerSubmitted();
-      },
-    );
+    // Auto-advance only for correct answers — wrong answers stay until the user
+    // manually taps "Nächste Frage" so they can use "Wo hängts?"
+    if (isCorrect) {
+      _autoAdvanceTimer = Timer(
+        const Duration(seconds: 3),
+        () {
+          if (mounted) widget.onAnswerSubmitted();
+        },
+      );
+    }
   }
 
   void _revealHint() {
@@ -176,32 +177,17 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     }
   }
 
-  Future<void> _sendWoHaengts() async {
-    final text = _woHaengtsController.text.trim();
-    if (text.isEmpty) return;
-
-    setState(() {
-      _woHaengtsSent = true;
-    });
-
-    try {
-      final aiService = ref.read(aiServiceProvider);
-      
-      // Send the "Wo haengts?" text as a custom hint request
-      final hint = await aiService.getCustomHint(
+  void _openWoHaengtsChat() {
+    _autoAdvanceTimer?.cancel();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => WoHaengtsChatSheet(
         questionText: widget.question.question,
-        userAnswer: text,
-        hintsAlreadyUsed: _hintsShown,
-      );
-
-      if (mounted) {
-        _showSnackBar(hint, icon: Icons.lightbulb);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('Fehler: ${e.toString()}');
-      }
-    }
+      ),
+    );
   }
 
   void _skipToNext() {
@@ -1068,94 +1054,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   // ============================================================================
 
   Widget _buildWoHaengtsSection(ThemeData theme, ColorScheme colorScheme) {
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 300),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colorScheme.tertiaryContainer.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: colorScheme.tertiary.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.help_outline,
-                  color: colorScheme.tertiary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Wo hängts?',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.tertiary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Beschreibe, wo du nicht weiterkommst. Die KI gibt dir einen gezielten Hinweis.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (!_woHaengtsSent) ...[
-              TextField(
-                controller: _woHaengtsController,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  hintText: 'z.B. "Ich verstehe den zweiten Schritt nicht..."',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: colorScheme.surface,
-                  contentPadding: const EdgeInsets.all(12),
-                ),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.tonalIcon(
-                onPressed: _sendWoHaengts,
-                icon: const Icon(Icons.send, size: 18),
-                label: const Text('Absenden'),
-              ),
-            ] else ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: colorScheme.tertiary,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Dein Feedback wurde gesendet!',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
+    return FilledButton.tonalIcon(
+      onPressed: _openWoHaengtsChat,
+      icon: const Icon(Icons.chat_bubble_outline, size: 18),
+      label: const Text('Wo hängts? — KI-Chat öffnen'),
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

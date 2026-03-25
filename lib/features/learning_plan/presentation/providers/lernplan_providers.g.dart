@@ -48,7 +48,7 @@ typedef _$LernplanNotifier = AutoDisposeAsyncNotifier<Lernplan>;
 String _$lernplanTopicsAsTopicDataHash() =>
     r'7e2c7443701fbdf97da101bfd00e98a2975ca9f9';
 
-/// Converts the Lernplan's topics into a List<TopicData> for use with AI services.
+/// Converts the Lernplan's topics into a `List<TopicData>` for use with AI services.
 ///
 /// Copied from [LernplanTopicsAsTopicData].
 @ProviderFor(LernplanTopicsAsTopicData)

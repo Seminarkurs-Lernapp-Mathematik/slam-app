@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/question.dart';
-import '../../../../core/presentation/widgets/cross_platform_webview.dart';
+import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
+import '../../../../core/services/auth_service.dart';
 import '../providers/apps_providers.dart';
+import 'app_viewer_screen.dart';
 
 /// GeoGebra Visualization Screen
 ///
-/// Allows users to generate GeoGebra visualizations from prompts
+/// Generates GeoGebra commands from a prompt, then shows an "Öffnen" button.
+/// Opening the visualization launches a full-screen GeoGebra WebView that
+/// supports multi-turn chat-based modifications.
 class GeogebraScreen extends ConsumerStatefulWidget {
   const GeogebraScreen({super.key});
 
@@ -18,166 +22,39 @@ class GeogebraScreen extends ConsumerStatefulWidget {
 
 class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   final _promptController = TextEditingController();
-  final _scrollController = ScrollController();
   bool _isLoading = false;
   String? _error;
   GeoGebraData? _currentVisualization;
 
-  String get _initialHtml => _getInitialGeoGebraHTML();
+  final List<String> _examplePrompts = [
+    'Quadratische Funktion mit Verschiebung',
+    'Kreistangente und Normale',
+    'Sinusfunktion',
+    'Parabel und Gerade (Schnittpunkte)',
+    'Dreieck Mittelsenkrechte',
+    'Vektoren addieren',
+  ];
 
   @override
   void dispose() {
     _promptController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
-  String _getInitialGeoGebraHTML() {
-    return '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
-    <script src="https://www.geogebra.org/apps/deployggb.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f5f5f5;
-        }
-        #ggb-element {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div id="ggb-element"></div>
-    <script>
-        (function() {
-            var parameters = {
-                "appName": "graphing",
-                "width": window.innerWidth,
-                "height": window.innerHeight,
-                "showToolBar": true,
-                "showAlgebraInput": true,
-                "showMenuBar": false,
-                "enableShiftDragZoom": true,
-                "enableRightClick": false,
-                "material_id": "J8YgX6Xp",
-                "allowStyleBar": true,
-                "showLogging": false
-            };
-
-            var ggbApplet = null;
-            var isReady = false;
-
-            // Initialize GeoGebra when page loads
-            function initGeoGebra() {
-                try {
-                    var applet = new GGBApplet(parameters, true);
-                    applet.inject('ggb-element');
-                    
-                    // Store reference to applet object
-                    ggbApplet = applet.getAppletObject();
-                    isReady = true;
-                    
-                    // Notify Flutter that GeoGebra is ready
-                    if (window.GeoGebraFlutterChannel) {
-                        window.GeoGebraFlutterChannel.postMessage('geogebraReady');
-                    }
-                    
-                    console.log('GeoGebra initialized successfully');
-                } catch (e) {
-                    console.error('Error initializing GeoGebra:', e);
-                    if (window.GeoGebraFlutterChannel) {
-                        window.GeoGebraFlutterChannel.postMessage('geogebraError:' + e.message);
-                    }
-                }
-            }
-
-            // Wait for GeoGebra script to load
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initGeoGebra);
-            } else {
-                // DOM already loaded, initialize immediately
-                setTimeout(initGeoGebra, 100);
-            }
-
-            // Function to execute GeoGebra commands (exposed globally)
-            window.executeCommands = function(commands) {
-                if (!ggbApplet || !isReady) {
-                    console.error('GeoGebra not ready');
-                    return 'GeoGebra not ready';
-                }
-                try {
-                    commands.forEach(function(cmd) {
-                        if (cmd && cmd.trim()) {
-                            ggbApplet.evalCommand(cmd);
-                        }
-                    });
-                    return 'Commands executed successfully';
-                } catch (e) {
-                    console.error('Error executing commands:', e);
-                    return 'Error: ' + e.message;
-                }
-            };
-
-            // Reset function
-            window.resetGeoGebra = function() {
-                if (ggbApplet && isReady) {
-                    ggbApplet.reset();
-                }
-            };
-        })();
-    </script>
-</body>
-</html>''';
-  }
-
-  void _onWebViewMessage(String message) {
-    debugPrint('GeoGebra WebView message: $message');
-    
-    if (message == 'geogebraReady') {
-      // Execute pending commands if available
-      if (_currentVisualization != null && _currentVisualization!.commands.isNotEmpty) {
-        _executeGeoGebraCommands(_currentVisualization!.commands);
-      }
-    } else if (message.startsWith('geogebraError:')) {
-      debugPrint('GeoGebra initialization error: $message');
-    }
-  }
-
-  void _executeGeoGebraCommands(List<String> commands) {
-    // Note: Commands are executed by the WebView's JavaScript channel
-    // The CrossPlatformWebView doesn't expose the controller directly,
-    // so we need to use a different approach - we'll reload with the commands embedded
-    // or use the existing executeCommands function via a message
-    
-    // For now, we'll create a new HTML with commands pre-loaded
-    if (!mounted) return;
-    
-    setState(() {
-      // The commands will be executed when GeoGebra becomes ready
-      // via the _onWebViewMessage callback
-    });
-  }
+  // ---------------------------------------------------------------------------
+  // Generation + auto-save
+  // ---------------------------------------------------------------------------
 
   Future<void> _generateVisualization() async {
     if (_promptController.text.trim().isEmpty) {
-      setState(() {
-        _error = 'Bitte gib eine Beschreibung ein';
-      });
+      setState(() => _error = 'Bitte gib eine Beschreibung ein');
       return;
     }
 
     setState(() {
       _isLoading = true;
       _error = null;
+      _currentVisualization = null;
     });
 
     try {
@@ -192,14 +69,8 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
         _isLoading = false;
       });
 
-      // Reset and execute new commands
-      if (visualization.commands.isNotEmpty) {
-        // For GeoGebra, we need to reload the WebView with commands embedded
-        // since we can't easily access the controller from CrossPlatformWebView
-        setState(() {
-          // The WebView will reload with the new visualization data
-        });
-      }
+      // Auto-save in background
+      _autoSave(visualization);
     } on AIException catch (e) {
       setState(() {
         _error = e.message;
@@ -213,15 +84,67 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     }
   }
 
+  Future<void> _autoSave(GeoGebraData data) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    try {
+      // Save as an HTML page that embeds the GeoGebra viewer
+      final html = buildGeoGebraViewerHtml(data.commands);
+      final content = SavedContent(
+        id: 'ggb-${DateTime.now().millisecondsSinceEpoch}',
+        userId: user.uid,
+        title: data.title,
+        type: ContentType.geogebra,
+        htmlContent: html,
+        description: _promptController.text.trim(),
+        createdAt: DateTime.now(),
+        tags: ['geogebra'],
+      );
+      await ref.read(saveContentProvider(content).future);
+      debugPrint('✅ GeoGebra: auto-saved "${data.title}"');
+    } catch (e) {
+      debugPrint('⚠️ GeoGebra: auto-save failed: $e');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Open fullscreen viewer
+  // ---------------------------------------------------------------------------
+
+  void _openVisualization() {
+    if (_currentVisualization == null) return;
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => AppViewerScreen(
+          title: _currentVisualization!.title,
+          htmlContent:
+              buildGeoGebraViewerHtml(_currentVisualization!.commands),
+          originalPrompt: _promptController.text.trim(),
+          contentType: ContentType.geogebra,
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Column(
       children: [
         // Prompt input section
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: cs.surface,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
@@ -245,7 +168,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             _promptController.clear();
-                            setState(() {});
+                            setState(() => _currentVisualization = null);
                           },
                         )
                       : null,
@@ -256,6 +179,25 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                 onSubmitted: (_) => _generateVisualization(),
               ),
               const SizedBox(height: 12),
+
+              // Example prompts
+              SizedBox(
+                height: 36,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _examplePrompts.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) => ActionChip(
+                    label: Text(_examplePrompts[index]),
+                    onPressed: () {
+                      _promptController.text = _examplePrompts[index];
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
               FilledButton.icon(
                 onPressed: _isLoading ? null : _generateVisualization,
                 icon: _isLoading
@@ -265,33 +207,25 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.auto_awesome),
-                label: Text(_isLoading
-                    ? 'Generiere...'
-                    : 'Visualisierung generieren'),
+                label: Text(
+                    _isLoading ? 'Generiere...' : 'Visualisierung generieren'),
               ),
+
               if (_error != null) ...[
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.errorContainer,
+                    color: cs.errorContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                      Icon(Icons.error_outline, color: cs.error),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                      ),
+                          child: Text(_error!,
+                              style: TextStyle(color: cs.error))),
                       IconButton(
                         icon: const Icon(Icons.refresh),
                         onPressed: _generateVisualization,
@@ -305,99 +239,115 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
           ),
         ),
 
-        // WebView with GeoGebra
-        Expanded(
-          child: CrossPlatformWebView(
-            htmlContent: _initialHtml,
-            javascriptChannelName: 'GeoGebraFlutterChannel',
-            onMessage: _onWebViewMessage,
-            onPageFinished: () {
-              debugPrint('✅ GeoGebra WebView loaded');
-            },
-          ),
-        ),
-
-        // Commands display
-        if (_currentVisualization != null &&
-            _currentVisualization!.commands.isNotEmpty)
-          Container(
-            height: 150,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.terminal, size: 20),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Ausgeführte Befehle',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${_currentVisualization!.commands.length} Befehle',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: _currentVisualization!.commands.length,
-                    itemBuilder: (context, index) {
-                      final command = _currentVisualization!.commands[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Text(
-                            command,
-                            style: const TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+        // Result area
+        Expanded(child: _buildResultArea(theme, cs)),
       ],
+    );
+  }
+
+  Widget _buildResultArea(ThemeData theme, ColorScheme cs) {
+    if (_isLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text('Visualisierung wird erstellt…',
+                style: theme.textTheme.titleMedium?.copyWith(
+                    color: cs.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            Text('GeoGebra-Befehle werden generiert',
+                style: theme.textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant)),
+          ],
+        ),
+      );
+    }
+
+    if (_currentVisualization == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.functions, size: 64, color: cs.primary),
+            const SizedBox(height: 16),
+            Text('Erstelle eine GeoGebra-Visualisierung',
+                style: theme.textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text('Beschreibe, was du visualisieren möchtest',
+                style: TextStyle(color: cs.secondary)),
+          ],
+        ),
+      );
+    }
+
+    // Generation complete — show result card
+    final vis = _currentVisualization!;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: cs.primaryContainer.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: cs.primary.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.check_circle, size: 48, color: cs.primary),
+                  const SizedBox(height: 12),
+                  Text(
+                    vis.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  if (vis.description.isNotEmpty) ...[
+                    Text(
+                      vis.description,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant),
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  Text(
+                    '${vis.commands.length} GeoGebra-Befehle • automatisch gespeichert',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                        color: cs.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: _openVisualization,
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Öffnen'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 32, vertical: 16),
+                textStyle: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _generateVisualization,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Neu generieren'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

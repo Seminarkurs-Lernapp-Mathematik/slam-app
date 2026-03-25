@@ -94,14 +94,16 @@ _$GeoGebraDataImpl _$$GeoGebraDataImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      description: json['description'] as String? ?? '',
+      description: json['explanation'] as String? ?? '',
+      title: json['title'] as String? ?? 'GeoGebra Visualisierung',
     );
 
 Map<String, dynamic> _$$GeoGebraDataImplToJson(_$GeoGebraDataImpl instance) =>
     <String, dynamic>{
       'appletId': instance.appletId,
       'commands': instance.commands,
-      'description': instance.description,
+      'explanation': instance.description,
+      'title': instance.title,
     };
 
 _$QuestionSessionImpl _$$QuestionSessionImplFromJson(

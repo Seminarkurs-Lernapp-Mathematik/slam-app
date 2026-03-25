@@ -409,14 +409,21 @@ class GeneratedApp {
   final String html;
   final String? css;
   final String? javascript;
+  final String title;
 
-  GeneratedApp({required this.html, this.css, this.javascript});
+  GeneratedApp({
+    required this.html,
+    this.css,
+    this.javascript,
+    this.title = 'KI-Labor App',
+  });
 
   factory GeneratedApp.fromJson(Map<String, dynamic> json) {
     return GeneratedApp(
       html: json['html'] as String,
       css: json['css'] as String?,
       javascript: json['javascript'] as String?,
+      title: (json['title'] as String?) ?? 'KI-Labor App',
     );
   }
 }
