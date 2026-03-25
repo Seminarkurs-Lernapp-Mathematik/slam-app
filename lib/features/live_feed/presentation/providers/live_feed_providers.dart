@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -352,14 +353,18 @@ class LiveFeedQueueState {
 @riverpod
 class LiveFeedQueue extends _$LiveFeedQueue {
   SharedPreferences? _prefs;
-  
+  final Completer<void> _cacheReady = Completer<void>();
+
+  /// Resolves once the initial cache load (Firebase or SharedPreferences) is done.
+  Future<void> get cacheInitialized => _cacheReady.future;
+
   @override
   LiveFeedQueueState build() {
     // Initialize and try to load cached questions
     _initializeCache();
     return LiveFeedQueueState();
   }
-  
+
   Future<void> _initializeCache() async {
     try {
       _prefs = await SharedPreferences.getInstance();
@@ -375,6 +380,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
       }
     } catch (e) {
       debugPrint('❌ LiveFeedQueue: Error initializing cache: $e');
+    } finally {
+      if (!_cacheReady.isCompleted) _cacheReady.complete();
     }
   }
 

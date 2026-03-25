@@ -46,10 +46,11 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
 
   Future<void> _initializeQueue() async {
     final queueNotifier = ref.read(liveFeedQueueProvider.notifier);
-    
-    // Wait for cache to be loaded (give it a moment)
-    await Future.delayed(const Duration(milliseconds: 100));
-    
+
+    // Wait until Firebase/SharedPreferences cache load completes (may take
+    // several hundred ms on Android — a fixed delay is not reliable).
+    await queueNotifier.cacheInitialized;
+
     // Check if we have cached questions
     if (queueNotifier.hasCachedQuestions) {
       debugPrint('✅ LiveFeed: Using ${queueNotifier.remainingCount} cached questions');
