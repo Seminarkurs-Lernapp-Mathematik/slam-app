@@ -10,6 +10,7 @@ import '../../../../core/services/firestore_service.dart';
 import '../../../../features/gamification/presentation/widgets/xp_animation.dart';
 import '../providers/live_feed_providers.dart';
 import 'wo_haengts_chat_sheet.dart';
+import '../../../../shared/widgets/math_text.dart';
 
 /// Feed Question Card - Single question display with MCQ options and inline feedback
 class FeedQuestionCard extends ConsumerStatefulWidget {
@@ -744,7 +745,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: MathText(
                       step.text,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: isWrongPosition
@@ -867,7 +868,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: borderColor),
         ),
-        child: Text(
+        child: MathText(
           step.text,
           style: theme.textTheme.bodyLarge,
         ),

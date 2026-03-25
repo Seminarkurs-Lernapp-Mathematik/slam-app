@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/question_session_providers.dart';
 import '../../../../shared/widgets/glass_panel.dart';
+import '../../../../shared/widgets/math_text.dart';
 import '../../../../core/services/ai_service.dart'; // New import
 
 final customHintProvider = StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>((ref) {
@@ -281,7 +282,7 @@ class _HintCard extends StatelessWidget {
             ),
             if (isRevealed) ...[
               const SizedBox(height: 12),
-              Text(
+              MathText(
                 hint,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),

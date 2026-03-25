@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../shared/widgets/math_text.dart';
 
 /// A single message in the "Wo h\u00e4ngts?" chat conversation
 class _ChatMessage {
@@ -409,7 +410,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                   bottomRight: Radius.circular(isUser ? 4 : 12),
                 ),
               ),
-              child: Text(
+              child: MathText(
                 msg.text,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isUser ? cs.onPrimary : cs.onSurfaceVariant,
