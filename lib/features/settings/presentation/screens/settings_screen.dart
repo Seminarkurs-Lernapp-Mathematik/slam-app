@@ -5,6 +5,8 @@ import '../providers/settings_providers.dart';
 import '../widgets/theme_selector.dart';
 import '../../../../core/services/auth_service.dart';
 
+import '../../../live_feed/presentation/providers/live_feed_providers.dart';
+
 /// Production Settings Screen
 /// Simplified for production - AI configuration is backend-managed.
 
@@ -61,6 +63,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const _EducationSettings(),
                 const SizedBox(height: 24),
                 
+                // Data Section
+                _SectionHeader(
+                  icon: Icons.storage,
+                  title: 'Daten',
+                  subtitle: 'Cache und lokale Daten',
+                  color: Colors.blueGrey,
+                ),
+                const SizedBox(height: 12),
+                const _DataSettings(),
+                const SizedBox(height: 24),
+
                 // Account Actions
                 _SectionHeader(
                   icon: Icons.account_circle,
@@ -163,12 +176,12 @@ class _EducationSettings extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  initialValue: settings.gradeLevel,
+                  value: settings.gradeLevel,
                   decoration: const InputDecoration(
                     labelText: 'Klassenstufe',
                     border: InputBorder.none,
                   ),
-                  items: ['Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13']
+                  items: ['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8', 'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13']
                       .map((g) => DropdownMenuItem(value: g, child: Text(g.replaceFirst('_', ' '))))
                       .toList(),
                   onChanged: (value) {
@@ -180,32 +193,69 @@ class _EducationSettings extends ConsumerWidget {
               ),
             ],
           ),
-          const Divider(height: 24),
-          // Course Type
-          Row(
-            children: [
-              Icon(Icons.menu_book, color: colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: settings.courseType,
-                  decoration: const InputDecoration(
-                    labelText: 'Kursart',
-                    border: InputBorder.none,
+          
+          if (!['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8', 'Klasse_9', 'Klasse_10'].contains(settings.gradeLevel)) ...[
+            const Divider(height: 24),
+            // Course Type
+            Row(
+              children: [
+                Icon(Icons.menu_book, color: colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: ['Grundkurs', 'Leistungskurs'].contains(settings.courseType)
+                        ? settings.courseType
+                        : 'Leistungskurs',
+                    decoration: const InputDecoration(
+                      labelText: 'Kursart',
+                      border: InputBorder.none,
+                    ),
+                    items: ['Grundkurs', 'Leistungskurs']
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        ref.read(appSettingsNotifierProvider.notifier).setCourseType(value);
+                      }
+                    },
                   ),
-                  items: ['Grundkurs', 'Leistungsfach', 'Leistungskurs']
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      ref.read(appSettingsNotifierProvider.notifier).setCourseType(value);
-                    }
-                  },
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// DATA SETTINGS
+// ============================================================================
+
+class _DataSettings extends ConsumerWidget {
+  const _DataSettings();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: const Icon(Icons.delete_sweep, color: Colors.orange),
+        title: const Text('Fragen-Cache leeren'),
+        subtitle: const Text('Löscht alle zwischengespeicherten Fragen'),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {
+          ref.read(liveFeedQueueProvider.notifier).clear();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fragen-Cache wurde geleert')),
+          );
+        },
       ),
     );
   }

@@ -32,8 +32,13 @@ String buildGeoGebraViewerHtml(List<String> commands) {
     var pendingCommands = $commandsJson;
 
     window.ggbOnInit = function() {
-      for (var i = 0; i < pendingCommands.length; i++) {
-        try { ggbApplet.evalCommand(pendingCommands[i]); } catch(e) { console.error('GGB cmd error:', e); }
+      if (typeof ggbApplet !== 'undefined' && ggbApplet.evalCommand) {
+        for (var i = 0; i < pendingCommands.length; i++) {
+          try { ggbApplet.evalCommand(pendingCommands[i]); } catch(e) { console.error('GGB cmd error:', e); }
+        }
+      } else {
+        // Fallback if ggbApplet is not yet defined
+        setTimeout(window.ggbOnInit, 100);
       }
     };
 
@@ -50,8 +55,8 @@ String buildGeoGebraViewerHtml(List<String> commands) {
       "showLogging": false
     };
 
-    var ggbApplet = new GGBApplet(params, true);
-    ggbApplet.inject('ggb-element');
+    var deployer = new GGBApplet(params, true);
+    deployer.inject('ggb-element');
   </script>
 </body>
 </html>''';

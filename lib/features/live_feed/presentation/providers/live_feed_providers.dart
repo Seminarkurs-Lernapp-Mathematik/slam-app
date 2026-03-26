@@ -282,7 +282,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
-        questionCount: 10, // Smaller batch = faster background prefetch
+        questionCount: 20, // Generated in batches of 20
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
           courseType: appSettings.courseType,

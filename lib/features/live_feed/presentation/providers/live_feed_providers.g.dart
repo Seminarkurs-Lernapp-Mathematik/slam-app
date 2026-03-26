@@ -229,7 +229,7 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
 String _$liveFeedQuestionGeneratorHash() =>
-    r'd5d41f20f8633c56a21fa60f1efddaaf908e756f';
+    r'921db1dde203302ead4d5fd817e82c190724be04';
 
 /// Live Feed Question Generator
 ///
