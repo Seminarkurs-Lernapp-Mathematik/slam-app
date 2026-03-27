@@ -28,6 +28,24 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Update streak on every app open (idempotent — only counts once per day)
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateStreakOnOpen());
+  }
+
+  Future<void> _updateStreakOnOpen() async {
+    final userId = ref.read(currentUserProvider)?.uid;
+    if (userId == null || userId.isEmpty) return;
+    try {
+      await ref.read(firestoreServiceProvider).updateStreak(userId);
+      debugPrint('✅ MainNavigation: streak updated');
+    } catch (e) {
+      debugPrint('❌ MainNavigation: streak update failed: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider);
     final userId = currentUser?.uid ?? '';

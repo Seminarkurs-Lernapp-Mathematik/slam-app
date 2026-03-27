@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
@@ -100,6 +101,7 @@ GoRouter router(Ref ref) {
           state.matchedLocation == '/password-reset' ||
           state.matchedLocation == '/verify-email';
       final isOnSplash = state.matchedLocation == '/';
+      final isOnOnboarding = state.matchedLocation == '/onboarding';
 
       // Allow splash screen
       if (isOnSplash) return null;
@@ -108,6 +110,9 @@ GoRouter router(Ref ref) {
       if (isAuthenticated && isOnAuthRoute) {
         return '/home';
       }
+
+      // Allow onboarding for authenticated users
+      if (isOnOnboarding) return null;
 
       // If not authenticated and trying to access protected routes, redirect to login
       if (!isAuthenticated && !isOnAuthRoute && !isOnSplash) {
@@ -126,6 +131,16 @@ GoRouter router(Ref ref) {
           context: context,
           state: state,
           child: const SplashScreen(),
+        ),
+      ),
+      // Onboarding (shown once after first login)
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const OnboardingScreen(),
         ),
       ),
       // Auth Routes

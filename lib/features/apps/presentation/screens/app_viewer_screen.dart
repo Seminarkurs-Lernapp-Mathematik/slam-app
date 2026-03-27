@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/presentation/widgets/cross_platform_webview.dart';
 import '../../../../core/services/ai_service.dart';
-import '../../../../core/services/auth_service.dart';
-import '../providers/apps_providers.dart';
 
 /// Builds a standalone HTML page that loads GeoGebra and executes [commands].
 ///
@@ -31,28 +29,22 @@ String buildGeoGebraViewerHtml(List<String> commands) {
   <script>
     var pendingCommands = $commandsJson;
 
-    window.ggbOnInit = function() {
-      if (typeof ggbApplet !== 'undefined' && ggbApplet.evalCommand) {
-        for (var i = 0; i < pendingCommands.length; i++) {
-          try { ggbApplet.evalCommand(pendingCommands[i]); } catch(e) { console.error('GGB cmd error:', e); }
-        }
-      } else {
-        // Fallback if ggbApplet is not yet defined
-        setTimeout(window.ggbOnInit, 100);
-      }
-    };
-
     var params = {
       "appName": "graphing",
-      "width": window.innerWidth,
-      "height": window.innerHeight,
+      "width": window.innerWidth || 800,
+      "height": window.innerHeight || 600,
       "showToolBar": true,
       "showAlgebraInput": true,
       "showMenuBar": false,
       "enableShiftDragZoom": true,
       "enableRightClick": false,
       "allowStyleBar": true,
-      "showLogging": false
+      "showLogging": false,
+      "appletOnLoad": function(api) {
+        for (var i = 0; i < pendingCommands.length; i++) {
+          try { api.evalCommand(pendingCommands[i]); } catch(e) { console.error('GGB cmd error:', e); }
+        }
+      }
     };
 
     var deployer = new GGBApplet(params, true);

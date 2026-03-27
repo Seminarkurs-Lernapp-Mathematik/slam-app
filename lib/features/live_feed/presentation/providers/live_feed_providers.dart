@@ -29,12 +29,23 @@ class LiveFeedDifficulty extends _$LiveFeedDifficulty {
     return 5.0; // Start at medium difficulty
   }
 
+  // AFB levels: I=3.0, II=6.0, III=9.0
   void increase() {
-    state = (state + 0.5).clamp(1.0, 10.0);
+    if (state <= 4.5) {
+      state = 6.0; // AFB I → AFB II
+    } else if (state <= 7.5) {
+      state = 9.0; // AFB II → AFB III
+    }
+    // Already at AFB III — no change
   }
 
   void decrease() {
-    state = (state - 0.5).clamp(1.0, 10.0);
+    if (state > 7.5) {
+      state = 6.0; // AFB III → AFB II
+    } else if (state > 4.5) {
+      state = 3.0; // AFB II → AFB I
+    }
+    // Already at AFB I — no change
   }
 
   void setDifficulty(double value) {

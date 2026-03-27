@@ -3,132 +3,143 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/live_feed_providers.dart';
 
-/// Difficulty Slider Widget - 1-10 scale with visual feedback
+/// AFB Level Selector — lets the user choose between the three
+/// Anforderungsbereiche (German curriculum difficulty categories).
+///
+/// Internally maps to the numeric difficulty provider:
+///   AFB I   → 3.0  (Wiedergabe & Verständnis)
+///   AFB II  → 6.0  (Anwendung & Verknüpfung)
+///   AFB III → 9.0  (Problemlösung & Reflexion)
 class DifficultySlider extends ConsumerWidget {
   const DifficultySlider({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final difficulty = ref.watch(liveFeedDifficultyProvider);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
 
-    // Color based on difficulty
-    final color = _getDifficultyColor(difficulty);
+    final selected = _toAfb(difficulty);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 2,
-        ),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.adjust, color: color, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Schwierigkeitsgrad',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${difficulty.toStringAsFixed(1)} / 10',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+              Icon(Icons.school, color: cs.primary, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Anforderungsbereich',
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          SliderTheme(
-            data: SliderThemeData(
-              activeTrackColor: color,
-              thumbColor: color,
-              overlayColor: color.withValues(alpha: 0.2),
-              inactiveTrackColor: color.withValues(alpha: 0.2),
-            ),
-            child: Slider(
-              value: difficulty,
-              min: 1.0,
-              max: 10.0,
-              divisions: 18, // 0.5 increments
-              label: difficulty.toStringAsFixed(1),
-              onChanged: (value) {
-                ref.read(liveFeedDifficultyProvider.notifier).setDifficulty(value);
-              },
-            ),
-          ),
-          const SizedBox(height: 4),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _getDifficultyLabel(1),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              Text(
-                _getDifficultyLabel(difficulty),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              Text(
-                _getDifficultyLabel(10),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
+            children: _AfbLevel.values.map((level) {
+              final isSelected = selected == level;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _AfbChip(
+                    level: level,
+                    selected: isSelected,
+                    onTap: () => ref
+                        .read(liveFeedDifficultyProvider.notifier)
+                        .setDifficulty(level.difficulty),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            selected.description,
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: cs.onSurfaceVariant),
           ),
         ],
       ),
     );
   }
 
-  Color _getDifficultyColor(double difficulty) {
-    if (difficulty <= 3) {
-      return const Color(0xFF10b981); // Green (easy)
-    } else if (difficulty <= 6) {
-      return const Color(0xFFf59e0b); // Amber (medium)
-    } else if (difficulty <= 8) {
-      return const Color(0xFFf97316); // Orange (hard)
-    } else {
-      return const Color(0xFFef4444); // Red (extreme)
-    }
+  static _AfbLevel _toAfb(double d) {
+    if (d <= 4.5) return _AfbLevel.afbI;
+    if (d <= 7.5) return _AfbLevel.afbII;
+    return _AfbLevel.afbIII;
   }
 
-  String _getDifficultyLabel(double difficulty) {
-    if (difficulty <= 3) {
-      return 'Leicht';
-    } else if (difficulty <= 6) {
-      return 'Mittel';
-    } else if (difficulty <= 8) {
-      return 'Schwer';
-    } else {
-      return 'Extrem';
-    }
+  // Public helper for use by other widgets (e.g. feed_question_card).
+  static String afbLabel(int difficulty) {
+    if (difficulty <= 4) return 'AFB I';
+    if (difficulty <= 7) return 'AFB II';
+    return 'AFB III';
+  }
+}
+
+enum _AfbLevel {
+  afbI(3.0, 'AFB I', 'Wiedergabe & Verständnis', Color(0xFF10b981)),
+  afbII(6.0, 'AFB II', 'Anwendung & Verknüpfung', Color(0xFFf59e0b)),
+  afbIII(9.0, 'AFB III', 'Problemlösung & Reflexion', Color(0xFFef4444));
+
+  final double difficulty;
+  final String label;
+  final String description;
+  final Color color;
+
+  const _AfbLevel(this.difficulty, this.label, this.description, this.color);
+}
+
+class _AfbChip extends StatelessWidget {
+  final _AfbLevel level;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _AfbChip({
+    required this.level,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected
+              ? level.color.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? level.color : theme.colorScheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              level.label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: selected ? level.color : theme.colorScheme.onSurfaceVariant,
+                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

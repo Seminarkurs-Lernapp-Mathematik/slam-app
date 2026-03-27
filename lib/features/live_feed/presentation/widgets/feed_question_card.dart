@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
 import '../../../../core/models/question.dart';
-import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../features/gamification/presentation/widgets/xp_animation.dart';
@@ -371,7 +370,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _AnimatedTimerChip(seconds: _timeSpentSeconds),
+        _QuietTimerChip(seconds: _timeSpentSeconds),
         if (queueState.remainingCount > 0)
           Chip(
             avatar: Icon(Icons.queue, size: 16, color: colorScheme.primary),
@@ -382,8 +381,9 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
             visualDensity: VisualDensity.compact,
           ),
         Chip(
-          avatar: const Icon(Icons.speed, size: 18),
-          label: Text('Level ${widget.question.difficulty}'),
+          avatar: const Icon(Icons.school, size: 16),
+          label: Text(_difficultyToAfb(widget.question.difficulty)),
+          visualDensity: VisualDensity.compact,
         ),
       ],
     );
@@ -1091,100 +1091,39 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   }
 }
 
-/// Animated Timer Chip with smooth sliding animation
-class _AnimatedTimerChip extends StatefulWidget {
+/// Subtle timer chip — shows elapsed time without distracting animations.
+class _QuietTimerChip extends StatelessWidget {
   final int seconds;
+  const _QuietTimerChip({required this.seconds});
 
-  const _AnimatedTimerChip({required this.seconds});
-
-  @override
-  State<_AnimatedTimerChip> createState() => _AnimatedTimerChipState();
-}
-
-class _AnimatedTimerChipState extends State<_AnimatedTimerChip>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
-  int _previousSeconds = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _previousSeconds = widget.seconds;
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
-  }
-
-  @override
-  void didUpdateWidget(_AnimatedTimerChip oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.seconds != widget.seconds) {
-      _controller.forward(from: 0.0);
-      _previousSeconds = oldWidget.seconds;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  String _formatTime(int s) {
+    final m = s ~/ 60;
+    final r = s % 60;
+    return '${m.toString().padLeft(2, '0')}:${r.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Chip(
-      avatar: const Icon(Icons.timer_outlined, size: 18),
-      label: SizedBox(
-        width: 42,
-        height: 20,
-        child: ClipRect(
-          child: Stack(
-            children: [
-              // Previous time sliding out (upward)
-              if (_previousSeconds != widget.seconds)
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: Offset.zero,
-                    end: const Offset(0, 1),
-                  ).animate(CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.easeOutCubic,
-                  )),
-                  child: Opacity(
-                    opacity: 1.0 - _controller.value,
-                    child: Text(
-                      _formatTime(_previousSeconds),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ),
-              // Current time sliding in (from top)
-              SlideTransition(
-                position: _slideAnimation,
-                child: Text(
-                  _formatTime(widget.seconds),
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-        ),
+      avatar: Icon(Icons.schedule, size: 14,
+          color: cs.onSurfaceVariant.withValues(alpha: 0.5)),
+      label: Text(
+        _formatTime(seconds),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+            ),
       ),
+      backgroundColor: Colors.transparent,
+      side: BorderSide.none,
+      visualDensity: VisualDensity.compact,
     );
   }
+}
+
+/// Maps a numeric difficulty (1–10) to the German Anforderungsbereich label.
+String _difficultyToAfb(int difficulty) {
+  if (difficulty <= 4) return 'AFB I';
+  if (difficulty <= 7) return 'AFB II';
+  return 'AFB III';
 }

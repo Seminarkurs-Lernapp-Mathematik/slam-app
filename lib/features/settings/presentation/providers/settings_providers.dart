@@ -204,7 +204,7 @@ class AppSettings {
 
   const AppSettings({
     this.aiModel = const AIModelConfig(),
-    this.courseType = 'Leistungsfach',
+    this.courseType = 'Leistungskurs',
     this.gradeLevel = 'Klasse_11',
     required this.theme,
     this.examDate,
@@ -231,7 +231,7 @@ class AppSettings {
 
     return AppSettings(
       aiModel: AIModelConfig.fromJson(json['aiModel'] as Map<String, dynamic>?),
-      courseType: json['courseType'] ?? 'Leistungsfach',
+      courseType: json['courseType'] ?? 'Leistungskurs',
       gradeLevel: json['gradeLevel'] ?? 'Klasse_11',
       theme: json['theme'] != null
           ? ThemeConfig.fromJson(json['theme'] as Map<String, dynamic>)
@@ -332,7 +332,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     final temperature = (prefs.getDouble('ai_temperature') ?? 0.7).clamp(0.0, 1.0);
     final helpfulness = (prefs.getInt('ai_helpfulness') ?? 7).clamp(1, 10);
     final autoMode = prefs.getBool('ai_auto_mode') ?? true;
-    final courseType = prefs.getString('course_type') ?? 'Leistungsfach';
+    final courseType = prefs.getString('course_type') ?? 'Leistungskurs';
     final gradeLevel = prefs.getString('grade_level') ?? 'Klasse_11';
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
     final examDateStr = prefs.getString('exam_date');
