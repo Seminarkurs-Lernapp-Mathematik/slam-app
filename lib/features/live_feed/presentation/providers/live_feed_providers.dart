@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/models/lernplan.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/question_result.dart';
@@ -266,12 +267,17 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final appSettings = ref.read(appSettingsNotifierProvider);
       final user = ref.read(currentUserProvider);
       final userId = user?.uid;
-      final lernplanTopics = ref.read(lernplanTopicsAsTopicDataProvider);
-
       if (userId == null || userId.isEmpty) {
         debugPrint('❌ LiveFeed: User not logged in');
         return;
       }
+
+      // Wait for the Lernplan stream to emit its first value (avoids race
+      // condition where the generator fires before Firestore data arrives and
+      // incorrectly sees an empty topic list).
+      debugPrint('🔄 LiveFeed: Waiting for Lernplan data...');
+      final lernplan = await ref.read(lernplanStreamProvider.future);
+      final lernplanTopics = lernplan.topics;
 
       if (lernplanTopics.isEmpty) {
         debugPrint('⚠️ LiveFeed: Lernplan is empty, cannot generate');
@@ -319,6 +325,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       }
     } catch (e, st) {
       debugPrint('❌ LiveFeed: Error generating questions: $e\n$st');
+      rethrow; // Surface error to the screen so it can display it
     } finally {
       state = false;
       ref.read(liveFeedQueueProvider.notifier).setGenerating(false);

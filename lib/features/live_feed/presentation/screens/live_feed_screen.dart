@@ -280,42 +280,41 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Widget _buildEmptyView() {
-    // Auto-trigger generation when showing empty view
-    // This ensures questions are always generated automatically
-    final isGenerating = ref.read(liveFeedQuestionGeneratorProvider);
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !isGenerating && _errorMessage == null) {
-        _generateQuestions();
-      }
-    });
-
+    // Queue is empty and not currently generating — offer a manual retry.
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.psychology,
-            size: 64,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Fragen werden generiert...',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Die KI erstellt personalisierte Fragen für dich',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-          const SizedBox(height: 32),
-          const CircularProgressIndicator(),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.psychology,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Keine Fragen verfügbar',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Alle Fragen wurden beantwortet oder es ist ein Fehler aufgetreten.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: _generateQuestions,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Neue Fragen generieren'),
+            ),
+          ],
+        ),
       ),
     );
   }
