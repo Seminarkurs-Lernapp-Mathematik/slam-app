@@ -108,13 +108,33 @@ class FirestoreService {
 
   /// Update streak (call daily)
   Future<void> updateStreak(String userId) async {
-    final stats = await getUserStats(userId);
-    if (stats == null) return;
+    final docRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+    await _firestore.runTransaction((transaction) async {
+      final doc = await transaction.get(docRef);
+      final data = doc.data();
+      if (data == null) return;
+      final statsData = data[FirebaseCollections.stats] as Map<String, dynamic>?;
+      if (statsData == null) return;
+      final today = DateTime.now().toIso8601String().substring(0, 10);
+      final updatedStats = UserStats.fromJson(statsData).updateStreak(today);
+      transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+    });
+  }
 
-    final today = DateTime.now().toIso8601String().substring(0, 10);
-    final updatedStats = stats.updateStreak(today);
-
-    await updateUserStats(userId, updatedStats);
+  /// Add XP and coins atomically (transaction prevents race conditions)
+  Future<void> addXpAndCoins(String userId, int xpEarned, int coinsEarned) async {
+    if (xpEarned == 0 && coinsEarned == 0) return;
+    final docRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+    await _firestore.runTransaction((transaction) async {
+      final doc = await transaction.get(docRef);
+      final data = doc.data();
+      if (data == null) return;
+      final statsData = data[FirebaseCollections.stats] as Map<String, dynamic>?;
+      if (statsData == null) return;
+      final updatedStats =
+          UserStats.fromJson(statsData).addXp(xpEarned).addCoins(coinsEarned);
+      transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+    });
   }
 
   // ============================================================================

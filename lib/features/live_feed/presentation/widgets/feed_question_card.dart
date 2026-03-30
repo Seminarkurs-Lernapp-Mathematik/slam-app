@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import '../../../../core/constants/level_thresholds.dart';
 
 import '../../../../core/models/question.dart';
 import '../../../../core/services/auth_service.dart';
@@ -106,12 +107,23 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   }
 
   Future<void> _processAnswer(bool isCorrect, String userAnswer) async {
-    // Local XP/coins calculation — no API call needed
     final difficulty = widget.question.difficulty;
-    final xpBase = isCorrect ? (difficulty * 10).clamp(10, 100) : 0;
-    final xpPenalty = _hintsShown * 5;
-    final xpEarned = (xpBase - xpPenalty).clamp(0, 100);
-    final coinsEarned = isCorrect ? difficulty : 0;
+    final xpEarned = isCorrect
+        ? XPSystem.calculateXP(
+            difficulty: difficulty,
+            hintsUsed: _hintsShown,
+            timeSpentSeconds: _timeSpentSeconds,
+            correctStreak: ref.read(consecutiveCorrectProvider),
+          )
+        : 0;
+    final coinsEarned = isCorrect
+        ? CoinSystem.calculateCoins(
+            difficulty: difficulty,
+            isFirstQuestionToday: false,
+            currentStreak: 0,
+            isPerfectAnswer: _hintsShown == 0,
+          )
+        : 0;
 
     final feedback = isCorrect
         ? (widget.question.correctFeedback ?? 'Richtig! Gut gemacht.')
@@ -212,18 +224,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   }
 
   Future<void> _updateUserStats(int xpEarned, int coinsEarned) async {
-    final userId = ref.read(authStateChangesProvider).value?.uid;
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId == null) return;
 
     try {
-      final firestoreService = ref.read(firestoreServiceProvider);
-      final currentStats = await firestoreService.getUserStats(userId);
-
-      if (currentStats != null) {
-        final updatedStats =
-            currentStats.addXp(xpEarned).addCoins(coinsEarned);
-        await firestoreService.updateUserStats(userId, updatedStats);
-      }
+      await ref.read(firestoreServiceProvider).addXpAndCoins(userId, xpEarned, coinsEarned);
     } catch (e) {
       debugPrint('Error updating user stats: $e');
     }
@@ -250,7 +255,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     int coinsEarned, {
     String? userAnswer,
   }) async {
-    final userId = ref.read(authStateChangesProvider).value?.uid;
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId == null) return;
 
     try {

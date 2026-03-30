@@ -333,7 +333,6 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
               widget.questionText,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: cs.onPrimaryContainer),
-              maxLines: 2,
             ),
           ),
         ],

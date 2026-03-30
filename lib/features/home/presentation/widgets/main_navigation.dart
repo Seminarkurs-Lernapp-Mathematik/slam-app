@@ -35,7 +35,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   }
 
   Future<void> _updateStreakOnOpen() async {
-    final userId = ref.read(currentUserProvider)?.uid;
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId == null || userId.isEmpty) return;
     try {
       await ref.read(firestoreServiceProvider).updateStreak(userId);

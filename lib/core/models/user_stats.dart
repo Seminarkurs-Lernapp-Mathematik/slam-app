@@ -69,11 +69,14 @@ class UserStats with _$UserStats {
     );
   }
 
-  /// Update stats after earning XP
+  /// Update stats after earning XP (awards coins for each level gained)
   UserStats addXp(int earnedXp) {
     final newTotalXp = totalXp + earnedXp;
     final newLevel = LevelSystem.levelFromXp(newTotalXp);
     final progress = LevelSystem.progressToNextLevel(newTotalXp);
+
+    final levelsGained = newLevel - level;
+    final levelUpCoins = levelsGained > 0 ? levelsGained * newLevel * 20 : 0;
 
     return copyWith(
       level: newLevel,
@@ -81,6 +84,7 @@ class UserStats with _$UserStats {
       xpToNextLevel: progress['xpNeeded'] as int,
       xpNeededUntil: progress['xpNeeded'] as int,
       totalXp: newTotalXp,
+      coins: coins + levelUpCoins,
     );
   }
 
