@@ -418,9 +418,15 @@ class LiveFeedQueue extends _$LiveFeedQueue {
       _prefs = await SharedPreferences.getInstance();
 
       // Firebase is the primary cache source (cross-device / cross-session).
-      // Fall back to SharedPreferences when the user is not yet authenticated
-      // or when Firebase is unavailable.
-      final userId = ref.read(currentUserProvider)?.uid;
+      // Fall back to SharedPreferences when the user is not authenticated.
+      //
+      // IMPORTANT: Use authService.currentUser (synchronous FirebaseAuth state)
+      // rather than currentUserProvider, which is a StreamProvider and returns
+      // null until the authStateChanges stream emits — even if Firebase Auth
+      // already has the user in memory. By the time LiveFeedScreen is shown the
+      // SplashScreen has already awaited authStateChanges().first, so
+      // FirebaseAuth.instance.currentUser is guaranteed to be non-null here.
+      final userId = ref.read(authServiceProvider).currentUser?.uid;
       if (userId != null && userId.isNotEmpty) {
         await _loadFromFirebase(userId);
       } else {
@@ -507,7 +513,7 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     }
 
     // Firebase cache (primary — survives browser refreshes and new devices)
-    final userId = ref.read(currentUserProvider)?.uid;
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId != null && userId.isNotEmpty) {
       try {
         final firestoreService = ref.read(firestoreServiceProvider);
@@ -536,7 +542,7 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     }
 
     // Clear Firebase cache
-    final userId = ref.read(currentUserProvider)?.uid;
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId != null && userId.isNotEmpty) {
       try {
         final firestoreService = ref.read(firestoreServiceProvider);
