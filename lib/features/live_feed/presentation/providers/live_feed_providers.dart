@@ -298,13 +298,13 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       // Map current difficulty to AFB level string for the backend
       final difficulty = ref.read(liveFeedDifficultyProvider);
       final afbLevel = difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
-      debugPrint('🔄 LiveFeed: Requesting 10 questions at AFB $afbLevel');
+      debugPrint('🔄 LiveFeed: Requesting 5 questions at AFB $afbLevel');
 
       final session = await aiService.generateQuestions(
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
-        questionCount: 10,
+        questionCount: 5,
         afbLevel: afbLevel,
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
@@ -568,8 +568,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   /// Get remaining question count
   int get remainingCount => state.remainingCount;
 
-  /// Whether more questions should be generated (prefetch at 10 remaining)
-  bool get needsMoreQuestions => state.remainingCount <= 10;
+  /// Whether more questions should be generated (prefetch at 2 remaining)
+  bool get needsMoreQuestions => state.remainingCount <= 2;
   
   /// Check if there are cached questions available
   bool get hasCachedQuestions => state.questions.isNotEmpty && state.currentIndex < state.questions.length;
