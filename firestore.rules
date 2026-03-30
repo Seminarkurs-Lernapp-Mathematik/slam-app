@@ -66,6 +66,16 @@ service cloud.firestore {
       match /savedContent/{contentId} {
         allow read, write: if isOwner(userId);
       }
+
+      // Question Queue Cache subcollection
+      match /questionQueueCache/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Question History subcollection
+      match /questionHistory/{resultId} {
+        allow read, write: if isOwner(userId);
+      }
     }
   }
 }
