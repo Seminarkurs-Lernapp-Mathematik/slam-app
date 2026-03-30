@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/models/lernplan.dart';
+import '../../../../core/models/memory.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/question_result.dart';
@@ -300,6 +301,28 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final afbLevel = difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
       debugPrint('🔄 LiveFeed: Requesting 5 questions at AFB $afbLevel');
 
+      // Build memories context: due spaced-repetition items + user preferences
+      List<Map<String, dynamic>>? memoriesContext;
+      try {
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final dueMemories = await firestoreService.getDueMemories(userId);
+        final preferences = appSettings.aiPreferences;
+        if (dueMemories.isNotEmpty || preferences.isNotEmpty) {
+          memoriesContext = [
+            for (final m in dueMemories.take(5))
+              {
+                'topic': m['topic'] ?? '',
+                'subtopic': m['subtopic'] ?? '',
+                'quality': m['lastQuality'] ?? 3,
+              },
+            if (preferences.isNotEmpty)
+              {'userPreferences': preferences.join('. ')},
+          ];
+        }
+      } catch (e) {
+        debugPrint('⚠️ LiveFeed: Could not fetch memories/preferences: $e');
+      }
+
       final session = await aiService.generateQuestions(
         userId: userId,
         learningPlanItemId: 0,
@@ -313,6 +336,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         recentPerformance: questionsAnswered > 0
             ? {'averageScore': correctRate, 'totalAnswered': questionsAnswered}
             : null,
+        recentMemories: memoriesContext,
       );
 
       if (session.questions.isNotEmpty) {
@@ -687,6 +711,103 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
       debugPrint('✅ Question result saved successfully: ${questionResult.questionId}');
     } catch (e, st) {
       debugPrint('❌ Error saving question result: $e\n$st');
+    }
+
+    // Update spaced-repetition memory (fire-and-forget — non-fatal)
+    _upsertMemory(
+      userId: userId,
+      question: currentQuestion,
+      isCorrect: evaluationResult['isCorrect'] ?? false,
+      hintsUsed: hintsUsed,
+    );
+  }
+
+  /// Creates or updates the SM-2 spaced-repetition memory for a question.
+  Future<void> _upsertMemory({
+    required String userId,
+    required Question question,
+    required bool isCorrect,
+    required int hintsUsed,
+  }) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      final quality = SM2Calculator.getQualityFromPerformance(
+        isCorrect: isCorrect,
+        hintsUsed: hintsUsed,
+        timeSpentSeconds: 0,
+        expectedTimeSeconds: 60,
+      );
+
+      final existing = await firestoreService.getMemory(
+        userId: userId,
+        memoryId: question.id,
+      );
+
+      final now = DateTime.now();
+
+      if (existing == null) {
+        // First time seeing this question — create a new memory
+        final sm2 = SM2Calculator.calculateNextReview(
+          quality: quality,
+          easeFactor: 2.5,
+          repetitions: 0,
+          interval: 0,
+        );
+        final memory = Memory(
+          id: question.id,
+          userId: userId,
+          questionId: question.id,
+          questionText: question.question,
+          topic: question.topic,
+          subtopic: question.subtopic,
+          leitidee: '',
+          difficulty: question.difficulty,
+          easeFactor: sm2.easeFactor,
+          interval: sm2.interval,
+          repetitions: sm2.repetitions,
+          nextReviewAt: sm2.nextReviewDate,
+          lastReviewedAt: now,
+          lastQuality: quality,
+          reviewCount: 1,
+          averageQuality: quality.toDouble(),
+          createdAt: now,
+          updatedAt: now,
+        );
+        await firestoreService.createMemory(
+          userId: userId,
+          memoryData: memory.toJson(),
+        );
+      } else {
+        // Update existing memory with SM-2
+        final prev = Memory.fromJson(existing);
+        final sm2 = SM2Calculator.calculateNextReview(
+          quality: quality,
+          easeFactor: prev.easeFactor,
+          repetitions: prev.repetitions,
+          interval: prev.interval,
+        );
+        final newCount = prev.reviewCount + 1;
+        final newAvg =
+            (prev.averageQuality * prev.reviewCount + quality) / newCount;
+        await firestoreService.updateMemory(
+          userId: userId,
+          memoryId: question.id,
+          updates: {
+            'easeFactor': sm2.easeFactor,
+            'interval': sm2.interval,
+            'repetitions': sm2.repetitions,
+            'nextReviewAt': Timestamp.fromDate(sm2.nextReviewDate),
+            'lastReviewedAt': Timestamp.fromDate(now),
+            'lastQuality': quality,
+            'reviewCount': newCount,
+            'averageQuality': newAvg,
+            'updatedAt': Timestamp.fromDate(now),
+          },
+        );
+      }
+      debugPrint('✅ Memory upserted for: ${question.id}');
+    } catch (e) {
+      debugPrint('❌ Memory upsert failed (non-fatal): $e');
     }
   }
 }

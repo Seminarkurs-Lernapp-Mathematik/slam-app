@@ -201,6 +201,7 @@ class AppSettings {
   final String gradeLevel; // 'Klasse_11', 'Klasse_12', etc.
   final ThemeConfig theme;
   final DateTime? examDate; // Optional exam/test date for countdown
+  final List<String> aiPreferences; // User-written instructions for the AI
 
   const AppSettings({
     this.aiModel = const AIModelConfig(),
@@ -208,6 +209,7 @@ class AppSettings {
     this.gradeLevel = 'Klasse_11',
     required this.theme,
     this.examDate,
+    this.aiPreferences = const [],
   });
 
   factory AppSettings.initial() {
@@ -223,6 +225,7 @@ class AppSettings {
         'gradeLevel': gradeLevel,
         'theme': theme.toJson(),
         'examDate': examDate?.toIso8601String(),
+        'aiPreferences': aiPreferences,
       };
 
   /// Create from Firebase JSON
@@ -239,6 +242,9 @@ class AppSettings {
       examDate: json['examDate'] != null
           ? DateTime.tryParse(json['examDate'] as String)
           : null,
+      aiPreferences: (json['aiPreferences'] as List<dynamic>?)
+              ?.cast<String>() ??
+          [],
     );
   }
 
@@ -249,6 +255,7 @@ class AppSettings {
     ThemeConfig? theme,
     DateTime? examDate,
     bool clearExamDate = false,
+    List<String>? aiPreferences,
   }) {
     return AppSettings(
       aiModel: aiModel ?? this.aiModel,
@@ -256,6 +263,7 @@ class AppSettings {
       gradeLevel: gradeLevel ?? this.gradeLevel,
       theme: theme ?? this.theme,
       examDate: clearExamDate ? null : (examDate ?? this.examDate),
+      aiPreferences: aiPreferences ?? this.aiPreferences,
     );
   }
 }
@@ -337,6 +345,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
     final examDateStr = prefs.getString('exam_date');
     final examDate = examDateStr != null ? DateTime.tryParse(examDateStr) : null;
+    final aiPreferences = prefs.getStringList('ai_preferences') ?? [];
 
     state = AppSettings(
       aiModel: AIModelConfig(
@@ -349,6 +358,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       gradeLevel: gradeLevel,
       theme: ThemeConfig.fromPreset(AppThemePreset.values[themeIndex.clamp(0, 4)]),
       examDate: examDate,
+      aiPreferences: aiPreferences,
     );
   }
 
@@ -367,6 +377,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     } else {
       await prefs.remove('exam_date');
     }
+    await prefs.setStringList('ai_preferences', state.aiPreferences);
   }
 
   Future<void> _syncToFirebase() async {
@@ -447,6 +458,21 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
         helpfulness: 7,
         temperature: 0.7,
       ),
+    );
+    _saveSettings();
+  }
+
+  // AI preferences
+  void addAiPreference(String preference) {
+    final trimmed = preference.trim();
+    if (trimmed.isEmpty || state.aiPreferences.contains(trimmed)) return;
+    state = state.copyWith(aiPreferences: [...state.aiPreferences, trimmed]);
+    _saveSettings();
+  }
+
+  void removeAiPreference(String preference) {
+    state = state.copyWith(
+      aiPreferences: state.aiPreferences.where((p) => p != preference).toList(),
     );
     _saveSettings();
   }

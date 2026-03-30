@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/settings_providers.dart';
 import '../widgets/theme_selector.dart';
+import '../widgets/memories_settings_section.dart';
 import '../../../../core/services/auth_service.dart';
 
 import '../../../live_feed/presentation/providers/live_feed_providers.dart';
@@ -72,6 +73,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 12),
                 const _DataSettings(),
+                const SizedBox(height: 24),
+
+                // KI-Erinnerungen Section
+                _SectionHeader(
+                  icon: Icons.psychology,
+                  title: 'KI-Erinnerungen',
+                  subtitle: 'Präferenzen & Lerngedächtnis',
+                  color: colorScheme.tertiary,
+                ),
+                const SizedBox(height: 12),
+                const MemoriesSettingsSection(),
                 const SizedBox(height: 24),
 
                 // Account Actions

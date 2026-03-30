@@ -653,6 +653,32 @@ class FirestoreService {
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
+  /// Stream all non-archived memories, ordered by next review date
+  Stream<List<Map<String, dynamic>>> getMemoriesStream(String userId) {
+    return _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.memories)
+        .where('isArchived', isEqualTo: false)
+        .orderBy('nextReviewAt')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  /// Delete all memories for a user
+  Future<void> deleteAllMemories(String userId) async {
+    final snapshot = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.memories)
+        .get();
+    final batch = _firestore.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
   /// Delete memory
   Future<void> deleteMemory({
     required String userId,

@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "de.mvlgym.slam_app_flutter"
+    namespace = "com.md28.slam"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "de.mvlgym.slam_app_flutter"
+        applicationId = "com.md28.slam"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdkVersion = flutter.minSdkVersion  // Required for cloud_firestore
