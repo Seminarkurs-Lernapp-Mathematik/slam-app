@@ -295,11 +295,17 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       final correctAnswers = ref.read(liveFeedCorrectAnswersProvider);
       final correctRate = questionsAnswered > 0 ? correctAnswers / questionsAnswered : 0.5;
 
+      // Map current difficulty to AFB level string for the backend
+      final difficulty = ref.read(liveFeedDifficultyProvider);
+      final afbLevel = difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
+      debugPrint('🔄 LiveFeed: Requesting 10 questions at AFB $afbLevel');
+
       final session = await aiService.generateQuestions(
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
-        questionCount: 20, // Generated in batches of 20
+        questionCount: 10,
+        afbLevel: afbLevel,
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
           courseType: appSettings.courseType,

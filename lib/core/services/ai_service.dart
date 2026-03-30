@@ -48,7 +48,8 @@ class AIService {
     required int learningPlanItemId,
     required List<TopicData> topics,
     required UserContext userContext,
-    int questionCount = 20,
+    int questionCount = 10,
+    String afbLevel = 'II',
     Map<String, dynamic>? autoModeAssessment,
     List<Map<String, dynamic>>? recentMemories,
     Map<String, dynamic>? recentPerformance,
@@ -56,12 +57,14 @@ class AIService {
     try {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateQuestions),
+        options: Options(receiveTimeout: const Duration(seconds: 120)),
         data: {
           'userId': userId,
           'learningPlanItemId': learningPlanItemId,
           'topics': topics.map((t) => t.toJson()).toList(),
           'userContext': userContext.toJson(),
           'questionCount': questionCount,
+          'afbLevel': afbLevel,
           'autoModeAssessment': autoModeAssessment,
           'recentMemories': recentMemories,
           'recentPerformance': recentPerformance,
