@@ -329,12 +329,11 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
           Icon(Icons.quiz_outlined, size: 14, color: cs.primary),
           const SizedBox(width: 6),
           Expanded(
-            child: Text(
+            child: MathText(
               widget.questionText,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: cs.onPrimaryContainer),
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

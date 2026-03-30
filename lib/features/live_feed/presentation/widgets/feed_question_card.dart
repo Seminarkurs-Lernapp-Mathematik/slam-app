@@ -1033,7 +1033,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      MathText(
                         hint.text,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onPrimaryContainer,
