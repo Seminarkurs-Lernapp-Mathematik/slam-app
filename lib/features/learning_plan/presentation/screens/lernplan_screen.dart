@@ -1,288 +1,300 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../../../../core/constants/topic_catalog.dart';
 import '../../../../core/models/lernplan.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 import '../providers/lernplan_providers.dart';
 
-/// Lernplan Screen
-/// Allows users to manage their learning plan by adding/removing topics.
 class LernplanScreen extends ConsumerWidget {
   const LernplanScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final lernplanAsync = ref.watch(lernplanStreamProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lernplan'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: SlamTokens.bg,
       body: lernplanAsync.when(
         data: (lernplan) {
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Dein aktueller Lernplan',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Wähle Themen aus, zu denen du im Feed Fragen erhalten möchtest.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      _buildCurrentLernplan(context, ref, lernplan.topics),
-                      const SizedBox(height: 24),
-                      _buildAddTopicsSection(context, ref),
-                      const SizedBox(height: 24),
-                      const _UploadSection(),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
+          final validTopics = lernplan.topics.where((t) =>
+              t.leitidee.isNotEmpty || t.thema.isNotEmpty || t.unterthema.isNotEmpty).toList();
+          return _LernplanBody(activeTopics: validTopics);
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Fehler beim Laden des Lernplans: $error'),
+        loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        error: (error, _) => Center(
+          child: Text('Fehler: $error', style: const TextStyle(color: SlamTokens.danger)),
         ),
       ),
     );
   }
+}
 
-  Widget _buildCurrentLernplan(
-      BuildContext context, WidgetRef ref, List<LernplanTopic> topics) {
-    final theme = Theme.of(context);
+class _LernplanBody extends ConsumerWidget {
+  const _LernplanBody({required this.activeTopics});
+  final List<LernplanTopic> activeTopics;
 
-    if (topics.isEmpty) {
-      return GlassPanel(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Icon(Icons.lightbulb_outline,
-                size: 48, color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              'Noch keine Themen hinzugefügt',
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Füge Themen hinzu, um im Feed Fragen zu erhalten!',
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        // ── Header ──────────────────────────────────────────────
+        SliverToBoxAdapter(child: _LernplanHeader(activeCount: activeTopics.length)),
 
-    // Filter out corrupted topics (with all empty fields) and auto-delete them
-    final validTopics = topics.where((topic) {
-      final isValid = topic.leitidee.isNotEmpty || 
-                      topic.thema.isNotEmpty || 
-                      topic.unterthema.isNotEmpty;
-      if (!isValid) {
-        // Auto-delete corrupted topic
-        ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
-        debugPrint('Auto-deleted corrupted topic with empty fields');
-      }
-      return isValid;
-    }).toList();
-
-    if (validTopics.isEmpty && topics.isNotEmpty) {
-      // All topics were corrupted and deleted
-      return GlassPanel(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Icon(Icons.cleaning_services,
-                size: 48, color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              'Korrupte Daten bereinigt',
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Ungültige Themen wurden automatisch entfernt.',
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    return GlassPanel(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: validTopics.map((topic) {
-          // Use unique key based on all topic fields plus timestamp
-          final uniqueKey = 'topic_${topic.uniqueKey}_${topic.hashCode}';
-          return Dismissible(
-            key: ValueKey(uniqueKey),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              color: theme.colorScheme.errorContainer,
-              child: Icon(Icons.delete_forever,
-                  color: theme.colorScheme.onErrorContainer),
-            ),
-            onDismissed: (direction) {
-              ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${topic.unterthema} aus Lernplan entfernt'),
-                  backgroundColor: theme.colorScheme.tertiary,
-                ),
-              );
-            },
-            child: ListTile(
-              title: Text(topic.unterthema),
-              subtitle: Text('${topic.leitidee} > ${topic.thema}'),
-              trailing: const Icon(Icons.arrow_back, size: 18),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildAddTopicsSection(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Themen manuell hinzufügen',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+        // ── Topic groups ─────────────────────────────────────────
+        ...topicCatalog.map((leitidee) => SliverToBoxAdapter(
+          child: _LeitideeSection(
+            leitidee: leitidee,
+            activeTopics: activeTopics,
           ),
-        ),
-        const SizedBox(height: 16),
-        GlassPanel(
-          child: ExpansionTile(
-            leading: Icon(Icons.functions, color: theme.colorScheme.primary),
-            title: Text(
-              'Algebra',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            children: _buildTopicCheckboxes(context, ref, 'Algebra', LeitideeGroup(name: 'Algebra', icon: IconType.functions, themen: topicCatalog[0].themen)),
-          ),
-        ),
-        const SizedBox(height: 8),
-        GlassPanel(
-          child: ExpansionTile(
-            leading: Icon(Icons.show_chart, color: theme.colorScheme.primary),
-            title: Text(
-              'Analysis',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            children: _buildTopicCheckboxes(context, ref, 'Analysis', LeitideeGroup(name: 'Analysis', icon: IconType.showChart, themen: topicCatalog[1].themen)),
-          ),
-        ),
-        const SizedBox(height: 8),
-        GlassPanel(
-          child: ExpansionTile(
-            leading: Icon(Icons.hexagon, color: theme.colorScheme.primary),
-            title: Text(
-              'Geometrie',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            children: _buildTopicCheckboxes(context, ref, 'Geometrie', LeitideeGroup(name: 'Geometrie', icon: IconType.hexagon, themen: topicCatalog[2].themen)),
-          ),
-        ),
-        const SizedBox(height: 8),
-        GlassPanel(
-          child: ExpansionTile(
-            leading: Icon(Icons.bar_chart, color: theme.colorScheme.primary),
-            title: Text(
-              'Stochastik',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            children: _buildTopicCheckboxes(context, ref, 'Stochastik', LeitideeGroup(name: 'Stochastik', icon: IconType.barChart, themen: topicCatalog[3].themen)),
+        )),
+
+        // ── Upload section ────────────────────────────────────────
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(SlamTokens.gutter, 8, SlamTokens.gutter, 32),
+            child: _UploadSection(),
           ),
         ),
       ],
     );
   }
-
-  List<Widget> _buildTopicCheckboxes(
-    BuildContext context,
-    WidgetRef ref,
-    String leitideeName,
-    LeitideeGroup leitideeGroup,
-  ) {
-    final currentLernplanTopics = ref.watch(lernplanStreamProvider).valueOrNull?.topics ?? [];
-    return leitideeGroup.themen.expand((thema) {
-      return thema.unterthemen.map((unterthema) {
-        final topic = LernplanTopic(
-          leitidee: leitideeName,
-          thema: thema.name,
-          unterthema: unterthema,
-          source: 'manual',
-          addedAt: DateTime.now(), // Will be set by Firestore service
-        );
-        final isSelected = currentLernplanTopics.any((t) =>
-            t.leitidee == topic.leitidee &&
-            t.thema == topic.thema &&
-            t.unterthema == topic.unterthema);
-
-        return CheckboxListTile(
-          title: Text(unterthema),
-          subtitle: Text(thema.name),
-          value: isSelected,
-          onChanged: (bool? newValue) {
-            if (newValue == true) {
-              ref.read(lernplanNotifierProvider.notifier).addTopics([topic]);
-            } else {
-              ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
-            }
-          },
-          controlAffinity: ListTileControlAffinity.leading,
-        );
-      });
-    }).toList();
-  }
-
 }
 
-/// Image upload section — picks a photo of a topic list and uses the AI
-/// to extract topics and add them to the Lernplan automatically.
+class _LernplanHeader extends StatelessWidget {
+  const _LernplanHeader({required this.activeCount});
+  final int activeCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 24, SlamTokens.gutter, 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'LERNPLAN',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 11, fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2, color: SlamTokens.textDim,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Woran willst\ndu arbeiten?',
+                    style: GoogleFonts.fraunces(
+                      fontSize: 34, fontWeight: FontWeight.w700,
+                      color: SlamTokens.text, letterSpacing: -0.8, height: 1.05,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (activeCount > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: SlamTokens.primarySoft,
+                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                ),
+                child: Text(
+                  '$activeCount aktiv',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12, fontWeight: FontWeight.w800,
+                    color: SlamTokens.primary,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LeitideeSection extends ConsumerWidget {
+  const _LeitideeSection({required this.leitidee, required this.activeTopics});
+  final LeitideeGroup leitidee;
+  final List<LernplanTopic> activeTopics;
+
+  (Color, Color) get _colors {
+    switch (leitidee.name) {
+      case 'Algebra': return (SlamTokens.algebra, SlamTokens.algebraSoft);
+      case 'Analysis': return (SlamTokens.analysis, SlamTokens.analysisSoft);
+      case 'Geometrie': return (SlamTokens.geometrie, SlamTokens.geometrieSoft);
+      case 'Stochastik': return (SlamTokens.stochastik, SlamTokens.stochastikSoft);
+      default: return (SlamTokens.primary, SlamTokens.primarySoft);
+    }
+  }
+
+  IconData get _icon {
+    switch (leitidee.icon) {
+      case IconType.functions: return Icons.functions;
+      case IconType.showChart: return Icons.show_chart;
+      case IconType.hexagon: return Icons.hexagon;
+      case IconType.barChart: return Icons.bar_chart;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final (hue, soft) = _colors;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 14, SlamTokens.gutter, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Leitidee label row
+          Row(
+            children: [
+              Container(
+                width: 30, height: 30,
+                decoration: BoxDecoration(color: soft, shape: BoxShape.circle),
+                alignment: Alignment.center,
+                child: Icon(_icon, size: 16, color: hue),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                leitidee.name,
+                style: GoogleFonts.fraunces(
+                  fontSize: 17, fontWeight: FontWeight.w700,
+                  color: SlamTokens.text, letterSpacing: -0.4,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Card with topic groups
+          Container(
+            decoration: BoxDecoration(
+              color: SlamTokens.surface,
+              borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+              border: Border.all(color: SlamTokens.line),
+            ),
+            child: Column(
+              children: leitidee.themen.asMap().entries.map((entry) {
+                final i = entry.key;
+                final thema = entry.value;
+                return Column(
+                  children: [
+                    if (i > 0) const Divider(color: SlamTokens.line, height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            thema.name,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12, fontWeight: FontWeight.w800,
+                              color: hue, letterSpacing: 0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: thema.unterthemen.map((sub) {
+                              final isSelected = activeTopics.any((t) =>
+                                  t.leitidee == leitidee.name &&
+                                  t.thema == thema.name &&
+                                  t.unterthema == sub);
+                              return _TopicChip(
+                                label: sub,
+                                isSelected: isSelected,
+                                selectedColor: hue,
+                                onTap: () {
+                                  final topic = LernplanTopic(
+                                    leitidee: leitidee.name,
+                                    thema: thema.name,
+                                    unterthema: sub,
+                                    source: 'manual',
+                                    addedAt: DateTime.now(),
+                                  );
+                                  if (isSelected) {
+                                    ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
+                                  } else {
+                                    ref.read(lernplanNotifierProvider.notifier).addTopics([topic]);
+                                  }
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopicChip extends StatelessWidget {
+  const _TopicChip({
+    required this.label,
+    required this.isSelected,
+    required this.selectedColor,
+    required this.onTap,
+  });
+  final String label;
+  final bool isSelected;
+  final Color selectedColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: SlamTokens.dState,
+        curve: SlamTokens.curveStandard,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 14 : 12,
+          vertical: isSelected ? 9 : 8,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedColor : SlamTokens.surfaceHi,
+          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+          border: Border.all(
+            color: isSelected ? selectedColor : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          isSelected ? '✓ $label' : label,
+          style: GoogleFonts.dmSans(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: isSelected ? SlamTokens.primaryOn : SlamTokens.textDim,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upload Section (unchanged functionality, updated visuals)
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _UploadSection extends ConsumerStatefulWidget {
   const _UploadSection();
 
@@ -313,8 +325,7 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
       final bytes = await file.readAsBytes();
       final aiService = ref.read(aiServiceProvider);
       final result = await aiService.analyzeImage(
-        imageBytes: bytes,
-        analysisType: 'learning_plan',
+        imageBytes: bytes, analysisType: 'learning_plan',
       );
 
       if (!mounted) return;
@@ -326,7 +337,6 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
         return;
       }
 
-      // Map returned topic strings to LernplanTopic objects by searching catalog
       final matched = <LernplanTopic>[];
       for (final topicName in result.topics) {
         final lower = topicName.toLowerCase();
@@ -349,24 +359,23 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
       }
 
       if (matched.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'KI hat folgende Themen erkannt, aber konnte sie nicht zuordnen: ${result.topics.join(', ')}',
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('KI erkannte: ${result.topics.join(', ')} — keine Zuordnung möglich.'),
+              duration: const Duration(seconds: 6),
             ),
-            duration: const Duration(seconds: 6),
-          ),
-        );
+          );
+        }
         return;
       }
 
       await ref.read(lernplanNotifierProvider.notifier).addTopics(matched);
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${matched.length} Themen zum Lernplan hinzugefügt!'),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            content: Text('${matched.length} Themen hinzugefügt!'),
+            backgroundColor: SlamTokens.success,
           ),
         );
       }
@@ -383,54 +392,65 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Themenliste hochladen (KI-basiert)',
-          style: theme.textTheme.titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        GlassPanel(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+    return GlassPanel(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Icon(Icons.camera_alt,
-                    size: 48, color: theme.colorScheme.secondary),
-                const SizedBox(height: 16),
-                Text(
-                  'Mache ein Foto von deiner Themenliste – die KI erkennt die Themen und fügt sie deinem Lernplan hinzu.',
-                  style: theme.textTheme.titleMedium,
-                  textAlign: TextAlign.center,
+                Container(
+                  width: 30, height: 30,
+                  decoration: const BoxDecoration(color: SlamTokens.primarySoft, shape: BoxShape.circle),
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.camera_alt, size: 16, color: SlamTokens.primary),
                 ),
-                const SizedBox(height: 20),
-                if (_isLoading)
-                  const CircularProgressIndicator()
-                else
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () => _pickAndAnalyze(ImageSource.camera),
-                        icon: const Icon(Icons.camera_alt, size: 18),
-                        label: const Text('Foto aufnehmen'),
-                      ),
-                      const SizedBox(width: 12),
-                      OutlinedButton.icon(
-                        onPressed: () => _pickAndAnalyze(ImageSource.gallery),
-                        icon: const Icon(Icons.photo_library, size: 18),
-                        label: const Text('Galerie'),
-                      ),
-                    ],
+                const SizedBox(width: 10),
+                Text(
+                  'Themenliste hochladen',
+                  style: GoogleFonts.fraunces(
+                    fontSize: 17, fontWeight: FontWeight.w700,
+                    color: SlamTokens.text, letterSpacing: -0.4,
                   ),
+                ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            Text(
+              'Mache ein Foto deiner Themenliste – die KI erkennt die Themen und fügt sie hinzu.',
+              style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim, height: 1.5),
+            ),
+            const SizedBox(height: 16),
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator(color: SlamTokens.primary))
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () => _pickAndAnalyze(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt, size: 16),
+                      label: const Text('Foto aufnehmen'),
+                      style: FilledButton.styleFrom(shape: const StadiumBorder()),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => _pickAndAnalyze(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library, size: 16),
+                    label: const Text('Galerie'),
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      foregroundColor: SlamTokens.textDim,
+                      side: const BorderSide(color: SlamTokens.line),
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

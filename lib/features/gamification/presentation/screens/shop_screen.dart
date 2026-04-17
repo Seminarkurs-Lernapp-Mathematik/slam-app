@@ -1,325 +1,320 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../shared/widgets/widgets.dart';
-import '../../../../core/services/auth_service.dart';
-import '../../../../core/services/firestore_service.dart';
+import '../../../../app/design_tokens.dart';
 import '../../../../core/models/user_stats.dart';
 import '../../../../core/models/theme_unlock.dart';
+import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/firestore_service.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 import '../widgets/purchase_success_animation.dart';
 
-/// Shop Screen
-///
-/// Allows users to purchase themes and streak freezes with coins.
-class ShopScreen extends ConsumerStatefulWidget {
+class ShopScreen extends ConsumerWidget {
   const ShopScreen({super.key});
 
   @override
-  ConsumerState<ShopScreen> createState() => _ShopScreenState();
-}
-
-class _ShopScreenState extends ConsumerState<ShopScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
     final userId = currentUser?.uid ?? '';
-
-    final userStatsAsync = ref.watch(userStatsStreamProvider(userId));
+    final userStatsAsync = ref.watch(_shopUserStatsProvider(userId));
     final themeUnlocksAsync = ref.watch(themeUnlocksStreamProvider(userId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shop'),
-        automaticallyImplyLeading: false,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.palette), text: 'Themes'),
-            Tab(icon: Icon(Icons.ac_unit), text: 'Items'),
-          ],
-        ),
-        actions: [
-          // Coin Balance
-          userStatsAsync.when(
-            data: (stats) => _CoinBalanceChip(coins: stats.coins),
-            loading: () => const _CoinBalanceChip(coins: 0),
-            error: (_, __) => const _CoinBalanceChip(coins: 0),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      backgroundColor: SlamTokens.bg,
       body: userStatsAsync.when(
         data: (stats) => themeUnlocksAsync.when(
-          data: (unlocks) => TabBarView(
-            controller: _tabController,
-            children: [
-              _ThemesTab(
-                stats: stats,
-                unlocks: unlocks,
-                userId: userId,
-              ),
-              _ItemsTab(
-                stats: stats,
-                userId: userId,
-              ),
-            ],
-          ),
-          loading: () => const Center(child: LoadingIndicator()),
-          error: (e, _) => Center(child: ErrorMessage(message: e.toString())),
+          data: (unlocks) => _ShopBody(stats: stats, unlocks: unlocks, userId: userId),
+          loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+          error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
         ),
-        loading: () => const Center(
-          child: LoadingIndicator(message: 'Lade Shop...'),
-        ),
-        error: (error, _) => Center(
-          child: ErrorMessage(message: error.toString()),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
       ),
     );
   }
 }
 
-/// Coin Balance Chip Widget
-class _CoinBalanceChip extends StatelessWidget {
-  final int coins;
-
-  const _CoinBalanceChip({required this.coins});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFC94D).withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: const Color(0xFFFFC94D).withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.monetization_on,
-              color: Color(0xFFFFC94D), size: 18),
-          const SizedBox(width: 5),
-          Text(
-            coins.toString(),
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFFFFC94D),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Themes Tab
-class _ThemesTab extends ConsumerWidget {
+class _ShopBody extends ConsumerWidget {
+  const _ShopBody({required this.stats, required this.unlocks, required this.userId});
   final UserStats stats;
   final ThemeUnlocks unlocks;
   final String userId;
 
-  const _ThemesTab({
-    required this.stats,
-    required this.unlocks,
-    required this.userId,
-  });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        // ── Header ──────────────────────────────────────────────
+        SliverToBoxAdapter(child: _ShopHeader(coins: stats.coins)),
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Info Card
-        GlassPanel(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.info_outline, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Schalte neue Themes mit Münzen frei und personalisiere dein Lernerlebnis!',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            ],
+        // ── THEMES label ─────────────────────────────────────────
+        SliverToBoxAdapter(child: _sectionLabel('THEMES')),
+
+        // ── Themes 2-col grid ─────────────────────────────────────
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 18),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.78,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (_, i) {
+                final preset = AppThemePreset.values[i];
+                final isUnlocked = unlocks.isUnlocked(preset);
+                final price = ThemePricing.getPrice(preset);
+                return _ThemeCard(
+                  preset: preset,
+                  isUnlocked: isUnlocked,
+                  price: price,
+                  canAfford: stats.coins >= price,
+                  onPurchase: () => _purchaseTheme(context, ref, preset, price),
+                  onSelect: () => _selectTheme(context, ref, preset),
+                );
+              },
+              childCount: AppThemePreset.values.length,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
 
-        // Theme Grid
-        ...AppThemePreset.values.map((preset) {
-          final isUnlocked = unlocks.isUnlocked(preset);
-          final price = ThemePricing.getPrice(preset);
-          final canAfford = stats.coins >= price;
+        // ── POWER-UPS label ───────────────────────────────────────
+        SliverToBoxAdapter(child: _sectionLabel('POWER-UPS')),
 
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _ThemeCard(
-              preset: preset,
-              isUnlocked: isUnlocked,
-              price: price,
-              canAfford: canAfford,
-              onPurchase: () => _purchaseTheme(context, ref, preset),
-              onSelect: () => _selectTheme(context, ref, preset),
-            ),
-          );
-        }),
+        // ── Power-ups list ────────────────────────────────────────
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 32),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              _PowerUpRow(
+                icon: Icons.ac_unit,
+                iconColor: SlamTokens.success,
+                title: 'Streak-Freeze',
+                subtitle: 'Power-Up',
+                cost: 80,
+                onBuy: () => _purchaseStreakFreezeWithCoins(context, ref, userId, stats),
+              ),
+              const SizedBox(height: 8),
+              _PowerUpRow(
+                icon: Icons.star,
+                iconColor: SlamTokens.primary,
+                title: 'Streak-Freeze (XP)',
+                subtitle: '100 XP Kosten',
+                cost: 0,
+                costLabel: '100 XP',
+                onBuy: () => _purchaseStreakFreezeWithXP(context, ref, userId, stats),
+              ),
+            ]),
+          ),
+        ),
       ],
     );
   }
 
-  Future<void> _purchaseTheme(
-    BuildContext context,
-    WidgetRef ref,
-    AppThemePreset preset,
-  ) async {
-    final price = ThemePricing.getPrice(preset);
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 6, SlamTokens.gutter, 10),
+      child: Text(
+        text,
+        style: GoogleFonts.dmSans(
+          fontSize: 11, fontWeight: FontWeight.w800,
+          letterSpacing: 1.2, color: SlamTokens.textDim,
+        ),
+      ),
+    );
+  }
 
+  Future<void> _purchaseTheme(
+    BuildContext context, WidgetRef ref, AppThemePreset preset, int price) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('${ThemePricing.getName(preset)} kaufen?'),
+      builder: (_) => AlertDialog(
+        backgroundColor: SlamTokens.surface,
+        title: Text('${ThemePricing.getName(preset)} kaufen?',
+            style: GoogleFonts.fraunces(color: SlamTokens.text, fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(ThemePricing.getDescription(preset)),
+            Text(ThemePricing.getDescription(preset),
+                style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                const Icon(Icons.monetization_on, color: Colors.amber),
-                const SizedBox(width: 8),
-                Text(
-                  '$price Münzen',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+            Row(children: [
+              const Icon(Icons.monetization_on, color: SlamTokens.warn, size: 18),
+              const SizedBox(width: 8),
+              Text('$price Münzen',
+                  style: GoogleFonts.dmSans(fontWeight: FontWeight.w700, color: SlamTokens.text)),
+            ]),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Kaufen'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false),
+              child: const Text('Abbrechen')),
+          FilledButton(onPressed: () => Navigator.pop(context, true),
+              child: const Text('Kaufen')),
         ],
       ),
     );
 
-    if (confirmed == true && context.mounted) {
-      // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+    if (confirmed != true || !context.mounted) return;
+
+    showDialog(context: context, barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      final resp = await ref.read(firestoreServiceProvider).purchaseTheme(
+        userId: userId, themeName: preset.name, cost: price,
       );
-
-      try {
-        final firestoreService = ref.read(firestoreServiceProvider);
-        final response = await firestoreService.purchaseTheme(
-          userId: userId,
-          themeName: preset.name,
-          cost: price,
-        );
-
-        // Pop loading dialog
-        if (context.mounted) {
-          Navigator.of(context).pop();
-        }
-
-        if (response['success'] == true) {
-          if (context.mounted) {
-            PurchaseSuccessAnimation.show(
-              context,
-              itemName: ThemePricing.getName(preset),
-              icon: Icons.palette,
-            );
-          }
-        } else {
-          if (context.mounted) {
-            _showErrorSnackBar(
-              context,
-              response['message']?.toString() ?? 'Unbekannter Fehler beim Kauf',
-            );
-          }
-        }
-      } catch (e) {
-        // Pop loading dialog
-        if (context.mounted) {
-          Navigator.of(context).pop();
-        }
-
-        if (context.mounted) {
-          _showErrorSnackBar(
-            context,
-            'Fehler beim Kauf: ${e.toString()}',
-          );
-        }
+      if (context.mounted) Navigator.pop(context);
+      if (resp['success'] == true && context.mounted) {
+        PurchaseSuccessAnimation.show(context, itemName: ThemePricing.getName(preset), icon: Icons.palette);
+      } else if (context.mounted) {
+        _showError(context, resp['message']?.toString() ?? 'Fehler');
       }
+    } catch (e) {
+      if (context.mounted) { Navigator.pop(context); _showError(context, e.toString()); }
     }
   }
 
   void _selectTheme(BuildContext context, WidgetRef ref, AppThemePreset preset) {
     ref.read(selectedThemeProvider.notifier).setTheme(preset);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${ThemePricing.getName(preset)} aktiviert!'),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
+      SnackBar(content: Text('${ThemePricing.getName(preset)} aktiviert!'),
+          backgroundColor: SlamTokens.success, duration: const Duration(seconds: 2)),
+    );
+  }
+
+  Future<void> _purchaseStreakFreezeWithCoins(
+      BuildContext context, WidgetRef ref, String userId, UserStats stats) async {
+    if (stats.coins < 80) {
+      _showError(context, 'Nicht genug Münzen (80 benötigt)');
+      return;
+    }
+    final confirmed = await _confirmDialog(context, 'Streak Freeze kaufen?', '80 Münzen');
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      final resp = await ref.read(firestoreServiceProvider).purchaseStreakFreezeWithCoins(userId: userId, cost: 80);
+      if (resp['success'] == true && context.mounted) {
+        PurchaseSuccessAnimation.show(context, itemName: 'Streak Freeze', icon: Icons.ac_unit);
+      } else if (context.mounted) {
+        _showError(context, resp['message']?.toString() ?? 'Fehler');
+      }
+    } catch (e) {
+      if (context.mounted) _showError(context, e.toString());
+    }
+  }
+
+  Future<void> _purchaseStreakFreezeWithXP(
+      BuildContext context, WidgetRef ref, String userId, UserStats stats) async {
+    if (stats.totalXp < 100) {
+      _showError(context, 'Nicht genug XP (100 benötigt)');
+      return;
+    }
+    final confirmed = await _confirmDialog(context, 'Streak Freeze kaufen?', '100 XP');
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      final resp = await ref.read(firestoreServiceProvider).purchaseStreakFreezeWithXP(userId: userId, xpCost: 100);
+      if (resp['success'] == true && context.mounted) {
+        PurchaseSuccessAnimation.show(context, itemName: 'Streak Freeze', icon: Icons.ac_unit);
+      } else if (context.mounted) {
+        _showError(context, resp['message']?.toString() ?? 'Fehler');
+      }
+    } catch (e) {
+      if (context.mounted) _showError(context, e.toString());
+    }
+  }
+
+  Future<bool?> _confirmDialog(BuildContext context, String title, String cost) {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: SlamTokens.surface,
+        title: Text(title, style: GoogleFonts.fraunces(color: SlamTokens.text, fontWeight: FontWeight.w700)),
+        content: Text(cost, style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Abbrechen')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Kaufen')),
+        ],
       ),
     );
   }
 
-  void _showErrorSnackBar(BuildContext context, String message) {
+  void _showError(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
+      SnackBar(content: Text(msg), backgroundColor: SlamTokens.danger, duration: const Duration(seconds: 4)),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shop Header
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ShopHeader extends StatelessWidget {
+  const _ShopHeader({required this.coins});
+  final int coins;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 24, SlamTokens.gutter, 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('SHOP', style: GoogleFonts.dmSans(
+                      fontSize: 11, fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2, color: SlamTokens.textDim)),
+                  const SizedBox(height: 6),
+                  Text('Belohnungen', style: GoogleFonts.fraunces(
+                      fontSize: 34, fontWeight: FontWeight.w700,
+                      color: SlamTokens.text, letterSpacing: -0.8)),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: SlamTokens.warn,
+                borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                boxShadow: [BoxShadow(color: SlamTokens.warn.withValues(alpha: 0.5),
+                    blurRadius: 18, offset: const Offset(0, 6), spreadRadius: -4)],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.monetization_on, size: 16, color: SlamTokens.primaryOn),
+                  const SizedBox(width: 6),
+                  Text('$coins', style: GoogleFonts.fraunces(
+                      fontSize: 14, fontWeight: FontWeight.w800, color: SlamTokens.primaryOn)),
+                ],
+              ),
+            ),
           ],
         ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
       ),
     );
   }
 }
 
-/// Theme Card Widget
+// ─────────────────────────────────────────────────────────────────────────────
+// Theme Card
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _ThemeCard extends StatelessWidget {
+  const _ThemeCard({
+    required this.preset, required this.isUnlocked, required this.price,
+    required this.canAfford, required this.onPurchase, required this.onSelect,
+  });
   final AppThemePreset preset;
   final bool isUnlocked;
   final int price;
@@ -327,487 +322,180 @@ class _ThemeCard extends StatelessWidget {
   final VoidCallback onPurchase;
   final VoidCallback onSelect;
 
-  const _ThemeCard({
-    required this.preset,
-    required this.isUnlocked,
-    required this.price,
-    required this.canAfford,
-    required this.onPurchase,
-    required this.onSelect,
-  });
+  Color get _presetColor {
+    switch (preset) {
+      case AppThemePreset.sunsetOrange: return const Color(0xFFF97316);
+      case AppThemePreset.oceanBlue: return const Color(0xFF3B82F6);
+      case AppThemePreset.forestGreen: return const Color(0xFF22C55E);
+      case AppThemePreset.lavenderPurple: return const Color(0xFFA855F7);
+      case AppThemePreset.cherryRed: return const Color(0xFFEF4444);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final presetColor = _getPresetColor(preset);
-
-    return GlassPanel(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          // Color Preview
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [presetColor, presetColor.withValues(alpha: 0.7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: isUnlocked ? onSelect : (canAfford ? onPurchase : null),
+      child: Container(
+        decoration: BoxDecoration(
+          color: SlamTokens.surface,
+          borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
+          border: Border.all(color: SlamTokens.line),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Color preview
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [_presetColor, _presetColor.withValues(alpha: 0.55)],
+                  ),
+                  borderRadius: BorderRadius.circular(SlamTokens.rCardSm - 4),
+                ),
+                child: Stack(
+                  children: [
+                    // Blob
+                    Positioned.fill(
+                      child: Container(
+                        margin: const EdgeInsets.all(-4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                        ),
+                      ),
+                    ),
+                    if (isUnlocked)
+                      Positioned(
+                        top: 8, right: 8,
+                        child: Container(
+                          width: 24, height: 24,
+                          decoration: const BoxDecoration(
+                            color: Color(0x66000000), shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.check, size: 14, color: Colors.white),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: presetColor.withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+            ),
+            const SizedBox(height: 10),
+            Text(ThemePricing.getName(preset), style: GoogleFonts.fraunces(
+                fontSize: 14, fontWeight: FontWeight.w700,
+                color: SlamTokens.text, letterSpacing: -0.2)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: SlamTokens.warnSoft,
+                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.monetization_on, size: 11, color: SlamTokens.warn),
+                      const SizedBox(width: 3),
+                      Text('$price', style: GoogleFonts.dmSans(
+                          fontSize: 11, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  isUnlocked ? 'BESITZT' : 'KAUFEN',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.6,
+                    color: isUnlocked ? SlamTokens.success : SlamTokens.textDim,
+                  ),
                 ),
               ],
             ),
-            child: isUnlocked
-                ? const Icon(Icons.check, color: Colors.white, size: 28)
-                : const Icon(Icons.lock_outline, color: Colors.white54, size: 24),
-          ),
-          const SizedBox(width: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-          // Info
+// ─────────────────────────────────────────────────────────────────────────────
+// Power-Up Row
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PowerUpRow extends StatelessWidget {
+  const _PowerUpRow({
+    required this.icon, required this.iconColor, required this.title,
+    required this.subtitle, required this.cost, this.costLabel, required this.onBuy,
+  });
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final int cost;
+  final String? costLabel;
+  final VoidCallback onBuy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: SlamTokens.surface,
+        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+        border: Border.all(color: SlamTokens.line),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Container(
+            width: 44, height: 44,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 20, color: iconColor),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  ThemePricing.getName(preset),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  ThemePricing.getDescription(preset),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(title, style: GoogleFonts.fraunces(
+                    fontSize: 14, fontWeight: FontWeight.w700,
+                    color: SlamTokens.text, letterSpacing: -0.2)),
+                Text(subtitle, style: GoogleFonts.dmSans(
+                    fontSize: 12, color: SlamTokens.textDim)),
               ],
             ),
           ),
-          const SizedBox(width: 12),
-
-          // Action Button
-          if (isUnlocked)
-            FilledButton(
-              onPressed: onSelect,
-              child: const Text('Auswählen'),
-            )
-          else if (price == 0)
-            FilledButton(
-              onPressed: onSelect,
-              child: const Text('Gratis'),
-            )
-          else
-            FilledButton.tonal(
-              onPressed: canAfford ? onPurchase : null,
+          GestureDetector(
+            onTap: onBuy,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: SlamTokens.warnSoft,
+                borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+              ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.monetization_on, size: 16),
-                  const SizedBox(width: 4),
-                  Text('$price'),
+                  if (cost > 0) ...[
+                    const Icon(Icons.monetization_on, size: 13, color: SlamTokens.warn),
+                    const SizedBox(width: 4),
+                    Text('$cost', style: GoogleFonts.dmSans(
+                        fontSize: 13, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
+                  ] else
+                    Text(costLabel ?? '', style: GoogleFonts.dmSans(
+                        fontSize: 12, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
                 ],
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Color _getPresetColor(AppThemePreset preset) {
-    switch (preset) {
-      case AppThemePreset.sunsetOrange:
-        return const Color(0xFFF97316);
-      case AppThemePreset.oceanBlue:
-        return const Color(0xFF3B82F6);
-      case AppThemePreset.forestGreen:
-        return const Color(0xFF22C55E);
-      case AppThemePreset.lavenderPurple:
-        return const Color(0xFFA855F7);
-      case AppThemePreset.cherryRed:
-        return const Color(0xFFEF4444);
-    }
-  }
-}
-
-/// Items Tab (Streak Freezes, etc.)
-class _ItemsTab extends ConsumerStatefulWidget {
-  final UserStats stats;
-  final String userId;
-
-  const _ItemsTab({
-    required this.stats,
-    required this.userId,
-  });
-
-  @override
-  ConsumerState<_ItemsTab> createState() => _ItemsTabState();
-}
-
-class _ItemsTabState extends ConsumerState<_ItemsTab> {
-  bool _isProcessing = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Streak Freeze Card
-        GlassPanel(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.ac_unit,
-                      color: Colors.blue,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Streak Freeze',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '${widget.stats.streakFreezes} im Inventar',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Schütze deine Streak, wenn du mal einen Tag verpasst. '
-                'Der Streak Freeze wird automatisch aktiviert.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  // Buy with Coins
-                  Expanded(
-                    child: _PurchaseButton(
-                      icon: Icons.monetization_on,
-                      iconColor: Colors.amber,
-                      label: '50 Münzen',
-                      enabled: widget.stats.coins >= 50 && !_isProcessing,
-                      onPressed: () => _purchaseStreakFreezeWithCoins(context),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Buy with XP
-                  Expanded(
-                    child: _PurchaseButton(
-                      icon: Icons.star,
-                      iconColor: theme.colorScheme.primary,
-                      label: '100 XP',
-                      enabled: widget.stats.totalXp >= 100 && !_isProcessing,
-                      onPressed: () => _purchaseStreakFreezeWithXP(context),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // How to earn coins info
-        GlassPanel.accent(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.lightbulb, color: theme.colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Wie verdiene ich Münzen?',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const _InfoRow(
-                icon: Icons.check_circle,
-                text: 'Richtige Antworten geben',
-              ),
-              const _InfoRow(
-                icon: Icons.speed,
-                text: 'Schnell & ohne Hinweise antworten (+25%)',
-              ),
-              const _InfoRow(
-                icon: Icons.local_fire_department,
-                text: '5+ Tage Streak halten (+50%)',
-              ),
-              const _InfoRow(
-                icon: Icons.wb_sunny,
-                text: 'Erste Frage des Tages (x2)',
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _purchaseStreakFreezeWithCoins(BuildContext context) async {
-    final confirmed = await _showPurchaseDialog(
-      context,
-      title: 'Streak Freeze kaufen?',
-      cost: '50 Münzen',
-      icon: Icons.monetization_on,
-      iconColor: Colors.amber,
-    );
-
-    if (confirmed == true && context.mounted) {
-      setState(() => _isProcessing = true);
-
-      try {
-        final firestoreService = ref.read(firestoreServiceProvider);
-        final response = await firestoreService.purchaseStreakFreezeWithCoins(
-          userId: widget.userId,
-          cost: 50,
-        );
-
-        setState(() => _isProcessing = false);
-
-        if (response['success'] == true) {
-          if (context.mounted) {
-            PurchaseSuccessAnimation.show(
-              context,
-              itemName: 'Streak Freeze',
-              icon: Icons.ac_unit,
-            );
-          }
-        } else {
-          if (context.mounted) {
-            _showErrorSnackBar(
-              context,
-              response['message']?.toString() ?? 'Unbekannter Fehler beim Kauf',
-            );
-          }
-        }
-      } catch (e) {
-        setState(() => _isProcessing = false);
-
-        if (context.mounted) {
-          _showErrorSnackBar(
-            context,
-            'Fehler beim Kauf: ${e.toString()}',
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _purchaseStreakFreezeWithXP(BuildContext context) async {
-    final confirmed = await _showPurchaseDialog(
-      context,
-      title: 'Streak Freeze kaufen?',
-      cost: '100 XP',
-      icon: Icons.star,
-      iconColor: Theme.of(context).colorScheme.primary,
-      warning: 'Achtung: Du verlierst 100 XP!',
-    );
-
-    if (confirmed == true && context.mounted) {
-      setState(() => _isProcessing = true);
-
-      try {
-        final firestoreService = ref.read(firestoreServiceProvider);
-        final response = await firestoreService.purchaseStreakFreezeWithXP(
-          userId: widget.userId,
-          xpCost: 100,
-        );
-
-        setState(() => _isProcessing = false);
-
-        if (response['success'] == true) {
-          if (context.mounted) {
-            PurchaseSuccessAnimation.show(
-              context,
-              itemName: 'Streak Freeze',
-              icon: Icons.ac_unit,
-            );
-          }
-        } else {
-          if (context.mounted) {
-            _showErrorSnackBar(
-              context,
-              response['message']?.toString() ?? 'Unbekannter Fehler beim Kauf',
-            );
-          }
-        }
-      } catch (e) {
-        setState(() => _isProcessing = false);
-
-        if (context.mounted) {
-          _showErrorSnackBar(
-            context,
-            'Fehler beim Kauf: ${e.toString()}',
-          );
-        }
-      }
-    }
-  }
-
-  Future<bool?> _showPurchaseDialog(
-    BuildContext context, {
-    required String title,
-    required String cost,
-    required IconData icon,
-    required Color iconColor,
-    String? warning,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: iconColor),
-                const SizedBox(width: 8),
-                Text(
-                  cost,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            if (warning != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                warning,
-                style: TextStyle(color: Colors.orange.shade700),
-              ),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Kaufen'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showErrorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
-      ),
-    );
-  }
-}
-
-/// Purchase Button Widget
-class _PurchaseButton extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  const _PurchaseButton({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.tonal(
-      onPressed: enabled ? onPressed : null,
-      style: FilledButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 18, color: enabled ? iconColor : null),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      ),
-    );
-  }
-}
-
-/// Info Row Widget
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const _InfoRow({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: theme.colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(text, style: theme.textTheme.bodySmall),
           ),
         ],
       ),
@@ -815,30 +503,24 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-/// Provider for Theme Unlocks Stream
+// ─────────────────────────────────────────────────────────────────────────────
+// Providers
+// ─────────────────────────────────────────────────────────────────────────────
+
+final _shopUserStatsProvider =
+    StreamProvider.autoDispose.family<UserStats, String>((ref, userId) {
+  if (userId.isEmpty) return Stream.value(UserStats.initial());
+  return ref.watch(firestoreServiceProvider).userStatsStream(userId);
+});
+
 final themeUnlocksStreamProvider =
     StreamProvider.autoDispose.family<ThemeUnlocks, String>((ref, userId) {
-  if (userId.isEmpty) {
-    return Stream.value(ThemeUnlocks.initial());
-  }
-
+  if (userId.isEmpty) return Stream.value(ThemeUnlocks.initial());
   final firestoreService = ref.watch(firestoreServiceProvider);
   return firestoreService.themeUnlocksStream(userId).map((data) {
     final unlockedThemes = (data['unlockedThemes'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
+            ?.map((e) => e.toString()).toList() ??
         ['sunsetOrange'];
     return ThemeUnlocks(unlockedThemes: unlockedThemes);
   });
-});
-
-/// Provider for User Stats Stream (reuse from progress_screen)
-final userStatsStreamProvider =
-    StreamProvider.autoDispose.family<UserStats, String>((ref, userId) {
-  if (userId.isEmpty) {
-    return Stream.value(UserStats.initial());
-  }
-
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  return firestoreService.userStatsStream(userId);
 });

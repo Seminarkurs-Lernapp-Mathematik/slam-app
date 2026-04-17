@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/models/memory.dart';
@@ -818,3 +819,6 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
   }
 }
 
+
+/// Timer seconds for the current question — updated by FeedQuestionCard, read by _FeedHeader.
+final liveFeedTimerSecondsProvider = StateProvider<int>((ref) => 0);

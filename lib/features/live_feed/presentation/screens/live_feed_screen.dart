@@ -1,6 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../app/design_tokens.dart';
@@ -14,8 +15,6 @@ import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
-/// Live Feed Screen — adaptive question stream.
-/// Header: Avatar (profile entry) + global stat pills (§7.1).
 class LiveFeedScreen extends ConsumerStatefulWidget {
   const LiveFeedScreen({super.key});
 
@@ -81,6 +80,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     ref.read(lastEvaluationResultProvider.notifier).clear();
     ref.read(showWoHaengtsProvider.notifier).hide();
     ref.read(woHaengtsInputProvider.notifier).clear();
+    ref.read(liveFeedTimerSecondsProvider.notifier).state = 0;
 
     if (ref.read(liveFeedQueueProvider.notifier).needsMoreQuestions) {
       _generateQuestions();
@@ -92,14 +92,13 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     final currentQuestion = ref.watch(currentLiveFeedQuestionProvider);
     final queueState = ref.watch(liveFeedQueueProvider);
     final topics = ref.watch(lernplanTopicsAsTopicDataProvider);
-    // Keep watching for adaptive difficulty (not displayed, but drives logic)
     ref.watch(consecutiveCorrectProvider);
 
     return Scaffold(
       backgroundColor: SlamTokens.bg,
       body: Column(
         children: [
-          _FeedHeader(question: currentQuestion),
+          const _FeedHeader(),
           Expanded(
             child: _buildQuestionArea(currentQuestion, queueState, topics),
           ),
@@ -118,15 +117,10 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     if (queueState.isGenerating && currentQuestion == null) return _buildLoadingView();
     if (currentQuestion == null) return _buildEmptyView();
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        SlamTokens.gutter, 12, SlamTokens.gutter, SlamTokens.gutter,
-      ),
-      child: FeedQuestionCard(
-        key: ValueKey(currentQuestion.id),
-        question: currentQuestion,
-        onAnswerSubmitted: _handleAnswerSubmitted,
-      ),
+    return FeedQuestionCard(
+      key: ValueKey(currentQuestion.id),
+      question: currentQuestion,
+      onAnswerSubmitted: _handleAnswerSubmitted,
     );
   }
 
@@ -138,9 +132,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
           const CircularProgressIndicator(color: SlamTokens.primary),
           const SizedBox(height: 24),
           Text('Generiere Fragen…',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: SlamTokens.textDim,
-                  )),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: SlamTokens.textDim)),
         ],
       ),
     );
@@ -157,20 +149,12 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
             const SizedBox(height: 16),
             Text('Fehler', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? 'Unbekannter Fehler',
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: SlamTokens.textDim),
-            ),
+            Text(_errorMessage ?? 'Unbekannter Fehler',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () {
-                setState(() => _errorMessage = null);
-                _generateQuestions();
-              },
+              onPressed: () { setState(() => _errorMessage = null); _generateQuestions(); },
               icon: const Icon(Icons.refresh),
               label: const Text('Erneut versuchen'),
             ),
@@ -187,23 +171,16 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.menu_book_outlined,
-                size: 56, color: SlamTokens.textMute),
+            const Icon(Icons.menu_book_outlined, size: 56, color: SlamTokens.textMute),
             const SizedBox(height: 16),
-            Text('Kein Lernplan',
-                style: Theme.of(context).textTheme.headlineMedium),
+            Text('Kein Lernplan', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
-            Text(
-              'Füge Themen zu deinem Lernplan hinzu.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: SlamTokens.textDim),
-            ),
+            Text('Füge Themen zu deinem Lernplan hinzu.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => context.go('/lernplan'),
+              onPressed: () => ref.read(mainNavNotifierProvider.notifier).switchToTab(1),
               icon: const Icon(Icons.add),
               label: const Text('Lernplan öffnen'),
             ),
@@ -220,23 +197,13 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.psychology,
-              size: 56,
-              color: SlamTokens.primary.withValues(alpha: 0.4),
-            ),
+            Icon(Icons.psychology, size: 56, color: SlamTokens.primary.withValues(alpha: 0.4)),
             const SizedBox(height: 24),
-            Text('Keine Fragen verfügbar',
-                style: Theme.of(context).textTheme.headlineMedium),
+            Text('Keine Fragen verfügbar', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 12),
-            Text(
-              'Alle Fragen wurden beantwortet.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: SlamTokens.textDim),
-            ),
+            Text('Alle Fragen wurden beantwortet.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
             const SizedBox(height: 32),
             FilledButton.icon(
               onPressed: _generateQuestions,
@@ -251,13 +218,11 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Feed Header (§7.1)
+// Feed Header — avatar ring + stat pills
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _FeedHeader extends ConsumerWidget {
-  const _FeedHeader({this.question});
-
-  final Question? question;
+  const _FeedHeader();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -272,66 +237,33 @@ class _FeedHeader extends ConsumerWidget {
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          SlamTokens.gutter, 12, SlamTokens.gutter, 0,
-        ),
+        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 12, SlamTokens.gutter, 0),
         child: Row(
           children: [
-            // Avatar — swoosh origin, profile entry (§6.7)
             GestureDetector(
-              onTap: () =>
-                  ref.read(mainNavNotifierProvider.notifier).openProfile(),
-              child: Container(
-                key: avatarGlobalKey,
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: SlamTokens.primarySoft,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: SlamTokens.primary, width: 2),
+              onTap: () => ref.read(mainNavNotifierProvider.notifier).openProfile(),
+              child: userStatsAsync.when(
+                data: (stats) => _AvatarRing(
+                  letter: avatarLetter,
+                  progress: stats.progressToNextLevel,
+                  level: stats.calculatedLevel,
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  avatarLetter,
-                  style: GoogleFonts.fraunces(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.primary,
-                  ),
-                ),
+                loading: () => _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
+                error: (_, __) => _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
               ),
             ),
 
-            // Subject tag (derived from current question's topic)
-            if (question?.topic != null) ...[
-              const SizedBox(width: 10),
-              _SubjectTag(topic: question!.topic),
-            ],
-
             const Spacer(),
 
-            // Global stat pills: Streak · Coins · XP
             userStatsAsync.when(
               data: (stats) => Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _StatPill(
-                    icon: Icons.local_fire_department,
-                    value: '${stats.streak}',
-                    color: SlamTokens.warn,
-                  ),
+                  _StatPill(icon: Icons.local_fire_department, value: '${stats.streak}', color: SlamTokens.danger),
                   const SizedBox(width: 6),
-                  _StatPill(
-                    icon: Icons.monetization_on,
-                    value: _fmt(stats.coins),
-                    color: SlamTokens.warn,
-                  ),
+                  _StatPill(icon: Icons.monetization_on, value: _fmt(stats.coins), color: SlamTokens.warn),
                   const SizedBox(width: 6),
-                  _StatPill(
-                    icon: Icons.star,
-                    value: _fmt(stats.totalXp),
-                    color: SlamTokens.primary,
-                  ),
+                  _StatPill(icon: Icons.star, value: _fmt(stats.totalXp), color: SlamTokens.primary),
                 ],
               ),
               loading: () => const SizedBox.shrink(),
@@ -350,13 +282,116 @@ class _FeedHeader extends ConsumerWidget {
   }
 }
 
-class _StatPill extends StatelessWidget {
-  const _StatPill({
-    required this.icon,
-    required this.value,
-    required this.color,
-  });
+// Avatar with XP progress ring + level badge
+class _AvatarRing extends StatelessWidget {
+  const _AvatarRing({required this.letter, required this.progress, required this.level});
 
+  final String letter;
+  final double progress;
+  final int level;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: Stack(
+        children: [
+          CustomPaint(
+            size: const Size(56, 56),
+            painter: _RingPainter(progress: progress),
+            child: Container(
+              key: avatarGlobalKey,
+              width: 56,
+              height: 56,
+              padding: const EdgeInsets.all(4),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: SlamTokens.primarySoft,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  letter,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.primary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: SlamTokens.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: SlamTokens.bg, width: 1.5),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '$level',
+                style: GoogleFonts.fraunces(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: SlamTokens.primaryOn,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  const _RingPainter({required this.progress});
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 3.0;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - strokeWidth / 2;
+
+    // background track
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..color = const Color(0x1AFFF4EC)
+        ..strokeWidth = strokeWidth
+        ..style = PaintingStyle.stroke,
+    );
+
+    // progress arc
+    if (progress > 0) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        -math.pi / 2,
+        2 * math.pi * progress,
+        false,
+        Paint()
+          ..color = SlamTokens.primary
+          ..strokeWidth = strokeWidth
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter old) => old.progress != progress;
+}
+
+class _StatPill extends StatelessWidget {
+  const _StatPill({required this.icon, required this.value, required this.color});
   final IconData icon;
   final String value;
   final Color color;
@@ -364,11 +399,11 @@ class _StatPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: SlamTokens.surface,
         borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        border: Border.all(color: SlamTokens.line),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -380,7 +415,7 @@ class _StatPill extends StatelessWidget {
             style: GoogleFonts.dmSans(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: color,
+              color: SlamTokens.text,
             ),
           ),
         ],
@@ -389,53 +424,8 @@ class _StatPill extends StatelessWidget {
   }
 }
 
-/// Colored subject-tag pill based on the question's topic string.
-class _SubjectTag extends StatelessWidget {
-  const _SubjectTag({required this.topic});
-
-  final String topic;
-
-  @override
-  Widget build(BuildContext context) {
-    final (bg, fg) = _hueFor(topic);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-      ),
-      child: Text(
-        topic,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.dmSans(
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          color: fg,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-
-  static (Color bg, Color fg) _hueFor(String topic) {
-    final t = topic.toLowerCase();
-    if (t.contains('algebra')) return (SlamTokens.algebraSoft, SlamTokens.algebra);
-    if (t.contains('analysis') || t.contains('differenzial') || t.contains('integral')) {
-      return (SlamTokens.analysisSoft, SlamTokens.analysis);
-    }
-    if (t.contains('geometrie') || t.contains('trigono')) {
-      return (SlamTokens.geometrieSoft, SlamTokens.geometrie);
-    }
-    if (t.contains('stochastik') || t.contains('statistik') || t.contains('wahrscheinlichkeit')) {
-      return (SlamTokens.stochastikSoft, SlamTokens.stochastik);
-    }
-    return (SlamTokens.primarySoft, SlamTokens.primary);
-  }
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Providers (local to this file)
+// Local provider
 // ─────────────────────────────────────────────────────────────────────────────
 
 final _feedUserStatsProvider =
