@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../app/design_tokens.dart';
 import '../../core/models/user_stats.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/firestore_service.dart';
@@ -46,21 +48,14 @@ class CoinBalanceChip extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.amber.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
+        color: SlamTokens.warnSoft,
+        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+        border: Border.all(color: SlamTokens.warn.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.monetization_on,
-            size: iconSize,
-            color: Colors.amber.shade700,
-          ),
+          Icon(Icons.monetization_on, size: iconSize, color: SlamTokens.warn),
           const SizedBox(width: 6),
           if (isLoading)
             SizedBox(
@@ -68,17 +63,16 @@ class CoinBalanceChip extends ConsumerWidget {
               height: 12,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.amber.shade700,
-                ),
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(SlamTokens.warn),
               ),
             )
           else
             Text(
               _formatNumber(coins),
-              style: TextStyle(
-                color: Colors.amber.shade700,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.dmSans(
+                color: SlamTokens.warn,
+                fontWeight: FontWeight.w700,
                 fontSize: fontSize,
               ),
             ),

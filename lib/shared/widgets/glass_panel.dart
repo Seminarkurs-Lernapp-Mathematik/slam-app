@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
-/// Glass Panel Widget
+import '../../app/design_tokens.dart';
+
+/// Card-style panel (DESIGN.md §6.2).
 ///
-/// Glassmorphism-style panel with backdrop blur.
-/// Replicates the React app's GlassPanel component.
+/// Replaces the old glassmorphism/backdrop-blur approach. Uses
+/// `surface` background + `line` border + symmetric corner radii.
+///
+/// All constructor parameters are preserved for backward compatibility.
+/// The `blur` and `opacity` parameters are kept but have no visual effect —
+/// existing callers compile without changes.
 class GlassPanel extends StatelessWidget {
+  const GlassPanel({
+    super.key,
+    required this.child,
+    this.padding,
+    this.margin,
+    this.borderRadius,
+    this.blur = 0,       // deprecated; retained for compat
+    this.opacity = 0,    // deprecated; retained for compat
+    this.showBorder = true,
+    this.borderColor,
+    this.glow = false,
+    this.glowColor,
+    this.backgroundColor,
+  });
+
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -16,68 +36,36 @@ class GlassPanel extends StatelessWidget {
   final Color? borderColor;
   final bool glow;
   final Color? glowColor;
-
-  const GlassPanel({
-    super.key,
-    required this.child,
-    this.padding,
-    this.margin,
-    this.borderRadius,
-    this.blur = 12.0,
-    this.opacity = 0.08,
-    this.showBorder = true,
-    this.borderColor,
-    this.glow = false,
-    this.glowColor,
-  });
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(16);
-    final effectiveBorderColor =
-        borderColor ?? Colors.white.withValues(alpha: 0.12);
-    final effectiveGlowColor =
-        glowColor ?? theme.colorScheme.primary.withValues(alpha: 0.4);
+    final radius = borderRadius ?? BorderRadius.circular(SlamTokens.rCardMd);
+    final bg = backgroundColor ?? SlamTokens.surface;
+    final border = borderColor ?? SlamTokens.line;
 
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        borderRadius: effectiveBorderRadius,
+        color: bg,
+        borderRadius: radius,
+        border: showBorder ? Border.all(color: border) : null,
         boxShadow: glow
             ? [
                 BoxShadow(
-                  color: effectiveGlowColor,
-                  blurRadius: 20,
-                  spreadRadius: 2,
+                  color: (glowColor ?? SlamTokens.primary).withValues(alpha: 0.35),
+                  blurRadius: 24,
+                  spreadRadius: 0,
                 )
               ]
             : null,
       ),
-      child: ClipRRect(
-        borderRadius: effectiveBorderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: opacity),
-              borderRadius: effectiveBorderRadius,
-              border: showBorder
-                  ? Border.all(
-                      color: effectiveBorderColor,
-                      width: 1,
-                    )
-                  : null,
-            ),
-            padding: padding,
-            child: child,
-          ),
-        ),
-      ),
+      padding: padding,
+      child: child,
     );
   }
 
-  /// Variant: Active (more opacity)
+  /// Variant: interactively highlighted card.
   factory GlassPanel.active({
     required Widget child,
     EdgeInsetsGeometry? padding,
@@ -88,13 +76,13 @@ class GlassPanel extends StatelessWidget {
       padding: padding,
       margin: margin,
       borderRadius: borderRadius,
-      opacity: 0.12,
-      borderColor: Colors.white.withValues(alpha: 0.20),
+      backgroundColor: SlamTokens.surfaceHi,
+      borderColor: SlamTokens.primary.withValues(alpha: 0.3),
       child: child,
     );
   }
 
-  /// Variant: Inactive (less opacity)
+  /// Variant: dimmed / secondary card.
   factory GlassPanel.inactive({
     required Widget child,
     EdgeInsetsGeometry? padding,
@@ -105,13 +93,12 @@ class GlassPanel extends StatelessWidget {
       padding: padding,
       margin: margin,
       borderRadius: borderRadius,
-      opacity: 0.05,
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      backgroundColor: SlamTokens.bgElev,
       child: child,
     );
   }
 
-  /// Variant: Accent (with glow)
+  /// Variant: accent card with primary glow.
   factory GlassPanel.accent({
     required Widget child,
     EdgeInsetsGeometry? padding,
@@ -123,7 +110,6 @@ class GlassPanel extends StatelessWidget {
       padding: padding,
       margin: margin,
       borderRadius: borderRadius,
-      opacity: 0.12,
       glow: true,
       glowColor: glowColor,
       child: child,

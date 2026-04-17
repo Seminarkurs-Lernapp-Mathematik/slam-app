@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-/// Gradient Button Widget
+import '../../app/design_tokens.dart';
+
+/// Primary CTA button (DESIGN.md §6.1) — pill shape, primary bg, primaryOn text,
+/// with shadow `0 10px 30px -8px primaryAA`.
 ///
-/// Button with gradient background and optional loading state.
+/// The `gradient` and `borderRadius` parameters are retained for backward
+/// compatibility but have no visual effect in the new design.
 class GradientButton extends StatelessWidget {
+  const GradientButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.isLoading = false,
+    this.gradient,       // retained for compat — ignored
+    this.height = 52,
+    this.width,
+    this.borderRadius,   // retained for compat — ignored
+    this.textStyle,
+    this.icon,
+    this.disabled = false,
+  });
+
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -15,61 +34,37 @@ class GradientButton extends StatelessWidget {
   final IconData? icon;
   final bool disabled;
 
-  const GradientButton({
-    super.key,
-    required this.text,
-    this.onPressed,
-    this.isLoading = false,
-    this.gradient,
-    this.height = 52,
-    this.width,
-    this.borderRadius,
-    this.textStyle,
-    this.icon,
-    this.disabled = false,
-  });
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final effectiveGradient = gradient ??
-        LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
-        );
-
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
-    final isDisabled = disabled || isLoading || onPressed == null;
+    final isOff = disabled || isLoading || onPressed == null;
 
     return SizedBox(
       height: height,
       width: width,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: isDisabled ? null : effectiveGradient,
-          color: isDisabled ? Colors.grey[800] : null,
-          borderRadius: effectiveBorderRadius,
+          color: isOff
+              ? SlamTokens.surfaceHi
+              : SlamTokens.primary,
+          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+          boxShadow: isOff ? null : [SlamTokens.primaryShadow],
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: isDisabled ? null : onPressed,
-            borderRadius: effectiveBorderRadius,
+            onTap: isOff ? null : onPressed,
+            borderRadius: BorderRadius.circular(SlamTokens.rCircle),
             child: Container(
               alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: isLoading
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
                       child: CircularProgressIndicator(
                         valueColor:
-                            const AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 2,
+                            AlwaysStoppedAnimation<Color>(SlamTokens.primaryOn),
+                        strokeWidth: 2.5,
                       ),
                     )
                   : Row(
@@ -77,16 +72,19 @@ class GradientButton extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (icon != null) ...[
-                          Icon(icon, color: Colors.white, size: 20),
+                          Icon(icon, color: SlamTokens.primaryOn, size: 20),
                           const SizedBox(width: 8),
                         ],
                         Text(
                           text,
                           style: textStyle ??
-                              const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              GoogleFonts.dmSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: isOff
+                                    ? SlamTokens.textMute
+                                    : SlamTokens.primaryOn,
+                                letterSpacing: 0.1,
                               ),
                         ),
                       ],
@@ -97,21 +95,10 @@ class GradientButton extends StatelessWidget {
       ),
     );
   }
-
 }
 
-/// Secondary Button (Outlined)
+/// Secondary button (DESIGN.md §6.1) — surface bg, line border, text fg.
 class SecondaryButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final double height;
-  final double? width;
-  final BorderRadius? borderRadius;
-  final TextStyle? textStyle;
-  final IconData? icon;
-  final bool disabled;
-
   const SecondaryButton({
     super.key,
     required this.text,
@@ -125,39 +112,44 @@ class SecondaryButton extends StatelessWidget {
     this.disabled = false,
   });
 
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final double height;
+  final double? width;
+  final BorderRadius? borderRadius;
+  final TextStyle? textStyle;
+  final IconData? icon;
+  final bool disabled;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
-    final isDisabled = disabled || isLoading || onPressed == null;
+    final isOff = disabled || isLoading || onPressed == null;
 
     return SizedBox(
       height: height,
       width: width,
       child: OutlinedButton(
-        onPressed: isDisabled ? null : onPressed,
+        onPressed: isOff ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: theme.colorScheme.primary,
+          foregroundColor: isOff ? SlamTokens.textMute : SlamTokens.text,
+          backgroundColor: SlamTokens.surface,
           side: BorderSide(
-            color: isDisabled
-                ? Colors.grey[700]!
-                : theme.colorScheme.primary,
-            width: 1.5,
+            color: isOff ? SlamTokens.textMute : SlamTokens.line,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           shape: RoundedRectangleBorder(
-            borderRadius: effectiveBorderRadius,
+            borderRadius: BorderRadius.circular(SlamTokens.rInput),
           ),
         ),
         child: isLoading
-            ? SizedBox(
-                width: 24,
-                height: 24,
+            ? const SizedBox(
+                width: 22,
+                height: 22,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.primary,
-                  ),
-                  strokeWidth: 2,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(SlamTokens.textDim),
+                  strokeWidth: 2.5,
                 ),
               )
             : Row(
@@ -171,12 +163,12 @@ class SecondaryButton extends StatelessWidget {
                   Text(
                     text,
                     style: textStyle ??
-                        TextStyle(
-                          color: isDisabled
-                              ? Colors.grey[500]
-                              : theme.colorScheme.primary,
-                          fontSize: 16,
+                        GoogleFonts.dmSans(
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
+                          color: isOff
+                              ? SlamTokens.textMute
+                              : SlamTokens.text,
                         ),
                   ),
                 ],

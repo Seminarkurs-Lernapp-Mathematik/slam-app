@@ -1,752 +1,336 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'design_tokens.dart';
 import '../features/settings/presentation/providers/settings_providers.dart';
 
-/// App Theme - Material 3 Expressive Design mit Sunset Orange Theme
+/// App Theme — Sunset Glow / Liquid UI (DESIGN.md v2)
 ///
-/// Repliziert das Tailwind CSS Orange Theme aus der React App
-/// mit Material 3 Expressive Design Principles:
-/// - Pronounced rounded corners (24-28px)
-/// - Expressive typography with dynamic scaling
-/// - Rich surface tints and elevation
-/// - Enhanced motion and interaction
+/// Typography:
+///   Fraunces  → emotional / hero content  (Display, Headings, large numbers)
+///   DM Sans   → action / structure        (Buttons, Labels, Body)
+///   JB Mono   → meta / timer / code tags  (via SlamTokens.jbMono() directly)
 class AppTheme {
-  // Sunset Theme Colors (aus React App: #f97316)
-  static const Color primaryOrange = Color(0xFFf97316);
-  static const Color primaryOrangeDark = Color(0xFFea580c);
-  static const Color primaryOrangeLight = Color(0xFFfb923c);
+  // Legacy color constants — kept for any screens not yet migrated.
+  // New code should use SlamTokens directly.
+  static const Color primaryOrange     = SlamTokens.primary;
+  static const Color primaryOrangeDark = Color(0xFFE85F20);
+  static const Color primaryOrangeLight= Color(0xFFFF9B67);
 
-  // Tonal Palette for Material 3 Expressive
-  static const Color primary10 = Color(0xFF3d0e00);
-  static const Color primary20 = Color(0xFF651d00);
-  static const Color primary30 = Color(0xFF8e2a00);
-  static const Color primary40 = Color(0xFFea580c);
-  static const Color primary50 = Color(0xFFf97316);
-  static const Color primary60 = Color(0xFFfb923c);
-  static const Color primary80 = Color(0xFFfdba74);
-  static const Color primary90 = Color(0xFFfed7aa);
+  static const Color backgroundDark    = SlamTokens.bg;
+  static const Color surfaceDark       = SlamTokens.surface;
+  static const Color surfaceContainer  = SlamTokens.bgElev;
+  static const Color textPrimary       = SlamTokens.text;
+  static const Color textSecondary     = SlamTokens.textDim;
 
-  // Dark Theme Background Colors
-  static const Color backgroundDark = Color(0xFF1a1a1f);
-  static const Color surfaceDark = Color(0xFF27272a);
-  static const Color surfaceDarkHighest = Color(0xFF3f3f46);
-  static const Color surfaceContainer = Color(0xFF2d2d32);
-  static const Color surfaceContainerLow = Color(0xFF232328);
-  static const Color surfaceContainerHigh = Color(0xFF36363c);
-
-  // Text Colors
-  static const Color textPrimary = Color(0xFFfafafa);
-  static const Color textSecondary = Color(0xFFa1a1aa);
-  static const Color textTertiary = Color(0xFF71717a);
-
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-
-      // Material 3 Expressive Color Scheme with Tonal Palette
-      colorScheme: ColorScheme.dark(
-        primary: primaryOrange,
-        onPrimary: Colors.white,
-        primaryContainer: primary30,
-        onPrimaryContainer: primary90,
-        secondary: primaryOrangeDark,
-        onSecondary: Colors.white,
-        secondaryContainer: primary20,
-        onSecondaryContainer: primary80,
-        tertiary: primaryOrangeLight,
-        onTertiary: Colors.black,
-        surface: surfaceDark,
-        onSurface: textPrimary,
-        surfaceContainerHighest: surfaceDarkHighest,
-        surfaceContainer: surfaceContainer,
-        surfaceContainerLow: surfaceContainerLow,
-        surfaceContainerHigh: surfaceContainerHigh,
-        error: const Color(0xFFef4444),
-        onError: Colors.white,
-        outline: Colors.white.withValues(alpha: 0.12),
-        outlineVariant: Colors.white.withValues(alpha: 0.08),
-      ),
-
-      // AppBar Theme
-      appBarTheme: const AppBarTheme(
-        backgroundColor: backgroundDark,
-        elevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          color: textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: textPrimary),
-      ),
-
-      // Card Theme (GlassPanel equivalent) - Material 3 Expressive
-      cardTheme: CardThemeData(
-        color: surfaceDark.withValues(alpha:0.8),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28), // Expressive: larger corners
-          side: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-            width: 1,
-          ),
-        ),
-      ),
-
-      // Button Themes - Material 3 Expressive with pronounced corners
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: primaryOrange,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), // Expressive: larger corners
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryOrange,
-          foregroundColor: Colors.white,
-          elevation: 2,
-          shadowColor: primaryOrange.withValues(alpha: 0.4),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), // Expressive: larger corners
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primaryOrange,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16), // Expressive
-          ),
-        ),
-      ),
-
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primaryOrange,
-          side: const BorderSide(color: primaryOrange, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), // Expressive: larger corners
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      // Input Decoration Theme - Material 3 Expressive
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceContainer,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20), // Expressive: larger corners
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: primaryOrange,
-            width: 2.5, // Slightly thicker for emphasis
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Color(0xFFef4444),
-            width: 1.5,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Color(0xFFef4444),
-            width: 2.5,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 18,
-        ),
-        hintStyle: TextStyle(
-          color: textTertiary,
-          fontSize: 16,
-        ),
-      ),
-
-      // Text Theme - Material 3 Expressive Typography with Google Sans
-      // More dramatic scale with enhanced contrast
-      // Using Google Sans for smooth, modern typography
-      textTheme: GoogleFonts.interTextTheme(
-        const TextTheme(
-          displayLarge: TextStyle(
-            fontSize: 64, // Expressive: larger displays
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: -0.5,
-            height: 1.1,
-          ),
-          displayMedium: TextStyle(
-            fontSize: 52, // Expressive
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: -0.25,
-            height: 1.15,
-          ),
-          displaySmall: TextStyle(
-            fontSize: 40, // Expressive
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.2,
-          ),
-          headlineLarge: TextStyle(
-            fontSize: 36, // Expressive: larger headlines
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.25,
-          ),
-          headlineMedium: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.25,
-          ),
-          headlineSmall: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.3,
-          ),
-          titleLarge: TextStyle(
-            fontSize: 22, // Slightly larger
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.15,
-            height: 1.4,
-          ),
-          titleMedium: TextStyle(
-            fontSize: 18, // Slightly larger
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.15,
-            height: 1.4,
-          ),
-          titleSmall: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.1,
-            height: 1.4,
-          ),
-          bodyLarge: TextStyle(
-            fontSize: 17, // Slightly larger for better readability
-            fontWeight: FontWeight.w400,
-            color: textPrimary,
-            letterSpacing: 0.25,
-            height: 1.5,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 15, // Slightly larger
-            fontWeight: FontWeight.w400,
-            color: textPrimary,
-            letterSpacing: 0.25,
-            height: 1.5,
-          ),
-          bodySmall: TextStyle(
-            fontSize: 13, // Slightly larger
-            fontWeight: FontWeight.w400,
-            color: textSecondary,
-            letterSpacing: 0.4,
-            height: 1.4,
-          ),
-          labelLarge: TextStyle(
-            fontSize: 15, // Slightly larger
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.1,
-            height: 1.4,
-          ),
-          labelMedium: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.5,
-            height: 1.3,
-          ),
-          labelSmall: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: textSecondary,
-            letterSpacing: 0.5,
-            height: 1.3,
-          ),
-        ),
-      ),
-
-      // IconTheme - Material 3 Expressive
-      iconTheme: const IconThemeData(
-        color: textPrimary,
-        size: 24,
-      ),
-
-      // FloatingActionButton Theme - Material 3 Expressive
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryOrange,
-        foregroundColor: Colors.white,
-        elevation: 3,
-        focusElevation: 4,
-        hoverElevation: 4,
-        highlightElevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28), // Expressive: large corners
-        ),
-        sizeConstraints: const BoxConstraints.tightFor(
-          width: 64, // Slightly larger
-          height: 64,
-        ),
-      ),
-
-      // NavigationBar Theme - Material 3 Expressive
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surfaceContainer,
-        elevation: 0,
-        height: 80,
-        indicatorColor: primary30,
-        labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ),
-
-      // Divider Theme
-      dividerTheme: DividerThemeData(
-        color: Colors.white.withValues(alpha:0.12),
-        thickness: 1,
-        space: 1,
-      ),
-
-      // Progress Indicator Theme
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: primaryOrange,
-        linearTrackColor: surfaceDark,
-      ),
-
-      // Scaffold Background
-      scaffoldBackgroundColor: backgroundDark,
-
-      // Page Transitions - Material 3 Expressive uses emphasized easing
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        },
-      ),
-    );
-  }
-
-  // Gradient für Buttons und spezielle UI-Elemente
-  static const LinearGradient primaryGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [
-      primaryOrange,
-      primaryOrangeDark,
-    ],
+  // Primary glow (used by existing GlassPanel.accent)
+  static BoxShadow get primaryGlow => BoxShadow(
+    color: SlamTokens.primary.withValues(alpha: 0.35),
+    blurRadius: 24,
+    spreadRadius: 0,
   );
 
-  // Glow Effect für spezielle Elemente
-  static BoxShadow get primaryGlow {
-    return BoxShadow(
-      color: primaryOrange.withValues(alpha:0.4),
-      blurRadius: 20,
-      spreadRadius: 2,
-    );
-  }
+  static ThemeData get darkTheme => _buildThemeWithPrimaryColor(SlamTokens.primary);
 
-  /// Get theme data based on preset
   static ThemeData getThemeForPreset(AppThemePreset preset) {
     final Color primaryColor;
-
     switch (preset) {
       case AppThemePreset.sunsetOrange:
-        primaryColor = const Color(0xFFf97316);
-        break;
+        primaryColor = SlamTokens.primary;
       case AppThemePreset.oceanBlue:
-        primaryColor = const Color(0xFF0ea5e9);
-        break;
+        primaryColor = const Color(0xFF3BA8FF);
       case AppThemePreset.forestGreen:
-        primaryColor = const Color(0xFF10b981);
-        break;
+        primaryColor = const Color(0xFF3BD490);
       case AppThemePreset.lavenderPurple:
-        primaryColor = const Color(0xFFa78bfa);
-        break;
+        primaryColor = const Color(0xFFA07CFF);
       case AppThemePreset.cherryRed:
-        primaryColor = const Color(0xFFef4444);
-        break;
+        primaryColor = const Color(0xFFFF5566);
     }
-
     return _buildThemeWithPrimaryColor(primaryColor);
   }
 
-  /// Build theme with custom primary color
-  static ThemeData _buildThemeWithPrimaryColor(Color primaryColor) {
-    final primary30 = Color.lerp(primaryColor, Colors.black, 0.7)!;
-    final primary20 = Color.lerp(primaryColor, Colors.black, 0.8)!;
-    final primary80 = Color.lerp(primaryColor, Colors.white, 0.6)!;
-    final primary90 = Color.lerp(primaryColor, Colors.white, 0.8)!;
+  static ThemeData _buildThemeWithPrimaryColor(Color primary) {
+    // Derive tonal shades for ColorScheme
+    final primaryContainer = Color.lerp(primary, Colors.black, 0.72)!;
+    final onPrimaryContainer = Color.lerp(primary, Colors.white, 0.75)!;
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
 
       colorScheme: ColorScheme.dark(
-        primary: primaryColor,
-        onPrimary: Colors.white,
-        primaryContainer: primary30,
-        onPrimaryContainer: primary90,
-        secondary: Color.lerp(primaryColor, Colors.black, 0.2)!,
-        onSecondary: Colors.white,
-        secondaryContainer: primary20,
-        onSecondaryContainer: primary80,
-        tertiary: Color.lerp(primaryColor, Colors.white, 0.3)!,
-        onTertiary: Colors.black,
-        surface: surfaceDark,
-        onSurface: textPrimary,
-        surfaceContainerHighest: surfaceDarkHighest,
-        surfaceContainer: surfaceContainer,
-        surfaceContainerLow: surfaceContainerLow,
-        surfaceContainerHigh: surfaceContainerHigh,
-        error: const Color(0xFFef4444),
-        onError: Colors.white,
-        outline: Colors.white.withValues(alpha: 0.12),
-        outlineVariant: Colors.white.withValues(alpha: 0.08),
+        primary: primary,
+        onPrimary: SlamTokens.primaryOn,
+        primaryContainer: primaryContainer,
+        onPrimaryContainer: onPrimaryContainer,
+        secondary: Color.lerp(primary, Colors.black, 0.2)!,
+        onSecondary: SlamTokens.text,
+        surface: SlamTokens.surface,
+        onSurface: SlamTokens.text,
+        surfaceContainerHighest: SlamTokens.surfaceHi,
+        surfaceContainer: SlamTokens.bgElev,
+        surfaceContainerLow: SlamTokens.bg,
+        surfaceContainerHigh: SlamTokens.surfaceHi,
+        error: SlamTokens.danger,
+        onError: SlamTokens.text,
+        outline: SlamTokens.line,
+        outlineVariant: SlamTokens.line,
+        // Exposed for legacy widgets that use colorScheme.secondary etc.
+        tertiary: Color.lerp(primary, Colors.white, 0.3)!,
+        onTertiary: SlamTokens.primaryOn,
       ),
 
-      appBarTheme: const AppBarTheme(
-        backgroundColor: backgroundDark,
+      scaffoldBackgroundColor: SlamTokens.bg,
+
+      // AppBar — minimal; screens supply their own headers in the new design.
+      appBarTheme: AppBarTheme(
+        backgroundColor: SlamTokens.bg,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-          color: textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: textPrimary),
-      ),
-
-      cardTheme: CardThemeData(
-        color: surfaceDark.withValues(alpha:0.8),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-          side: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-            width: 1,
-          ),
-        ),
-      ),
-
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+        titleTextStyle: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 2,
-          shadowColor: primaryColor.withValues(alpha: 0.4),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primaryColor,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-      ),
-
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primaryColor,
-          side: BorderSide(color: primaryColor, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-          ),
-        ),
-      ),
-
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceContainer,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha:0.12),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: primaryColor,
-            width: 2.5,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Color(0xFFef4444),
-            width: 1.5,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Color(0xFFef4444),
-            width: 2.5,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 18,
-        ),
-        hintStyle: TextStyle(
-          color: textTertiary,
-          fontSize: 16,
-        ),
-      ),
-
-      textTheme: GoogleFonts.interTextTheme(
-        const TextTheme(
-          displayLarge: TextStyle(
-            fontSize: 64,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: -0.5,
-            height: 1.1,
-          ),
-          displayMedium: TextStyle(
-            fontSize: 52,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: -0.25,
-            height: 1.15,
-          ),
-          displaySmall: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.2,
-          ),
-          headlineLarge: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.25,
-          ),
-          headlineMedium: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.25,
-          ),
-          headlineSmall: TextStyle(
+            color: SlamTokens.text,
             fontSize: 28,
             fontWeight: FontWeight.w700,
-            color: textPrimary,
-            letterSpacing: 0,
-            height: 1.3,
+            letterSpacing: -0.6,
           ),
-          titleLarge: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.15,
-            height: 1.4,
-          ),
-          titleMedium: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.15,
-            height: 1.4,
-          ),
-          titleSmall: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.1,
-            height: 1.4,
-          ),
-          bodyLarge: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w400,
-            color: textPrimary,
-            letterSpacing: 0.25,
-            height: 1.5,
-          ),
-          bodyMedium: TextStyle(
+        ),
+        iconTheme: const IconThemeData(color: SlamTokens.text),
+      ),
+
+      // Card — §6.2
+      cardTheme: CardThemeData(
+        color: SlamTokens.surface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+          side: const BorderSide(color: SlamTokens.line),
+        ),
+      ),
+
+      // Filled button — Primary CTA §6.1: pill, primary bg, primaryOn text
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: SlamTokens.primaryOn,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.dmSans(
             fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: textPrimary,
-            letterSpacing: 0.25,
-            height: 1.5,
-          ),
-          bodySmall: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            color: textSecondary,
-            letterSpacing: 0.4,
-            height: 1.4,
-          ),
-          labelLarge: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
+            fontWeight: FontWeight.w800,
             letterSpacing: 0.1,
-            height: 1.4,
-          ),
-          labelMedium: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-            letterSpacing: 0.5,
-            height: 1.3,
-          ),
-          labelSmall: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: textSecondary,
-            letterSpacing: 0.5,
-            height: 1.3,
           ),
         ),
       ),
 
-      iconTheme: const IconThemeData(
-        color: textPrimary,
-        size: 24,
+      // Elevated button — also pill, with shadow
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: SlamTokens.primaryOn,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.dmSans(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.1,
+          ),
+        ),
       ),
+
+      // Outlined — Secondary §6.1
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: SlamTokens.text,
+          side: const BorderSide(color: SlamTokens.line),
+          backgroundColor: SlamTokens.surface,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          ),
+          textStyle: GoogleFonts.dmSans(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+
+      // Text button — Ghost §6.1
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: SlamTokens.textDim,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          ),
+          textStyle: GoogleFonts.dmSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+
+      // Input — §6.5: surfaceHi bg, pill container, no border/outline on field
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: SlamTokens.surfaceHi,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          borderSide: const BorderSide(color: SlamTokens.line),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          borderSide: const BorderSide(color: SlamTokens.line),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          borderSide: BorderSide(color: primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          borderSide: const BorderSide(color: SlamTokens.danger, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+          borderSide: const BorderSide(color: SlamTokens.danger, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        hintStyle: const TextStyle(color: SlamTokens.textMute, fontSize: 15),
+      ),
+
+      // Typography — Fraunces for display/headlines, DM Sans for body/UI
+      textTheme: TextTheme(
+        // ── Fraunces: Display (Hero Level, Screen titles, Question text) ──
+        displayLarge: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 70, fontWeight: FontWeight.w800,
+            color: SlamTokens.text, letterSpacing: -2, height: 1.0,
+          ),
+        ),
+        displayMedium: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 52, fontWeight: FontWeight.w700,
+            color: SlamTokens.text, letterSpacing: -1.2, height: 1.05,
+          ),
+        ),
+        displaySmall: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 40, fontWeight: FontWeight.w700,
+            color: SlamTokens.text, letterSpacing: -0.8, height: 1.1,
+          ),
+        ),
+        headlineLarge: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 34, fontWeight: FontWeight.w700,
+            color: SlamTokens.text, letterSpacing: -0.8, height: 1.15,
+          ),
+        ),
+        headlineMedium: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 30, fontWeight: FontWeight.w700,
+            color: SlamTokens.text, letterSpacing: -0.6, height: 1.2,
+          ),
+        ),
+        headlineSmall: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 24, fontWeight: FontWeight.w600,
+            color: SlamTokens.text, letterSpacing: -0.4, height: 1.25,
+          ),
+        ),
+        // ── Fraunces: Card titles ─────────────────────────────────────────
+        titleLarge: GoogleFonts.fraunces(
+          textStyle: const TextStyle(
+            fontSize: 17, fontWeight: FontWeight.w700,
+            color: SlamTokens.text, letterSpacing: -0.3, height: 1.4,
+          ),
+        ),
+        // ── DM Sans: UI structure ─────────────────────────────────────────
+        titleMedium: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w600,
+            color: SlamTokens.text, letterSpacing: 0.1, height: 1.4,
+          ),
+        ),
+        titleSmall: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 13, fontWeight: FontWeight.w600,
+            color: SlamTokens.text, letterSpacing: 0.1, height: 1.4,
+          ),
+        ),
+        bodyLarge: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w500,
+            color: SlamTokens.text, letterSpacing: 0, height: 1.5,
+          ),
+        ),
+        bodyMedium: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w500,
+            color: SlamTokens.text, letterSpacing: 0, height: 1.5,
+          ),
+        ),
+        bodySmall: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 13, fontWeight: FontWeight.w400,
+            color: SlamTokens.textDim, letterSpacing: 0, height: 1.4,
+          ),
+        ),
+        labelLarge: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 12, fontWeight: FontWeight.w800,
+            color: SlamTokens.text, letterSpacing: 1.2, height: 1.3,
+          ),
+        ),
+        labelMedium: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 11, fontWeight: FontWeight.w700,
+            color: SlamTokens.textDim, letterSpacing: 1.0, height: 1.3,
+          ),
+        ),
+        labelSmall: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontSize: 10, fontWeight: FontWeight.w700,
+            color: SlamTokens.textMute, letterSpacing: 0.8, height: 1.3,
+          ),
+        ),
+      ),
+
+      iconTheme: const IconThemeData(color: SlamTokens.text, size: 24),
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 3,
-        focusElevation: 4,
-        hoverElevation: 4,
-        highlightElevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
-        sizeConstraints: const BoxConstraints.tightFor(
-          width: 64,
-          height: 64,
-        ),
-      ),
-
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surfaceContainer,
+        backgroundColor: primary,
+        foregroundColor: SlamTokens.primaryOn,
         elevation: 0,
-        height: 80,
-        indicatorColor: primary30,
+        shape: const CircleBorder(),
+        sizeConstraints: const BoxConstraints.tightFor(width: 56, height: 56),
+      ),
+
+      // NavigationBar kept for compat but replaced by SlamBottomNav widget.
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: SlamTokens.bgElev,
+        elevation: 0,
+        height: 72,
+        indicatorColor: primary,
         labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
+          GoogleFonts.dmSans(fontSize: 11, fontWeight: FontWeight.w700),
         ),
       ),
 
-      dividerTheme: DividerThemeData(
-        color: Colors.white.withValues(alpha:0.12),
+      dividerTheme: const DividerThemeData(
+        color: SlamTokens.line,
         thickness: 1,
         space: 1,
       ),
 
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: primaryColor,
-        linearTrackColor: surfaceDark,
+        color: primary,
+        linearTrackColor: SlamTokens.surfaceHi,
       ),
-
-      scaffoldBackgroundColor: backgroundDark,
 
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
