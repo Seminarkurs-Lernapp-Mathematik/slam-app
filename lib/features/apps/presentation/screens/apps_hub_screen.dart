@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/design_tokens.dart';
 import 'geogebra_screen.dart';
 import 'generative_apps_screen.dart';
 import 'content_library_screen.dart';
@@ -31,36 +32,43 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.functions),
-              text: 'GeoGebra',
-            ),
-            Tab(
-              icon: Icon(Icons.auto_awesome),
-              text: 'KI-Labor',
-            ),
-            Tab(
-              icon: Icon(Icons.folder),
-              text: 'Meine Inhalte',
-            ),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        children: [
+          TabBar(
             controller: _tabController,
-            children: const [
-              GeogebraScreen(),
-              GenerativeAppsScreen(),
-              ContentLibraryScreen(),
+            indicatorColor: SlamTokens.primary,
+            labelColor: SlamTokens.primary,
+            unselectedLabelColor: SlamTokens.textDim,
+            dividerColor: SlamTokens.line,
+            tabs: const [
+              Tab(
+                icon: Icon(Icons.functions),
+                text: 'GeoGebra',
+              ),
+              Tab(
+                icon: Icon(Icons.auto_awesome),
+                text: 'KI-Labor',
+              ),
+              Tab(
+                icon: Icon(Icons.folder),
+                text: 'Meine Inhalte',
+              ),
             ],
           ),
-        ),
-      ],
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                GeogebraScreen(),
+                GenerativeAppsScreen(),
+                ContentLibraryScreen(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

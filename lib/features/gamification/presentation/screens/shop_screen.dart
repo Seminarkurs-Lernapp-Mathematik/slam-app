@@ -46,10 +46,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shop'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -110,20 +107,23 @@ class _CoinBalanceChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+        color: const Color(0xFFFFC94D).withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: const Color(0xFFFFC94D).withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.monetization_on, color: Colors.amber, size: 20),
-          const SizedBox(width: 6),
+          const Icon(Icons.monetization_on,
+              color: Color(0xFFFFC94D), size: 18),
+          const SizedBox(width: 5),
           Text(
             coins.toString(),
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.amber,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFFFFC94D),
             ),
           ),
         ],

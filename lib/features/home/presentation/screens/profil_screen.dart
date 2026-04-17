@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../gamification/presentation/screens/progress_screen.dart';
 import '../../../gamification/presentation/widgets/level_progress_circle.dart';
@@ -8,6 +9,7 @@ import '../../../gamification/presentation/widgets/xp_stats_card.dart';
 import '../../../gamification/presentation/widgets/streak_calendar.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 import '../../../gamification/presentation/screens/progress_screen.dart' show userStatsStreamProvider;
+import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
@@ -77,63 +79,63 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, String name) {
-    final theme = Theme.of(context);
-
     return GlassPanel(
       child: InkWell(
         onTap: () => _showProfileDialog(context, name),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Row(
             children: [
-              // Avatar
-              Hero(
-                tag: 'profile-avatar',
-                child: CircleAvatar(
-                  radius: 32,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Text(
-                    name.substring(0, 1).toUpperCase(),
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: SlamTokens.primarySoft,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: SlamTokens.primary, width: 2),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  name.substring(0, 1).toUpperCase(),
+                  style: GoogleFonts.fraunces(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.primary,
                   ),
                 ),
               ),
 
               const SizedBox(width: 16),
 
-              // Name and Email
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       name,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.fraunces(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: SlamTokens.text,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Profil anzeigen',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary,
+                      'Statistiken anzeigen',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13,
+                        color: SlamTokens.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              // Profile icon
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              const Icon(Icons.chevron_right, color: SlamTokens.textDim),
             ],
           ),
         ),
@@ -184,8 +186,6 @@ class ProfilScreen extends ConsumerWidget {
     required VoidCallback onTap,
     bool highlight = false,
   }) {
-    final theme = Theme.of(context);
-
     if (highlight) {
       return FilledButton.icon(
         onPressed: onTap,
@@ -193,7 +193,7 @@ class ProfilScreen extends ConsumerWidget {
         label: Text(label),
         style: FilledButton.styleFrom(
           minimumSize: const Size(double.infinity, 52),
-          textStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
+          shape: const StadiumBorder(),
         ),
       );
     }
@@ -201,21 +201,19 @@ class ProfilScreen extends ConsumerWidget {
     return GlassPanel(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: theme.colorScheme.primary,
-              ),
+              Icon(icon, size: 32, color: SlamTokens.primary),
               const SizedBox(height: 8),
               Text(
                 label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: SlamTokens.text,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -258,7 +256,6 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final currentUser = ref.watch(currentUserProvider);
     final userId = currentUser?.uid ?? '';
     final userStatsAsync = ref.watch(userStatsStreamProvider(userId));
@@ -266,13 +263,20 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
     return AlertDialog(
       title: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: theme.colorScheme.primaryContainer,
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: SlamTokens.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
             child: Text(
               name.substring(0, 1).toUpperCase(),
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.fraunces(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.primary,
               ),
             ),
           ),
@@ -280,8 +284,10 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
           Expanded(
             child: Text(
               name,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.fraunces(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -295,15 +301,15 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildStatRow(context, 'Level', stats.calculatedLevel.toString(), Icons.military_tech, theme.colorScheme.primary),
+              _buildStatRow(context, 'Level', stats.calculatedLevel.toString(), Icons.military_tech, SlamTokens.primary),
               const Divider(),
-              _buildStatRow(context, 'Gesamt XP', stats.totalXp.toString(), Icons.star, Colors.amber),
+              _buildStatRow(context, 'Gesamt XP', stats.totalXp.toString(), Icons.star, SlamTokens.warn),
               const Divider(),
-              _buildStatRow(context, 'Streak', '${stats.streak} Tage', Icons.local_fire_department, Colors.deepOrange),
+              _buildStatRow(context, 'Streak', '${stats.streak} Tage', Icons.local_fire_department, SlamTokens.warn),
               const Divider(),
-              _buildStatRow(context, 'Level Titel', stats.levelTitle, Icons.emoji_events, theme.colorScheme.secondary),
+              _buildStatRow(context, 'Level Titel', stats.levelTitle, Icons.emoji_events, SlamTokens.primary),
               const Divider(),
-              _buildStatRow(context, 'Streak Freezes', stats.streakFreezes.toString(), Icons.ac_unit, Colors.blue),
+              _buildStatRow(context, 'Streak Freezes', stats.streakFreezes.toString(), Icons.ac_unit, SlamTokens.success),
             ],
           ),
         ),
@@ -334,13 +340,14 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.textDim),
             ),
           ),
           Text(
             value,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
@@ -358,8 +365,6 @@ class _ProgressContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -382,12 +387,12 @@ class _ProgressContent extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      color: SlamTokens.warnSoft,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.local_fire_department,
-                      color: theme.colorScheme.primary,
+                      color: SlamTokens.warn,
                       size: 24,
                     ),
                   ),
@@ -395,11 +400,20 @@ class _ProgressContent extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Streak', style: theme.textTheme.titleMedium),
+                      Text(
+                        'Streak',
+                        style: GoogleFonts.fraunces(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: SlamTokens.text,
+                        ),
+                      ),
                       Text(
                         '${stats.streak} ${stats.streak == 1 ? "Tag" : "Tage"} in Folge',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.primary,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          color: SlamTokens.warn,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -428,34 +442,34 @@ class _StreakRiskBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.orange.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+        color: SlamTokens.warnSoft,
+        borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
+        border: Border.all(color: SlamTokens.warn.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.local_fire_department, color: Colors.orange, size: 28),
+          const Icon(Icons.local_fire_department, color: SlamTokens.warn, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Streak in Gefahr! 🔥',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange.shade800,
+                  'Streak in Gefahr!',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.warn,
                   ),
                 ),
                 Text(
                   '$streak-Tage-Streak – beantworte heute noch eine Frage!',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.orange.shade700,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    color: SlamTokens.textDim,
                   ),
                 ),
               ],
@@ -478,7 +492,6 @@ class _ExamCountdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final now = DateTime.now();
     final diff = examDate.difference(DateTime(now.year, now.month, now.day));
     final days = diff.inDays;
@@ -488,13 +501,13 @@ class _ExamCountdownCard extends StatelessWidget {
     Color cardColor;
     String urgencyText;
     if (days <= 7) {
-      cardColor = Colors.red;
+      cardColor = SlamTokens.danger;
       urgencyText = 'Letzte Chance zum Üben!';
     } else if (days <= 30) {
-      cardColor = Colors.orange;
+      cardColor = SlamTokens.warn;
       urgencyText = 'Jetzt intensiv üben!';
     } else {
-      cardColor = theme.colorScheme.primary;
+      cardColor = SlamTokens.primary;
       urgencyText = 'Bleib dran!';
     }
 
@@ -502,7 +515,7 @@ class _ExamCountdownCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: cardColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
         border: Border.all(color: cardColor.withValues(alpha: 0.4)),
       ),
       child: Row(
@@ -526,14 +539,16 @@ class _ExamCountdownCard extends StatelessWidget {
                       : days == 1
                           ? 'Prüfung: Morgen!'
                           : 'Noch $days Tage bis zur Prüfung',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                     color: cardColor,
                   ),
                 ),
                 Text(
                   urgencyText,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
                     color: cardColor.withValues(alpha: 0.8),
                   ),
                 ),
@@ -542,8 +557,9 @@ class _ExamCountdownCard extends StatelessWidget {
           ),
           Text(
             '$days',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.fraunces(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
               color: cardColor,
             ),
           ),

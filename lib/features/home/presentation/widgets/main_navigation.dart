@@ -13,11 +13,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../app/design_tokens.dart';
 import '../providers/main_nav_notifier.dart';
-
-/// GlobalKey assigned by LiveFeedScreen's avatar widget so the profile
-/// swoosh-overlay can measure the exact screen origin at runtime.
-/// See DESIGN.md §6.7 and §5.3 (Profile-Swoosh).
-final GlobalKey avatarGlobalKey = GlobalKey();
+import '../providers/nav_keys.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MainNavigation

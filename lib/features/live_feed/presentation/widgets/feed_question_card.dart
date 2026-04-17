@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../app/design_tokens.dart';
 import '../../../../core/constants/level_thresholds.dart';
 
 import '../../../../core/models/question.dart';
@@ -313,8 +315,12 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final colorScheme = theme.colorScheme;
 
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: SlamTokens.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SlamTokens.rCardLg),
+        side: const BorderSide(color: SlamTokens.line),
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -512,93 +518,84 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     IconData? trailingIcon;
 
     if (!isAnswered) {
-      // Before answering: neutral style
-      backgroundColor = colorScheme.surfaceContainerLow;
-      borderColor = colorScheme.outlineVariant;
-      textColor = colorScheme.onSurface;
+      backgroundColor = SlamTokens.surfaceHi;
+      borderColor = SlamTokens.line;
+      textColor = SlamTokens.text;
     } else if (option.isCorrect) {
-      // After answering: correct option always green
-      backgroundColor = const Color(0xFF10b981).withValues(alpha: 0.15);
-      borderColor = const Color(0xFF10b981);
-      textColor = const Color(0xFF065f46);
+      backgroundColor = SlamTokens.successSoft;
+      borderColor = SlamTokens.success;
+      textColor = SlamTokens.success;
       trailingIcon = Icons.check_circle;
     } else if (isSelected && !option.isCorrect) {
-      // After answering: selected wrong option in red
-      backgroundColor = const Color(0xFFef4444).withValues(alpha: 0.15);
-      borderColor = const Color(0xFFef4444);
-      textColor = const Color(0xFF991b1b);
+      backgroundColor = SlamTokens.dangerSoft;
+      borderColor = SlamTokens.danger;
+      textColor = SlamTokens.danger;
       trailingIcon = Icons.cancel;
     } else {
-      // After answering: non-selected, non-correct option dimmed
-      backgroundColor = colorScheme.surfaceContainerLow.withValues(alpha: 0.5);
-      borderColor = colorScheme.outlineVariant.withValues(alpha: 0.3);
-      textColor = colorScheme.onSurface.withValues(alpha: 0.4);
+      backgroundColor = SlamTokens.surfaceHi.withValues(alpha: 0.4);
+      borderColor = SlamTokens.line.withValues(alpha: 0.4);
+      textColor = SlamTokens.textMute;
     }
 
+    final badgeColor = isSelected && !isAnswered
+        ? SlamTokens.primary
+        : isAnswered && option.isCorrect
+            ? SlamTokens.success
+            : isAnswered && isSelected && !option.isCorrect
+                ? SlamTokens.danger
+                : SlamTokens.surfaceHi;
+    final badgeText = isSelected && !isAnswered
+        ? SlamTokens.primaryOn
+        : isAnswered && (option.isCorrect || (isSelected && !option.isCorrect))
+            ? Colors.white
+            : SlamTokens.textDim;
+
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+      duration: SlamTokens.dState,
+      curve: SlamTokens.curveStandard,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: isAnswered ? null : () => _selectOption(option.id),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(SlamTokens.rOption),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
+            duration: SlamTokens.dState,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(SlamTokens.rOption),
               border: Border.all(
                 color: borderColor,
-                width: isSelected || (isAnswered && option.isCorrect) ? 2 : 1,
+                width: isSelected || (isAnswered && option.isCorrect) ? 1.5 : 1,
               ),
             ),
             child: Row(
               children: [
-                // Option letter badge (A, B, C, D)
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
-                    color: isSelected && !isAnswered
-                        ? colorScheme.primary
-                        : isAnswered && option.isCorrect
-                            ? const Color(0xFF10b981)
-                            : isAnswered && isSelected && !option.isCorrect
-                                ? const Color(0xFFef4444)
-                                : colorScheme.surfaceContainerHighest,
+                    color: badgeColor,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     option.id,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isSelected && !isAnswered
-                          ? colorScheme.onPrimary
-                          : isAnswered &&
-                                  (option.isCorrect ||
-                                      (isSelected && !option.isCorrect))
-                              ? Colors.white
-                              : colorScheme.onSurfaceVariant,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: badgeText,
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Option text
-                Expanded(
-                  child: _buildOptionText(option.text, theme, textColor),
-                ),
-                // Trailing icon for answered state
+                Expanded(child: _buildOptionText(option.text, theme, textColor)),
                 if (trailingIcon != null) ...[
                   const SizedBox(width: 8),
                   Icon(
                     trailingIcon,
-                    color: option.isCorrect
-                        ? const Color(0xFF10b981)
-                        : const Color(0xFFef4444),
-                    size: 24,
+                    color: option.isCorrect ? SlamTokens.success : SlamTokens.danger,
+                    size: 20,
                   ),
                 ],
               ],
@@ -903,15 +900,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     }
 
     return AnimatedSize(
-      duration: const Duration(milliseconds: 300),
+      duration: SlamTokens.dState,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: feedbackColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: feedbackColor.withValues(alpha: 0.3),
-          ),
+          borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
+          border: Border.all(color: feedbackColor.withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -990,13 +985,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     return OutlinedButton.icon(
       onPressed: _hintsShown < maxHints ? _revealHint : null,
-      icon: const Icon(Icons.lightbulb_outline),
+      icon: const Icon(Icons.lightbulb_outline, size: 18),
       label: Text(hintLabel),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: const StadiumBorder(),
+        foregroundColor: SlamTokens.textDim,
+        side: const BorderSide(color: SlamTokens.line),
       ),
     );
   }
@@ -1076,22 +1071,17 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   // ============================================================================
 
   Widget _buildNextButton(ThemeData theme, ColorScheme colorScheme) {
-    return Row(
-      children: [
-        Expanded(
-          child: FilledButton.icon(
-            onPressed: _skipToNext,
-            icon: const Icon(Icons.arrow_forward),
-            label: const Text('Nächste Frage'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: _skipToNext,
+        icon: const Icon(Icons.arrow_forward, size: 18),
+        label: const Text('Nächste Frage'),
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: const StadiumBorder(),
         ),
-      ],
+      ),
     );
   }
 }
