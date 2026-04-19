@@ -2,37 +2,54 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/firestore_service.dart';
 
 part 'auth_providers.g.dart';
 
 /// Auth Login Provider
-///
-/// Handles login with email and password
 @riverpod
 Future<User> authLogin(AuthLoginRef ref, Map<String, String> credentials) async {
   final authService = ref.watch(authServiceProvider);
+  final firestoreService = ref.watch(firestoreServiceProvider);
 
-  return await authService.signIn(
+  final user = await authService.signIn(
     email: credentials['email']!,
     password: credentials['password']!,
   );
+
+  // Ensure Firestore document exists (handles accounts created before this was wired)
+  await firestoreService.initializeUserProfile(
+    userId: user.uid,
+    displayName: user.displayName ?? user.email ?? '',
+    email: user.email ?? '',
+  );
+
+  return user;
 }
 
 /// Auth Register Provider
-///
-/// Handles registration with email, password, and display name
 @riverpod
 Future<User> authRegister(
   AuthRegisterRef ref,
   Map<String, String> credentials,
 ) async {
   final authService = ref.watch(authServiceProvider);
+  final firestoreService = ref.watch(firestoreServiceProvider);
 
-  return await authService.signUp(
+  final user = await authService.signUp(
     email: credentials['email']!,
     password: credentials['password']!,
     displayName: credentials['displayName']!,
   );
+
+  // Create the Firestore document with initial stats/settings
+  await firestoreService.initializeUserProfile(
+    userId: user.uid,
+    displayName: credentials['displayName']!,
+    email: credentials['email']!,
+  );
+
+  return user;
 }
 
 /// Auth Logout Provider

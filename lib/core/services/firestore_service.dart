@@ -121,19 +121,23 @@ class FirestoreService {
     });
   }
 
-  /// Add XP and coins atomically (transaction prevents race conditions)
+  /// Add XP and coins atomically (transaction prevents race conditions).
+  /// Falls back to creating the stats field from scratch when the document or
+  /// stats field is missing (handles users created before Firestore init was wired).
   Future<void> addXpAndCoins(String userId, int xpEarned, int coinsEarned) async {
     if (xpEarned == 0 && coinsEarned == 0) return;
     final docRef = _firestore.collection(FirebaseCollections.users).doc(userId);
     await _firestore.runTransaction((transaction) async {
       final doc = await transaction.get(docRef);
       final data = doc.data();
-      if (data == null) return;
-      final statsData = data[FirebaseCollections.stats] as Map<String, dynamic>?;
-      if (statsData == null) return;
-      final updatedStats =
-          UserStats.fromJson(statsData).addXp(xpEarned).addCoins(coinsEarned);
-      transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+      final statsData = data?[FirebaseCollections.stats] as Map<String, dynamic>?;
+      final currentStats = statsData != null ? UserStats.fromJson(statsData) : UserStats.initial();
+      final updatedStats = currentStats.addXp(xpEarned).addCoins(coinsEarned);
+      if (!doc.exists) {
+        transaction.set(docRef, {FirebaseCollections.stats: updatedStats.toJson()}, SetOptions(merge: true));
+      } else {
+        transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+      }
     });
   }
 

@@ -41,35 +41,12 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
 /// Material 3 Expressive Page Transition
 /// Uses emphasized easing curves for smooth, physics-based motion
-CustomTransitionPage<void> buildPageWithExpressiveTransition({
+NoTransitionPage<void> buildPageWithExpressiveTransition({
   required BuildContext context,
   required GoRouterState state,
   required Widget child,
 }) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    child: child,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const curve = Curves.easeInOutCubicEmphasized;
-
-      final fade = CurvedAnimation(parent: animation, curve: curve);
-
-      final slide = Tween<Offset>(
-        begin: const Offset(0.06, 0),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: animation, curve: curve));
-
-      return FadeTransition(
-        opacity: fade,
-        child: SlideTransition(
-          position: slide,
-          child: child,
-        ),
-      );
-    },
-    transitionDuration: const Duration(milliseconds: 380),
-    reverseTransitionDuration: const Duration(milliseconds: 300),
-  );
+  return NoTransitionPage<void>(key: state.pageKey, child: child);
 }
 
 /// App Routes Provider

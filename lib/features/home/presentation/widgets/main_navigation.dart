@@ -329,10 +329,10 @@ class _ProfileSwooshOverlayState extends State<_ProfileSwooshOverlay>
                 ),
               ),
 
-              // Close button — top-right, inside safe area
+              // Close button — top-left, inside safe area
               Positioned(
                 top: MediaQuery.paddingOf(context).top + 12,
-                right: 16,
+                left: 16,
                 child: FadeTransition(
                   opacity: _contentAnim,
                   child: GestureDetector(

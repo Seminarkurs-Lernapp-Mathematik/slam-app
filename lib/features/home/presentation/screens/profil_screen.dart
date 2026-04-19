@@ -24,22 +24,39 @@ class ProfilScreen extends ConsumerWidget {
     final userId = currentUser?.uid ?? '';
     final userStatsAsync = ref.watch(userStatsStreamProvider(userId));
 
+    final name = currentUser?.displayName ?? currentUser?.email ?? 'Benutzer';
+
     return Scaffold(
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Profile Header with Actions
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                // Space for the X button (top-left, 44px tall + 12+12 padding = 68px)
+                const SizedBox(height: 68),
+
+                // Compact stats strip — lives in the space "freed" by pushing content down
+                userStatsAsync.when(
+                  data: (stats) => _CompactStatsStrip(stats: stats),
+                  loading: () => const SizedBox(height: 52),
+                  error: (_, __) => const SizedBox(height: 52),
+                ),
+
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+
+          // Profile header + actions
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Column(
                 children: [
-                  // Profile Avatar and Name
-                  _buildProfileHeader(context, currentUser?.displayName ?? currentUser?.email ?? 'Benutzer'),
-
+                  _buildProfileHeader(context, name),
                   const SizedBox(height: 16),
 
-                  // Streak risk warning & exam countdown
                   userStatsAsync.whenData((stats) {
                     final today = DateTime.now().toIso8601String().substring(0, 10);
                     final atRisk = stats.streak > 0 && stats.isStreakAtRisk(today);
@@ -57,18 +74,16 @@ class ProfilScreen extends ConsumerWidget {
                     );
                   }).value ?? const SizedBox.shrink(),
 
-                  // Quick Action Buttons
                   _buildQuickActions(context),
-
                   const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
 
-          // Progress Content (embedded from ProgressScreen)
-          SliverToBoxAdapter(
-            child: const Padding(
+          // Progress Content
+          const SliverToBoxAdapter(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: _EmbeddedProgressContent(),
             ),
@@ -430,6 +445,77 @@ class _ProgressContent extends ConsumerWidget {
   }
 }
 
+
+// ============================================================================
+// COMPACT STATS STRIP — shown at top of profile, below the X button
+// ============================================================================
+
+class _CompactStatsStrip extends StatelessWidget {
+  const _CompactStatsStrip({required this.stats});
+  final dynamic stats;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          _StatPill(
+            icon: Icons.military_tech,
+            label: 'Lv. ${stats.calculatedLevel}',
+            color: SlamTokens.primary,
+          ),
+          const SizedBox(width: 8),
+          _StatPill(
+            icon: Icons.local_fire_department,
+            label: '${stats.streak}d',
+            color: SlamTokens.warn,
+          ),
+          const SizedBox(width: 8),
+          _StatPill(
+            icon: Icons.star,
+            label: '${stats.totalXp} XP',
+            color: SlamTokens.warn,
+          ),
+          const SizedBox(width: 8),
+          _StatPill(
+            icon: Icons.monetization_on,
+            label: '${stats.coins}',
+            color: const Color(0xFFFFC94D),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatPill extends StatelessWidget {
+  const _StatPill({required this.icon, required this.label, required this.color});
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 5),
+          Text(label, style: GoogleFonts.dmSans(
+              fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+        ],
+      ),
+    );
+  }
+}
 
 // ============================================================================
 // STREAK RISK BANNER
