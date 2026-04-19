@@ -324,23 +324,23 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 14),
 
               // ── Question text ─────────────────────────────────────
               AnimatedDefaultTextStyle(
                 duration: SlamTokens.dState,
                 curve: SlamTokens.curveStandard,
                 style: GoogleFonts.fraunces(
-                  fontSize: _answered ? 20 : 30,
+                  fontSize: _answered ? 17 : 22,
                   fontWeight: FontWeight.w700,
                   color: SlamTokens.text,
-                  letterSpacing: -0.6,
-                  height: 1.22,
+                  letterSpacing: -0.4,
+                  height: 1.28,
                 ),
                 child: _buildQuestionText(),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // ── Hints cloud ───────────────────────────────────────
               if (_hintsShown > 0 && !_answered)
@@ -411,11 +411,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       return Text(questionText);
     }
     final style = GoogleFonts.fraunces(
-      fontSize: _answered ? 20 : 30,
+      fontSize: _answered ? 17 : 22,
       fontWeight: FontWeight.w700,
       color: SlamTokens.text,
-      letterSpacing: -0.6,
-      height: 1.22,
+      letterSpacing: -0.4,
+      height: 1.28,
     );
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
