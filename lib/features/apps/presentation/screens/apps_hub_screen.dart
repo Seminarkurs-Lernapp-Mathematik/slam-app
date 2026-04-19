@@ -33,8 +33,18 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: _buildHeader()),
-          SliverToBoxAdapter(child: _AnimatedHeroCard(onTap: () => setState(() => _subScreen = 1))),
-          SliverToBoxAdapter(child: _buildGrid()),
+          SliverToBoxAdapter(child: _AnimatedHeroCard(
+            index: 0,
+            onTap: () => setState(() => _subScreen = 1),
+          )),
+          SliverToBoxAdapter(child: _AnimatedHeroCard(
+            index: 1,
+            onTap: () => setState(() => _subScreen = 0),
+          )),
+          SliverToBoxAdapter(child: _AnimatedHeroCard(
+            index: 2,
+            onTap: () => setState(() => _subScreen = 2),
+          )),
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
@@ -89,43 +99,79 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
     );
   }
 
-  Widget _buildGrid() {
-    final apps = [
-      _AppTile(title: 'GeoGebra', subtitle: 'Visualisiere Funktionen & Geometrie',
-          icon: Icons.architecture, color: const Color(0xFFFFB35C),
-          onTap: () => setState(() => _subScreen = 0)),
-      _AppTile(title: 'KI-Labor', subtitle: 'Generiere Mini-Apps per Prompt',
-          icon: Icons.science, color: const Color(0xFFC88CFF),
-          onTap: () => setState(() => _subScreen = 1)),
-      _AppTile(title: 'Meine Inhalte', subtitle: 'Gespeicherte Apps & Visualisierungen',
-          icon: Icons.folder_open, color: const Color(0xFFFFC94D),
-          onTap: () => setState(() => _subScreen = 2)),
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: SlamTokens.gutter),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 190,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.88,
-        ),
-        itemCount: apps.length,
-        itemBuilder: (_, i) => _AnimatedAppCard(index: i, app: apps[i]),
-      ),
-    );
-  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Animated hero card — shifting gradient + NEU badge pulse + entrance
+// Hero card data
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _HeroData {
+  final String badge;
+  final IconData badgeIcon;
+  final String headline;
+  final String body;
+  final String cta;
+  final Color colorA;
+  final Color colorB;
+  final Color colorC;
+  final Color colorD;
+
+  const _HeroData({
+    required this.badge,
+    required this.badgeIcon,
+    required this.headline,
+    required this.body,
+    required this.cta,
+    required this.colorA,
+    required this.colorB,
+    required this.colorC,
+    required this.colorD,
+  });
+}
+
+const _heroData = [
+  _HeroData(
+    badge: 'NEU',
+    badgeIcon: Icons.auto_awesome,
+    headline: 'Bau deine\nMini-App.',
+    body: 'Beschreibe was du brauchst — die KI generiert Rechner, Graphen, Simulatoren.',
+    cta: 'KI-Labor öffnen',
+    colorA: Color(0xFFFF9A4A),
+    colorB: Color(0xFFFF6020),
+    colorC: Color(0xFFFF6FA0),
+    colorD: Color(0xFFFF4080),
+  ),
+  _HeroData(
+    badge: 'VISUALISIEREN',
+    badgeIcon: Icons.architecture,
+    headline: 'Entdecke\nGeoGebra.',
+    body: 'Zeichne Funktionen, konstruiere Geometrie und verstehe Mathe visuell.',
+    cta: 'GeoGebra öffnen',
+    colorA: Color(0xFF3B82F6),
+    colorB: Color(0xFF6366F1),
+    colorC: Color(0xFF8B5CF6),
+    colorD: Color(0xFF4F46E5),
+  ),
+  _HeroData(
+    badge: 'BIBLIOTHEK',
+    badgeIcon: Icons.folder_open,
+    headline: 'Meine\nInhalte.',
+    body: 'Deine gespeicherten Mini-Apps, GeoGebra-Konstruktionen und Visualisierungen.',
+    cta: 'Inhalte öffnen',
+    colorA: Color(0xFFD97706),
+    colorB: Color(0xFFF59E0B),
+    colorC: Color(0xFFFBBF24),
+    colorD: Color(0xFFEA580C),
+  ),
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Animated hero card — shifting gradient + badge pulse + entrance
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _AnimatedHeroCard extends StatefulWidget {
-  const _AnimatedHeroCard({required this.onTap});
+  const _AnimatedHeroCard({required this.index, required this.onTap});
+  final int index;
   final VoidCallback onTap;
 
   @override
@@ -142,13 +188,15 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
   @override
   void initState() {
     super.initState();
-    _gradCtrl = AnimationController(vsync: this,
-        duration: const Duration(seconds: 4))..repeat(reverse: true);
+    _gradCtrl = AnimationController(
+        vsync: this, duration: const Duration(seconds: 4))
+      ..repeat(reverse: true);
 
-    _badgeCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 900))..repeat(reverse: true);
-    _badgeScale = Tween(begin: 1.0, end: 1.08).animate(
-        CurvedAnimation(parent: _badgeCtrl, curve: Curves.easeInOut));
+    _badgeCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 900))
+      ..repeat(reverse: true);
+    _badgeScale = Tween(begin: 1.0, end: 1.08)
+        .animate(CurvedAnimation(parent: _badgeCtrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -162,17 +210,22 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 700),
+      duration: Duration(milliseconds: 600 + widget.index * 120),
       curve: Curves.easeOutCubic,
       builder: (_, v, child) => Opacity(
         opacity: v,
-        child: Transform.translate(offset: Offset(0, (1 - v) * 24), child: child),
+        child: Transform.translate(
+            offset: Offset(0, (1 - v) * 24), child: child),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 14),
+        padding: const EdgeInsets.fromLTRB(
+            SlamTokens.gutter, 0, SlamTokens.gutter, 14),
         child: GestureDetector(
           onTapDown: (_) => setState(() => _pressScale = 0.97),
-          onTapUp: (_) { setState(() => _pressScale = 1.0); widget.onTap(); },
+          onTapUp: (_) {
+            setState(() => _pressScale = 1.0);
+            widget.onTap();
+          },
           onTapCancel: () => setState(() => _pressScale = 1.0),
           child: AnimatedScale(
             scale: _pressScale,
@@ -186,12 +239,13 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
   }
 
   Widget _buildCardContent() {
+    final data = _heroData[widget.index];
     return AnimatedBuilder(
       animation: _gradCtrl,
       builder: (_, __) {
         final t = _gradCtrl.value;
-        final c1 = Color.lerp(const Color(0xFFFF9A4A), const Color(0xFFFF6020), t)!;
-        final c2 = Color.lerp(const Color(0xFFFF6FA0), const Color(0xFFFF4080), t)!;
+        final c1 = Color.lerp(data.colorA, data.colorB, t)!;
+        final c2 = Color.lerp(data.colorC, data.colorD, t)!;
 
         return Container(
           decoration: BoxDecoration(
@@ -205,25 +259,29 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
           padding: const EdgeInsets.all(22),
           child: Stack(
             children: [
-              // Animated blob
               Positioned(
-                right: -30 + t * 12, top: -20 + t * 8,
+                right: -30 + t * 12,
+                top: -20 + t * 8,
                 child: Container(
-                  width: 140, height: 140,
+                  width: 140,
+                  height: 140,
                   decoration: const BoxDecoration(
-                    color: Color(0x22FFFFFF), shape: BoxShape.circle,
+                    color: Color(0x22FFFFFF),
+                    shape: BoxShape.circle,
                   ),
                 ),
               ),
-              // Second smaller blob
               Positioned(
-                right: 40, bottom: -10,
+                right: 40,
+                bottom: -10,
                 child: Opacity(
                   opacity: 0.15 + t * 0.1,
                   child: Container(
-                    width: 80, height: 80,
+                    width: 80,
+                    height: 80,
                     decoration: const BoxDecoration(
-                      color: Colors.white, shape: BoxShape.circle,
+                      color: Colors.white,
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
@@ -231,53 +289,81 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // NEU badge with pulse
                   AnimatedBuilder(
                     animation: _badgeScale,
                     builder: (_, child) => Transform.scale(
-                      scale: _badgeScale.value, alignment: Alignment.centerLeft, child: child,
+                      scale: _badgeScale.value,
+                      alignment: Alignment.centerLeft,
+                      child: child,
                     ),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: const Color(0x38000000),
-                        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                        borderRadius:
+                            BorderRadius.circular(SlamTokens.rCircle),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.auto_awesome, size: 12, color: Colors.white),
+                          Icon(data.badgeIcon,
+                              size: 12, color: Colors.white),
                           const SizedBox(width: 6),
-                          Text('NEU', style: GoogleFonts.dmSans(
-                              fontSize: 10, fontWeight: FontWeight.w800,
-                              color: Colors.white, letterSpacing: 0.8)),
+                          Text(
+                            data.badge,
+                            style: GoogleFonts.dmSans(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: 0.8),
+                          ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text('Bau deine\nMini-App.', style: GoogleFonts.fraunces(
-                      fontSize: 26, fontWeight: FontWeight.w800,
-                      color: SlamTokens.primaryOn, letterSpacing: -0.6, height: 1.1)),
+                  Text(
+                    data.headline,
+                    style: GoogleFonts.fraunces(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: SlamTokens.primaryOn,
+                        letterSpacing: -0.6,
+                        height: 1.1),
+                  ),
                   const SizedBox(height: 8),
                   Text(
-                    'Beschreibe was du brauchst — die KI generiert Rechner, Graphen, Simulatoren.',
+                    data.body,
                     style: GoogleFonts.dmSans(
-                        fontSize: 13, color: SlamTokens.primaryOn.withValues(alpha: 0.8), height: 1.4),
+                        fontSize: 13,
+                        color:
+                            SlamTokens.primaryOn.withValues(alpha: 0.8),
+                        height: 1.4),
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 10),
                     decoration: BoxDecoration(
                       color: SlamTokens.primaryOn,
-                      borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                      borderRadius:
+                          BorderRadius.circular(SlamTokens.rCircle),
                     ),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text('KI-Labor öffnen', style: GoogleFonts.dmSans(
-                          fontSize: 13, fontWeight: FontWeight.w800, color: SlamTokens.primary)),
-                      const SizedBox(width: 6),
-                      Icon(Icons.arrow_forward, size: 14, color: SlamTokens.primary),
-                    ]),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          data.cta,
+                          style: GoogleFonts.dmSans(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: c1),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(Icons.arrow_forward, size: 14, color: c1),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -287,147 +373,6 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
       },
     );
   }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Animated app card — staggered entrance + floating icon + 3D tilt + press
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _AnimatedAppCard extends StatefulWidget {
-  const _AnimatedAppCard({required this.index, required this.app});
-  final int index;
-  final _AppTile app;
-
-  @override
-  State<_AnimatedAppCard> createState() => _AnimatedAppCardState();
-}
-
-class _AnimatedAppCardState extends State<_AnimatedAppCard>
-    with TickerProviderStateMixin {
-  late AnimationController _entranceCtrl;
-  late Animation<double> _fade;
-  late Animation<double> _scale;
-  late Animation<Offset> _slide;
-
-  late AnimationController _floatCtrl;
-  late Animation<double> _floatY;
-
-  double _pressScale = 1.0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _entranceCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 650));
-    _fade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
-    _scale = Tween(begin: 0.78, end: 1.0).animate(
-        CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutBack));
-    _slide = Tween(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-        CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
-    Future.delayed(Duration(milliseconds: 200 + widget.index * 120), () {
-      if (mounted) _entranceCtrl.forward();
-    });
-
-    _floatCtrl = AnimationController(vsync: this,
-        duration: Duration(milliseconds: 2200 + widget.index * 300))
-      ..repeat(reverse: true);
-    _floatY = Tween(begin: 0.0, end: -5.0).animate(
-        CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _entranceCtrl.dispose();
-    _floatCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fade,
-      child: ScaleTransition(
-        scale: _scale,
-        child: SlideTransition(
-          position: _slide,
-          child: GestureDetector(
-            onTapDown: (_) => setState(() => _pressScale = 0.93),
-            onTapUp: (_) { setState(() => _pressScale = 1.0); widget.app.onTap(); },
-            onTapCancel: () => setState(() => _pressScale = 1.0),
-            child: AnimatedScale(
-              scale: _pressScale,
-              duration: const Duration(milliseconds: 140),
-              curve: Curves.easeOutBack,
-              child: _buildCardContent(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardContent() {
-    return Container(
-      decoration: BoxDecoration(
-        color: SlamTokens.surface,
-        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-        border: Border.all(color: SlamTokens.line),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Floating icon with glow
-          AnimatedBuilder(
-            animation: _floatY,
-            builder: (_, child) => Transform.translate(
-              offset: Offset(0, _floatY.value), child: child,
-            ),
-            child: Container(
-              width: 48, height: 48,
-              decoration: BoxDecoration(
-                color: widget.app.color,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [BoxShadow(
-                  color: widget.app.color.withValues(alpha: 0.55),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                  spreadRadius: -4,
-                )],
-              ),
-              alignment: Alignment.center,
-              child: Icon(widget.app.icon, size: 22, color: SlamTokens.primaryOn),
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(widget.app.title, style: GoogleFonts.fraunces(
-              fontSize: 15, fontWeight: FontWeight.w700,
-              color: SlamTokens.text, letterSpacing: -0.3)),
-          const SizedBox(height: 4),
-          Text(widget.app.subtitle, style: GoogleFonts.dmSans(
-              fontSize: 11, color: SlamTokens.textDim, height: 1.4)),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Data + helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _AppTile {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _AppTile({
-    required this.title, required this.subtitle,
-    required this.icon, required this.color, required this.onTap,
-  });
 }
 
 class _SubScreenShell extends StatelessWidget {

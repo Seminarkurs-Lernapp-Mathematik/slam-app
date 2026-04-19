@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../../app/design_tokens.dart';
+import '../../../../core/services/auth_service.dart';
+import '../../../live_feed/presentation/providers/live_feed_providers.dart';
 import '../providers/settings_providers.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/memories_settings_section.dart';
-import '../../../../core/services/auth_service.dart';
-
-import '../../../live_feed/presentation/providers/live_feed_providers.dart';
-
-/// Production Settings Screen
-/// Simplified for production - AI configuration is backend-managed.
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -21,149 +20,215 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: CustomScrollView(
-        slivers: [
-          // App Bar
-          SliverAppBar.large(
-            title: const Text('Einstellungen'),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.go('/home'),
-            ),
-          ),
-          
-          // Content
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Theme Section
-                _SectionHeader(
-                  icon: Icons.palette,
-                  title: 'Erscheinungsbild',
-                  subtitle: 'Personalisiere dein Erlebnis',
-                  color: colorScheme.tertiary,
+      backgroundColor: SlamTokens.bg,
+      body: Column(
+        children: [
+          _buildHeader(context),
+          Expanded(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                      SlamTokens.gutter, 8, SlamTokens.gutter, 32),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _buildSection(
+                        icon: Icons.palette_outlined,
+                        title: 'Erscheinungsbild',
+                        color: SlamTokens.primary,
+                        child: const ThemeSelector(),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSection(
+                        icon: Icons.school_outlined,
+                        title: 'Bildung',
+                        color: const Color(0xFF4CAF9E),
+                        child: const _EducationSettings(),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSection(
+                        icon: Icons.psychology_outlined,
+                        title: 'KI-Erinnerungen',
+                        color: const Color(0xFFC88CFF),
+                        child: const MemoriesSettingsSection(),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSection(
+                        icon: Icons.storage_outlined,
+                        title: 'Daten',
+                        color: SlamTokens.textDim,
+                        child: const _DataSettings(),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSection(
+                        icon: Icons.account_circle_outlined,
+                        title: 'Account',
+                        color: SlamTokens.danger,
+                        child: const _AccountActions(),
+                      ),
+                    ]),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                const ThemeSelector(),
-                const SizedBox(height: 24),
-                
-                // Education Section
-                _SectionHeader(
-                  icon: Icons.school,
-                  title: 'Bildung',
-                  subtitle: 'Klassenstufe und Kursart',
-                  color: Colors.green,
-                ),
-                const SizedBox(height: 12),
-                const _EducationSettings(),
-                const SizedBox(height: 24),
-                
-                // Data Section
-                _SectionHeader(
-                  icon: Icons.storage,
-                  title: 'Daten',
-                  subtitle: 'Cache und lokale Daten',
-                  color: Colors.blueGrey,
-                ),
-                const SizedBox(height: 12),
-                const _DataSettings(),
-                const SizedBox(height: 24),
-
-                // KI-Erinnerungen Section
-                _SectionHeader(
-                  icon: Icons.psychology,
-                  title: 'KI-Erinnerungen',
-                  subtitle: 'Präferenzen & Lerngedächtnis',
-                  color: colorScheme.tertiary,
-                ),
-                const SizedBox(height: 12),
-                const MemoriesSettingsSection(),
-                const SizedBox(height: 24),
-
-                // Account Actions
-                _SectionHeader(
-                  icon: Icons.account_circle,
-                  title: 'Account',
-                  subtitle: 'Verwalte deinen Account',
-                  color: colorScheme.primary,
-                ),
-                const SizedBox(height: 12),
-                const _AccountActions(),
-                const SizedBox(height: 48),
-              ]),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-}
 
-// ============================================================================
-// SECTION HEADER
-// ============================================================================
-
-class _SectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-
-  const _SectionHeader({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: color, size: 24),
+  Widget _buildHeader(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(4, 4, SlamTokens.gutter, 0),
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: SlamTokens.text),
+              onPressed: () => context.pop(),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Einstellungen',
+              style: GoogleFonts.fraunces(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+      ),
+    );
+  }
+
+  Widget _buildSection({
+    required IconData icon,
+    required String title,
+    required Color color,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(8),
               ),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+              alignment: Alignment.center,
+              child: Icon(icon, size: 16, color: color),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: SlamTokens.textDim,
+                letterSpacing: 0.4,
               ),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: SlamTokens.surface,
+            borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+            border: Border.all(color: SlamTokens.line),
           ),
+          child: child,
         ),
       ],
     );
   }
 }
 
-// ============================================================================
-// EDUCATION SETTINGS
-// ============================================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Row helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SettingsRow extends StatelessWidget {
+  const _SettingsRow({
+    required this.icon,
+    required this.label,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.iconColor = SlamTokens.textDim,
+    this.isDestructive = false,
+    this.showDivider = true,
+  });
+
+  final IconData icon;
+  final String label;
+  final String? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final Color iconColor;
+  final bool isDestructive;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final labelColor = isDestructive ? SlamTokens.danger : SlamTokens.text;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: isDestructive ? SlamTokens.danger : iconColor),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label,
+                          style: GoogleFonts.dmSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: labelColor)),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(subtitle!,
+                            style: GoogleFonts.dmSans(
+                                fontSize: 12, color: SlamTokens.textDim)),
+                      ],
+                    ],
+                  ),
+                ),
+                if (trailing != null) trailing!
+                else if (onTap != null)
+                  const Icon(Icons.chevron_right, size: 18, color: SlamTokens.textMute),
+              ],
+            ),
+          ),
+        ),
+        if (showDivider)
+          Divider(height: 1, indent: 50, color: SlamTokens.line),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Education Settings
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _EducationSettings extends ConsumerWidget {
   const _EducationSettings();
@@ -171,153 +236,172 @@ class _EducationSettings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsNotifierProvider);
-    final colorScheme = Theme.of(context).colorScheme;
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          // Grade Level
-          Row(
+    final showCourseType = !['Klasse_5', 'Klasse_6', 'Klasse_7',
+        'Klasse_8', 'Klasse_9', 'Klasse_10'].contains(settings.gradeLevel);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+          child: Row(
             children: [
-              Icon(Icons.grade, color: colorScheme.primary),
-              const SizedBox(width: 12),
+              const Icon(Icons.grade_outlined, size: 20, color: SlamTokens.textDim),
+              const SizedBox(width: 14),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: settings.gradeLevel,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Klassenstufe',
+                    labelStyle: GoogleFonts.dmSans(
+                        fontSize: 12, color: SlamTokens.textDim),
                     border: InputBorder.none,
                   ),
-                  items: ['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8', 'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13']
-                      .map((g) => DropdownMenuItem(value: g, child: Text(g.replaceFirst('_', ' '))))
+                  dropdownColor: SlamTokens.bgElev,
+                  style: GoogleFonts.dmSans(
+                      fontSize: 15, fontWeight: FontWeight.w600, color: SlamTokens.text),
+                  items: ['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8',
+                    'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13']
+                      .map((g) => DropdownMenuItem(
+                          value: g,
+                          child: Text(g.replaceFirst('_', ' '))))
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(appSettingsNotifierProvider.notifier).setGradeLevel(value);
+                      ref
+                          .read(appSettingsNotifierProvider.notifier)
+                          .setGradeLevel(value);
                     }
                   },
                 ),
               ),
             ],
           ),
-          
-          if (!['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8', 'Klasse_9', 'Klasse_10'].contains(settings.gradeLevel)) ...[
-            const Divider(height: 24),
-            // Course Type
-            Row(
+        ),
+        if (showCourseType) ...[
+          Divider(height: 1, indent: 50, color: SlamTokens.line),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+            child: Row(
               children: [
-                Icon(Icons.menu_book, color: colorScheme.primary),
-                const SizedBox(width: 12),
+                const Icon(Icons.menu_book_outlined, size: 20, color: SlamTokens.textDim),
+                const SizedBox(width: 14),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: ['Grundkurs', 'Leistungskurs'].contains(settings.courseType)
+                    value: ['Grundkurs', 'Leistungskurs']
+                            .contains(settings.courseType)
                         ? settings.courseType
                         : 'Leistungskurs',
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Kursart',
+                      labelStyle: GoogleFonts.dmSans(
+                          fontSize: 12, color: SlamTokens.textDim),
                       border: InputBorder.none,
                     ),
+                    dropdownColor: SlamTokens.bgElev,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: SlamTokens.text),
                     items: ['Grundkurs', 'Leistungskurs']
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .map((c) =>
+                            DropdownMenuItem(value: c, child: Text(c)))
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {
-                        ref.read(appSettingsNotifierProvider.notifier).setCourseType(value);
+                        ref
+                            .read(appSettingsNotifierProvider.notifier)
+                            .setCourseType(value);
                       }
                     },
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }
 
-// ============================================================================
-// DATA SETTINGS
-// ============================================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Data Settings
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _DataSettings extends ConsumerWidget {
   const _DataSettings();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        leading: const Icon(Icons.delete_sweep, color: Colors.orange),
-        title: const Text('Fragen-Cache leeren'),
-        subtitle: const Text('Löscht alle zwischengespeicherten Fragen'),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {
-          ref.read(liveFeedQueueProvider.notifier).clear();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Fragen-Cache wurde geleert')),
-          );
-        },
-      ),
+    return _SettingsRow(
+      icon: Icons.delete_sweep_outlined,
+      label: 'Fragen-Cache leeren',
+      subtitle: 'Löscht alle zwischengespeicherten Fragen',
+      showDivider: false,
+      onTap: () {
+        ref.read(liveFeedQueueProvider.notifier).clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Cache geleert',
+                style: GoogleFonts.dmSans(color: SlamTokens.text)),
+            backgroundColor: SlamTokens.surface,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
     );
   }
 }
 
-// ============================================================================
-// ACCOUNT ACTIONS
-// ============================================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Account Actions
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _AccountActions extends ConsumerWidget {
   const _AccountActions();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    
     return Column(
       children: [
-        ListTile(
-          leading: const Icon(Icons.logout, color: Colors.red),
-          title: const Text('Abmelden'),
-          subtitle: const Text('Von deinem Account abmelden'),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        _SettingsRow(
+          icon: Icons.logout,
+          label: 'Abmelden',
+          subtitle: 'Von deinem Account abmelden',
           onTap: () => ref.read(authServiceProvider).signOut(),
         ),
-        const Divider(),
-        ListTile(
-          leading: Icon(Icons.delete_forever, color: colorScheme.error),
-          title: Text('Account löschen', style: TextStyle(color: colorScheme.error)),
-          subtitle: const Text('Dies kann nicht rückgängig gemacht werden'),
-          trailing: Icon(Icons.arrow_forward_ios, size: 16, color: colorScheme.error),
-          onTap: () => _showDeleteAccountDialog(context, ref),
+        _SettingsRow(
+          icon: Icons.delete_forever_outlined,
+          label: 'Account löschen',
+          subtitle: 'Kann nicht rückgängig gemacht werden',
+          isDestructive: true,
+          showDivider: false,
+          onTap: () => _showDeleteDialog(context, ref),
         ),
       ],
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+  void _showDeleteDialog(BuildContext context, WidgetRef ref) {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Account löschen?'),
-        content: const Text(
+        backgroundColor: SlamTokens.bgElev,
+        title: Text('Account löschen?',
+            style: GoogleFonts.fraunces(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text)),
+        content: Text(
           'Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten werden permanent gelöscht.',
+          style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.textDim),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Abbrechen'),
+            child: Text('Abbrechen',
+                style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
           ),
           FilledButton(
             onPressed: () async {
@@ -330,8 +414,10 @@ class _AccountActions extends ConsumerWidget {
                 );
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Löschen'),
+            style: FilledButton.styleFrom(backgroundColor: SlamTokens.danger),
+            child: Text('Löschen',
+                style: GoogleFonts.dmSans(
+                    fontWeight: FontWeight.w700, color: Colors.white)),
           ),
         ],
       ),

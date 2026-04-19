@@ -3,16 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
 
-/// Splash Screen
-///
-/// Checks authentication status and navigates accordingly:
-/// - If authenticated: Navigate to /home
-/// - If not authenticated: Navigate to /login
-/// - If email not verified: Navigate to /verify-email
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -20,11 +16,52 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _logoCtrl;
+  late AnimationController _textCtrl;
+  late Animation<double> _logoScale;
+  late Animation<double> _logoFade;
+  late Animation<double> _textFade;
+  late Animation<Offset> _textSlide;
+
   @override
   void initState() {
     super.initState();
+
+    _logoCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _textCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _logoScale = Tween(begin: 0.72, end: 1.0).animate(
+      CurvedAnimation(parent: _logoCtrl, curve: Curves.easeOutBack),
+    );
+    _logoFade = CurvedAnimation(parent: _logoCtrl, curve: Curves.easeOut);
+
+    _textFade = CurvedAnimation(parent: _textCtrl, curve: Curves.easeOut);
+    _textSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+      CurvedAnimation(parent: _textCtrl, curve: Curves.easeOutCubic),
+    );
+
+    // Staggered entrance: logo first, then tagline
+    _logoCtrl.forward();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) _textCtrl.forward();
+    });
+
     _checkAuthAndNavigate();
+  }
+
+  @override
+  void dispose() {
+    _logoCtrl.dispose();
+    _textCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _navigateHome() async {
@@ -36,24 +73,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Show the splash screen for a minimum of 500 ms.
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    // Minimum splash duration so the animation plays fully
+    await Future.delayed(const Duration(milliseconds: 1400));
     if (!mounted) return;
 
     final authService = ref.read(authServiceProvider);
-
-    // On web, Firebase Auth restores a persisted session asynchronously.
-    // Waiting for the first event of authStateChanges guarantees we get the
-    // real auth state instead of the initial `null` that currentUser returns
-    // before the session is restored.
     try {
       final user = await authService.authStateChanges
           .timeout(const Duration(seconds: 10))
           .first;
-
       if (!mounted) return;
-
       if (user != null && user.emailVerified) {
         await _navigateHome();
       } else if (user != null) {
@@ -62,7 +91,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         context.go('/login');
       }
     } on TimeoutException {
-      // Firebase took too long — fall back to the synchronous value (may be null).
       if (!mounted) return;
       final user = authService.currentUser;
       if (user != null && user.emailVerified) {
@@ -79,57 +107,127 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // App Logo/Icon
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Icon(
-                Icons.auto_awesome,
-                size: 64,
-                color: theme.colorScheme.primary,
+      backgroundColor: SlamTokens.bg,
+      body: Stack(
+        children: [
+          // Subtle radial glow behind the logo
+          Positioned.fill(
+            child: AnimatedBuilder(
+              animation: _logoCtrl,
+              builder: (_, __) => Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.7,
+                    colors: [
+                      SlamTokens.primary.withValues(alpha: _logoCtrl.value * 0.08),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 32),
+          ),
 
-            // App Name
-            Text(
-              'SLAM',
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 8),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo mark
+                ScaleTransition(
+                  scale: _logoScale,
+                  child: FadeTransition(
+                    opacity: _logoFade,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Color(0xFFFF9A4A), Color(0xFFFF5020)],
+                            ),
+                            borderRadius: BorderRadius.circular(26),
+                            boxShadow: [
+                              BoxShadow(
+                                color: SlamTokens.primary.withValues(alpha: 0.45),
+                                blurRadius: 36,
+                                offset: const Offset(0, 12),
+                                spreadRadius: -4,
+                              ),
+                            ],
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'S',
+                            style: GoogleFonts.fraunces(
+                              fontSize: 52,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'SLAM',
+                          style: GoogleFonts.fraunces(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w800,
+                            color: SlamTokens.text,
+                            letterSpacing: 4,
+                            height: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
-            // Tagline
-            Text(
-              'Smarte Lern-App für Mathematik',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 48),
+                const SizedBox(height: 14),
 
-            // Loading Indicator
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                theme.colorScheme.primary,
+                // Tagline — delayed fade + slide up
+                SlideTransition(
+                  position: _textSlide,
+                  child: FadeTransition(
+                    opacity: _textFade,
+                    child: Text(
+                      'Smarte Lern-App für Mathematik',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15,
+                        color: SlamTokens.textDim,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Subtle loading dots at the bottom (barely visible, just indicates activity)
+          Positioned(
+            bottom: 52,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _textFade,
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    color: SlamTokens.primary.withValues(alpha: 0.4),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

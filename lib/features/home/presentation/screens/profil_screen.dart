@@ -166,31 +166,11 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                context,
-                icon: Icons.menu_book,
-                label: 'Lernplan',
-                onTap: () => context.go('/lernplan'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                context,
-                icon: Icons.settings,
-                label: 'Einstellungen',
-                onTap: () => context.go('/settings'),
-              ),
-            ),
-          ],
-        ),
-
-      ],
+    return _buildActionCard(
+      context,
+      icon: Icons.settings,
+      label: 'Einstellungen',
+      onTap: () => context.push('/settings'),
     );
   }
 
