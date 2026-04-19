@@ -62,9 +62,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       children: [
         Scaffold(
           backgroundColor: SlamTokens.bg,
-          body: _AnimatedTabBody(
+          body: IndexedStack(
             index: navState.tabIndex,
-            screens: _screens,
+            children: _screens,
           ),
           bottomNavigationBar: _SlamBottomNav(
             selectedIndex: navState.tabIndex,
@@ -390,78 +390,4 @@ class _CircleRevealClipper extends CustomClipper<Path> {
       old.fraction != fraction || old.origin != origin;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Animated tab body — crossfade + subtle slide direction between tabs
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _AnimatedTabBody extends StatefulWidget {
-  const _AnimatedTabBody({required this.index, required this.screens});
-  final int index;
-  final List<Widget> screens;
-
-  @override
-  State<_AnimatedTabBody> createState() => _AnimatedTabBodyState();
-}
-
-class _AnimatedTabBodyState extends State<_AnimatedTabBody>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _fade;
-  late Animation<Offset> _slide;
-  int _activeIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _activeIndex = widget.index;
-    _ctrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 260));
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween(begin: const Offset(0.04, 0), end: Offset.zero).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-    _ctrl.value = 1.0;
-  }
-
-  @override
-  void didUpdateWidget(_AnimatedTabBody old) {
-    super.didUpdateWidget(old);
-    if (old.index != widget.index) {
-      _activeIndex = widget.index;
-      // Slide direction: right-to-left when going forward, left-to-right when back
-      final goingForward = widget.index > old.index;
-      _slide = Tween(
-        begin: Offset(goingForward ? 0.05 : -0.05, 0),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-      _ctrl.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // All screens kept alive via Offstage (preserves state)
-        for (int i = 0; i < widget.screens.length; i++)
-          Offstage(offstage: i != _activeIndex, child: widget.screens[i]),
-
-        // Animated overlay for the incoming screen only
-        if (_ctrl.status != AnimationStatus.completed)
-          AnimatedBuilder(
-            animation: _ctrl,
-            builder: (_, __) => FadeTransition(
-              opacity: _fade,
-              child: SlideTransition(
-                position: _slide,
-                child: widget.screens[_activeIndex],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
 

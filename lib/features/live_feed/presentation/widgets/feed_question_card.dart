@@ -42,6 +42,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   List<String> _stepOrder = [];
   final int _currentStepIndex = 0;
 
+  // Card entrance
+  late AnimationController _entranceCtrl;
+  late Animation<double> _entranceFade;
+  late Animation<Offset> _entranceSlide;
+
   // Wrong-answer feedback
   late AnimationController _shakeCtrl;
   late Animation<double> _shakeAnim;
@@ -61,6 +66,12 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       _stepOrder = List.from(widget.question.stepByStepData!.steps.map((s) => s.id));
       _stepOrder.shuffle();
     }
+
+    _entranceCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 340));
+    _entranceFade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
+    _entranceSlide = Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
+    _entranceCtrl.forward();
 
     _shakeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 520));
     _shakeAnim = TweenSequence<double>([
@@ -83,6 +94,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   void dispose() {
     _autoAdvanceTimer?.cancel();
     _questionTimer?.cancel();
+    _entranceCtrl.dispose();
     _shakeCtrl.dispose();
     _redCtrl.dispose();
     super.dispose();
@@ -296,7 +308,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final afb = _difficultyToAfb(widget.question.difficulty);
     final timer = _formatTimer(_timeSpentSeconds);
 
-    return AnimatedBuilder(
+    return FadeTransition(
+      opacity: _entranceFade,
+      child: SlideTransition(
+        position: _entranceSlide,
+        child: AnimatedBuilder(
       animation: _shakeAnim,
       builder: (_, child) => Transform.translate(
         offset: Offset(_shakeAnim.value, 0),
@@ -308,7 +324,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(
-            SlamTokens.gutter, 8, SlamTokens.gutter, 120,
+            SlamTokens.gutter, 8, SlamTokens.gutter, 80,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -387,28 +403,31 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 ...List.generate(_hintsShown, (i) {
                   if (i >= widget.question.hints.length) return const SizedBox();
                   final hint = widget.question.hints[i];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: subjectSoft,
-                        borderRadius: BorderRadius.circular(SlamTokens.rInput),
-                        border: Border.all(color: subjectColor.withValues(alpha: 0.3)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'HINT ${i+1} · ${widget.question.hints.length}',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 10, fontWeight: FontWeight.w800,
-                              letterSpacing: 0.8, color: subjectColor,
+                  return _AnimatedReveal(
+                    key: ValueKey('hint_$i'),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: subjectSoft,
+                          borderRadius: BorderRadius.circular(SlamTokens.rInput),
+                          border: Border.all(color: subjectColor.withValues(alpha: 0.3)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'HINT ${i+1} · ${widget.question.hints.length}',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 10, fontWeight: FontWeight.w800,
+                                letterSpacing: 0.8, color: subjectColor,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          MathText(hint.text, style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.text)),
-                        ],
+                            const SizedBox(height: 4),
+                            MathText(hint.text, style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.text)),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -423,21 +442,27 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
               // ── Feedback ──────────────────────────────────────────
               if (_answered) ...[
                 const SizedBox(height: 16),
-                _buildFeedback(),
+                _AnimatedReveal(
+                  key: ValueKey('feedback_${widget.question.id}'),
+                  child: _buildFeedback(),
+                ),
                 if (!_isCorrect && _showWoHaengtsInput) ...[
                   const SizedBox(height: 10),
-                  _buildWoHaengtsButton(subjectColor, subjectSoft),
+                  _AnimatedReveal(
+                    key: ValueKey('wohaengts_${widget.question.id}'),
+                    child: _buildWoHaengtsButton(subjectColor, subjectSoft),
+                  ),
                 ],
               ],
             ],
           ),
         ),
 
-        // ── Floating action bar ────────────────────────────────────
+        // ── Action bar — flush at bottom, directly above nav bar ──
         Positioned(
-          bottom: 16,
-          left: SlamTokens.gutter,
-          right: SlamTokens.gutter,
+          bottom: 0,
+          left: 0,
+          right: 0,
           child: _buildActionBar(subjectColor),
         ),
 
@@ -465,6 +490,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           ),
       ],
     ),
+      ),
+      ),
     );
   }
 
@@ -745,36 +772,37 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     return Container(
       decoration: BoxDecoration(
-        color: SlamTokens.bgElev,
-        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-        border: Border.all(color: SlamTokens.line),
-        boxShadow: const [BoxShadow(color: Color(0x60000000), blurRadius: 32, offset: Offset(0, 12), spreadRadius: -8)],
+        color: SlamTokens.bg,
+        border: Border(top: BorderSide(color: SlamTokens.line)),
       ),
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 10, SlamTokens.gutter, 12),
       child: _answered
-          ? GestureDetector(
-              onTap: _skipToNext,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
-                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Nächste Frage',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 15, fontWeight: FontWeight.w800,
-                        color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn,
-                        letterSpacing: -0.1,
+          ? _AnimatedReveal(
+              key: ValueKey('actionbar_answered_${widget.question.id}'),
+              child: GestureDetector(
+                onTap: _skipToNext,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
+                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Nächste Frage',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 15, fontWeight: FontWeight.w800,
+                          color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn,
+                          letterSpacing: -0.1,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 18,
-                        color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn),
-                  ],
+                      const SizedBox(width: 8),
+                      Icon(Icons.arrow_forward, size: 18,
+                          color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn),
+                    ],
+                  ),
                 ),
               ),
             )
@@ -783,7 +811,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 // Hint button
                 GestureDetector(
                   onTap: canHint ? _revealHint : null,
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: SlamTokens.dState,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: _hintsShown > 0
@@ -829,7 +858,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     child: Row(
                       children: [
-                        Text('Skip', style: GoogleFonts.dmSans(
+                        Text('Überspringen', style: GoogleFonts.dmSans(
                             fontSize: 13, fontWeight: FontWeight.w700, color: SlamTokens.textDim)),
                         const SizedBox(width: 4),
                         const Icon(Icons.skip_next, size: 14, color: SlamTokens.textDim),
@@ -990,6 +1019,29 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           );
         }),
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Animated reveal — fade + slide-up entrance for conditionally shown widgets
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AnimatedReveal extends StatelessWidget {
+  const _AnimatedReveal({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      builder: (_, v, c) => Opacity(
+        opacity: v,
+        child: Transform.translate(offset: Offset(0, (1 - v) * 14), child: c),
+      ),
+      child: child,
     );
   }
 }

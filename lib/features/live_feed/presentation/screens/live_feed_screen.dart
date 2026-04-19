@@ -117,28 +117,10 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     if (queueState.isGenerating && currentQuestion == null) return _buildLoadingView();
     if (currentQuestion == null) return _buildEmptyView();
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 320),
-      switchInCurve: Curves.easeOutCubic,
-      switchOutCurve: Curves.easeInCubic,
-      transitionBuilder: (child, animation) {
-        final inAnim = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
-        return FadeTransition(
-          opacity: inAnim,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.06),
-              end: Offset.zero,
-            ).animate(inAnim),
-            child: child,
-          ),
-        );
-      },
-      child: FeedQuestionCard(
-        key: ValueKey(currentQuestion.id),
-        question: currentQuestion,
-        onAnswerSubmitted: _handleAnswerSubmitted,
-      ),
+    return FeedQuestionCard(
+      key: ValueKey(currentQuestion.id),
+      question: currentQuestion,
+      onAnswerSubmitted: _handleAnswerSubmitted,
     );
   }
 
