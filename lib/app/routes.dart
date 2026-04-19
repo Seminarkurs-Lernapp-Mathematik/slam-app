@@ -54,26 +54,16 @@ CustomTransitionPage<void> buildPageWithExpressiveTransition({
 
       final fade = CurvedAnimation(parent: animation, curve: curve);
 
-      // Subtle slide from right + fade (natural navigation feel)
       final slide = Tween<Offset>(
         begin: const Offset(0.06, 0),
         end: Offset.zero,
       ).animate(CurvedAnimation(parent: animation, curve: curve));
 
-      // Secondary page slides slightly left when being replaced
-      final secondarySlide = Tween<Offset>(
-        begin: Offset.zero,
-        end: const Offset(-0.03, 0),
-      ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve));
-
-      return SlideTransition(
-        position: secondarySlide,
-        child: FadeTransition(
-          opacity: fade,
-          child: SlideTransition(
-            position: slide,
-            child: child,
-          ),
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(
+          position: slide,
+          child: child,
         ),
       );
     },

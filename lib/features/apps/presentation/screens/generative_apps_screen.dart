@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
-/// Generative Apps Screen (KI-Labor)
-///
-/// Lets users describe a mini-app, generates it, then shows an "Öffnen"
-/// button. Opening the app launches a full-screen viewer that supports
-/// multi-turn chat-based modifications.
 class GenerativeAppsScreen extends ConsumerStatefulWidget {
   const GenerativeAppsScreen({super.key});
 
   @override
-  ConsumerState<GenerativeAppsScreen> createState() =>
-      _GenerativeAppsScreenState();
+  ConsumerState<GenerativeAppsScreen> createState() => _GenerativeAppsScreenState();
 }
 
 class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
@@ -43,53 +39,28 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Generation + auto-save
-  // ---------------------------------------------------------------------------
-
   Future<void> _generateApp() async {
     if (_promptController.text.trim().isEmpty) {
       setState(() => _error = 'Bitte gib eine Beschreibung ein');
       return;
     }
-
-    setState(() {
-      _isLoading = true;
-      _error = null;
-      _currentApp = null;
-    });
-
+    setState(() { _isLoading = true; _error = null; _currentApp = null; });
     try {
       final app = await ref.read(
-        generateMiniAppProvider(
-          description: _promptController.text.trim(),
-        ).future,
+        generateMiniAppProvider(description: _promptController.text.trim()).future,
       );
-
-      setState(() {
-        _isLoading = false;
-        _currentApp = app;
-      });
-
-      // Auto-save in background (fire-and-forget, don't block UI)
+      setState(() { _isLoading = false; _currentApp = app; });
       _autoSave(app);
     } on AIException catch (e) {
-      setState(() {
-        _error = e.message;
-        _isLoading = false;
-      });
+      setState(() { _error = e.message; _isLoading = false; });
     } catch (e) {
-      setState(() {
-        _error = 'Fehler beim Generieren der App: $e';
-        _isLoading = false;
-      });
+      setState(() { _error = 'Fehler beim Generieren: $e'; _isLoading = false; });
     }
   }
 
   Future<void> _autoSave(GeneratedApp app) async {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
-
     try {
       final content = SavedContent(
         id: 'app-${DateTime.now().millisecondsSinceEpoch}',
@@ -104,37 +75,27 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         tags: ['ki-labor'],
       );
       await ref.read(saveContentProvider(content).future);
-      debugPrint('✅ KI-Labor: auto-saved "${app.title}"');
     } catch (e) {
       debugPrint('⚠️ KI-Labor: auto-save failed: $e');
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Open fullscreen viewer
-  // ---------------------------------------------------------------------------
-
   void _openApp() {
     if (_currentApp == null) return;
-
-    final html = _buildHtml(_currentApp!);
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (_) => AppViewerScreen(
-          title: _currentApp!.title,
-          htmlContent: html,
-          originalPrompt: _promptController.text.trim(),
-          contentType: ContentType.miniApp,
-        ),
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      fullscreenDialog: true,
+      builder: (_) => AppViewerScreen(
+        title: _currentApp!.title,
+        htmlContent: _buildHtml(_currentApp!),
+        originalPrompt: _promptController.text.trim(),
+        contentType: ContentType.miniApp,
       ),
-    );
+    ));
   }
 
   String _buildHtml(GeneratedApp app) {
     final html = app.html.trim();
-    if (html.toLowerCase().startsWith('<!doctype') ||
-        html.toLowerCase().startsWith('<html')) {
+    if (html.toLowerCase().startsWith('<!doctype') || html.toLowerCase().startsWith('<html')) {
       return html;
     }
     return '''<!DOCTYPE html>
@@ -150,142 +111,152 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
 </html>''';
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
     return Column(
       children: [
-        // Prompt input section
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cs.surface,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: _promptController,
-                decoration: InputDecoration(
-                  hintText: 'z.B. "Erstelle einen Funktionsplotter"',
-                  labelText: 'Was soll die App können?',
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.auto_awesome),
-                  suffixIcon: _promptController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _promptController.clear();
-                            setState(() => _currentApp = null);
-                          },
-                        )
-                      : null,
-                ),
-                maxLines: 3,
-                textInputAction: TextInputAction.done,
-                onChanged: (_) => setState(() {}),
-                onSubmitted: (_) => _generateApp(),
-              ),
-              const SizedBox(height: 12),
-
-              // Example prompts
-              SizedBox(
-                height: 36,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _examplePrompts.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    return ActionChip(
-                      label: Text(_examplePrompts[index]),
-                      onPressed: () {
-                        _promptController.text = _examplePrompts[index];
-                        setState(() {});
-                      },
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              FilledButton.icon(
-                onPressed: _isLoading ? null : _generateApp,
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.auto_awesome),
-                label:
-                    Text(_isLoading ? 'Generiere App...' : 'App generieren'),
-              ),
-
-              if (_error != null) ...[
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cs.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline, color: cs.error),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(_error!,
-                            style: TextStyle(color: cs.error)),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: _generateApp,
-                        tooltip: 'Erneut versuchen',
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-
-        // Result area
-        Expanded(
-          child: _buildResultArea(theme, cs),
-        ),
+        _buildInputSection(),
+        Expanded(child: _buildResultArea()),
       ],
     );
   }
 
-  Widget _buildResultArea(ThemeData theme, ColorScheme cs) {
+  Widget _buildInputSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SlamTokens.surface,
+        border: Border(bottom: BorderSide(color: SlamTokens.line)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _promptController,
+            style: GoogleFonts.dmSans(color: SlamTokens.text, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'z.B. "Erstelle einen Funktionsplotter"',
+              hintStyle: GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
+              labelText: 'Was soll die App können?',
+              labelStyle: GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 13),
+              filled: true,
+              fillColor: SlamTokens.bgElev,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+                borderSide: BorderSide(color: SlamTokens.line),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+                borderSide: BorderSide(color: SlamTokens.line),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+                borderSide: const BorderSide(color: SlamTokens.primary, width: 1.5),
+              ),
+              prefixIcon: const Icon(Icons.auto_awesome, color: SlamTokens.primary, size: 20),
+              suffixIcon: _promptController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 18, color: SlamTokens.textDim),
+                      onPressed: () { _promptController.clear(); setState(() => _currentApp = null); },
+                    )
+                  : null,
+            ),
+            maxLines: 3,
+            textInputAction: TextInputAction.done,
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) => _generateApp(),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 34,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _examplePrompts.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (_, i) => GestureDetector(
+                onTap: () { _promptController.text = _examplePrompts[i]; setState(() {}); },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: SlamTokens.bgElev,
+                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                    border: Border.all(color: SlamTokens.line),
+                  ),
+                  child: Text(_examplePrompts[i],
+                      style: GoogleFonts.dmSans(fontSize: 12, color: SlamTokens.textDim)),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: _isLoading ? null : _generateApp,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: _isLoading ? SlamTokens.primary.withValues(alpha: 0.5) : SlamTokens.primary,
+                borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+              ),
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_isLoading)
+                    const SizedBox(width: 18, height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: SlamTokens.primaryOn))
+                  else
+                    const Icon(Icons.auto_awesome, size: 18, color: SlamTokens.primaryOn),
+                  const SizedBox(width: 8),
+                  Text(_isLoading ? 'Generiere App...' : 'App generieren',
+                      style: GoogleFonts.dmSans(
+                          fontSize: 14, fontWeight: FontWeight.w700,
+                          color: SlamTokens.primaryOn)),
+                ],
+              ),
+            ),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: SlamTokens.dangerSoft,
+                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+                border: Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: SlamTokens.danger, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(_error!,
+                      style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.danger))),
+                  GestureDetector(
+                    onTap: _generateApp,
+                    child: const Icon(Icons.refresh, color: SlamTokens.danger, size: 18),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultArea() {
     if (_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
+            const CircularProgressIndicator(color: SlamTokens.primary),
             const SizedBox(height: 16),
             Text('App wird generiert…',
-                style: theme.textTheme.titleMedium?.copyWith(
-                    color: cs.onSurfaceVariant)),
-            const SizedBox(height: 8),
+                style: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w600, color: SlamTokens.text)),
+            const SizedBox(height: 6),
             Text('Das dauert etwa 10–20 Sekunden',
-                style: theme.textTheme.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant)),
+                style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim)),
           ],
         ),
       );
@@ -293,22 +264,33 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
 
     if (_currentApp == null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.auto_awesome, size: 64, color: cs.primary),
-            const SizedBox(height: 16),
-            Text('Generiere deine erste Mini-App',
-                style: theme.textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text('Beschreibe, was die App können soll',
-                style: TextStyle(color: cs.secondary)),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 72, height: 72,
+                decoration: BoxDecoration(
+                  color: SlamTokens.primarySoft,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.auto_awesome, size: 36, color: SlamTokens.primary),
+              ),
+              const SizedBox(height: 20),
+              Text('KI-Labor',
+                  style: GoogleFonts.fraunces(fontSize: 20, fontWeight: FontWeight.w700, color: SlamTokens.text)),
+              const SizedBox(height: 8),
+              Text('Beschreibe, was die App können soll',
+                  style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
+                  textAlign: TextAlign.center),
+            ],
+          ),
         ),
       );
     }
 
-    // Generation complete — show result card with Öffnen button
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -318,50 +300,63 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: cs.primaryContainer.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: cs.primary.withValues(alpha: 0.3)),
+                color: SlamTokens.primarySoft,
+                borderRadius: BorderRadius.circular(SlamTokens.rCardLg),
+                border: Border.all(color: SlamTokens.primary.withValues(alpha: 0.25)),
               ),
               child: Column(
                 children: [
-                  Icon(Icons.check_circle,
-                      size: 48, color: cs.primary),
+                  const Icon(Icons.check_circle, size: 48, color: SlamTokens.primary),
                   const SizedBox(height: 12),
-                  Text(
-                    _currentApp!.title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(_currentApp!.title,
+                      style: GoogleFonts.fraunces(fontSize: 18, fontWeight: FontWeight.w700, color: SlamTokens.text),
+                      textAlign: TextAlign.center),
                   const SizedBox(height: 8),
-                  Text(
-                    'App erfolgreich generiert und gespeichert',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
+                  Text('App erfolgreich generiert und gespeichert',
+                      style: GoogleFonts.dmSans(fontSize: 12, color: SlamTokens.textDim),
+                      textAlign: TextAlign.center),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: _openApp,
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Öffnen'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 16),
-                textStyle: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+            GestureDetector(
+              onTap: _openApp,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                decoration: BoxDecoration(
+                  color: SlamTokens.primary,
+                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.open_in_new, size: 18, color: SlamTokens.primaryOn),
+                    const SizedBox(width: 8),
+                    Text('Öffnen', style: GoogleFonts.dmSans(
+                        fontSize: 15, fontWeight: FontWeight.w800, color: SlamTokens.primaryOn)),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _generateApp,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Neu generieren'),
+            GestureDetector(
+              onTap: _generateApp,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: SlamTokens.line),
+                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.refresh, size: 16, color: SlamTokens.textDim),
+                    const SizedBox(width: 6),
+                    Text('Neu generieren',
+                        style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim)),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

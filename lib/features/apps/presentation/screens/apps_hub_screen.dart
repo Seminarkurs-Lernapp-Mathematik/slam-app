@@ -137,13 +137,6 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
   late AnimationController _gradCtrl;
   late AnimationController _badgeCtrl;
   late Animation<double> _badgeScale;
-
-  // 3D tilt
-  double _rotX = 0, _rotY = 0;
-  double _fromX = 0, _fromY = 0;
-  late AnimationController _springCtrl;
-  late Animation<double> _springX;
-  late Animation<double> _springY;
   double _pressScale = 1.0;
 
   @override
@@ -156,39 +149,13 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
         duration: const Duration(milliseconds: 900))..repeat(reverse: true);
     _badgeScale = Tween(begin: 1.0, end: 1.08).animate(
         CurvedAnimation(parent: _badgeCtrl, curve: Curves.easeInOut));
-
-    _springCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 500));
-    _springX = const AlwaysStoppedAnimation(0);
-    _springY = const AlwaysStoppedAnimation(0);
-    _springCtrl.addListener(() {
-      if (mounted) setState(() { _rotX = _springX.value; _rotY = _springY.value; });
-    });
   }
 
   @override
   void dispose() {
     _gradCtrl.dispose();
     _badgeCtrl.dispose();
-    _springCtrl.dispose();
     super.dispose();
-  }
-
-  void _onMouseMove(Offset pos, Size size) {
-    _springCtrl.stop();
-    setState(() {
-      _rotY = (pos.dx / size.width - 0.5) * 2 * 0.12;
-      _rotX = -(pos.dy / size.height - 0.5) * 2 * 0.09;
-    });
-  }
-
-  void _springBack() {
-    _fromX = _rotX; _fromY = _rotY;
-    _springX = Tween(begin: _fromX, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springY = Tween(begin: _fromY, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springCtrl.forward(from: 0);
   }
 
   @override
@@ -203,32 +170,16 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 14),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final size = Size(constraints.maxWidth, 200);
-            return MouseRegion(
-              onHover: (e) => _onMouseMove(e.localPosition, size),
-              onExit: (_) => _springBack(),
-              child: GestureDetector(
-                onTapDown: (_) => setState(() => _pressScale = 0.97),
-                onTapUp: (_) { setState(() => _pressScale = 1.0); widget.onTap(); },
-                onTapCancel: () => setState(() => _pressScale = 1.0),
-                child: AnimatedScale(
-                  scale: _pressScale,
-                  duration: const Duration(milliseconds: 140),
-                  curve: Curves.easeOutBack,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, 0.0015)
-                      ..rotateX(_rotX)
-                      ..rotateY(_rotY),
-                    child: _buildCardContent(),
-                  ),
-                ),
-              ),
-            );
-          },
+        child: GestureDetector(
+          onTapDown: (_) => setState(() => _pressScale = 0.97),
+          onTapUp: (_) { setState(() => _pressScale = 1.0); widget.onTap(); },
+          onTapCancel: () => setState(() => _pressScale = 1.0),
+          child: AnimatedScale(
+            scale: _pressScale,
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOutBack,
+            child: _buildCardContent(),
+          ),
         ),
       ),
     );
@@ -353,22 +304,14 @@ class _AnimatedAppCard extends StatefulWidget {
 
 class _AnimatedAppCardState extends State<_AnimatedAppCard>
     with TickerProviderStateMixin {
-  // Entrance
   late AnimationController _entranceCtrl;
   late Animation<double> _fade;
   late Animation<double> _scale;
   late Animation<Offset> _slide;
 
-  // Icon float
   late AnimationController _floatCtrl;
   late Animation<double> _floatY;
 
-  // 3D tilt
-  double _rotX = 0, _rotY = 0;
-  double _fromX = 0, _fromY = 0;
-  late AnimationController _springCtrl;
-  late Animation<double> _springX;
-  late Animation<double> _springY;
   double _pressScale = 1.0;
 
   @override
@@ -391,39 +334,13 @@ class _AnimatedAppCardState extends State<_AnimatedAppCard>
       ..repeat(reverse: true);
     _floatY = Tween(begin: 0.0, end: -5.0).animate(
         CurvedAnimation(parent: _floatCtrl, curve: Curves.easeInOut));
-
-    _springCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 500));
-    _springX = const AlwaysStoppedAnimation(0);
-    _springY = const AlwaysStoppedAnimation(0);
-    _springCtrl.addListener(() {
-      if (mounted) setState(() { _rotX = _springX.value; _rotY = _springY.value; });
-    });
   }
 
   @override
   void dispose() {
     _entranceCtrl.dispose();
     _floatCtrl.dispose();
-    _springCtrl.dispose();
     super.dispose();
-  }
-
-  void _onMouseMove(Offset pos, Size size) {
-    _springCtrl.stop();
-    setState(() {
-      _rotY = (pos.dx / size.width - 0.5) * 2 * 0.16;
-      _rotX = -(pos.dy / size.height - 0.5) * 2 * 0.12;
-    });
-  }
-
-  void _springBack() {
-    _fromX = _rotX; _fromY = _rotY;
-    _springX = Tween(begin: _fromX, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springY = Tween(begin: _fromY, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springCtrl.forward(from: 0);
   }
 
   @override
@@ -434,32 +351,16 @@ class _AnimatedAppCardState extends State<_AnimatedAppCard>
         scale: _scale,
         child: SlideTransition(
           position: _slide,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final size = Size(constraints.maxWidth, constraints.maxHeight);
-              return MouseRegion(
-                onHover: (e) => _onMouseMove(e.localPosition, size),
-                onExit: (_) => _springBack(),
-                child: GestureDetector(
-                  onTapDown: (_) => setState(() => _pressScale = 0.93),
-                  onTapUp: (_) { setState(() => _pressScale = 1.0); widget.app.onTap(); },
-                  onTapCancel: () => setState(() => _pressScale = 1.0),
-                  child: AnimatedScale(
-                    scale: _pressScale,
-                    duration: const Duration(milliseconds: 140),
-                    curve: Curves.easeOutBack,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.002)
-                        ..rotateX(_rotX)
-                        ..rotateY(_rotY),
-                      child: _buildCardContent(),
-                    ),
-                  ),
-                ),
-              );
-            },
+          child: GestureDetector(
+            onTapDown: (_) => setState(() => _pressScale = 0.93),
+            onTapUp: (_) { setState(() => _pressScale = 1.0); widget.app.onTap(); },
+            onTapCancel: () => setState(() => _pressScale = 1.0),
+            child: AnimatedScale(
+              scale: _pressScale,
+              duration: const Duration(milliseconds: 140),
+              curve: Curves.easeOutBack,
+              child: _buildCardContent(),
+            ),
           ),
         ),
       ),

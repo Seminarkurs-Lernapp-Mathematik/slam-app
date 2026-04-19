@@ -564,6 +564,33 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     debugPrint('💾 LiveFeedQueue: Saved ${state.questions.length} questions to cache');
   }
 
+  /// Eagerly persist that the current question has been answered so cold
+  /// restarts don't replay it (called immediately on answer, before advancing).
+  void persistAnsweredCurrent() {
+    final nextIdx = state.currentIndex + 1;
+    _eagerPersistIndex(nextIdx);
+  }
+
+  Future<void> _eagerPersistIndex(int nextIdx) async {
+    if (_prefs != null) {
+      try {
+        await _prefs!.setInt(_kQueueIndexKey, nextIdx);
+      } catch (_) {}
+    }
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        await ref.read(firestoreServiceProvider).saveQuestionQueueCache(
+          userId: userId,
+          questions: state.questions,
+          currentIndex: nextIdx,
+        );
+      } catch (e) {
+        debugPrint('LiveFeedQueue: eager persist failed: $e');
+      }
+    }
+  }
+
   /// Move to the next question in the queue
   Question? nextQuestion() {
     if (!state.hasNext) {

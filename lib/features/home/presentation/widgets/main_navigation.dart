@@ -329,10 +329,10 @@ class _ProfileSwooshOverlayState extends State<_ProfileSwooshOverlay>
                 ),
               ),
 
-              // Close button at avatar position
+              // Close button — top-right, inside safe area
               Positioned(
-                left: _origin.dx - 22,
-                top: _origin.dy - 22,
+                top: MediaQuery.paddingOf(context).top + 12,
+                right: 16,
                 child: FadeTransition(
                   opacity: _contentAnim,
                   child: GestureDetector(

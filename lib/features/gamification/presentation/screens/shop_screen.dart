@@ -396,26 +396,15 @@ class _AnimatedThemeCard extends StatefulWidget {
 
 class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
     with TickerProviderStateMixin {
-  // Entrance
   late AnimationController _entranceCtrl;
   late Animation<double> _entranceFade;
   late Animation<double> _entranceScale;
   late Animation<Offset> _entranceSlide;
 
-  // 3D tilt
-  double _rotX = 0, _rotY = 0;
-  double _fromX = 0, _fromY = 0;
-  late AnimationController _springCtrl;
-  late Animation<double> _springX;
-  late Animation<double> _springY;
-
-  // Press
   double _pressScale = 1.0;
 
-  // Gradient shimmer
   late AnimationController _shimmerCtrl;
 
-  // Owned border pulse
   late AnimationController _ownedCtrl;
   late Animation<double> _ownedGlow;
 
@@ -441,18 +430,6 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
     _entranceSlide = Tween(begin: const Offset(0, 0.18), end: Offset.zero).animate(
         CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
 
-    _springCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 500));
-    _springX = const AlwaysStoppedAnimation(0);
-    _springY = const AlwaysStoppedAnimation(0);
-    _springCtrl.addListener(() {
-      if (!mounted) return;
-      setState(() {
-        _rotX = _springX.value;
-        _rotY = _springY.value;
-      });
-    });
-
     _shimmerCtrl = AnimationController(vsync: this,
         duration: const Duration(milliseconds: 2200))
       ..repeat();
@@ -471,30 +448,9 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
   @override
   void dispose() {
     _entranceCtrl.dispose();
-    _springCtrl.dispose();
     _shimmerCtrl.dispose();
     _ownedCtrl.dispose();
     super.dispose();
-  }
-
-  void _onMouseMove(Offset pos, Size size) {
-    _springCtrl.stop();
-    final nx = (pos.dx / size.width - 0.5) * 2;
-    final ny = (pos.dy / size.height - 0.5) * 2;
-    setState(() {
-      _rotY = nx * 0.18;
-      _rotX = -ny * 0.13;
-    });
-  }
-
-  void _springBack() {
-    _fromX = _rotX;
-    _fromY = _rotY;
-    _springX = Tween(begin: _fromX, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springY = Tween(begin: _fromY, end: 0.0).animate(
-        CurvedAnimation(parent: _springCtrl, curve: Curves.elasticOut));
-    _springCtrl.forward(from: 0);
   }
 
   void _onTapDown(TapDownDetails _) => setState(() => _pressScale = 0.93);
@@ -512,32 +468,16 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
         scale: _entranceScale,
         child: SlideTransition(
           position: _entranceSlide,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final size = Size(constraints.maxWidth, constraints.maxHeight);
-              return MouseRegion(
-                onHover: (e) => _onMouseMove(e.localPosition, size),
-                onExit: (_) => _springBack(),
-                child: GestureDetector(
-                  onTapDown: _onTapDown,
-                  onTapUp: _onTapUp,
-                  onTapCancel: _onTapCancel,
-                  child: AnimatedScale(
-                    scale: _pressScale,
-                    duration: const Duration(milliseconds: 130),
-                    curve: Curves.easeOutBack,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0018)
-                        ..rotateX(_rotX)
-                        ..rotateY(_rotY),
-                      child: _buildCard(),
-                    ),
-                  ),
-                ),
-              );
-            },
+          child: GestureDetector(
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            child: AnimatedScale(
+              scale: _pressScale,
+              duration: const Duration(milliseconds: 130),
+              curve: Curves.easeOutBack,
+              child: _buildCard(),
+            ),
           ),
         ),
       ),
