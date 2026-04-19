@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
@@ -9,7 +10,6 @@ import '../../../../core/constants/level_thresholds.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
-import '../../../../features/gamification/presentation/widgets/xp_animation.dart';
 import '../providers/live_feed_providers.dart';
 import 'wo_haengts_chat_sheet.dart';
 import '../../../../shared/widgets/math_text.dart';
@@ -29,7 +29,7 @@ class FeedQuestionCard extends ConsumerStatefulWidget {
 }
 
 class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   Timer? _autoAdvanceTimer;
   Timer? _questionTimer;
   int _hintsShown = 0;
@@ -42,6 +42,16 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   List<String> _stepOrder = [];
   final int _currentStepIndex = 0;
 
+  // Wrong-answer feedback
+  late AnimationController _shakeCtrl;
+  late Animation<double> _shakeAnim;
+  late AnimationController _redCtrl;
+  late Animation<double> _redAnim;
+
+  // Correct-answer feedback
+  bool _showSuccessBurst = false;
+  int _burstXp = 0;
+
   @override
   void initState() {
     super.initState();
@@ -51,12 +61,30 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       _stepOrder = List.from(widget.question.stepByStepData!.steps.map((s) => s.id));
       _stepOrder.shuffle();
     }
+
+    _shakeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 520));
+    _shakeAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 11.0), weight: 10),
+      TweenSequenceItem(tween: Tween(begin: 11.0, end: -13.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: -13.0, end: 9.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 9.0, end: -7.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: -7.0, end: 3.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 3.0, end: 0.0), weight: 10),
+    ]).animate(_shakeCtrl);
+
+    _redCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 650));
+    _redAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.18), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.18, end: 0.0), weight: 80),
+    ]).animate(CurvedAnimation(parent: _redCtrl, curve: Curves.easeInOut));
   }
 
   @override
   void dispose() {
     _autoAdvanceTimer?.cancel();
     _questionTimer?.cancel();
+    _shakeCtrl.dispose();
+    _redCtrl.dispose();
     super.dispose();
   }
 
@@ -146,7 +174,12 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     _updateStats(isCorrect, xpEarned, coinsEarned);
     _updateAdaptiveDifficulty(isCorrect);
 
-    if (isCorrect && mounted) XPAnimation.show(context, xpAmount: xpEarned);
+    if (isCorrect && mounted) {
+      setState(() { _showSuccessBurst = true; _burstXp = xpEarned; });
+    } else if (mounted) {
+      _shakeCtrl.forward(from: 0);
+      _redCtrl.forward(from: 0);
+    }
     _saveProgress(isCorrect, xpEarned, coinsEarned, userAnswer: userAnswer);
 
     if (!isCorrect) {
@@ -262,7 +295,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final afb = _difficultyToAfb(widget.question.difficulty);
     final timer = _formatTimer(_timeSpentSeconds);
 
-    return Stack(
+    return AnimatedBuilder(
+      animation: _shakeAnim,
+      builder: (_, child) => Transform.translate(
+        offset: Offset(_shakeAnim.value, 0),
+        child: child,
+      ),
+      child: Stack(
       children: [
         // Scrollable content
         SingleChildScrollView(
@@ -400,7 +439,31 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           right: SlamTokens.gutter,
           child: _buildActionBar(subjectColor),
         ),
+
+        // ── Wrong-answer red flash ─────────────────────────────────
+        AnimatedBuilder(
+          animation: _redAnim,
+          builder: (_, __) => _redAnim.value > 0
+              ? Positioned.fill(
+                  child: IgnorePointer(
+                    child: Container(
+                      color: SlamTokens.danger.withValues(alpha: _redAnim.value),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+
+        // ── Correct-answer burst ───────────────────────────────────
+        if (_showSuccessBurst)
+          Positioned.fill(
+            child: _SuccessBurst(
+              xp: _burstXp,
+              onComplete: () { if (mounted) setState(() => _showSuccessBurst = false); },
+            ),
+          ),
       ],
+    ),
     );
   }
 
@@ -928,4 +991,194 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       ],
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Success burst overlay — particle ring + check circle + floating XP chip
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SuccessBurst extends StatefulWidget {
+  const _SuccessBurst({required this.xp, required this.onComplete});
+  final int xp;
+  final VoidCallback onComplete;
+
+  @override
+  State<_SuccessBurst> createState() => _SuccessBurstState();
+}
+
+class _SuccessBurstState extends State<_SuccessBurst>
+    with TickerProviderStateMixin {
+  late AnimationController _particleCtrl;
+  late AnimationController _checkCtrl;
+  late AnimationController _xpCtrl;
+  late AnimationController _fadeCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _particleCtrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 800))..forward();
+    _checkCtrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 380));
+    _xpCtrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 700));
+    _fadeCtrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 300));
+
+    Future.delayed(const Duration(milliseconds: 80), () {
+      if (mounted) _checkCtrl.forward();
+    });
+    Future.delayed(const Duration(milliseconds: 160), () {
+      if (mounted) _xpCtrl.forward();
+    });
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) _fadeCtrl.forward().then((_) => widget.onComplete());
+    });
+  }
+
+  @override
+  void dispose() {
+    _particleCtrl.dispose();
+    _checkCtrl.dispose();
+    _xpCtrl.dispose();
+    _fadeCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _fadeCtrl,
+      builder: (_, child) => Opacity(
+        opacity: 1 - _fadeCtrl.value,
+        child: child,
+      ),
+      child: IgnorePointer(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Expanding green radial glow
+            AnimatedBuilder(
+              animation: _particleCtrl,
+              builder: (_, __) {
+                final t = Curves.easeOut.transform(_particleCtrl.value);
+                return Container(
+                  width: t * 220,
+                  height: t * 220,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: SlamTokens.success.withValues(alpha: (1 - t) * 0.13),
+                  ),
+                );
+              },
+            ),
+
+            // Particle ring
+            AnimatedBuilder(
+              animation: _particleCtrl,
+              builder: (_, __) => CustomPaint(
+                painter: _BurstParticlePainter(progress: _particleCtrl.value),
+                child: const SizedBox(width: 240, height: 240),
+              ),
+            ),
+
+            // Check circle with spring scale
+            AnimatedBuilder(
+              animation: _checkCtrl,
+              builder: (_, __) {
+                final t = Curves.easeOutBack.transform(_checkCtrl.value);
+                return Transform.scale(
+                  scale: t,
+                  child: Container(
+                    width: 64, height: 64,
+                    decoration: BoxDecoration(
+                      color: SlamTokens.success,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(
+                        color: SlamTokens.success.withValues(alpha: 0.55),
+                        blurRadius: 24, spreadRadius: 2,
+                      )],
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 34),
+                  ),
+                );
+              },
+            ),
+
+            // Floating XP chip
+            if (widget.xp > 0)
+              AnimatedBuilder(
+                animation: _xpCtrl,
+                builder: (_, __) {
+                  final t = Curves.easeOut.transform(_xpCtrl.value);
+                  final opacity = _xpCtrl.value < 0.75 ? 1.0 : (1 - _xpCtrl.value) / 0.25;
+                  return Transform.translate(
+                    offset: Offset(0, 44 - t * 90),
+                    child: Opacity(
+                      opacity: opacity.clamp(0.0, 1.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: SlamTokens.primary,
+                          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                          boxShadow: [BoxShadow(
+                            color: SlamTokens.primary.withValues(alpha: 0.55),
+                            blurRadius: 16, offset: const Offset(0, 4),
+                          )],
+                        ),
+                        child: Text('+${widget.xp} XP',
+                            style: GoogleFonts.fraunces(
+                                fontSize: 15, fontWeight: FontWeight.w800,
+                                color: SlamTokens.primaryOn)),
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BurstParticlePainter extends CustomPainter {
+  const _BurstParticlePainter({required this.progress});
+  final double progress;
+
+  static const _colors = [
+    Color(0xFF4ADE80), // success green
+    Color(0xFFF97316), // primary orange
+    Color(0xFFFFC94D), // warn yellow
+    Color(0xFFFFB35C), // algebra amber
+    Color(0xFFC88CFF), // geometrie purple
+    Color(0xFF7CC4FF), // analysis blue
+    Color(0xFF7FE3C4), // stochastik teal
+    Color(0xFFFF6FA0), // pink
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final maxR = size.width * 0.42;
+    final t = Curves.easeOut.transform(progress);
+
+    for (int i = 0; i < _colors.length; i++) {
+      final angle = (i / _colors.length) * 2 * math.pi - math.pi / 2;
+      final r = t * maxR;
+      final opacity = (1 - progress).clamp(0.0, 1.0);
+      final pR = (1 - t * 0.5) * 5.5;
+
+      canvas.drawCircle(
+        Offset(cx + r * math.cos(angle), cy + r * math.sin(angle)),
+        pR,
+        Paint()..color = _colors[i].withValues(alpha: opacity),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_BurstParticlePainter old) => old.progress != progress;
 }
