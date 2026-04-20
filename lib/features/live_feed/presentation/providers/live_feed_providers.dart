@@ -20,7 +20,6 @@ part 'live_feed_providers.g.dart';
 // QUESTION QUEUE CACHE KEYS
 // ============================================================================
 const String _kQuestionQueueKey = 'live_feed_question_queue';
-const String _kQueueIndexKey = 'live_feed_queue_index';
 const String _kQueueTimestampKey = 'live_feed_queue_timestamp';
 const Duration _kCacheValidityDuration = Duration(hours: 24); // Cache valid for 24 hours
 
@@ -468,7 +467,6 @@ class LiveFeedQueue extends _$LiveFeedQueue {
 
     try {
       final cachedJson = _prefs!.getString(_kQuestionQueueKey);
-      final cachedIndex = _prefs!.getInt(_kQueueIndexKey) ?? 0;
       final cachedTimestamp = _prefs!.getInt(_kQueueTimestampKey) ?? 0;
 
       // Check if cache is still valid
@@ -482,12 +480,9 @@ class LiveFeedQueue extends _$LiveFeedQueue {
             .toList();
 
         if (questions.isNotEmpty) {
-          // Restore the queue state
-          state = state.copyWith(
-            questions: questions,
-            currentIndex: cachedIndex.clamp(0, questions.length - 1),
-          );
-          debugPrint('✅ LiveFeedQueue: Loaded ${questions.length} cached questions (index: $cachedIndex)');
+          // The stored list contains only unanswered questions; currentIndex is always 0.
+          state = state.copyWith(questions: questions, currentIndex: 0);
+          debugPrint('✅ LiveFeedQueue: Loaded ${questions.length} cached questions');
         }
       } else if (cachedJson != null) {
         // Cache expired, clear it
@@ -499,14 +494,15 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     }
   }
 
-  /// Save current queue to local storage and Firebase
+  /// Persist the current (unanswered) question list to both caches.
+  /// state.questions always contains only unanswered questions (answered ones
+  /// are removed in persistAnsweredCurrent), so currentIndex is always 0.
   Future<void> _saveCache() async {
     // Local cache (SharedPreferences)
     if (_prefs != null) {
       try {
         final questionsJson = state.questions.map((q) => q.toJson()).toList();
         await _prefs!.setString(_kQuestionQueueKey, jsonEncode(questionsJson));
-        await _prefs!.setInt(_kQueueIndexKey, state.currentIndex);
         await _prefs!.setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
       } catch (e) {
         debugPrint('❌ LiveFeedQueue: Error saving local cache: $e');
@@ -521,7 +517,7 @@ class LiveFeedQueue extends _$LiveFeedQueue {
         await firestoreService.saveQuestionQueueCache(
           userId: userId,
           questions: state.questions,
-          currentIndex: state.currentIndex,
+          currentIndex: 0,
         );
       } catch (e) {
         debugPrint('❌ LiveFeedQueue: Error saving to Firebase: $e');
@@ -535,7 +531,6 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     if (_prefs != null) {
       try {
         await _prefs!.remove(_kQuestionQueueKey);
-        await _prefs!.remove(_kQueueIndexKey);
         await _prefs!.remove(_kQueueTimestampKey);
       } catch (e) {
         debugPrint('❌ LiveFeedQueue: Error clearing local cache: $e');
@@ -564,45 +559,26 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     debugPrint('💾 LiveFeedQueue: Saved ${state.questions.length} questions to cache');
   }
 
-  /// Eagerly persist that the current question has been answered so cold
-  /// restarts don't replay it (called immediately on answer, before advancing).
+  /// Remove the answered question from the queue immediately so it can never
+  /// be replayed on a different device or after a cold restart.
+  /// Always call this before [nextQuestion].
   void persistAnsweredCurrent() {
-    final nextIdx = state.currentIndex + 1;
-    _eagerPersistIndex(nextIdx);
+    if (state.questions.isEmpty) return;
+    // Drop the first (current) question from the list; currentIndex stays 0.
+    final remaining = state.questions.skip(1).toList();
+    state = state.copyWith(questions: remaining, currentIndex: 0);
+    // Persist the trimmed list to both caches immediately.
+    _saveCache();
   }
 
-  Future<void> _eagerPersistIndex(int nextIdx) async {
-    if (_prefs != null) {
-      try {
-        await _prefs!.setInt(_kQueueIndexKey, nextIdx);
-      } catch (_) {}
-    }
-    final userId = ref.read(authServiceProvider).currentUser?.uid;
-    if (userId != null && userId.isNotEmpty) {
-      try {
-        await ref.read(firestoreServiceProvider).saveQuestionQueueCache(
-          userId: userId,
-          questions: state.questions,
-          currentIndex: nextIdx,
-        );
-      } catch (e) {
-        debugPrint('LiveFeedQueue: eager persist failed: $e');
-      }
-    }
-  }
-
-  /// Move to the next question in the queue
+  /// Return the next question to display (questions[0] after the answered one
+  /// has been removed by [persistAnsweredCurrent]).
   Question? nextQuestion() {
-    if (!state.hasNext) {
-      // No more questions, clear cache
+    if (state.questions.isEmpty) {
       _clearCache();
       return null;
     }
-    final nextIndex = state.currentIndex + 1;
-    state = state.copyWith(currentIndex: nextIndex);
-    // Update cache with new index
-    _saveCache();
-    return state.currentQuestion;
+    return state.currentQuestion; // index 0 — already the next unanswered question
   }
 
   /// Set the current question (first question load)
