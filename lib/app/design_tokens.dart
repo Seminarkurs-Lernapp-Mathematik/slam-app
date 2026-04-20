@@ -14,18 +14,28 @@ abstract final class SlamTokens {
   static const Color textDim  = Color(0x94FFF4EC); // 0.58 α
   static const Color textMute = Color(0x52FFF4EC); // 0.32 α
 
-  // ── Primary (§2.1) ───────────────────────────────────────────────────────
-  static const Color primary     = Color(0xFFFF7A3B);
-  static const Color primaryOn   = Color(0xFF23100A);
-  static const Color primarySoft = Color(0x24FF7A3B); // 0.14 α
+  // ── Primary (§2.1) — runtime-mutable so theme switches take effect ────────
+  // Defaults are the Sunset Orange palette; call applyTheme() on theme change.
+  static Color primary     = const Color(0xFFFF7A3B);
+  static Color primaryOn   = const Color(0xFF23100A);
+  static Color primarySoft = const Color(0x24FF7A3B); // 0.14 α
+
+  /// Update all primary colour tokens at once.
+  /// Call this before (re)building ThemeData so every widget that reads
+  /// SlamTokens.primary sees the new colour in the same frame.
+  static void applyTheme({required Color primary, required Color primaryOn}) {
+    SlamTokens.primary     = primary;
+    SlamTokens.primaryOn   = primaryOn;
+    SlamTokens.primarySoft = primary.withValues(alpha: 36 / 255); // 0.14 α
+  }
 
   // ── Subject hues (§2.2) ──────────────────────────────────────────────────
-  static const Color algebra      = Color(0xFFFFB35C);
-  static const Color algebraSoft  = Color(0x24FFB35C);
-  static const Color analysis     = Color(0xFF7CC4FF);
-  static const Color analysisSoft = Color(0x247CC4FF);
-  static const Color geometrie     = Color(0xFFC88CFF);
-  static const Color geometrieSoft = Color(0x24C88CFF);
+  static const Color algebra       = Color(0xFFFFB35C);
+  static const Color algebraSoft   = Color(0x24FFB35C);
+  static const Color analysis      = Color(0xFF7CC4FF);
+  static const Color analysisSoft  = Color(0x247CC4FF);
+  static const Color geometrie      = Color(0xFFC88CFF);
+  static const Color geometrieSoft  = Color(0x24C88CFF);
   static const Color stochastik     = Color(0xFF7FE3C4);
   static const Color stochastikSoft = Color(0x247FE3C4);
 
@@ -71,10 +81,10 @@ abstract final class SlamTokens {
   static const Duration dConfetti = Duration(milliseconds: 1200);
 
   // ── Elevation shadows ────────────────────────────────────────────────────
-  static BoxShadow get primaryShadow => const BoxShadow(
-    color: Color(0xAAFF7A3B),
+  static BoxShadow get primaryShadow => BoxShadow(
+    color: primary.withValues(alpha: 0.67),
     blurRadius: 30,
-    offset: Offset(0, 10),
+    offset: const Offset(0, 10),
     spreadRadius: -8,
   );
 }

@@ -11,7 +11,9 @@ class SLAMApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final selectedTheme = ref.watch(selectedThemeProvider);
-    final theme = AppTheme.getThemeForPreset(selectedTheme);
+    // themeForPreset updates SlamTokens.primary/primaryOn/primarySoft AND
+    // returns the ThemeData — both happen before MaterialApp is rebuilt.
+    final theme = AppTheme.themeForPreset(selectedTheme);
 
     return MaterialApp.router(
       title: 'SLAM Learning',

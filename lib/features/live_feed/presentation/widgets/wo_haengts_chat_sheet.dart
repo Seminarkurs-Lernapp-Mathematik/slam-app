@@ -224,7 +224,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: const Icon(Icons.psychology, size: 18, color: SlamTokens.primary),
+            child: Icon(Icons.psychology, size: 18, color: SlamTokens.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -239,8 +239,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
           ),
           if (_messages.length >= 2) ...[
             _isSaving
-                ? const Padding(
-                    padding: EdgeInsets.all(12),
+                ? Padding(
+                    padding: const EdgeInsets.all(12),
                     child: SizedBox(
                         width: 18,
                         height: 18,
@@ -248,7 +248,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                             strokeWidth: 2, color: SlamTokens.primary)),
                   )
                 : IconButton(
-                    icon: const Icon(Icons.bookmark_add_outlined,
+                    icon: Icon(Icons.bookmark_add_outlined,
                         color: SlamTokens.primary, size: 20),
                     onPressed: _saveChat,
                     tooltip: 'Chat speichern',
@@ -275,7 +275,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.quiz_outlined, size: 14, color: SlamTokens.primary),
+          Icon(Icons.quiz_outlined, size: 14, color: SlamTokens.primary),
           const SizedBox(width: 8),
           Expanded(
             child: MathText(
@@ -307,7 +307,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                   borderRadius: BorderRadius.circular(18),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.chat_bubble_outline,
+                child: Icon(Icons.chat_bubble_outline,
                     size: 28, color: SlamTokens.primary),
               ),
               const SizedBox(height: 16),
@@ -466,12 +466,12 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
               ),
               alignment: Alignment.center,
               child: _isLoading
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: SlamTokens.primaryOn))
-                  : const Icon(Icons.arrow_upward,
+                  : Icon(Icons.arrow_upward,
                       size: 18, color: SlamTokens.primaryOn),
             ),
           ),
@@ -550,7 +550,7 @@ class _TypingDotsState extends State<_TypingDots>
                   width: 7,
                   height: 7,
                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: SlamTokens.primary,
                     shape: BoxShape.circle,
                   ),

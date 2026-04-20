@@ -168,7 +168,7 @@ class ProfilScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.bar_chart,
+                      Icon(Icons.bar_chart,
                           size: 13, color: SlamTokens.primary),
                       const SizedBox(width: 4),
                       Text(
@@ -218,7 +218,7 @@ class ProfilScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.settings_outlined,
+              child: Icon(Icons.settings_outlined,
                   size: 18, color: SlamTokens.primary),
             ),
             const SizedBox(width: 14),
@@ -291,7 +291,7 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: SlamTokens.primarySoft,
               shape: BoxShape.circle,
             ),

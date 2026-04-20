@@ -25,7 +25,7 @@ class LernplanScreen extends ConsumerWidget {
               t.leitidee.isNotEmpty || t.thema.isNotEmpty || t.unterthema.isNotEmpty).toList();
           return _LernplanBody(activeTopics: validTopics);
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
         error: (error, _) => Center(
           child: Text('Fehler: $error', style: const TextStyle(color: SlamTokens.danger)),
         ),
@@ -402,9 +402,9 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
               children: [
                 Container(
                   width: 30, height: 30,
-                  decoration: const BoxDecoration(color: SlamTokens.primarySoft, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: SlamTokens.primarySoft, shape: BoxShape.circle),
                   alignment: Alignment.center,
-                  child: const Icon(Icons.camera_alt, size: 16, color: SlamTokens.primary),
+                  child: Icon(Icons.camera_alt, size: 16, color: SlamTokens.primary),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -423,7 +423,7 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
             ),
             const SizedBox(height: 16),
             if (_isLoading)
-              const Center(child: CircularProgressIndicator(color: SlamTokens.primary))
+              Center(child: CircularProgressIndicator(color: SlamTokens.primary))
             else
               Row(
                 children: [

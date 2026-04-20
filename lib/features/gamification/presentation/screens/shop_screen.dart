@@ -27,10 +27,10 @@ class ShopScreen extends ConsumerWidget {
       body: userStatsAsync.when(
         data: (stats) => themeUnlocksAsync.when(
           data: (unlocks) => _ShopBody(stats: stats, unlocks: unlocks, userId: userId),
-          loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+          loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
           error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
         ),
-        loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
         error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
       ),
     );
@@ -310,7 +310,7 @@ class _PulsingCoinBadgeState extends State<_PulsingCoinBadge>
             )],
           ),
           child: Row(children: [
-            const Icon(Icons.monetization_on, size: 16, color: SlamTokens.primaryOn),
+            Icon(Icons.monetization_on, size: 16, color: SlamTokens.primaryOn),
             const SizedBox(width: 6),
             Text('$value', style: GoogleFonts.fraunces(
                 fontSize: 14, fontWeight: FontWeight.w800, color: SlamTokens.primaryOn)),

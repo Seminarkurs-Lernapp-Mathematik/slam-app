@@ -42,7 +42,7 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
                 ),
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+            loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
             error: (error, _) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +86,7 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-                borderSide: const BorderSide(color: SlamTokens.primary, width: 1.5),
+                borderSide: BorderSide(color: SlamTokens.primary, width: 1.5),
               ),
               prefixIcon: const Icon(Icons.search, color: SlamTokens.textDim, size: 20),
               suffixIcon: searchQuery.isNotEmpty

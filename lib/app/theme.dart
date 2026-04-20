@@ -4,6 +4,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'design_tokens.dart';
 import '../features/settings/presentation/providers/settings_providers.dart';
 
+// Primary colours per preset (mirrors ThemeConfig.fromPreset)
+const Map<AppThemePreset, Color> _kPrimary = {
+  AppThemePreset.sunsetOrange:    Color(0xFFFF7A3B),
+  AppThemePreset.oceanBlue:       Color(0xFF3BA8FF),
+  AppThemePreset.forestGreen:     Color(0xFF3BD490),
+  AppThemePreset.lavenderPurple:  Color(0xFFA07CFF),
+  AppThemePreset.cherryRed:       Color(0xFFFF5566),
+};
+
+// "On primary" text colours — dark tint of the primary for legibility
+const Map<AppThemePreset, Color> _kPrimaryOn = {
+  AppThemePreset.sunsetOrange:    Color(0xFF23100A),
+  AppThemePreset.oceanBlue:       Color(0xFF0A1A2E),
+  AppThemePreset.forestGreen:     Color(0xFF071A10),
+  AppThemePreset.lavenderPurple:  Color(0xFF100A20),
+  AppThemePreset.cherryRed:       Color(0xFF1A0A0A),
+};
+
 /// App Theme — Sunset Glow / Liquid UI (DESIGN.md v2)
 ///
 /// Typography:
@@ -13,9 +31,19 @@ import '../features/settings/presentation/providers/settings_providers.dart';
 class AppTheme {
   // Legacy color constants — kept for any screens not yet migrated.
   // New code should use SlamTokens directly.
-  static const Color primaryOrange     = SlamTokens.primary;
-  static const Color primaryOrangeDark = Color(0xFFE85F20);
-  static const Color primaryOrangeLight= Color(0xFFFF9B67);
+  static Color get primaryOrange => SlamTokens.primary;
+  static const Color primaryOrangeDark  = Color(0xFFE85F20);
+  static const Color primaryOrangeLight = Color(0xFFFF9B67);
+
+  /// Sync SlamTokens primary colours with [preset] and return the ThemeData.
+  /// Call this in SLAMApp.build() BEFORE building MaterialApp so every widget
+  /// reads the correct colour in the same frame.
+  static ThemeData themeForPreset(AppThemePreset preset) {
+    final primary   = _kPrimary[preset]!;
+    final primaryOn = _kPrimaryOn[preset]!;
+    SlamTokens.applyTheme(primary: primary, primaryOn: primaryOn);
+    return _buildThemeWithPrimaryColor(primary);
+  }
 
   static const Color backgroundDark    = SlamTokens.bg;
   static const Color surfaceDark       = SlamTokens.surface;

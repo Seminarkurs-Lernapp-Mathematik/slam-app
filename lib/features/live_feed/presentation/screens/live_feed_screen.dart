@@ -129,7 +129,7 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(color: SlamTokens.primary),
+          CircularProgressIndicator(color: SlamTokens.primary),
           const SizedBox(height: 24),
           Text('Generiere Fragen…',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: SlamTokens.textDim)),
@@ -306,7 +306,7 @@ class _AvatarRing extends StatelessWidget {
               height: 56,
               padding: const EdgeInsets.all(4),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: SlamTokens.primarySoft,
                   shape: BoxShape.circle,
                 ),
