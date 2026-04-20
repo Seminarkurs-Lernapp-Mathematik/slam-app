@@ -94,65 +94,98 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, String name) {
-    return GlassPanel(
-      child: InkWell(
-        onTap: () => _showProfileDialog(context, name),
-        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: SlamTokens.primarySoft,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: SlamTokens.primary, width: 2),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  name.substring(0, 1).toUpperCase(),
-                  style: GoogleFonts.fraunces(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.primary,
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: GoogleFonts.fraunces(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: SlamTokens.text,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Statistiken anzeigen',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 13,
-                        color: SlamTokens.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const Icon(Icons.chevron_right, color: SlamTokens.textDim),
+    return GestureDetector(
+      onTap: () => _showProfileDialog(context, name),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              SlamTokens.surfaceHi,
+              SlamTokens.surface,
             ],
           ),
+          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+          border: Border.all(
+              color: SlamTokens.primary.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: SlamTokens.primary.withValues(alpha: 0.06),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            )
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFFF9A4A), Color(0xFFFF5020)],
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: SlamTokens.primary.withValues(alpha: 0.4),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                    spreadRadius: -4,
+                  )
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                name.substring(0, 1).toUpperCase(),
+                style: GoogleFonts.fraunces(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: SlamTokens.text,
+                      letterSpacing: -0.4,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.bar_chart,
+                          size: 13, color: SlamTokens.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Statistiken anzeigen',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          color: SlamTokens.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: SlamTokens.textMute, size: 20),
+          ],
         ),
       ),
     );
@@ -166,54 +199,51 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return _buildActionCard(
-      context,
-      icon: Icons.settings,
-      label: 'Einstellungen',
+    return GestureDetector(
       onTap: () => context.push('/settings'),
-    );
-  }
-
-  Widget _buildActionCard(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    bool highlight = false,
-  }) {
-    if (highlight) {
-      return FilledButton.icon(
-        onPressed: onTap,
-        icon: Icon(icon),
-        label: Text(label),
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(double.infinity, 52),
-          shape: const StadiumBorder(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        decoration: BoxDecoration(
+          color: SlamTokens.surface,
+          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+          border: Border.all(color: SlamTokens.line),
         ),
-      );
-    }
-
-    return GlassPanel(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Icon(icon, size: 32, color: SlamTokens.primary),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: GoogleFonts.dmSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: SlamTokens.text,
-                ),
-                textAlign: TextAlign.center,
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: SlamTokens.primarySoft,
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
-          ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.settings_outlined,
+                  size: 18, color: SlamTokens.primary),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Einstellungen',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: SlamTokens.text),
+                  ),
+                  Text(
+                    'Design, Klassenstufe, Account',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 12, color: SlamTokens.textDim),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right,
+                size: 18, color: SlamTokens.textMute),
+          ],
         ),
       ),
     );
@@ -440,62 +470,80 @@ class _CompactStatsStrip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          _StatPill(
+          Expanded(child: _StatTile(
             icon: Icons.military_tech,
-            label: 'Lv. ${stats.calculatedLevel}',
+            label: 'Level',
+            value: '${stats.calculatedLevel}',
             color: SlamTokens.primary,
-          ),
+          )),
           const SizedBox(width: 8),
-          _StatPill(
+          Expanded(child: _StatTile(
             icon: Icons.local_fire_department,
-            label: '${stats.streak}d',
+            label: 'Streak',
+            value: '${stats.streak}d',
             color: SlamTokens.warn,
-          ),
+          )),
           const SizedBox(width: 8),
-          _StatPill(
+          Expanded(child: _StatTile(
             icon: Icons.star,
-            label: '${stats.totalXp} XP',
+            label: 'XP',
+            value: '${stats.totalXp}',
             color: SlamTokens.warn,
-          ),
+          )),
           const SizedBox(width: 8),
-          _StatPill(
+          Expanded(child: _StatTile(
             icon: Icons.monetization_on,
-            label: '${stats.coins}',
+            label: 'Coins',
+            value: '${stats.coins}',
             color: const Color(0xFFFFC94D),
-          ),
+          )),
         ],
       ),
     );
   }
 }
 
-class _StatPill extends StatelessWidget {
-  const _StatPill({required this.icon, required this.label, required this.color});
+class _StatTile extends StatelessWidget {
+  const _StatTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final IconData icon;
   final String label;
+  final String value;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 5),
-          Text(label, style: GoogleFonts.dmSans(
-              fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 4),
+          Text(value,
+              style: GoogleFonts.fraunces(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: color)),
+          Text(label,
+              style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  color: SlamTokens.textDim,
+                  fontWeight: FontWeight.w600)),
         ],
       ),
     );
   }
 }
+
 
 // ============================================================================
 // STREAK RISK BANNER

@@ -55,6 +55,8 @@ dependencies:
   lottie: ^3.3.2
   crypto: ^3.0.6
   image_picker: ^1.1.2
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:

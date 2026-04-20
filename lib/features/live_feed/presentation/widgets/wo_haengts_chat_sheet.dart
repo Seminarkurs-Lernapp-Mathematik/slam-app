@@ -1,29 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../shared/widgets/math_text.dart';
 
-/// A single message in the "Wo h\u00e4ngts?" chat conversation
 class _ChatMessage {
   final String text;
   final bool isUser;
-
   const _ChatMessage({required this.text, required this.isUser});
 }
 
-/// Persistent chat bottom sheet for "Wo h\u00e4ngts?" conversations.
-///
-/// Opens as a modal bottom sheet and supports multi-turn dialogue:
-/// the user can keep asking follow-up questions after the first response.
-/// The conversation can be saved to "Meine Inhalte" as a KI-Chat entry.
 class WoHaengtsChatSheet extends ConsumerStatefulWidget {
   final String questionText;
-
-  /// First message the user typed in the inline section.
-  /// The sheet will immediately send this and show the AI response.
   final String? initialUserMessage;
 
   const WoHaengtsChatSheet({
@@ -33,8 +25,7 @@ class WoHaengtsChatSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<WoHaengtsChatSheet> createState() =>
-      _WoHaengtsChatSheetState();
+  ConsumerState<WoHaengtsChatSheet> createState() => _WoHaengtsChatSheetState();
 }
 
 class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
@@ -49,9 +40,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     super.initState();
     if (widget.initialUserMessage != null &&
         widget.initialUserMessage!.isNotEmpty) {
-      _messages.add(
-          _ChatMessage(text: widget.initialUserMessage!, isUser: true));
-      // Fetch first AI response right after the first frame
+      _messages.add(_ChatMessage(text: widget.initialUserMessage!, isUser: true));
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _fetchAiResponse(widget.initialUserMessage!);
       });
@@ -77,30 +66,20 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     });
   }
 
-  /// Calls the backend and appends the AI reply to [_messages].
   Future<void> _fetchAiResponse(String userMessage) async {
     setState(() => _isLoading = true);
     _scrollToBottom();
-
     try {
       final aiService = ref.read(aiServiceProvider);
-
-      // Build history from all messages EXCEPT the last user turn
-      // (that one is passed as userMessage)
       final history = _messages
           .sublist(0, _messages.length - 1)
-          .map((m) => {
-                'role': m.isUser ? 'user' : 'assistant',
-                'content': m.text,
-              })
+          .map((m) => {'role': m.isUser ? 'user' : 'assistant', 'content': m.text})
           .toList();
-
       final hint = await aiService.getChatHint(
         questionText: widget.questionText,
         userMessage: userMessage,
         chatHistory: history,
       );
-
       if (mounted) {
         setState(() {
           _messages.add(_ChatMessage(text: hint, isUser: false));
@@ -111,10 +90,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _messages.add(
-            _ChatMessage(
-                text: 'Fehler beim Laden der Antwort: $e', isUser: false),
-          );
+          _messages.add(_ChatMessage(text: 'Fehler: $e', isUser: false));
           _isLoading = false;
         });
         _scrollToBottom();
@@ -125,18 +101,11 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
   Future<void> _sendMessage() async {
     final text = _inputController.text.trim();
     if (text.isEmpty || _isLoading) return;
-
-    setState(() {
-      _messages.add(_ChatMessage(text: text, isUser: true));
-    });
+    setState(() => _messages.add(_ChatMessage(text: text, isUser: true)));
     _inputController.clear();
     _scrollToBottom();
     await _fetchAiResponse(text);
   }
-
-  // ---------------------------------------------------------------------------
-  // Save chat to Firestore as a KI-Chat entry
-  // ---------------------------------------------------------------------------
 
   String _escapeHtml(String text) => text
       .replaceAll('&', '&amp;')
@@ -146,193 +115,175 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
 
   Future<void> _saveChat() async {
     final user = ref.read(currentUserProvider);
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bitte melde dich an')),
-      );
-      return;
-    }
-    if (_messages.length < 2) return; // need at least one exchange
-
+    if (user == null || _messages.length < 2) return;
     setState(() => _isSaving = true);
-
     try {
       final now = DateTime.now();
       final safeQuestion = _escapeHtml(widget.questionText);
       final messagesHtml = _messages.map((m) {
         final role = m.isUser ? 'Du' : 'KI-Assistent';
         final css = m.isUser ? 'user-msg' : 'ai-msg';
-        final safeText =
-            _escapeHtml(m.text).replaceAll('\n', '<br>');
-        return '<div class="msg $css">'
-            '<div class="role">$role</div>'
-            '<div class="bubble">$safeText</div>'
-            '</div>';
+        final safeText = _escapeHtml(m.text).replaceAll('\n', '<br>');
+        return '<div class="msg $css"><div class="role">$role</div>'
+            '<div class="bubble">$safeText</div></div>';
       }).join('\n');
-
-      final html = '''
-<!DOCTYPE html>
-<html lang="de">
-<head>
+      final html = '''<!DOCTYPE html><html lang="de"><head>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    *{box-sizing:border-box}body{font-family:system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;background:#f5f5f5}
-    .ctx{background:#e8eaf6;border-left:4px solid #5c35cc;padding:12px 16px;border-radius:8px;margin-bottom:20px}
-    .ctx h3{margin:0 0 4px;font-size:12px;font-weight:700;color:#5c35cc;text-transform:uppercase;letter-spacing:.05em}
-    .ctx p{margin:0;font-size:14px;color:#333}
-    .msg{margin-bottom:14px;display:flex;flex-direction:column}
-    .user-msg{align-items:flex-end}.ai-msg{align-items:flex-start}
-    .role{font-size:11px;font-weight:700;color:#888;margin-bottom:4px}
-    .bubble{padding:10px 14px;border-radius:12px;max-width:85%;line-height:1.5;font-size:14px}
-    .user-msg .bubble{background:#5c35cc;color:#fff;border-radius:12px 12px 4px 12px}
-    .ai-msg .bubble{background:#fff;border:1px solid #e0e0e0;border-radius:12px 12px 12px 4px;color:#333}
-  </style>
-</head>
-<body>
+  <style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;max-width:700px;margin:0 auto;padding:16px;background:#0F0A0D;color:#FFF4EC}
+  .ctx{background:#2E1D25;border-left:4px solid #FF7A3B;padding:12px 16px;border-radius:8px;margin-bottom:20px}
+  .ctx h3{margin:0 0 4px;font-size:12px;font-weight:700;color:#FF7A3B;text-transform:uppercase;letter-spacing:.05em}
+  .ctx p{margin:0;font-size:14px;color:#FFF4EC}
+  .msg{margin-bottom:14px;display:flex;flex-direction:column}
+  .user-msg{align-items:flex-end}.ai-msg{align-items:flex-start}
+  .role{font-size:11px;font-weight:700;color:#94FFF4EC;margin-bottom:4px}
+  .bubble{padding:10px 14px;border-radius:12px;max-width:85%;line-height:1.5;font-size:14px}
+  .user-msg .bubble{background:#FF7A3B;color:#23100A;border-radius:12px 12px 4px 12px}
+  .ai-msg .bubble{background:#22161C;border:1px solid #1AFFB496;border-radius:12px 12px 12px 4px;color:#FFF4EC}
+  </style></head><body>
   <div class="ctx"><h3>Aufgabe</h3><p>$safeQuestion</p></div>
-  $messagesHtml
-</body>
-</html>''';
-
-      final docId = 'chat-${now.millisecondsSinceEpoch}';
-      final title =
-          'Wo h\u00e4ngts? \u2013 ${now.day}.${now.month}.${now.year} '
-          '${now.hour}:${now.minute.toString().padLeft(2, '0')}';
-
+  $messagesHtml</body></html>''';
       await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
+          .collection('users').doc(user.uid)
           .collection('savedContent')
-          .doc(docId)
+          .doc('chat-${now.millisecondsSinceEpoch}')
           .set({
         'userId': user.uid,
-        'title': title,
+        'title': 'Wo hängts? – ${now.day}.${now.month}.${now.year} '
+            '${now.hour}:${now.minute.toString().padLeft(2, '0')}',
         'type': 'chat',
         'htmlContent': html,
         'description': widget.questionText,
         'createdAt': Timestamp.fromDate(now),
         'tags': ['wo-haengts'],
       });
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Chat in "Meine Inhalte" gespeichert!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Gespeichert!',
+              style: GoogleFonts.dmSans(color: SlamTokens.text)),
+          backgroundColor: SlamTokens.surface,
+          behavior: SnackBarBehavior.floating,
+        ));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler beim Speichern: $e')),
-        );
+            SnackBar(content: Text('Fehler: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Container(
-      height: MediaQuery.of(context).size.height * 0.82,
-      decoration: BoxDecoration(
-        color: cs.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: SlamTokens.bgElev,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(SlamTokens.rCardLg)),
       ),
       child: Column(
         children: [
-          _buildHeader(theme, cs),
-          _buildContextBanner(theme, cs),
-          Expanded(child: _buildMessageList(theme, cs)),
-          _buildInputBar(theme, cs),
+          _buildHandle(),
+          _buildHeader(),
+          _buildContextBanner(),
+          Expanded(child: _buildMessageList()),
+          _buildInputBar(bottomInset),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(ThemeData theme, ColorScheme cs) {
+  Widget _buildHandle() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
-      child: Column(
+      padding: const EdgeInsets.only(top: 12),
+      child: Center(
+        child: Container(
+          width: 36,
+          height: 4,
+          decoration: BoxDecoration(
+            color: SlamTokens.line,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
+      child: Row(
         children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: SlamTokens.primarySoft,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.psychology, size: 18, color: SlamTokens.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Wo hängts?',
+              style: GoogleFonts.fraunces(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: SlamTokens.text,
+                  letterSpacing: -0.4),
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(Icons.help_outline, color: cs.tertiary, size: 22),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Wo h\u00e4ngts?',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: cs.tertiary,
+          if (_messages.length >= 2) ...[
+            _isSaving
+                ? const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: SlamTokens.primary)),
+                  )
+                : IconButton(
+                    icon: const Icon(Icons.bookmark_add_outlined,
+                        color: SlamTokens.primary, size: 20),
+                    onPressed: _saveChat,
+                    tooltip: 'Chat speichern',
                   ),
-                ),
-              ),
-              if (_messages.length >= 2)
-                _isSaving
-                    ? const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2)),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.bookmark_add_outlined),
-                        onPressed: _saveChat,
-                        tooltip: 'Chat speichern',
-                        color: cs.primary,
-                      ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
+          ],
+          IconButton(
+            icon: const Icon(Icons.close, color: SlamTokens.textDim, size: 20),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContextBanner(ThemeData theme, ColorScheme cs) {
+  Widget _buildContextBanner() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: cs.primaryContainer.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: cs.primary.withValues(alpha: 0.2)),
+        color: SlamTokens.primarySoft,
+        borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
+        border: Border.all(color: SlamTokens.primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.quiz_outlined, size: 14, color: cs.primary),
-          const SizedBox(width: 6),
+          const Icon(Icons.quiz_outlined, size: 14, color: SlamTokens.primary),
+          const SizedBox(width: 8),
           Expanded(
             child: MathText(
               widget.questionText,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: cs.onPrimaryContainer),
+              style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  color: SlamTokens.text.withValues(alpha: 0.85),
+                  height: 1.4),
             ),
           ),
         ],
@@ -340,23 +291,38 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     );
   }
 
-  Widget _buildMessageList(ThemeData theme, ColorScheme cs) {
+  Widget _buildMessageList() {
     if (_messages.isEmpty && !_isLoading) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.chat_bubble_outline,
-                  size: 48,
-                  color: cs.onSurfaceVariant.withValues(alpha: 0.3)),
-              const SizedBox(height: 12),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: SlamTokens.primarySoft,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.chat_bubble_outline,
+                    size: 28, color: SlamTokens.primary),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Stell deine Frage',
+                style: GoogleFonts.fraunces(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.text),
+              ),
+              const SizedBox(height: 8),
               Text(
                 'Beschreibe, wo du nicht weiterkommst.',
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(color: cs.onSurfaceVariant),
+                style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
               ),
             ],
           ),
@@ -366,53 +332,70 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: _messages.length + (_isLoading ? 1 : 0),
       itemBuilder: (ctx, i) {
-        if (i == _messages.length) return _buildTypingIndicator(cs);
-        return _buildBubble(_messages[i], theme, cs);
+        if (i == _messages.length) return const _TypingDots();
+        return _buildBubble(_messages[i]);
       },
     );
   }
 
-  Widget _buildBubble(_ChatMessage msg, ThemeData theme, ColorScheme cs) {
+  Widget _buildBubble(_ChatMessage msg) {
     final isUser = msg.isUser;
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.78),
+        margin: const EdgeInsets.only(bottom: 14),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.76),
         child: Column(
           crossAxisAlignment:
               isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              isUser ? 'Du' : 'KI-Assistent',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: cs.onSurfaceVariant,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4, left: 4, right: 4),
+              child: Text(
+                isUser ? 'Du' : 'SLAM-KI',
+                style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: isUser
+                        ? SlamTokens.primary
+                        : SlamTokens.textMute,
+                    letterSpacing: 0.4),
               ),
             ),
-            const SizedBox(height: 3),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
               decoration: BoxDecoration(
-                color:
-                    isUser ? cs.primary : cs.surfaceContainerHighest,
+                color: isUser ? SlamTokens.primary : SlamTokens.surface,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(12),
-                  topRight: const Radius.circular(12),
-                  bottomLeft: Radius.circular(isUser ? 12 : 4),
-                  bottomRight: Radius.circular(isUser ? 4 : 12),
+                  topLeft: const Radius.circular(16),
+                  topRight: const Radius.circular(16),
+                  bottomLeft: Radius.circular(isUser ? 16 : 4),
+                  bottomRight: Radius.circular(isUser ? 4 : 16),
                 ),
+                border: isUser
+                    ? null
+                    : Border.all(color: SlamTokens.line),
+                boxShadow: isUser
+                    ? [
+                        BoxShadow(
+                          color: SlamTokens.primary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                          spreadRadius: -4,
+                        )
+                      ]
+                    : null,
               ),
               child: MathText(
                 msg.text,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isUser ? cs.onPrimary : cs.onSurfaceVariant,
-                  height: 1.45,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: isUser ? SlamTokens.primaryOn : SlamTokens.text,
+                  height: 1.5,
                 ),
               ),
             ),
@@ -422,92 +405,160 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     );
   }
 
-  Widget _buildTypingIndicator(ColorScheme cs) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2, color: cs.primary),
-            ),
-            const SizedBox(width: 8),
-            Text('Denke nach\u2026',
-                style: TextStyle(
-                    color: cs.onSurfaceVariant, fontSize: 13)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputBar(ThemeData theme, ColorScheme cs) {
+  Widget _buildInputBar(double bottomInset) {
     return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 12,
-        top: 10,
-        bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: cs.surface,
-        border: Border(
-          top: BorderSide(
-              color: cs.outlineVariant.withValues(alpha: 0.5)),
-        ),
+      padding: EdgeInsets.fromLTRB(16, 10, 12, 10 + bottomInset),
+      decoration: const BoxDecoration(
+        color: SlamTokens.bgElev,
+        border: Border(top: BorderSide(color: SlamTokens.line)),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
-            child: TextField(
-              controller: _inputController,
-              maxLines: 3,
-              minLines: 1,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _sendMessage(),
-              decoration: InputDecoration(
-                hintText: 'Stell eine Folgefrage\u2026',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide:
-                      BorderSide(color: cs.outlineVariant),
+            child: Container(
+              decoration: BoxDecoration(
+                color: SlamTokens.surface,
+                borderRadius: BorderRadius.circular(SlamTokens.rInput),
+                border: Border.all(color: SlamTokens.line),
+              ),
+              child: TextField(
+                controller: _inputController,
+                maxLines: 4,
+                minLines: 1,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => _sendMessage(),
+                style: GoogleFonts.dmSans(
+                    fontSize: 14, color: SlamTokens.text),
+                decoration: InputDecoration(
+                  hintText: 'Stell eine Folgefrage…',
+                  hintStyle: GoogleFonts.dmSans(
+                      fontSize: 14, color: SlamTokens.textDim),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 10),
-                filled: true,
-                fillColor: cs.surfaceContainerHighest
-                    .withValues(alpha: 0.5),
               ),
             ),
           ),
           const SizedBox(width: 8),
-          FilledButton(
-            onPressed: _isLoading ? null : _sendMessage,
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.all(12),
-              minimumSize: const Size(48, 48),
+          GestureDetector(
+            onTap: _isLoading ? null : _sendMessage,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _isLoading
+                    ? SlamTokens.primary.withValues(alpha: 0.4)
+                    : SlamTokens.primary,
+                shape: BoxShape.circle,
+                boxShadow: _isLoading
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: SlamTokens.primary.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                          spreadRadius: -4,
+                        )
+                      ],
+              ),
+              alignment: Alignment.center,
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: SlamTokens.primaryOn))
+                  : const Icon(Icons.arrow_upward,
+                      size: 18, color: SlamTokens.primaryOn),
             ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.send),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Animated typing indicator — three bouncing dots
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _TypingDots extends StatefulWidget {
+  const _TypingDots();
+
+  @override
+  State<_TypingDots> createState() => _TypingDotsState();
+}
+
+class _TypingDotsState extends State<_TypingDots>
+    with TickerProviderStateMixin {
+  late List<AnimationController> _ctrls;
+  late List<Animation<double>> _anims;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrls = List.generate(3, (i) {
+      final ctrl = AnimationController(
+          vsync: this, duration: const Duration(milliseconds: 600));
+      Future.delayed(Duration(milliseconds: i * 160), () {
+        if (mounted) ctrl.repeat(reverse: true);
+      });
+      return ctrl;
+    });
+    _anims = _ctrls
+        .map((c) => Tween(begin: 0.0, end: -6.0)
+            .animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)))
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    for (final c in _ctrls) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: SlamTokens.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+            bottomLeft: Radius.circular(4),
+          ),
+          border: Border.all(color: SlamTokens.line),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) {
+            return AnimatedBuilder(
+              animation: _anims[i],
+              builder: (_, __) => Transform.translate(
+                offset: Offset(0, _anims[i].value),
+                child: Container(
+                  width: 7,
+                  height: 7,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  decoration: const BoxDecoration(
+                    color: SlamTokens.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

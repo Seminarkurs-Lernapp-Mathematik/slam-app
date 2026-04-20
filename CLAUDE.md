@@ -127,7 +127,7 @@ restores a persisted session (critical for web).
 
 ## Backend
 
-**Base URL:** `https://learn-smart.app`
+**Base URL:** `https://api.learn-smart.app`
 **Source:** `https://github.com/Seminarkurs-Lernapp-Mathematik/slam-backend`
 
 | Endpoint | Purpose |

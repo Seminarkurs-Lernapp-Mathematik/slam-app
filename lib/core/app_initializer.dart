@@ -7,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../firebase_options.dart';
 import 'data/datasources/local_datasource.dart';
 import 'data/datasources/remote_datasource.dart';
+import 'services/notification_service.dart';
 import 'utils/error_handler.dart';
 import 'utils/logger.dart';
 
@@ -90,7 +91,8 @@ class AppInitializer {
   }
 
   Future<void> _initializeServices() async {
-    // Additional service initialization if needed
+    await NotificationService.initialize();
+    await NotificationService.scheduleDailyReminder();
   }
 }
 

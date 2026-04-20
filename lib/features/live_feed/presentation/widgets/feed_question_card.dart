@@ -383,17 +383,19 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
               const SizedBox(height: 14),
 
               // ── Question text ─────────────────────────────────────
-              AnimatedDefaultTextStyle(
-                duration: SlamTokens.dState,
-                curve: SlamTokens.curveStandard,
-                style: GoogleFonts.fraunces(
-                  fontSize: _answered ? 17 : 22,
-                  fontWeight: FontWeight.w700,
-                  color: SlamTokens.text,
-                  letterSpacing: -0.4,
-                  height: 1.28,
+              SelectionContainer.disabled(
+                child: AnimatedDefaultTextStyle(
+                  duration: SlamTokens.dState,
+                  curve: SlamTokens.curveStandard,
+                  style: GoogleFonts.fraunces(
+                    fontSize: _answered ? 17 : 22,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.text,
+                    letterSpacing: -0.4,
+                    height: 1.28,
+                  ),
+                  child: _buildQuestionText(),
                 ),
-                child: _buildQuestionText(),
               ),
 
               const SizedBox(height: 16),

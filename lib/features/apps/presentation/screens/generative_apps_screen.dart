@@ -9,26 +9,32 @@ import '../../../../core/services/auth_service.dart';
 import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
+// KI-Labor accent colors
+const _kiA = Color(0xFFFF7A3B);
+const _kiB = Color(0xFFFF4080);
+
 class GenerativeAppsScreen extends ConsumerStatefulWidget {
   const GenerativeAppsScreen({super.key});
 
   @override
-  ConsumerState<GenerativeAppsScreen> createState() => _GenerativeAppsScreenState();
+  ConsumerState<GenerativeAppsScreen> createState() =>
+      _GenerativeAppsScreenState();
 }
 
-class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
+class _GenerativeAppsScreenState
+    extends ConsumerState<GenerativeAppsScreen> {
   final _promptController = TextEditingController();
   bool _isLoading = false;
   String? _error;
   GeneratedApp? _currentApp;
 
-  final List<String> _examplePrompts = [
-    'Binomialverteilung Simulator',
-    'Ableitungen visualisieren',
+  final List<String> _examples = [
+    'Binomialverteilung',
+    'Ableitungen',
     'Vektoraddition',
     'Würfelsimulator',
     'Funktionsplotter',
-    'Primzahlenfinder',
+    'Primzahlen',
     'Bruchrechner',
     'Geometrie-Tool',
   ];
@@ -39,22 +45,34 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     super.dispose();
   }
 
-  Future<void> _generateApp() async {
-    if (_promptController.text.trim().isEmpty) {
-      setState(() => _error = 'Bitte gib eine Beschreibung ein');
-      return;
-    }
-    setState(() { _isLoading = true; _error = null; _currentApp = null; });
+  Future<void> _generate() async {
+    if (_promptController.text.trim().isEmpty) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+      _currentApp = null;
+    });
     try {
       final app = await ref.read(
-        generateMiniAppProvider(description: _promptController.text.trim()).future,
+        generateMiniAppProvider(
+                description: _promptController.text.trim())
+            .future,
       );
-      setState(() { _isLoading = false; _currentApp = app; });
+      setState(() {
+        _currentApp = app;
+        _isLoading = false;
+      });
       _autoSave(app);
     } on AIException catch (e) {
-      setState(() { _error = e.message; _isLoading = false; });
+      setState(() {
+        _error = e.message;
+        _isLoading = false;
+      });
     } catch (e) {
-      setState(() { _error = 'Fehler beim Generieren: $e'; _isLoading = false; });
+      setState(() {
+        _error = 'Fehler: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -62,7 +80,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
     try {
-      final content = SavedContent(
+      await ref.read(saveContentProvider(SavedContent(
         id: 'app-${DateTime.now().millisecondsSinceEpoch}',
         userId: user.uid,
         title: app.title,
@@ -73,11 +91,8 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         description: _promptController.text.trim(),
         createdAt: DateTime.now(),
         tags: ['ki-labor'],
-      );
-      await ref.read(saveContentProvider(content).future);
-    } catch (e) {
-      debugPrint('⚠️ KI-Labor: auto-save failed: $e');
-    }
+      )).future);
+    } catch (_) {}
   }
 
   void _openApp() {
@@ -95,168 +110,282 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
 
   String _buildHtml(GeneratedApp app) {
     final html = app.html.trim();
-    if (html.toLowerCase().startsWith('<!doctype') || html.toLowerCase().startsWith('<html')) {
+    if (html.toLowerCase().startsWith('<!doctype') ||
+        html.toLowerCase().startsWith('<html')) {
       return html;
     }
-    return '''<!DOCTYPE html>
-<html>
-<head>
+    return '''<!DOCTYPE html><html><head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>* { box-sizing: border-box; } body { margin: 0; padding: 16px; font-family: -apple-system, sans-serif; } ${app.css ?? ''}</style>
-</head>
-<body>
-  ${app.html}
-  <script>${app.javascript ?? ''}</script>
-</body>
-</html>''';
+</head><body>${app.html}<script>${app.javascript ?? ''}</script></body></html>''';
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildInputSection(),
-        Expanded(child: _buildResultArea()),
+        _buildHero(),
+        _buildInput(),
+        if (_error != null) _buildError(),
+        Expanded(child: _buildResult()),
       ],
     );
   }
 
-  Widget _buildInputSection() {
+  Widget _buildHero() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(
+          SlamTokens.gutter, 12, SlamTokens.gutter, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
-        color: SlamTokens.surface,
-        border: Border(bottom: BorderSide(color: SlamTokens.line)),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [_kiA, _kiB],
+        ),
+        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+        boxShadow: [
+          BoxShadow(
+            color: _kiA.withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: -6,
+          )
+        ],
       ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child:
+                const Icon(Icons.auto_awesome, size: 22, color: Colors.white),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('KI-Labor',
+                    style: GoogleFonts.fraunces(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: -0.3)),
+                Text('Beschreibe — die KI baut es.',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.75))),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius:
+                  BorderRadius.circular(SlamTokens.rCircle),
+            ),
+            child: Text('NEU',
+                style: GoogleFonts.dmSans(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 0.8)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          SlamTokens.gutter, 16, SlamTokens.gutter, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextField(
-            controller: _promptController,
-            style: GoogleFonts.dmSans(color: SlamTokens.text, fontSize: 14),
-            decoration: InputDecoration(
-              hintText: 'z.B. "Erstelle einen Funktionsplotter"',
-              hintStyle: GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
-              labelText: 'Was soll die App können?',
-              labelStyle: GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 13),
-              filled: true,
-              fillColor: SlamTokens.bgElev,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-                borderSide: BorderSide(color: SlamTokens.line),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-                borderSide: BorderSide(color: SlamTokens.line),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-                borderSide: const BorderSide(color: SlamTokens.primary, width: 1.5),
-              ),
-              prefixIcon: const Icon(Icons.auto_awesome, color: SlamTokens.primary, size: 20),
-              suffixIcon: _promptController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 18, color: SlamTokens.textDim),
-                      onPressed: () { _promptController.clear(); setState(() => _currentApp = null); },
-                    )
-                  : null,
+          Container(
+            decoration: BoxDecoration(
+              color: SlamTokens.surface,
+              borderRadius: BorderRadius.circular(SlamTokens.rInput),
+              border: Border.all(color: SlamTokens.line),
             ),
-            maxLines: 3,
-            textInputAction: TextInputAction.done,
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => _generateApp(),
+            child: TextField(
+              controller: _promptController,
+              style: GoogleFonts.dmSans(
+                  color: SlamTokens.text, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'z.B. "Erstelle einen Funktionsplotter"',
+                hintStyle: GoogleFonts.dmSans(
+                    color: SlamTokens.textDim, fontSize: 14),
+                border: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.fromLTRB(16, 14, 48, 14),
+                suffixIcon: _promptController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear,
+                            size: 16, color: SlamTokens.textDim),
+                        onPressed: () {
+                          _promptController.clear();
+                          setState(() => _currentApp = null);
+                        },
+                      )
+                    : null,
+              ),
+              maxLines: 3,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _generate(),
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           SizedBox(
-            height: 34,
+            height: 32,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: _examplePrompts.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemCount: _examples.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 7),
               itemBuilder: (_, i) => GestureDetector(
-                onTap: () { _promptController.text = _examplePrompts[i]; setState(() {}); },
+                onTap: () {
+                  _promptController.text = _examples[i];
+                  setState(() {});
+                },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 11, vertical: 5),
                   decoration: BoxDecoration(
-                    color: SlamTokens.bgElev,
-                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                    border: Border.all(color: SlamTokens.line),
+                    color: _kiA.withValues(alpha: 0.1),
+                    borderRadius:
+                        BorderRadius.circular(SlamTokens.rCircle),
+                    border: Border.all(
+                        color: _kiA.withValues(alpha: 0.25)),
                   ),
-                  child: Text(_examplePrompts[i],
-                      style: GoogleFonts.dmSans(fontSize: 12, color: SlamTokens.textDim)),
+                  child: Text(_examples[i],
+                      style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          color: _kiA,
+                          fontWeight: FontWeight.w600)),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: _isLoading ? null : _generateApp,
+            onTap: _isLoading ? null : _generate,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: _isLoading ? SlamTokens.primary.withValues(alpha: 0.5) : SlamTokens.primary,
-                borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                gradient: LinearGradient(
+                  colors: _isLoading
+                      ? [
+                          _kiA.withValues(alpha: 0.4),
+                          _kiB.withValues(alpha: 0.4)
+                        ]
+                      : [_kiA, _kiB],
+                ),
+                borderRadius:
+                    BorderRadius.circular(SlamTokens.rCircle),
+                boxShadow: _isLoading
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: _kiA.withValues(alpha: 0.4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                          spreadRadius: -4,
+                        )
+                      ],
               ),
               alignment: Alignment.center,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (_isLoading)
-                    const SizedBox(width: 18, height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: SlamTokens.primaryOn))
+                    const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white))
                   else
-                    const Icon(Icons.auto_awesome, size: 18, color: SlamTokens.primaryOn),
+                    const Icon(Icons.auto_awesome,
+                        size: 16, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text(_isLoading ? 'Generiere App...' : 'App generieren',
-                      style: GoogleFonts.dmSans(
-                          fontSize: 14, fontWeight: FontWeight.w700,
-                          color: SlamTokens.primaryOn)),
-                ],
-              ),
-            ),
-          ),
-          if (_error != null) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: SlamTokens.dangerSoft,
-                borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-                border: Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.error_outline, color: SlamTokens.danger, size: 18),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(_error!,
-                      style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.danger))),
-                  GestureDetector(
-                    onTap: _generateApp,
-                    child: const Icon(Icons.refresh, color: SlamTokens.danger, size: 18),
+                  Text(
+                    _isLoading ? 'Generiere App…' : 'App generieren',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildResultArea() {
+  Widget _buildError() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+          SlamTokens.gutter, 10, SlamTokens.gutter, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: SlamTokens.dangerSoft,
+        borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+        border:
+            Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline,
+              color: SlamTokens.danger, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+              child: Text(_error!,
+                  style: GoogleFonts.dmSans(
+                      fontSize: 13, color: SlamTokens.danger))),
+          GestureDetector(
+            onTap: _generate,
+            child: const Icon(Icons.refresh,
+                color: SlamTokens.danger, size: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResult() {
     if (_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(color: SlamTokens.primary),
-            const SizedBox(height: 16),
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: CircularProgressIndicator(
+                  color: _kiA, strokeWidth: 3),
+            ),
+            const SizedBox(height: 20),
             Text('App wird generiert…',
-                style: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w600, color: SlamTokens.text)),
+                style: GoogleFonts.fraunces(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.text)),
             const SizedBox(height: 6),
             Text('Das dauert etwa 10–20 Sekunden',
-                style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim)),
+                style: GoogleFonts.dmSans(
+                    fontSize: 13, color: SlamTokens.textDim)),
           ],
         ),
       );
@@ -270,21 +399,41 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 72, height: 72,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  color: SlamTokens.primarySoft,
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [_kiA, _kiB],
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _kiA.withValues(alpha: 0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                      spreadRadius: -6,
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.auto_awesome, size: 36, color: SlamTokens.primary),
+                child: const Icon(Icons.auto_awesome,
+                    size: 38, color: Colors.white),
               ),
               const SizedBox(height: 20),
-              Text('KI-Labor',
-                  style: GoogleFonts.fraunces(fontSize: 20, fontWeight: FontWeight.w700, color: SlamTokens.text)),
+              Text('Was soll die App können?',
+                  style: GoogleFonts.fraunces(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: SlamTokens.text)),
               const SizedBox(height: 8),
-              Text('Beschreibe, was die App können soll',
-                  style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
-                  textAlign: TextAlign.center),
+              Text(
+                'Beschreibe deine Idee — die KI generiert Rechner, Graphen und Simulatoren.',
+                style: GoogleFonts.dmSans(
+                    fontSize: 13, color: SlamTokens.textDim),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -298,62 +447,100 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: SlamTokens.primarySoft,
-                borderRadius: BorderRadius.circular(SlamTokens.rCardLg),
-                border: Border.all(color: SlamTokens.primary.withValues(alpha: 0.25)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _kiA.withValues(alpha: 0.12),
+                    _kiB.withValues(alpha: 0.08)
+                  ],
+                ),
+                borderRadius:
+                    BorderRadius.circular(SlamTokens.rCardLg),
+                border: Border.all(
+                    color: _kiA.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.check_circle, size: 48, color: SlamTokens.primary),
-                  const SizedBox(height: 12),
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                          colors: [_kiA, _kiB]),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.check,
+                        size: 26, color: Colors.white),
+                  ),
+                  const SizedBox(height: 14),
                   Text(_currentApp!.title,
-                      style: GoogleFonts.fraunces(fontSize: 18, fontWeight: FontWeight.w700, color: SlamTokens.text),
+                      style: GoogleFonts.fraunces(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: SlamTokens.text),
                       textAlign: TextAlign.center),
                   const SizedBox(height: 8),
-                  Text('App erfolgreich generiert und gespeichert',
-                      style: GoogleFonts.dmSans(fontSize: 12, color: SlamTokens.textDim),
-                      textAlign: TextAlign.center),
+                  Text('App generiert & gespeichert',
+                      style: GoogleFonts.dmSans(
+                          fontSize: 12, color: _kiA)),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: _openApp,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 32, vertical: 14),
                 decoration: BoxDecoration(
-                  color: SlamTokens.primary,
-                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                  gradient: const LinearGradient(
+                      colors: [_kiA, _kiB]),
+                  borderRadius:
+                      BorderRadius.circular(SlamTokens.rCircle),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _kiA.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                      spreadRadius: -4,
+                    )
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.open_in_new, size: 18, color: SlamTokens.primaryOn),
+                    const Icon(Icons.open_in_new,
+                        size: 16, color: Colors.white),
                     const SizedBox(width: 8),
-                    Text('Öffnen', style: GoogleFonts.dmSans(
-                        fontSize: 15, fontWeight: FontWeight.w800, color: SlamTokens.primaryOn)),
+                    Text('App öffnen',
+                        style: GoogleFonts.dmSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white)),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             GestureDetector(
-              onTap: _generateApp,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: SlamTokens.line),
-                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                ),
+              onTap: _generate,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.refresh, size: 16, color: SlamTokens.textDim),
+                    const Icon(Icons.refresh,
+                        size: 14, color: SlamTokens.textDim),
                     const SizedBox(width: 6),
                     Text('Neu generieren',
-                        style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim)),
+                        style: GoogleFonts.dmSans(
+                            fontSize: 13,
+                            color: SlamTokens.textDim)),
                   ],
                 ),
               ),

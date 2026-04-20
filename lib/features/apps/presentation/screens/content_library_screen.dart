@@ -31,16 +31,11 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
               if (content.isEmpty) {
                 return _EmptyState(hasFilter: currentFilter != null || searchQuery.isNotEmpty);
               }
-              return GridView.builder(
+              return ListView.separated(
                 padding: const EdgeInsets.all(SlamTokens.gutter),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.85,
-                ),
                 itemCount: content.length,
-                itemBuilder: (_, i) => _ContentCard(
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (_, i) => _ContentRow(
                   content: content[i],
                   onTap: () => _openContent(content[i]),
                   onDelete: () => _deleteContent(content[i]),
@@ -203,69 +198,15 @@ class _FilterPill extends StatelessWidget {
   }
 }
 
-class _ContentCard extends StatelessWidget {
-  const _ContentCard({required this.content, required this.onTap, required this.onDelete});
+class _ContentRow extends StatelessWidget {
+  const _ContentRow(
+      {required this.content, required this.onTap, required this.onDelete});
   final SavedContent content;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
-  @override
-  Widget build(BuildContext context) {
-    final color = _typeColor(content.type);
-    return GestureDetector(
-      onTap: onTap,
-      onLongPress: onDelete,
-      child: Container(
-        decoration: BoxDecoration(
-          color: SlamTokens.surface,
-          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-          border: Border.all(color: SlamTokens.line),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Container(
-                color: color.withValues(alpha: 0.12),
-                alignment: Alignment.center,
-                child: Icon(_typeIcon(content.type), size: 40, color: color),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(content.title,
-                      style: GoogleFonts.fraunces(
-                          fontSize: 13, fontWeight: FontWeight.w700, color: SlamTokens.text),
-                      maxLines: 2, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Row(children: [
-                    Icon(Icons.label_outline, size: 11, color: SlamTokens.textDim),
-                    const SizedBox(width: 4),
-                    Expanded(child: Text(content.type.displayName,
-                        style: GoogleFonts.dmSans(fontSize: 11, color: SlamTokens.textDim))),
-                  ]),
-                  const SizedBox(height: 2),
-                  Row(children: [
-                    Icon(Icons.access_time, size: 11, color: SlamTokens.textDim),
-                    const SizedBox(width: 4),
-                    Expanded(child: Text(_formatDate(content.createdAt),
-                        style: GoogleFonts.dmSans(fontSize: 11, color: SlamTokens.textDim))),
-                  ]),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  IconData _typeIcon(ContentType type) {
-    switch (type) {
+  static IconData _typeIcon(ContentType t) {
+    switch (t) {
       case ContentType.miniApp: return Icons.auto_awesome;
       case ContentType.geogebra: return Icons.functions;
       case ContentType.simulation: return Icons.science;
@@ -273,21 +214,113 @@ class _ContentCard extends StatelessWidget {
     }
   }
 
-  Color _typeColor(ContentType type) {
-    switch (type) {
-      case ContentType.miniApp: return const Color(0xFFC88CFF);
+  static Color _typeColor(ContentType t) {
+    switch (t) {
+      case ContentType.miniApp: return const Color(0xFFFF7A3B);
       case ContentType.geogebra: return const Color(0xFF60A5FA);
       case ContentType.simulation: return const Color(0xFF4ADE80);
       case ContentType.chat: return const Color(0xFF2DD4BF);
     }
   }
 
-  String _formatDate(DateTime date) {
+  static String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
     if (diff.inDays == 0) return 'Heute';
     if (diff.inDays == 1) return 'Gestern';
     if (diff.inDays < 7) return 'vor ${diff.inDays} Tagen';
     return '${date.day}.${date.month}.${date.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _typeColor(content.type);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: SlamTokens.surface,
+          borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
+          border: Border.all(color: SlamTokens.line),
+        ),
+        child: Row(
+          children: [
+            // Type accent stripe + icon
+            Container(
+              width: 64,
+              height: 72,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(SlamTokens.rCardMd)),
+                border: Border(
+                    right: BorderSide(
+                        color: color.withValues(alpha: 0.18))),
+              ),
+              alignment: Alignment.center,
+              child: Icon(_typeIcon(content.type), size: 26, color: color),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      content.title,
+                      style: GoogleFonts.fraunces(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: SlamTokens.text,
+                          letterSpacing: -0.2),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            content.type.displayName,
+                            style: GoogleFonts.dmSans(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: color),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDate(content.createdAt),
+                          style: GoogleFonts.dmSans(
+                              fontSize: 11,
+                              color: SlamTokens.textDim),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Delete button
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: const Icon(Icons.delete_outline,
+                    size: 18, color: SlamTokens.textMute),
+                onPressed: onDelete,
+                splashRadius: 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
