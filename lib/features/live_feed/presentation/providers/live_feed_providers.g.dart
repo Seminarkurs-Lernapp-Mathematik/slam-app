@@ -247,7 +247,7 @@ final liveFeedQuestionGeneratorProvider =
 );
 
 typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
-String _$liveFeedQueueHash() => r'4f51c3516c896f0564f7c9bf64c5e0445ac114d0';
+String _$liveFeedQueueHash() => r'0ffbd0b8f9c34ee02066401d9e1d0ff58b76710c';
 
 /// Live Feed Queue Provider with Caching
 ///

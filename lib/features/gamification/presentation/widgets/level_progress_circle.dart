@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/models/user_stats.dart';
 
@@ -41,7 +42,11 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
       curve: Curves.easeOutCubic,
     ));
 
-    _controller.forward();
+    _controller.forward().then((_) {
+      if (mounted && widget.stats.progressToNextLevel > 0.5) {
+        HapticFeedback.lightImpact();
+      }
+    });
   }
 
   @override

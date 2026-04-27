@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/widgets/widgets.dart';
@@ -130,7 +131,10 @@ class ProgressScreen extends ConsumerWidget {
                           const Spacer(),
                           FilledButton.icon(
                             onPressed: stats.totalXp >= 100
-                                ? () => _purchaseStreakFreeze(context, ref, userId, stats)
+                                ? () {
+                                    HapticFeedback.lightImpact();
+                                    _purchaseStreakFreeze(context, ref, userId, stats);
+                                  }
                                 : null,
                             icon: const Icon(Icons.add_shopping_cart, size: 18),
                             label: const Text('100 XP'),
@@ -383,6 +387,7 @@ class ProgressScreen extends ConsumerWidget {
 
     if (confirmed == true && context.mounted) {
       try {
+        HapticFeedback.mediumImpact();
         final updatedStats = currentStats.purchaseStreakFreeze();
 
         await ref.read(firestoreServiceProvider).updateUserStats(userId, updatedStats);
@@ -397,6 +402,7 @@ class ProgressScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
+          HapticFeedback.heavyImpact();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Fehler: ${e.toString()}'),

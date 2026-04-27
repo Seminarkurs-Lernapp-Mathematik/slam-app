@@ -7,3 +7,4 @@ export 'gradient_button.dart';
 export 'error_message.dart';
 export 'loading_indicator.dart';
 export 'coin_balance_chip.dart';
+export 'confetti_overlay.dart';

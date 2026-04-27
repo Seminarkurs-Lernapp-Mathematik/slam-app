@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +14,7 @@ import '../../../../core/services/firestore_service.dart';
 import '../providers/live_feed_providers.dart';
 import 'wo_haengts_chat_sheet.dart';
 import '../../../../shared/widgets/math_text.dart';
+import '../../../../shared/widgets/confetti_overlay.dart';
 
 class FeedQuestionCard extends ConsumerStatefulWidget {
   final Question question;
@@ -140,6 +142,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
   void _selectOption(String optionId) {
     if (_answered) return;
+    HapticFeedback.lightImpact();
     setState(() => _selectedOptionId = optionId);
 
     final selectedOption = widget.question.options?.firstWhere((o) => o.id == optionId);
@@ -188,8 +191,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     ref.read(liveFeedQueueProvider.notifier).persistAnsweredCurrent();
 
     if (isCorrect && mounted) {
+      HapticFeedback.mediumImpact();
       setState(() { _showSuccessBurst = true; _burstXp = xpEarned; });
     } else if (mounted) {
+      HapticFeedback.heavyImpact();
       _shakeCtrl.forward(from: 0);
       _redCtrl.forward(from: 0);
     }
@@ -214,6 +219,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   void _revealHint() {
     final maxHints = widget.question.hints.length;
     if (_hintsShown >= maxHints || _answered) return;
+    HapticFeedback.selectionClick();
     setState(() => _hintsShown++);
     ref.read(liveFeedHintsUsedProvider.notifier).increment();
 
@@ -308,27 +314,30 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final afb = _difficultyToAfb(widget.question.difficulty);
     final timer = _formatTimer(_timeSpentSeconds);
 
-    return FadeTransition(
-      opacity: _entranceFade,
-      child: SlideTransition(
-        position: _entranceSlide,
-        child: AnimatedBuilder(
-      animation: _shakeAnim,
-      builder: (_, child) => Transform.translate(
-        offset: Offset(_shakeAnim.value, 0),
-        child: child,
-      ),
-      child: Stack(
-      children: [
-        // Scrollable content
-        SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(
-            SlamTokens.gutter, 8, SlamTokens.gutter, 80,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    return ConfettiOverlay(
+      show: _showSuccessBurst,
+      xpEarned: _burstXp,
+      child: FadeTransition(
+        opacity: _entranceFade,
+        child: SlideTransition(
+          position: _entranceSlide,
+          child: AnimatedBuilder(
+        animation: _shakeAnim,
+        builder: (_, child) => Transform.translate(
+          offset: Offset(_shakeAnim.value, 0),
+          child: child,
+        ),
+        child: Stack(
+        children: [
+          // Scrollable content
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              SlamTokens.gutter, 8, SlamTokens.gutter, 80,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               // ── Subject row ──────────────────────────────────────
               Row(
                 children: [
@@ -492,7 +501,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           ),
       ],
     ),
-      ),
+          ),
+        ),
       ),
     );
   }
@@ -739,7 +749,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
   Widget _buildWoHaengtsButton(Color subjectColor, Color subjectSoft) {
     return GestureDetector(
-      onTap: _openWoHaengtsChat,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        _openWoHaengtsChat();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
@@ -782,7 +795,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           ? _AnimatedReveal(
               key: ValueKey('actionbar_answered_${widget.question.id}'),
               child: GestureDetector(
-                onTap: _skipToNext,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _skipToNext();
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(

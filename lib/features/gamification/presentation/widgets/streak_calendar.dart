@@ -71,47 +71,57 @@ class StreakCalendar extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: isActive
-                ? theme.colorScheme.primary
-                : theme.colorScheme.surfaceContainerHighest,
-            shape: BoxShape.circle,
-            border: isToday
-                ? Border.all(
-                    color: theme.colorScheme.primary,
-                    width: 2,
-                  )
-                : null,
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.4),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Center(
-            child: isActive
-                ? Icon(
-                    Icons.local_fire_department,
-                    color: Colors.white,
-                    size: 18,
-                  )
-                : Text(
-                    date.day.toString(),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.4),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-          ),
+        TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.elasticOut,
+          tween: Tween(begin: 0.8, end: 1.0),
+          builder: (context, scale, child) {
+            return Transform.scale(
+              scale: scale,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                  border: isToday
+                      ? Border.all(
+                          color: theme.colorScheme.primary,
+                          width: 2,
+                        )
+                      : null,
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: isActive
+                      ? Icon(
+                          Icons.local_fire_department,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                      : Text(
+                          date.day.toString(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.4),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

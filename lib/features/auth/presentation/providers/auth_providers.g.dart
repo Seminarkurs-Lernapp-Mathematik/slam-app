@@ -6,7 +6,7 @@ part of 'auth_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authLoginHash() => r'b947e33f58e898fb9fc49062724cb9657a99327c';
+String _$authLoginHash() => r'3c9008c34adddb785b9ca1262c2927f78cccd6b2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,28 +31,20 @@ class _SystemHash {
 
 /// Auth Login Provider
 ///
-/// Handles login with email and password
-///
 /// Copied from [authLogin].
 @ProviderFor(authLogin)
 const authLoginProvider = AuthLoginFamily();
 
 /// Auth Login Provider
 ///
-/// Handles login with email and password
-///
 /// Copied from [authLogin].
 class AuthLoginFamily extends Family<AsyncValue<User>> {
   /// Auth Login Provider
-  ///
-  /// Handles login with email and password
   ///
   /// Copied from [authLogin].
   const AuthLoginFamily();
 
   /// Auth Login Provider
-  ///
-  /// Handles login with email and password
   ///
   /// Copied from [authLogin].
   AuthLoginProvider call(
@@ -89,13 +81,9 @@ class AuthLoginFamily extends Family<AsyncValue<User>> {
 
 /// Auth Login Provider
 ///
-/// Handles login with email and password
-///
 /// Copied from [authLogin].
 class AuthLoginProvider extends AutoDisposeFutureProvider<User> {
   /// Auth Login Provider
-  ///
-  /// Handles login with email and password
   ///
   /// Copied from [authLogin].
   AuthLoginProvider(
@@ -181,11 +169,9 @@ class _AuthLoginProviderElement extends AutoDisposeFutureProviderElement<User>
       (origin as AuthLoginProvider).credentials;
 }
 
-String _$authRegisterHash() => r'a8c093d6693c67a03eb4031eb886712178d2628e';
+String _$authRegisterHash() => r'ca47693ce3201bd29f25922fb3771b87dd2337fd';
 
 /// Auth Register Provider
-///
-/// Handles registration with email, password, and display name
 ///
 /// Copied from [authRegister].
 @ProviderFor(authRegister)
@@ -193,20 +179,14 @@ const authRegisterProvider = AuthRegisterFamily();
 
 /// Auth Register Provider
 ///
-/// Handles registration with email, password, and display name
-///
 /// Copied from [authRegister].
 class AuthRegisterFamily extends Family<AsyncValue<User>> {
   /// Auth Register Provider
-  ///
-  /// Handles registration with email, password, and display name
   ///
   /// Copied from [authRegister].
   const AuthRegisterFamily();
 
   /// Auth Register Provider
-  ///
-  /// Handles registration with email, password, and display name
   ///
   /// Copied from [authRegister].
   AuthRegisterProvider call(
@@ -243,13 +223,9 @@ class AuthRegisterFamily extends Family<AsyncValue<User>> {
 
 /// Auth Register Provider
 ///
-/// Handles registration with email, password, and display name
-///
 /// Copied from [authRegister].
 class AuthRegisterProvider extends AutoDisposeFutureProvider<User> {
   /// Auth Register Provider
-  ///
-  /// Handles registration with email, password, and display name
   ///
   /// Copied from [authRegister].
   AuthRegisterProvider(
