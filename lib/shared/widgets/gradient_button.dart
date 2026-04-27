@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/design_tokens.dart';
@@ -8,7 +9,7 @@ import '../../app/design_tokens.dart';
 ///
 /// The `gradient` and `borderRadius` parameters are retained for backward
 /// compatibility but have no visual effect in the new design.
-class GradientButton extends StatelessWidget {
+class GradientButton extends StatefulWidget {
   const GradientButton({
     super.key,
     required this.text,
@@ -35,60 +36,77 @@ class GradientButton extends StatelessWidget {
   final bool disabled;
 
   @override
-  Widget build(BuildContext context) {
-    final isOff = disabled || isLoading || onPressed == null;
+  State<GradientButton> createState() => _GradientButtonState();
+}
 
-    return SizedBox(
-      height: height,
-      width: width,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: isOff
-              ? SlamTokens.surfaceHi
-              : SlamTokens.primary,
-          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-          boxShadow: isOff ? null : [SlamTokens.primaryShadow],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: isOff ? null : onPressed,
+class _GradientButtonState extends State<GradientButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isOff = widget.disabled || widget.isLoading || widget.onPressed == null;
+
+    return AnimatedScale(
+      scale: _isPressed ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 100),
+      child: SizedBox(
+        height: widget.height,
+        width: widget.width,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: isOff
+                ? SlamTokens.surfaceHi
+                : SlamTokens.primary,
             borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: isLoading
-                  ? SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(SlamTokens.primaryOn),
-                        strokeWidth: 2.5,
-                      ),
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (icon != null) ...[
-                          Icon(icon, color: SlamTokens.primaryOn, size: 20),
-                          const SizedBox(width: 8),
-                        ],
-                        Text(
-                          text,
-                          style: textStyle ??
-                              GoogleFonts.dmSans(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: isOff
-                                    ? SlamTokens.textMute
-                                    : SlamTokens.primaryOn,
-                                letterSpacing: 0.1,
-                              ),
+            boxShadow: isOff ? null : [SlamTokens.primaryShadow],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: isOff ? null : () {
+                HapticFeedback.lightImpact();
+                widget.onPressed?.call();
+              },
+              onTapDown: isOff ? null : (_) => setState(() => _isPressed = true),
+              onTapUp: isOff ? null : (_) => setState(() => _isPressed = false),
+              onTapCancel: isOff ? null : () => setState(() => _isPressed = false),
+              borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: widget.isLoading
+                    ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(SlamTokens.primaryOn),
+                          strokeWidth: 2.5,
                         ),
-                      ],
-                    ),
+                      )
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Icon(widget.icon, color: SlamTokens.primaryOn, size: 20),
+                            const SizedBox(width: 8),
+                          ],
+                          Text(
+                            widget.text,
+                            style: widget.textStyle ??
+                                GoogleFonts.dmSans(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: isOff
+                                      ? SlamTokens.textMute
+                                      : SlamTokens.primaryOn,
+                                  letterSpacing: 0.1,
+                                ),
+                          ),
+                        ],
+                      ),
+              ),
             ),
           ),
         ),

@@ -283,7 +283,7 @@ class _FeedHeader extends ConsumerWidget {
 }
 
 // Avatar with XP progress ring + level badge
-class _AvatarRing extends StatelessWidget {
+class _AvatarRing extends StatefulWidget {
   const _AvatarRing({required this.letter, required this.progress, required this.level});
 
   final String letter;
@@ -291,60 +291,110 @@ class _AvatarRing extends StatelessWidget {
   final int level;
 
   @override
+  State<_AvatarRing> createState() => _AvatarRingState();
+}
+
+class _AvatarRingState extends State<_AvatarRing> with SingleTickerProviderStateMixin {
+  late AnimationController _pulseCtrl;
+  late Animation<double> _pulseAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _pulseAnim = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
+    );
+
+    if (widget.progress > 0.8) {
+      _pulseCtrl.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(_AvatarRing old) {
+    super.didUpdateWidget(old);
+    if (widget.progress > 0.8 && old.progress <= 0.8) {
+      _pulseCtrl.repeat(reverse: true);
+    } else if (widget.progress <= 0.8 && old.progress > 0.8) {
+      _pulseCtrl.stop();
+      _pulseCtrl.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 56,
-      height: 56,
-      child: Stack(
-        children: [
-          CustomPaint(
-            size: const Size(56, 56),
-            painter: _RingPainter(progress: progress),
-            child: Container(
-              key: avatarGlobalKey,
-              width: 56,
-              height: 56,
-              padding: const EdgeInsets.all(4),
+    return AnimatedBuilder(
+      animation: _pulseAnim,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: widget.progress > 0.8 ? _pulseAnim.value : 1.0,
+          child: child,
+        );
+      },
+      child: SizedBox(
+        width: 56,
+        height: 56,
+        child: Stack(
+          children: [
+            CustomPaint(
+              size: const Size(56, 56),
+              painter: _RingPainter(progress: widget.progress),
               child: Container(
-                decoration: BoxDecoration(
-                  color: SlamTokens.primarySoft,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  letter,
-                  style: GoogleFonts.fraunces(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.primary,
+                key: avatarGlobalKey,
+                width: 56,
+                height: 56,
+                padding: const EdgeInsets.all(4),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: SlamTokens.primarySoft,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.letter,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: SlamTokens.primary,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: SlamTokens.primary,
-                shape: BoxShape.circle,
-                border: Border.all(color: SlamTokens.bg, width: 1.5),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '$level',
-                style: GoogleFonts.fraunces(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  color: SlamTokens.primaryOn,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: SlamTokens.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: SlamTokens.bg, width: 1.5),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '${widget.level}',
+                  style: GoogleFonts.fraunces(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: SlamTokens.primaryOn,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -398,28 +448,38 @@ class _StatPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: SlamTokens.surface,
-        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-        border: Border.all(color: SlamTokens.line),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            value,
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: SlamTokens.text,
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutBack,
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: SlamTokens.surface,
+              borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+              border: Border.all(color: SlamTokens.line),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 14, color: color),
+                const SizedBox(width: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.text,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
