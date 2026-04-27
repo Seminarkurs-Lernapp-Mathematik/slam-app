@@ -1,4 +1,4 @@
-package de.mvlgym.slam_app_flutter
+package de.mvlgym.slam
 
 import android.os.Build
 import android.os.Bundle

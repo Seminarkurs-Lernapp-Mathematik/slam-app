@@ -47,25 +47,25 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCunDxN9_YHcV3T5aEBLEG-Di7Nb2cXzqo',
-    appId: '1:640778470963:android:fd4b13d8dc28443a95c546',
+    apiKey: 'AIzaSyC1hs9ZzbPP2ejTcXfnnJlTxIioWfnXe3c',
+    appId: '1:640778470963:android:565ec0a4bd75951e95c546',
     messagingSenderId: '640778470963',
     projectId: 'seminarkurs-lernapp',
     storageBucket: 'seminarkurs-lernapp.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyANaPaFUkx_KNT04sFFdQGl8syjrkTm_b8',
-    appId: '1:640778470963:ios:21779980c450bc2095c546',
+    apiKey: 'AIzaSyC1hs9ZzbPP2ejTcXfnnJlTxIioWfnXe3c',
+    appId: '1:640778470963:ios:dba4d6a7ef56f72495c546',
     messagingSenderId: '640778470963',
     projectId: 'seminarkurs-lernapp',
     storageBucket: 'seminarkurs-lernapp.firebasestorage.app',
-    iosBundleId: 'de.mvlgym.slamAppFlutter',
+    iosBundleId: 'de.mvlgym.slam',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDTge-QQKB2aY-ZRZqtuDq8PcpBiErmfWQ',
-    appId: '1:640778470963:web:ce209272262574ac95c546',
+    apiKey: 'AIzaSyC1hs9ZzbPP2ejTcXfnnJlTxIioWfnXe3c',
+    appId: '1:640778470963:web:54acf822f40ce62595c546',
     messagingSenderId: '640778470963',
     projectId: 'seminarkurs-lernapp',
     authDomain: 'seminarkurs-lernapp.firebaseapp.com',
