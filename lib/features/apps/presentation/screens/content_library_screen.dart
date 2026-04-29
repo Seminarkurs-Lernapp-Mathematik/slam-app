@@ -216,7 +216,7 @@ class _ContentRow extends StatelessWidget {
 
   static Color _typeColor(ContentType t) {
     switch (t) {
-      case ContentType.miniApp: return const Color(0xFFFF7A3B);
+      case ContentType.miniApp: return SlamTokens.primary;
       case ContentType.geogebra: return const Color(0xFF60A5FA);
       case ContentType.simulation: return const Color(0xFF4ADE80);
       case ContentType.chat: return const Color(0xFF2DD4BF);

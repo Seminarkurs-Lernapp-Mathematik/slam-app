@@ -10,7 +10,7 @@ import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
 // KI-Labor accent colors
-const _kiA = Color(0xFFFF7A3B);
+final _kiA = SlamTokens.primary;
 const _kiB = Color(0xFFFF4080);
 
 class GenerativeAppsScreen extends ConsumerStatefulWidget {

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../../app/design_tokens.dart';
 
 class ConfettiOverlay extends StatefulWidget {
   final Widget child;
@@ -58,12 +59,12 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
 
   Color _randomColor(math.Random rng) {
     final colors = [
-      const Color(0xFFFF7A3B),
-      const Color(0xFFFFB35C),
-      const Color(0xFF7CC4FF),
-      const Color(0xFFC88CFF),
-      const Color(0xFF4DD490),
-      const Color(0xFFFFC94D),
+      SlamTokens.primary,
+      SlamTokens.algebra,
+      SlamTokens.analysis,
+      SlamTokens.geometrie,
+      SlamTokens.success,
+      SlamTokens.warn,
     ];
     return colors[rng.nextInt(colors.length)];
   }

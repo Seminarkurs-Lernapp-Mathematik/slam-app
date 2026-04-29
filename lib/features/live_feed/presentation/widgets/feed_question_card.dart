@@ -142,7 +142,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
   void _selectOption(String optionId) {
     if (_answered) return;
-    HapticFeedback.lightImpact();
+    HapticFeedback.selectionClick();
     setState(() => _selectedOptionId = optionId);
 
     final selectedOption = widget.question.options?.firstWhere((o) => o.id == optionId);
@@ -191,10 +191,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     ref.read(liveFeedQueueProvider.notifier).persistAnsweredCurrent();
 
     if (isCorrect && mounted) {
-      HapticFeedback.mediumImpact();
+      HapticFeedback.heavyImpact();
+      Future.delayed(const Duration(milliseconds: 50), () => HapticFeedback.mediumImpact());
       setState(() { _showSuccessBurst = true; _burstXp = xpEarned; });
     } else if (mounted) {
       HapticFeedback.heavyImpact();
+      Future.delayed(const Duration(milliseconds: 100), () => HapticFeedback.mediumImpact());
+      Future.delayed(const Duration(milliseconds: 200), () => HapticFeedback.lightImpact());
       _shakeCtrl.forward(from: 0);
       _redCtrl.forward(from: 0);
     }
@@ -219,13 +222,17 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   void _revealHint() {
     final maxHints = widget.question.hints.length;
     if (_hintsShown >= maxHints || _answered) return;
-    HapticFeedback.selectionClick();
+    HapticFeedback.mediumImpact();
     setState(() => _hintsShown++);
     ref.read(liveFeedHintsUsedProvider.notifier).increment();
 
     if (_hintsShown >= maxHints && !_answered) {
-      setState(() => _showWoHaengtsInput = true);
-      ref.read(showWoHaengtsProvider.notifier).show();
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted && !_answered) {
+          setState(() => _showWoHaengtsInput = true);
+          ref.read(showWoHaengtsProvider.notifier).show();
+        }
+      });
     }
   }
 
