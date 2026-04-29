@@ -47,8 +47,9 @@ class _GradientButtonState extends State<GradientButton> {
     final isOff = widget.disabled || widget.isLoading || widget.onPressed == null;
 
     return AnimatedScale(
-      scale: _isPressed ? 0.96 : 1.0,
-      duration: const Duration(milliseconds: 100),
+      scale: _isPressed ? 0.94 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOutCubic,
       child: SizedBox(
         height: widget.height,
         width: widget.width,
@@ -64,10 +65,13 @@ class _GradientButtonState extends State<GradientButton> {
             color: Colors.transparent,
             child: InkWell(
               onTap: isOff ? null : () {
-                HapticFeedback.lightImpact();
+                HapticFeedback.mediumImpact();
                 widget.onPressed?.call();
               },
-              onTapDown: isOff ? null : (_) => setState(() => _isPressed = true),
+              onTapDown: isOff ? null : (_) {
+                HapticFeedback.selectionClick();
+                setState(() => _isPressed = true);
+              },
               onTapUp: isOff ? null : (_) => setState(() => _isPressed = false),
               onTapCancel: isOff ? null : () => setState(() => _isPressed = false),
               borderRadius: BorderRadius.circular(SlamTokens.rCircle),

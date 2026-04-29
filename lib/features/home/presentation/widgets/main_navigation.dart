@@ -176,7 +176,7 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.lightImpact();
+        HapticFeedback.selectionClick();
         onTap();
       },
       child: AnimatedContainer(
@@ -192,10 +192,15 @@ class _NavItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isActive ? tab.selectedIcon : tab.icon,
-              size: 20,
-              color: isActive ? SlamTokens.primaryOn : SlamTokens.textDim,
+            AnimatedScale(
+              scale: isActive ? 1.0 : 0.95,
+              duration: SlamTokens.dState,
+              curve: SlamTokens.curveStandard,
+              child: Icon(
+                isActive ? tab.selectedIcon : tab.icon,
+                size: 20,
+                color: isActive ? SlamTokens.primaryOn : SlamTokens.textDim,
+              ),
             ),
             AnimatedSize(
               duration: SlamTokens.dState,
