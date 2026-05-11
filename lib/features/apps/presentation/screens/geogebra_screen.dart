@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +28,15 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   bool _isLoading = false;
   String? _error;
   GeoGebraData? _currentVisualization;
+  String _loadingMessage = 'Visualisierung wird erstellt…';
+  Timer? _loadingTimer;
+
+  static const _loadingStages = [
+    (4,  'Mathematik wird analysiert…'),
+    (12, 'Koordinatensystem wird aufgebaut…'),
+    (25, 'Objekte werden gezeichnet…'),
+    (40, 'Details werden verfeinert…'),
+  ];
 
   final List<String> _examples = [
     'Quadratische Funktion',
@@ -39,7 +50,25 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   @override
   void dispose() {
     _promptController.dispose();
+    _loadingTimer?.cancel();
     super.dispose();
+  }
+
+  void _startLoadingTimer() {
+    _loadingTimer?.cancel();
+    final startTime = DateTime.now();
+    _loadingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final elapsed = DateTime.now().difference(startTime).inSeconds;
+      for (final (seconds, message) in _loadingStages.reversed) {
+        if (elapsed >= seconds) {
+          if (_loadingMessage != message) {
+            setState(() => _loadingMessage = message);
+          }
+          break;
+        }
+      }
+    });
   }
 
   Future<void> _generate() async {
@@ -48,22 +77,38 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
       _isLoading = true;
       _error = null;
       _currentVisualization = null;
+      _loadingMessage = 'Visualisierung wird erstellt…';
     });
+    _startLoadingTimer();
     try {
       final vis = await ref.read(
         generateGeogebraProvider(prompt: _promptController.text.trim()).future,
+      ).timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => throw TimeoutException('timeout'),
       );
+      _loadingTimer?.cancel();
       setState(() {
         _currentVisualization = vis;
         _isLoading = false;
       });
       _autoSave(vis);
-    } on AIException catch (e) {
+    } on TimeoutException {
+      _loadingTimer?.cancel();
       setState(() {
-        _error = e.message;
+        _error = 'Die Visualisierung hat zu lange gedauert. Bitte erneut versuchen.';
+        _isLoading = false;
+      });
+    } on AIException catch (e) {
+      _loadingTimer?.cancel();
+      setState(() {
+        _error = e.statusCode == 408
+            ? 'Zeitüberschreitung — bitte erneut versuchen.'
+            : e.message;
         _isLoading = false;
       });
     } catch (e) {
+      _loadingTimer?.cancel();
       setState(() {
         _error = 'Fehler: $e';
         _isLoading = false;
@@ -345,11 +390,17 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text('Visualisierung wird erstellt…',
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              child: Text(
+                _loadingMessage,
+                key: ValueKey(_loadingMessage),
                 style: GoogleFonts.fraunces(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: SlamTokens.text)),
+                    color: SlamTokens.text),
+              ),
+            ),
             const SizedBox(height: 6),
             Text('GeoGebra-Befehle werden generiert',
                 style: GoogleFonts.dmSans(

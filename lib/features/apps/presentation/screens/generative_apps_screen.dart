@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +29,17 @@ class _GenerativeAppsScreenState
   bool _isLoading = false;
   String? _error;
   GeneratedApp? _currentApp;
+  String _loadingMessage = 'App wird generiert…';
+  Timer? _loadingTimer;
+
+  static const _loadingStages = [
+    (4,  'Idee wird analysiert…'),
+    (10, 'Konzept wird entworfen…'),
+    (20, 'Code wird geschrieben…'),
+    (35, 'Interface wird gebaut…'),
+    (55, 'Details werden verfeinert…'),
+    (80, 'Fast fertig…'),
+  ];
 
   final List<String> _examples = [
     'Binomialverteilung',
@@ -42,7 +55,25 @@ class _GenerativeAppsScreenState
   @override
   void dispose() {
     _promptController.dispose();
+    _loadingTimer?.cancel();
     super.dispose();
+  }
+
+  void _startLoadingTimer() {
+    _loadingTimer?.cancel();
+    final startTime = DateTime.now();
+    _loadingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final elapsed = DateTime.now().difference(startTime).inSeconds;
+      for (final (seconds, message) in _loadingStages.reversed) {
+        if (elapsed >= seconds) {
+          if (_loadingMessage != message) {
+            setState(() => _loadingMessage = message);
+          }
+          break;
+        }
+      }
+    });
   }
 
   Future<void> _generate() async {
@@ -51,24 +82,40 @@ class _GenerativeAppsScreenState
       _isLoading = true;
       _error = null;
       _currentApp = null;
+      _loadingMessage = 'App wird generiert…';
     });
+    _startLoadingTimer();
     try {
       final app = await ref.read(
         generateMiniAppProvider(
                 description: _promptController.text.trim())
             .future,
+      ).timeout(
+        const Duration(seconds: 90),
+        onTimeout: () => throw TimeoutException('timeout'),
       );
+      _loadingTimer?.cancel();
       setState(() {
         _currentApp = app;
         _isLoading = false;
       });
       _autoSave(app);
-    } on AIException catch (e) {
+    } on TimeoutException {
+      _loadingTimer?.cancel();
       setState(() {
-        _error = e.message;
+        _error = 'Die Generierung hat zu lange gedauert. Versuche es mit einer einfacheren Beschreibung oder später erneut.';
+        _isLoading = false;
+      });
+    } on AIException catch (e) {
+      _loadingTimer?.cancel();
+      setState(() {
+        _error = e.statusCode == 408
+            ? 'Zeitüberschreitung — das Netzwerk ist langsam. Bitte erneut versuchen.'
+            : e.message;
         _isLoading = false;
       });
     } catch (e) {
+      _loadingTimer?.cancel();
       setState(() {
         _error = 'Fehler: $e';
         _isLoading = false;
@@ -377,13 +424,19 @@ class _GenerativeAppsScreenState
                   color: _kiA, strokeWidth: 3),
             ),
             const SizedBox(height: 20),
-            Text('App wird generiert…',
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              child: Text(
+                _loadingMessage,
+                key: ValueKey(_loadingMessage),
                 style: GoogleFonts.fraunces(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: SlamTokens.text)),
+                    color: SlamTokens.text),
+              ),
+            ),
             const SizedBox(height: 6),
-            Text('Das dauert etwa 10–20 Sekunden',
+            Text('Das dauert etwa 15–30 Sekunden',
                 style: GoogleFonts.dmSans(
                     fontSize: 13, color: SlamTokens.textDim)),
           ],
