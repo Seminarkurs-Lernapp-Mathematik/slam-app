@@ -39,16 +39,22 @@ jobs:
 
       - name: Decode google-services.json
         env:
-          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
         run: |
           if [ -z "$GOOGLE_SERVICES_JSON_B64" ]; then
-            echo "❌ Secret GOOGLE_SERVICES_JSON is not set in repository settings"
+            echo "❌ Secret GOOGLE_SERVICES_JSON_B64 is not set in repository settings"
             exit 1
           fi
           printf '%s' "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > android/app/google-services.json
-          # Validate that the result is well-formed JSON
-          python3 -c "import json,sys; json.load(open('android/app/google-services.json'))" \
-            || { echo "❌ google-services.json decoded to invalid JSON — check the secret value"; exit 1; }
+          # Validate JSON and print the package name for easy diagnosis
+          python3 - <<'EOF'
+import json, sys
+with open('android/app/google-services.json') as f:
+    data = json.load(f)
+clients = data.get('client', [])
+names = [c.get('client_info', {}).get('android_client_info', {}).get('package_name', '?') for c in clients]
+print(f"✅ google-services.json decoded — registered packages: {names}")
+EOF
 
       - name: Get Flutter dependencies
         run: flutter pub get
