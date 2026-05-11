@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -166,6 +167,7 @@ class _ShopBody extends ConsumerWidget {
   }
 
   void _selectTheme(BuildContext context, WidgetRef ref, AppThemePreset preset) {
+    HapticFeedback.selectionClick();
     ref.read(selectedThemeProvider.notifier).setTheme(preset);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${ThemePricing.getName(preset)} aktiviert!'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/design_tokens.dart';
@@ -53,9 +54,12 @@ class DifficultySlider extends ConsumerWidget {
                   child: _AfbChip(
                     level: level,
                     selected: isSelected,
-                    onTap: () => ref
-                        .read(liveFeedDifficultyProvider.notifier)
-                        .setDifficulty(level.difficulty),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      ref
+                          .read(liveFeedDifficultyProvider.notifier)
+                          .setDifficulty(level.difficulty);
+                    },
                   ),
                 ),
               );
