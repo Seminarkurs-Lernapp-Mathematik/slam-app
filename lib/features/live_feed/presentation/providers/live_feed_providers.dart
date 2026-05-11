@@ -58,7 +58,7 @@ class LiveFeedDifficulty extends _$LiveFeedDifficulty {
 /// Question Buffer Provider (caching system)
 @riverpod
 class QuestionBuffer extends _$QuestionBuffer {
-  static const int bufferSize = 5;
+  static const int bufferSize = 10;
 
   @override
   List<Question> build() {
@@ -299,7 +299,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       // Map current difficulty to AFB level string for the backend
       final difficulty = ref.read(liveFeedDifficultyProvider);
       final afbLevel = difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
-      debugPrint('🔄 LiveFeed: Requesting 5 questions at AFB $afbLevel');
+      debugPrint('🔄 LiveFeed: Requesting 10 questions at AFB $afbLevel');
 
       // Build memories context: due spaced-repetition items + user preferences
       List<Map<String, dynamic>>? memoriesContext;
@@ -327,7 +327,7 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
         userId: userId,
         learningPlanItemId: 0,
         topics: topicsForAI,
-        questionCount: 5,
+        questionCount: 10,
         afbLevel: afbLevel,
         userContext: UserContext(
           gradeLevel: appSettings.gradeLevel.replaceAll('Klasse_', ''),
@@ -602,8 +602,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   /// Get remaining question count
   int get remainingCount => state.remainingCount;
 
-  /// Whether more questions should be generated (prefetch at 2 remaining)
-  bool get needsMoreQuestions => state.remainingCount <= 2;
+  /// Whether more questions should be generated (prefetch at 4 remaining)
+  bool get needsMoreQuestions => state.remainingCount <= 4;
   
   /// Check if there are cached questions available
   bool get hasCachedQuestions => state.questions.isNotEmpty && state.currentIndex < state.questions.length;
