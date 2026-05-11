@@ -12,10 +12,36 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Fix #3: Teacher accounts identified via Custom Claims (set exclusively by backend).
+    // Used to grant read-only dashboard access to student subcollections.
+    function isTeacher() {
+      return isAuthenticated() && request.auth.token.teacher == true;
+    }
+
+    // Fix #2: asyncJobs are created and read exclusively by the backend (Admin SDK).
+    // Explicit deny prevents any client-side access even if a jobId is guessed.
+    match /asyncJobs/{jobId} {
+      allow read, write: if false;
+    }
+
     // Users collection - main document
     match /users/{userId} {
-      // Allow users to read and write their own data
-      allow read, write: if isOwner(userId);
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+
+      // Fix #1 + #4: Split write into create/update/delete.
+      // - Blocks self-deletion (delete: false).
+      // - Blocks client-side modification of backend-only stats fields
+      //   (unlockedThemes, streakFreezes — written only by the purchase backend).
+      //   Regular stats writes (XP, coins, streak) from the client remain allowed.
+      allow update: if isOwner(userId) &&
+        !(
+          request.resource.data.diff(resource.data).affectedKeys().hasAny(['stats']) &&
+          request.resource.data.stats
+              .diff(resource.data.get(['stats'], {}))
+              .affectedKeys().hasAny(['unlockedThemes', 'streakFreezes'])
+        );
+      allow delete: if false;
 
       // Generated Questions subcollection
       match /generatedQuestions/{sessionId} {
@@ -72,9 +98,12 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
-      // Question History subcollection
+      // Fix #3: Question History — students own their data;
+      // teachers may read for the AI assessment dashboard (Admin SDK bypasses
+      // rules, but explicit grant future-proofs the Flutter teacher client).
       match /questionHistory/{resultId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isTeacher();
+        allow write: if isOwner(userId);
       }
     }
   }
