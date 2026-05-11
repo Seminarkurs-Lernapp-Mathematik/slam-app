@@ -68,8 +68,8 @@ class DifficultySlider extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             selected.description,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: cs.onSurfaceVariant),
+            style:
+                theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
           ),
         ],
       ),
@@ -138,7 +138,8 @@ class _AfbChip extends StatelessWidget {
             Text(
               level.label,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: selected ? level.color : theme.colorScheme.onSurfaceVariant,
+                color:
+                    selected ? level.color : theme.colorScheme.onSurfaceVariant,
                 fontWeight: selected ? FontWeight.bold : FontWeight.normal,
               ),
             ),

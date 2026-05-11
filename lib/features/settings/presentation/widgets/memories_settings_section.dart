@@ -296,7 +296,8 @@ class _MemoryTile extends ConsumerWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       title: Text(
         memory.subtopic.isNotEmpty ? memory.subtopic : memory.topic,
-        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        style:
+            theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

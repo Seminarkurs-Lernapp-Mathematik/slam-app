@@ -155,7 +155,8 @@ class UserStats with _$UserStats {
   /// Spend coins (for themes, streak freezes, etc.)
   UserStats spendCoins(int amount, String reason) {
     if (coins < amount) {
-      throw Exception('Nicht genug Münzen. Benötigt: $amount, Verfügbar: $coins');
+      throw Exception(
+          'Nicht genug Münzen. Benötigt: $amount, Verfügbar: $coins');
     }
 
     return copyWith(coins: coins - amount);
@@ -164,7 +165,8 @@ class UserStats with _$UserStats {
   /// Purchase streak freeze with coins (costs 50 coins)
   UserStats purchaseStreakFreezeWithCoins() {
     if (coins < 50) {
-      throw Exception('Nicht genug Münzen für Streak Freeze (benötigt 50 Münzen)');
+      throw Exception(
+          'Nicht genug Münzen für Streak Freeze (benötigt 50 Münzen)');
     }
 
     return copyWith(

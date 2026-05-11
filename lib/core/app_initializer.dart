@@ -17,8 +17,9 @@ class InitResult {
   final String? error;
   final InitState state;
 
-  InitResult._(this.success, this.state, {this.error});
-  InitResult.success(this.state) : success = true, error = null;
+  InitResult.success(this.state)
+      : success = true,
+        error = null;
   InitResult.failure(this.error, this.state) : success = false;
 }
 
@@ -82,7 +83,6 @@ class AppInitializer {
       _state = InitState.complete;
       Logger.info('App initialization complete');
       return InitResult.success(_state);
-
     } catch (e, st) {
       _state = InitState.failed;
       Logger.fatal('App initialization failed', error: e, stackTrace: st);

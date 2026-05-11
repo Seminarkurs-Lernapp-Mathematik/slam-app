@@ -162,9 +162,7 @@ class _SettingsRow extends StatelessWidget {
     required this.icon,
     required this.label,
     this.subtitle,
-    this.trailing,
     this.onTap,
-    this.iconColor = SlamTokens.textDim,
     this.isDestructive = false,
     this.showDivider = true,
   });
@@ -172,9 +170,7 @@ class _SettingsRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String? subtitle;
-  final Widget? trailing;
   final VoidCallback? onTap;
-  final Color iconColor;
   final bool isDestructive;
   final bool showDivider;
 
@@ -192,7 +188,10 @@ class _SettingsRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
-                Icon(icon, size: 20, color: isDestructive ? SlamTokens.danger : iconColor),
+                Icon(icon,
+                    size: 20,
+                    color:
+                        isDestructive ? SlamTokens.danger : SlamTokens.textDim),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -212,15 +211,14 @@ class _SettingsRow extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (trailing != null) trailing!
-                else if (onTap != null)
-                  const Icon(Icons.chevron_right, size: 18, color: SlamTokens.textMute),
+                if (onTap != null)
+                  const Icon(Icons.chevron_right,
+                      size: 18, color: SlamTokens.textMute),
               ],
             ),
           ),
         ),
-        if (showDivider)
-          Divider(height: 1, indent: 50, color: SlamTokens.line),
+        if (showDivider) Divider(height: 1, indent: 50, color: SlamTokens.line),
       ],
     );
   }
@@ -236,8 +234,14 @@ class _EducationSettings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsNotifierProvider);
-    final showCourseType = !['Klasse_5', 'Klasse_6', 'Klasse_7',
-        'Klasse_8', 'Klasse_9', 'Klasse_10'].contains(settings.gradeLevel);
+    final showCourseType = ![
+      'Klasse_5',
+      'Klasse_6',
+      'Klasse_7',
+      'Klasse_8',
+      'Klasse_9',
+      'Klasse_10'
+    ].contains(settings.gradeLevel);
 
     return Column(
       children: [
@@ -245,7 +249,8 @@ class _EducationSettings extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           child: Row(
             children: [
-              const Icon(Icons.grade_outlined, size: 20, color: SlamTokens.textDim),
+              const Icon(Icons.grade_outlined,
+                  size: 20, color: SlamTokens.textDim),
               const SizedBox(width: 14),
               Expanded(
                 child: DropdownButtonFormField<String>(
@@ -258,12 +263,22 @@ class _EducationSettings extends ConsumerWidget {
                   ),
                   dropdownColor: SlamTokens.bgElev,
                   style: GoogleFonts.dmSans(
-                      fontSize: 15, fontWeight: FontWeight.w600, color: SlamTokens.text),
-                  items: ['Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8',
-                    'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13']
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: SlamTokens.text),
+                  items: [
+                    'Klasse_5',
+                    'Klasse_6',
+                    'Klasse_7',
+                    'Klasse_8',
+                    'Klasse_9',
+                    'Klasse_10',
+                    'Klasse_11',
+                    'Klasse_12',
+                    'Klasse_13'
+                  ]
                       .map((g) => DropdownMenuItem(
-                          value: g,
-                          child: Text(g.replaceFirst('_', ' '))))
+                          value: g, child: Text(g.replaceFirst('_', ' '))))
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -283,7 +298,8 @@ class _EducationSettings extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
             child: Row(
               children: [
-                const Icon(Icons.menu_book_outlined, size: 20, color: SlamTokens.textDim),
+                const Icon(Icons.menu_book_outlined,
+                    size: 20, color: SlamTokens.textDim),
                 const SizedBox(width: 14),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -303,8 +319,7 @@ class _EducationSettings extends ConsumerWidget {
                         fontWeight: FontWeight.w600,
                         color: SlamTokens.text),
                     items: ['Grundkurs', 'Leistungskurs']
-                        .map((c) =>
-                            DropdownMenuItem(value: c, child: Text(c)))
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {

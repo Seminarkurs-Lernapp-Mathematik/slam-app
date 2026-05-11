@@ -65,17 +65,22 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     _startQuestionTimer();
     if (widget.question.type == QuestionType.stepByStep &&
         widget.question.stepByStepData != null) {
-      _stepOrder = List.from(widget.question.stepByStepData!.steps.map((s) => s.id));
+      _stepOrder =
+          List.from(widget.question.stepByStepData!.steps.map((s) => s.id));
       _stepOrder.shuffle();
     }
 
-    _entranceCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 340));
-    _entranceFade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
-    _entranceSlide = Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
+    _entranceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 340));
+    _entranceFade =
+        CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
+    _entranceSlide =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+            CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
     _entranceCtrl.forward();
 
-    _shakeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 520));
+    _shakeCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 520));
     _shakeAnim = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 11.0), weight: 10),
       TweenSequenceItem(tween: Tween(begin: 11.0, end: -13.0), weight: 20),
@@ -85,7 +90,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       TweenSequenceItem(tween: Tween(begin: 3.0, end: 0.0), weight: 10),
     ]).animate(_shakeCtrl);
 
-    _redCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 650));
+    _redCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 650));
     _redAnim = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.18), weight: 20),
       TweenSequenceItem(tween: Tween(begin: 0.18, end: 0.0), weight: 80),
@@ -108,7 +114,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     _questionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() => _timeSpentSeconds++);
-        ref.read(liveFeedTimerSecondsProvider.notifier).state = _timeSpentSeconds;
+        ref.read(liveFeedTimerSecondsProvider.notifier).state =
+            _timeSpentSeconds;
       }
     });
   }
@@ -127,14 +134,19 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
   (Color, Color) _subjectColors(String topic) {
     final t = topic.toLowerCase();
-    if (t.contains('algebra')) return (SlamTokens.algebra, SlamTokens.algebraSoft);
-    if (t.contains('analysis') || t.contains('differenzial') || t.contains('integral')) {
+    if (t.contains('algebra'))
+      return (SlamTokens.algebra, SlamTokens.algebraSoft);
+    if (t.contains('analysis') ||
+        t.contains('differenzial') ||
+        t.contains('integral')) {
       return (SlamTokens.analysis, SlamTokens.analysisSoft);
     }
     if (t.contains('geometrie') || t.contains('trigono')) {
       return (SlamTokens.geometrie, SlamTokens.geometrieSoft);
     }
-    if (t.contains('stochastik') || t.contains('statistik') || t.contains('wahrscheinlichkeit')) {
+    if (t.contains('stochastik') ||
+        t.contains('statistik') ||
+        t.contains('wahrscheinlichkeit')) {
       return (SlamTokens.stochastik, SlamTokens.stochastikSoft);
     }
     return (SlamTokens.primary, SlamTokens.primarySoft);
@@ -145,12 +157,16 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     HapticFeedback.selectionClick();
     setState(() => _selectedOptionId = optionId);
 
-    final selectedOption = widget.question.options?.firstWhere((o) => o.id == optionId);
+    final selectedOption =
+        widget.question.options?.firstWhere((o) => o.id == optionId);
     if (selectedOption == null) return;
 
     _questionTimer?.cancel();
     final isCorrect = selectedOption.isCorrect;
-    setState(() { _answered = true; _isCorrect = isCorrect; });
+    setState(() {
+      _answered = true;
+      _isCorrect = isCorrect;
+    });
 
     ref.read(selectedOptionProvider.notifier).select(optionId);
     _processAnswer(isCorrect, optionId);
@@ -192,12 +208,18 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     if (isCorrect && mounted) {
       HapticFeedback.heavyImpact();
-      Future.delayed(const Duration(milliseconds: 50), () => HapticFeedback.mediumImpact());
-      setState(() { _showSuccessBurst = true; _burstXp = xpEarned; });
+      Future.delayed(const Duration(milliseconds: 50),
+          () => HapticFeedback.mediumImpact());
+      setState(() {
+        _showSuccessBurst = true;
+        _burstXp = xpEarned;
+      });
     } else if (mounted) {
       HapticFeedback.heavyImpact();
-      Future.delayed(const Duration(milliseconds: 100), () => HapticFeedback.mediumImpact());
-      Future.delayed(const Duration(milliseconds: 200), () => HapticFeedback.lightImpact());
+      Future.delayed(const Duration(milliseconds: 100),
+          () => HapticFeedback.mediumImpact());
+      Future.delayed(const Duration(milliseconds: 200),
+          () => HapticFeedback.lightImpact());
       _shakeCtrl.forward(from: 0);
       _redCtrl.forward(from: 0);
     }
@@ -243,7 +265,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => WoHaengtsChatSheet(questionText: widget.question.question),
+      builder: (_) =>
+          WoHaengtsChatSheet(questionText: widget.question.question),
     );
   }
 
@@ -270,7 +293,9 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId == null) return;
     try {
-      await ref.read(firestoreServiceProvider).addXpAndCoins(userId, xpEarned, coinsEarned);
+      await ref
+          .read(firestoreServiceProvider)
+          .addXpAndCoins(userId, xpEarned, coinsEarned);
     } catch (e) {
       debugPrint('Error updating user stats: $e');
     }
@@ -289,15 +314,18 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     }
   }
 
-  Future<void> _saveProgress(bool isCorrect, int xpEarned, int coinsEarned, {String? userAnswer}) async {
+  Future<void> _saveProgress(bool isCorrect, int xpEarned, int coinsEarned,
+      {String? userAnswer}) async {
     final userId = ref.read(authServiceProvider).currentUser?.uid;
     if (userId == null) return;
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       final progress = QuestionProgress(
         questionId: widget.question.id,
-        sessionId: 'live-feed-${DateTime.now().toIso8601String().substring(0, 10)}',
-        startedAt: DateTime.now().subtract(Duration(seconds: _timeSpentSeconds)),
+        sessionId:
+            'live-feed-${DateTime.now().toIso8601String().substring(0, 10)}',
+        startedAt:
+            DateTime.now().subtract(Duration(seconds: _timeSpentSeconds)),
         completedAt: DateTime.now(),
         status: QuestionStatus.completed,
         hintsUsed: _hintsShown,
@@ -309,7 +337,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         topic: widget.question.topic,
         difficulty: widget.question.difficulty,
       );
-      await firestoreService.saveQuestionProgress(userId: userId, progress: progress);
+      await firestoreService.saveQuestionProgress(
+          userId: userId, progress: progress);
     } catch (e) {
       debugPrint('Error saving question progress: $e');
     }
@@ -329,185 +358,209 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         child: SlideTransition(
           position: _entranceSlide,
           child: AnimatedBuilder(
-        animation: _shakeAnim,
-        builder: (_, child) => Transform.translate(
-          offset: Offset(_shakeAnim.value, 0),
-          child: child,
-        ),
-        child: Stack(
-        children: [
-          // Scrollable content
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              SlamTokens.gutter, 8, SlamTokens.gutter, 80,
+            animation: _shakeAnim,
+            builder: (_, child) => Transform.translate(
+              offset: Offset(_shakeAnim.value, 0),
+              child: child,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: Stack(
               children: [
-              // ── Subject row ──────────────────────────────────────
-              Row(
-                children: [
-                  Container(
-                    width: 6, height: 6,
-                    decoration: BoxDecoration(
-                      color: subjectColor,
-                      shape: BoxShape.circle,
-                    ),
+                // Scrollable content
+                SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    SlamTokens.gutter,
+                    8,
+                    SlamTokens.gutter,
+                    80,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.question.topic.toUpperCase(),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.4,
-                      color: subjectColor,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text('·', style: GoogleFonts.dmSans(fontSize: 11, color: SlamTokens.textDim)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      widget.question.subtopic,
-                      style: GoogleFonts.dmSans(fontSize: 11, color: SlamTokens.textDim, fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: SlamTokens.surfaceHi,
-                      borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                      border: Border.all(color: SlamTokens.line),
-                    ),
-                    child: Text(
-                      '$afb · $timer',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: SlamTokens.textDim,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-
-              // ── Question text ─────────────────────────────────────
-              SelectionContainer.disabled(
-                child: AnimatedDefaultTextStyle(
-                  duration: SlamTokens.dState,
-                  curve: SlamTokens.curveStandard,
-                  style: GoogleFonts.fraunces(
-                    fontSize: _answered ? 17 : 22,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.text,
-                    letterSpacing: -0.4,
-                    height: 1.28,
-                  ),
-                  child: _buildQuestionText(),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // ── Hints cloud ───────────────────────────────────────
-              if (_hintsShown > 0 && !_answered)
-                ...List.generate(_hintsShown, (i) {
-                  if (i >= widget.question.hints.length) return const SizedBox();
-                  final hint = widget.question.hints[i];
-                  return _AnimatedReveal(
-                    key: ValueKey('hint_$i'),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: subjectSoft,
-                          borderRadius: BorderRadius.circular(SlamTokens.rInput),
-                          border: Border.all(color: subjectColor.withValues(alpha: 0.3)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'HINT ${i+1} · ${widget.question.hints.length}',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // ── Subject row ──────────────────────────────────────
+                      Row(
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: subjectColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            widget.question.topic.toUpperCase(),
+                            style: GoogleFonts.dmSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.4,
+                              color: subjectColor,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text('·',
                               style: GoogleFonts.dmSans(
-                                fontSize: 10, fontWeight: FontWeight.w800,
-                                letterSpacing: 0.8, color: subjectColor,
+                                  fontSize: 11, color: SlamTokens.textDim)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              widget.question.subtopic,
+                              style: GoogleFonts.dmSans(
+                                  fontSize: 11,
+                                  color: SlamTokens.textDim,
+                                  fontWeight: FontWeight.w600),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: SlamTokens.surfaceHi,
+                              borderRadius:
+                                  BorderRadius.circular(SlamTokens.rCircle),
+                              border: Border.all(color: SlamTokens.line),
+                            ),
+                            child: Text(
+                              '$afb · $timer',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: SlamTokens.textDim,
+                                letterSpacing: 0.3,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            MathText(hint.text, style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.text)),
-                          ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      // ── Question text ─────────────────────────────────────
+                      SelectionContainer.disabled(
+                        child: AnimatedDefaultTextStyle(
+                          duration: SlamTokens.dState,
+                          curve: SlamTokens.curveStandard,
+                          style: GoogleFonts.fraunces(
+                            fontSize: _answered ? 17 : 22,
+                            fontWeight: FontWeight.w700,
+                            color: SlamTokens.text,
+                            letterSpacing: -0.4,
+                            height: 1.28,
+                          ),
+                          child: _buildQuestionText(),
                         ),
                       ),
-                    ),
-                  );
-                }),
 
-              // ── Options ───────────────────────────────────────────
-              if (widget.question.type == QuestionType.multipleChoice)
-                _buildOptions(subjectColor, subjectSoft),
-              if (widget.question.type == QuestionType.stepByStep)
-                _buildStepByStepArea(),
+                      const SizedBox(height: 16),
 
-              // ── Feedback ──────────────────────────────────────────
-              if (_answered) ...[
-                const SizedBox(height: 16),
-                _AnimatedReveal(
-                  key: ValueKey('feedback_${widget.question.id}'),
-                  child: _buildFeedback(),
+                      // ── Hints cloud ───────────────────────────────────────
+                      if (_hintsShown > 0 && !_answered)
+                        ...List.generate(_hintsShown, (i) {
+                          if (i >= widget.question.hints.length)
+                            return const SizedBox();
+                          final hint = widget.question.hints[i];
+                          return _AnimatedReveal(
+                            key: ValueKey('hint_$i'),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: subjectSoft,
+                                  borderRadius:
+                                      BorderRadius.circular(SlamTokens.rInput),
+                                  border: Border.all(
+                                      color:
+                                          subjectColor.withValues(alpha: 0.3)),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'HINT ${i + 1} · ${widget.question.hints.length}',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.8,
+                                        color: subjectColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    MathText(hint.text,
+                                        style: GoogleFonts.dmSans(
+                                            fontSize: 14,
+                                            color: SlamTokens.text)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+
+                      // ── Options ───────────────────────────────────────────
+                      if (widget.question.type == QuestionType.multipleChoice)
+                        _buildOptions(subjectColor, subjectSoft),
+                      if (widget.question.type == QuestionType.stepByStep)
+                        _buildStepByStepArea(),
+
+                      // ── Feedback ──────────────────────────────────────────
+                      if (_answered) ...[
+                        const SizedBox(height: 16),
+                        _AnimatedReveal(
+                          key: ValueKey('feedback_${widget.question.id}'),
+                          child: _buildFeedback(),
+                        ),
+                        if (!_isCorrect && _showWoHaengtsInput) ...[
+                          const SizedBox(height: 10),
+                          _AnimatedReveal(
+                            key: ValueKey('wohaengts_${widget.question.id}'),
+                            child: _buildWoHaengtsButton(
+                                subjectColor, subjectSoft),
+                          ),
+                        ],
+                      ],
+                    ],
+                  ),
                 ),
-                if (!_isCorrect && _showWoHaengtsInput) ...[
-                  const SizedBox(height: 10),
-                  _AnimatedReveal(
-                    key: ValueKey('wohaengts_${widget.question.id}'),
-                    child: _buildWoHaengtsButton(subjectColor, subjectSoft),
-                  ),
-                ],
-              ],
-            ],
-          ),
-        ),
 
-        // ── Action bar — flush at bottom, directly above nav bar ──
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _buildActionBar(subjectColor),
-        ),
+                // ── Action bar — flush at bottom, directly above nav bar ──
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _buildActionBar(subjectColor),
+                ),
 
-        // ── Wrong-answer red flash ─────────────────────────────────
-        AnimatedBuilder(
-          animation: _redAnim,
-          builder: (_, __) => _redAnim.value > 0
-              ? Positioned.fill(
-                  child: IgnorePointer(
-                    child: Container(
-                      color: SlamTokens.danger.withValues(alpha: _redAnim.value),
+                // ── Wrong-answer red flash ─────────────────────────────────
+                AnimatedBuilder(
+                  animation: _redAnim,
+                  builder: (_, __) => _redAnim.value > 0
+                      ? Positioned.fill(
+                          child: IgnorePointer(
+                            child: Container(
+                              color: SlamTokens.danger
+                                  .withValues(alpha: _redAnim.value),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+
+                // ── Correct-answer burst ───────────────────────────────────
+                if (_showSuccessBurst)
+                  Positioned.fill(
+                    child: _SuccessBurst(
+                      xp: _burstXp,
+                      onComplete: () {
+                        if (mounted) setState(() => _showSuccessBurst = false);
+                      },
                     ),
                   ),
-                )
-              : const SizedBox.shrink(),
-        ),
-
-        // ── Correct-answer burst ───────────────────────────────────
-        if (_showSuccessBurst)
-          Positioned.fill(
-            child: _SuccessBurst(
-              xp: _burstXp,
-              onComplete: () { if (mounted) setState(() => _showSuccessBurst = false); },
+              ],
             ),
-          ),
-      ],
-    ),
           ),
         ),
       ),
@@ -561,7 +614,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     );
   }
 
-  Widget _buildOptionButton(QuestionOption option, Color subjectColor, Color subjectSoft) {
+  Widget _buildOptionButton(
+      QuestionOption option, Color subjectColor, Color subjectSoft) {
     final isSelected = _selectedOptionId == option.id;
 
     Color bg, border, textColor;
@@ -575,7 +629,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       bg = SlamTokens.surface;
       border = isSelected ? subjectColor : SlamTokens.line;
       textColor = SlamTokens.text;
-      badgeBg = isSelected ? subjectColor : SlamTokens.text.withValues(alpha: 0.06);
+      badgeBg =
+          isSelected ? subjectColor : SlamTokens.text.withValues(alpha: 0.06);
       badgeFg = isSelected ? SlamTokens.primaryOn : SlamTokens.textDim;
     } else if (option.isCorrect) {
       bg = SlamTokens.successSoft;
@@ -627,13 +682,16 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 AnimatedContainer(
                   duration: SlamTokens.dState,
                   curve: SlamTokens.curveStandard,
-                  width: 34, height: 34,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
                     color: badgeBg,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   alignment: Alignment.center,
-                  child: _answered && (option.isCorrect || (isSelected && !option.isCorrect))
+                  child: _answered &&
+                          (option.isCorrect ||
+                              (isSelected && !option.isCorrect))
                       ? Icon(
                           option.isCorrect ? Icons.check : Icons.close,
                           size: 18,
@@ -642,7 +700,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                       : Text(
                           option.id,
                           style: GoogleFonts.fraunces(
-                            fontSize: 14, fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
                             color: badgeFg,
                           ),
                         ),
@@ -669,30 +728,36 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           if (part.isEmpty) return const SizedBox.shrink();
           if (index % 2 == 1) {
             try {
-              return Math.tex(part, textStyle: TextStyle(color: textColor, fontSize: 16));
+              return Math.tex(part,
+                  textStyle: TextStyle(color: textColor, fontSize: 16));
             } catch (_) {
               return Text(part, style: TextStyle(color: textColor));
             }
           }
           return Text(
             part,
-            style: GoogleFonts.dmSans(fontSize: 16, color: textColor, fontWeight: FontWeight.w500),
+            style: GoogleFonts.dmSans(
+                fontSize: 16, color: textColor, fontWeight: FontWeight.w500),
           );
         }),
       );
     }
-    return Text(text, style: GoogleFonts.dmSans(fontSize: 16, color: textColor, fontWeight: FontWeight.w500));
+    return Text(text,
+        style: GoogleFonts.dmSans(
+            fontSize: 16, color: textColor, fontWeight: FontWeight.w500));
   }
 
   Widget _buildFeedback() {
     final feedbackColor = _isCorrect ? SlamTokens.success : SlamTokens.danger;
-    final feedbackSoft = _isCorrect ? SlamTokens.successSoft : SlamTokens.dangerSoft;
+    final feedbackSoft =
+        _isCorrect ? SlamTokens.successSoft : SlamTokens.dangerSoft;
 
     String feedbackText;
     if (_isCorrect) {
       feedbackText = widget.question.correctFeedback ?? 'Richtig! Gut gemacht.';
     } else {
-      feedbackText = widget.question.incorrectFeedback ?? 'Leider nicht richtig.';
+      feedbackText =
+          widget.question.incorrectFeedback ?? 'Leider nicht richtig.';
     }
 
     return Container(
@@ -700,7 +765,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       decoration: BoxDecoration(
         color: feedbackSoft,
         borderRadius: BorderRadius.circular(SlamTokens.rCardSm),
-        border: Border.all(color: feedbackColor.withValues(alpha: 0.5), width: 1.5),
+        border:
+            Border.all(color: feedbackColor.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -708,24 +774,30 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           Row(
             children: [
               Container(
-                width: 34, height: 34,
-                decoration: BoxDecoration(color: feedbackColor, shape: BoxShape.circle),
+                width: 34,
+                height: 34,
+                decoration:
+                    BoxDecoration(color: feedbackColor, shape: BoxShape.circle),
                 alignment: Alignment.center,
-                child: Icon(_isCorrect ? Icons.check : Icons.close, size: 18, color: Colors.white),
+                child: Icon(_isCorrect ? Icons.check : Icons.close,
+                    size: 18, color: Colors.white),
               ),
               const SizedBox(width: 10),
               Text(
                 _isCorrect ? 'Stark gelöst!' : 'Knapp daneben',
                 style: GoogleFonts.fraunces(
-                  fontSize: 17, fontWeight: FontWeight.w700,
-                  color: feedbackColor, letterSpacing: -0.2,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: feedbackColor,
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(feedbackText,
-              style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.text, height: 1.55)),
+              style: GoogleFonts.dmSans(
+                  fontSize: 14, color: SlamTokens.text, height: 1.55)),
           if (!_isCorrect) ...[
             const SizedBox(height: 10),
             Container(
@@ -738,11 +810,15 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Lösung: ',
-                      style: GoogleFonts.dmSans(fontSize: 13, fontWeight: FontWeight.w700, color: SlamTokens.text)),
+                      style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: SlamTokens.text)),
                   Expanded(
                     child: MathText(
                       widget.question.solution,
-                      style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
+                      style: GoogleFonts.dmSans(
+                          fontSize: 13, color: SlamTokens.textDim),
                     ),
                   ),
                 ],
@@ -770,19 +846,26 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         child: Row(
           children: [
             Container(
-              width: 30, height: 30,
-              decoration: BoxDecoration(color: subjectSoft, shape: BoxShape.circle),
+              width: 30,
+              height: 30,
+              decoration:
+                  BoxDecoration(color: subjectSoft, shape: BoxShape.circle),
               alignment: Alignment.center,
-              child: Icon(Icons.chat_bubble_outline, size: 16, color: subjectColor),
+              child: Icon(Icons.chat_bubble_outline,
+                  size: 16, color: subjectColor),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Wo hängts? Frag die KI',
-                style: GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w600, color: SlamTokens.text),
+                style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: SlamTokens.text),
               ),
             ),
-            const Icon(Icons.chevron_right, size: 16, color: SlamTokens.textDim),
+            const Icon(Icons.chevron_right,
+                size: 16, color: SlamTokens.textDim),
           ],
         ),
       ),
@@ -797,7 +880,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
         color: SlamTokens.bg,
         border: Border(top: BorderSide(color: SlamTokens.line)),
       ),
-      padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 10, SlamTokens.gutter, 12),
+      padding: const EdgeInsets.fromLTRB(
+          SlamTokens.gutter, 10, SlamTokens.gutter, 12),
       child: _answered
           ? _AnimatedReveal(
               key: ValueKey('actionbar_answered_${widget.question.id}'),
@@ -818,14 +902,20 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                       Text(
                         'Nächste Frage',
                         style: GoogleFonts.dmSans(
-                          fontSize: 15, fontWeight: FontWeight.w800,
-                          color: _isCorrect ? SlamTokens.successBgDark : SlamTokens.primaryOn,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: _isCorrect
+                              ? SlamTokens.successBgDark
+                              : SlamTokens.primaryOn,
                           letterSpacing: -0.1,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.arrow_forward, size: 18,
-                          color: _isCorrect ? SlamTokens.successBgDark : SlamTokens.primaryOn),
+                      Icon(Icons.arrow_forward,
+                          size: 18,
+                          color: _isCorrect
+                              ? SlamTokens.successBgDark
+                              : SlamTokens.primaryOn),
                     ],
                   ),
                 ),
@@ -838,7 +928,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                   onTap: canHint ? _revealHint : null,
                   child: AnimatedContainer(
                     duration: SlamTokens.dState,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: _hintsShown > 0
                           ? subjectColor.withValues(alpha: 0.12)
@@ -847,8 +938,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.lightbulb_outline, size: 16,
-                            color: canHint ? subjectColor : SlamTokens.textMute),
+                        Icon(Icons.lightbulb_outline,
+                            size: 16,
+                            color:
+                                canHint ? subjectColor : SlamTokens.textMute),
                         const SizedBox(width: 6),
                         Text(
                           _hintsShown == 0
@@ -857,7 +950,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                                   ? '$_hintsShown/${widget.question.hints.length}'
                                   : 'Max',
                           style: GoogleFonts.dmSans(
-                            fontSize: 13, fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             color: canHint ? subjectColor : SlamTokens.textMute,
                           ),
                         ),
@@ -872,7 +966,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                     'Tippe auf eine Antwort',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.dmSans(
-                        fontSize: 12, color: SlamTokens.textDim, fontWeight: FontWeight.w600, letterSpacing: 0.3),
+                        fontSize: 12,
+                        color: SlamTokens.textDim,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3),
                   ),
                 ),
 
@@ -880,13 +977,18 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 GestureDetector(
                   onTap: _skipToNext,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
                     child: Row(
                       children: [
-                        Text('Überspringen', style: GoogleFonts.dmSans(
-                            fontSize: 13, fontWeight: FontWeight.w700, color: SlamTokens.textDim)),
+                        Text('Überspringen',
+                            style: GoogleFonts.dmSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: SlamTokens.textDim)),
                         const SizedBox(width: 4),
-                        const Icon(Icons.skip_next, size: 14, color: SlamTokens.textDim),
+                        const Icon(Icons.skip_next,
+                            size: 14, color: SlamTokens.textDim),
                       ],
                     ),
                   ),
@@ -899,7 +1001,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
   // ── Step-by-step (unchanged logic, minimal styling update) ──────────────────
   Widget _buildStepByStepArea() {
     final stepData = widget.question.stepByStepData;
-    if (stepData == null) return _buildOptions(SlamTokens.primary, SlamTokens.primarySoft);
+    if (stepData == null)
+      return _buildOptions(SlamTokens.primary, SlamTokens.primarySoft);
 
     if (stepData.type == 'sort-steps') {
       return _buildSortableSteps(stepData);
@@ -912,7 +1015,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Bringe die Schritte in die richtige Reihenfolge:',
-            style: GoogleFonts.dmSans(color: SlamTokens.textDim, fontWeight: FontWeight.w500)),
+            style: GoogleFonts.dmSans(
+                color: SlamTokens.textDim, fontWeight: FontWeight.w500)),
         const SizedBox(height: 12),
         ReorderableListView(
           shrinkWrap: true,
@@ -940,34 +1044,48 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: _answered
-                    ? isCorrectPosition ? SlamTokens.successSoft : SlamTokens.dangerSoft
+                    ? isCorrectPosition
+                        ? SlamTokens.successSoft
+                        : SlamTokens.dangerSoft
                     : SlamTokens.surface,
                 borderRadius: BorderRadius.circular(SlamTokens.rOption),
                 border: Border.all(
                   color: _answered
-                      ? isCorrectPosition ? SlamTokens.success : SlamTokens.danger
+                      ? isCorrectPosition
+                          ? SlamTokens.success
+                          : SlamTokens.danger
                       : SlamTokens.line,
                 ),
               ),
               child: Row(
                 children: [
-                  if (!_answered) const Icon(Icons.drag_handle, color: SlamTokens.textDim),
-                  if (_answered) Icon(
-                    isCorrectPosition ? Icons.check_circle : Icons.cancel,
-                    color: isCorrectPosition ? SlamTokens.success : SlamTokens.danger,
-                    size: 20,
-                  ),
+                  if (!_answered)
+                    const Icon(Icons.drag_handle, color: SlamTokens.textDim),
+                  if (_answered)
+                    Icon(
+                      isCorrectPosition ? Icons.check_circle : Icons.cancel,
+                      color: isCorrectPosition
+                          ? SlamTokens.success
+                          : SlamTokens.danger,
+                      size: 20,
+                    ),
                   const SizedBox(width: 12),
                   Container(
-                    width: 28, height: 28,
-                    decoration: BoxDecoration(color: SlamTokens.surfaceHi, shape: BoxShape.circle),
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                        color: SlamTokens.surfaceHi, shape: BoxShape.circle),
                     alignment: Alignment.center,
                     child: Text('${index + 1}',
-                        style: GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w700, color: SlamTokens.textDim)),
+                        style: GoogleFonts.dmSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: SlamTokens.textDim)),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(child: MathText(step.text,
-                      style: GoogleFonts.dmSans(color: SlamTokens.text))),
+                  Expanded(
+                      child: MathText(step.text,
+                          style: GoogleFonts.dmSans(color: SlamTokens.text))),
                 ],
               ),
             );
@@ -1006,7 +1124,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Was ist der nächste Schritt?',
-            style: GoogleFonts.dmSans(color: SlamTokens.textDim, fontWeight: FontWeight.w500)),
+            style: GoogleFonts.dmSans(
+                color: SlamTokens.textDim, fontWeight: FontWeight.w500)),
         const SizedBox(height: 12),
         ...stepData.steps.map((step) {
           final isSelected = _selectedOptionId == step.id;
@@ -1015,30 +1134,41 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
           Color bg = SlamTokens.surface, border = SlamTokens.line;
           if (_answered) {
-            if (isCorrectStep) { bg = SlamTokens.successSoft; border = SlamTokens.success; }
-            else if (isSelected) { bg = SlamTokens.dangerSoft; border = SlamTokens.danger; }
+            if (isCorrectStep) {
+              bg = SlamTokens.successSoft;
+              border = SlamTokens.success;
+            } else if (isSelected) {
+              bg = SlamTokens.dangerSoft;
+              border = SlamTokens.danger;
+            }
           }
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: GestureDetector(
-              onTap: _answered ? null : () {
-                setState(() {
-                  _selectedOptionId = step.id;
-                  _answered = true;
-                  _isCorrect = isCorrectStep;
-                });
-                _questionTimer?.cancel();
-                _processAnswer(_isCorrect, step.id);
-              },
+              onTap: _answered
+                  ? null
+                  : () {
+                      setState(() {
+                        _selectedOptionId = step.id;
+                        _answered = true;
+                        _isCorrect = isCorrectStep;
+                      });
+                      _questionTimer?.cancel();
+                      _processAnswer(_isCorrect, step.id);
+                    },
               child: AnimatedContainer(
                 duration: SlamTokens.dState,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: bg, borderRadius: BorderRadius.circular(SlamTokens.rOption),
+                  color: bg,
+                  borderRadius: BorderRadius.circular(SlamTokens.rOption),
                   border: Border.all(color: border),
                 ),
-                child: MathText(step.text, style: GoogleFonts.dmSans(fontSize: 16, color: SlamTokens.text)),
+                child: MathText(step.text,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 16, color: SlamTokens.text)),
               ),
             ),
           );
@@ -1094,14 +1224,15 @@ class _SuccessBurstState extends State<_SuccessBurst>
   @override
   void initState() {
     super.initState();
-    _particleCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 800))..forward();
-    _checkCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 380));
-    _xpCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 700));
-    _fadeCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 300));
+    _particleCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800))
+      ..forward();
+    _checkCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 380));
+    _xpCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 700));
+    _fadeCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
 
     Future.delayed(const Duration(milliseconds: 80), () {
       if (mounted) _checkCtrl.forward();
@@ -1168,17 +1299,22 @@ class _SuccessBurstState extends State<_SuccessBurst>
                 return Transform.scale(
                   scale: t,
                   child: Container(
-                    width: 64, height: 64,
+                    width: 64,
+                    height: 64,
                     decoration: BoxDecoration(
                       color: SlamTokens.success,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(
-                        color: SlamTokens.success.withValues(alpha: 0.55),
-                        blurRadius: 24, spreadRadius: 2,
-                      )],
+                      boxShadow: [
+                        BoxShadow(
+                          color: SlamTokens.success.withValues(alpha: 0.55),
+                          blurRadius: 24,
+                          spreadRadius: 2,
+                        )
+                      ],
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 34),
+                    child: const Icon(Icons.check_rounded,
+                        color: Colors.white, size: 34),
                   ),
                 );
               },
@@ -1190,24 +1326,31 @@ class _SuccessBurstState extends State<_SuccessBurst>
                 animation: _xpCtrl,
                 builder: (_, __) {
                   final t = Curves.easeOut.transform(_xpCtrl.value);
-                  final opacity = _xpCtrl.value < 0.75 ? 1.0 : (1 - _xpCtrl.value) / 0.25;
+                  final opacity =
+                      _xpCtrl.value < 0.75 ? 1.0 : (1 - _xpCtrl.value) / 0.25;
                   return Transform.translate(
                     offset: Offset(0, 44 - t * 90),
                     child: Opacity(
                       opacity: opacity.clamp(0.0, 1.0),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 7),
                         decoration: BoxDecoration(
                           color: SlamTokens.primary,
-                          borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                          boxShadow: [BoxShadow(
-                            color: SlamTokens.primary.withValues(alpha: 0.55),
-                            blurRadius: 16, offset: const Offset(0, 4),
-                          )],
+                          borderRadius:
+                              BorderRadius.circular(SlamTokens.rCircle),
+                          boxShadow: [
+                            BoxShadow(
+                              color: SlamTokens.primary.withValues(alpha: 0.55),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
                         ),
                         child: Text('+${widget.xp} XP',
                             style: GoogleFonts.fraunces(
-                                fontSize: 15, fontWeight: FontWeight.w800,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
                                 color: SlamTokens.primaryOn)),
                       ),
                     ),

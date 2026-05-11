@@ -42,7 +42,8 @@ class AuthService {
       if (!isValidEmail(email)) {
         throw AuthException(
           code: 'invalid-domain',
-          message: 'Nur E-Mail-Adressen mit der Domain $allowedDomain sind erlaubt.',
+          message:
+              'Nur E-Mail-Adressen mit der Domain $allowedDomain sind erlaubt.',
         );
       }
 
@@ -93,7 +94,8 @@ class AuthService {
       if (!user.emailVerified) {
         throw AuthException(
           code: 'email-not-verified',
-          message: 'Bitte verifiziere deine E-Mail-Adresse, bevor du dich anmeldest.',
+          message:
+              'Bitte verifiziere deine E-Mail-Adresse, bevor du dich anmeldest.',
         );
       }
 
@@ -260,7 +262,8 @@ class AuthService {
       case 'weak-password':
         return AuthException(
           code: e.code,
-          message: 'Das Passwort ist zu schwach. Bitte wähle ein stärkeres Passwort.',
+          message:
+              'Das Passwort ist zu schwach. Bitte wähle ein stärkeres Passwort.',
         );
       case 'invalid-email':
         return AuthException(

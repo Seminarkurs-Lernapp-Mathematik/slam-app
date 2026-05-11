@@ -15,11 +15,11 @@ class UserSettings {
   // Education
   final String gradeLevel;
   final String courseType;
-  
+
   // Theme
   final String themeName;
   final String primaryColor;
-  
+
   // Timestamps
   final DateTime? lastSyncedAt;
   final DateTime createdAt;
@@ -42,36 +42,36 @@ class UserSettings {
       courseType: json['courseType'] ?? 'Leistungsfach',
       themeName: json['themeName'] ?? 'Sunset',
       primaryColor: json['primaryColor'] ?? '#f97316',
-      lastSyncedAt: json['lastSyncedAt'] != null 
-          ? DateTime.parse(json['lastSyncedAt']) 
+      lastSyncedAt: json['lastSyncedAt'] != null
+          ? DateTime.parse(json['lastSyncedAt'])
           : null,
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'gradeLevel': gradeLevel,
-    'courseType': courseType,
-    'themeName': themeName,
-    'primaryColor': primaryColor,
-    'lastSyncedAt': lastSyncedAt?.toIso8601String(),
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': DateTime.now().toIso8601String(),
-  };
+        'gradeLevel': gradeLevel,
+        'courseType': courseType,
+        'themeName': themeName,
+        'primaryColor': primaryColor,
+        'lastSyncedAt': lastSyncedAt?.toIso8601String(),
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
 
   Map<String, dynamic> toRemoteJson() => {
-    'gradeLevel': gradeLevel,
-    'courseType': courseType,
-    'theme': {
-      'name': themeName,
-      'primary': primaryColor,
-    },
-  };
+        'gradeLevel': gradeLevel,
+        'courseType': courseType,
+        'theme': {
+          'name': themeName,
+          'primary': primaryColor,
+        },
+      };
 
   UserSettings copyWith({
     String? gradeLevel,
@@ -154,7 +154,8 @@ class SettingsRepository with RepositoryCache<UserSettings, String> {
     );
   }
 
-  Future<Result<UserSettings, AppError>> saveSettings(UserSettings settings) async {
+  Future<Result<UserSettings, AppError>> saveSettings(
+      UserSettings settings) async {
     // Always save locally first
     final localResult = await _local.cacheSettings(_userId, settings.toJson());
     if (localResult.isFailure) {
@@ -165,11 +166,13 @@ class SettingsRepository with RepositoryCache<UserSettings, String> {
     putInCache(_userId, settings);
 
     // Try to sync to remote
-    final remoteResult = await _remote.updateSettings(_userId, settings.toRemoteJson());
-    
+    final remoteResult =
+        await _remote.updateSettings(_userId, settings.toRemoteJson());
+
     return remoteResult.map(
       success: (_) => Success(settings.copyWith(lastSyncedAt: DateTime.now())),
-      failure: (error) => Success(settings), // Return local version on sync failure
+      failure: (error) =>
+          Success(settings), // Return local version on sync failure
     );
   }
 
@@ -180,7 +183,7 @@ class SettingsRepository with RepositoryCache<UserSettings, String> {
     String? primaryColor,
   }) async {
     final currentResult = await getSettings();
-    
+
     return currentResult.map(
       success: (current) async {
         final updated = current.copyWith(
@@ -217,7 +220,7 @@ class SettingsRepository with RepositoryCache<UserSettings, String> {
 
   Future<Result<void, AppError>> sync() async {
     final remoteResult = await _remote.getSettings(_userId);
-    
+
     return remoteResult.map(
       success: (data) async {
         if (data != null) {
@@ -298,7 +301,8 @@ class SettingsNotifier extends _$SettingsNotifier {
 
     // After update, reload settings
     if (result.isSuccess) {
-      final getResult = await ref.read(settingsRepositoryProvider).getSettings();
+      final getResult =
+          await ref.read(settingsRepositoryProvider).getSettings();
       state = AsyncValue.data(getResult.getOrElse(UserSettings()));
     } else if (result.isFailure) {
       state = AsyncValue.error(result.failureOrNull!, StackTrace.current);
@@ -338,5 +342,6 @@ LocalDataSource localDataSource(Ref ref) {
 RemoteDataSource remoteDataSource(Ref ref) {
   // This needs to be initialized with FirebaseFirestore instance
   // Will be connected in the main app initialization
-  throw UnimplementedError('RemoteDataSource must be initialized with FirebaseFirestore');
+  throw UnimplementedError(
+      'RemoteDataSource must be initialized with FirebaseFirestore');
 }

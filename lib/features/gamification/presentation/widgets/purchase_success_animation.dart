@@ -181,7 +181,8 @@ class _PurchaseSuccessAnimationState extends State<PurchaseSuccessAnimation>
             animation: _fadeAnimation,
             builder: (context, child) {
               return Container(
-                color: Colors.black.withValues(alpha: 0.3 * _fadeAnimation.value),
+                color:
+                    Colors.black.withValues(alpha: 0.3 * _fadeAnimation.value),
               );
             },
           ),
@@ -239,8 +240,8 @@ class _PurchaseSuccessAnimationState extends State<PurchaseSuccessAnimation>
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color:
-                                theme.colorScheme.primary.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -377,7 +378,8 @@ class _ConfettiPainter extends CustomPainter {
           break;
         case 1: // Rectangle
           canvas.drawRect(
-            Rect.fromCenter(center: Offset.zero, width: c.size, height: c.size / 2),
+            Rect.fromCenter(
+                center: Offset.zero, width: c.size, height: c.size / 2),
             paint,
           );
           break;

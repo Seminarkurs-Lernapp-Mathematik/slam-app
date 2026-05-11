@@ -13,7 +13,8 @@ class ContentLibraryScreen extends ConsumerStatefulWidget {
   const ContentLibraryScreen({super.key});
 
   @override
-  ConsumerState<ContentLibraryScreen> createState() => _ContentLibraryScreenState();
+  ConsumerState<ContentLibraryScreen> createState() =>
+      _ContentLibraryScreenState();
 }
 
 class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
@@ -30,7 +31,8 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
           child: contentAsync.when(
             data: (content) {
               if (content.isEmpty) {
-                return _EmptyState(hasFilter: currentFilter != null || searchQuery.isNotEmpty);
+                return _EmptyState(
+                    hasFilter: currentFilter != null || searchQuery.isNotEmpty);
               }
               return ListView.separated(
                 padding: const EdgeInsets.all(SlamTokens.gutter),
@@ -43,12 +45,14 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
                 ),
               );
             },
-            loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+            loading: () => Center(
+                child: CircularProgressIndicator(color: SlamTokens.primary)),
             error: (error, _) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: SlamTokens.danger),
+                  const Icon(Icons.error_outline,
+                      size: 48, color: SlamTokens.danger),
                   const SizedBox(height: 16),
                   Text('Fehler: $error',
                       style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
@@ -74,7 +78,8 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
             style: GoogleFonts.dmSans(color: SlamTokens.text, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Inhalte durchsuchen...',
-              hintStyle: GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
+              hintStyle:
+                  GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
               filled: true,
               fillColor: SlamTokens.bgElev,
               border: OutlineInputBorder(
@@ -89,29 +94,42 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
                 borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
                 borderSide: BorderSide(color: SlamTokens.primary, width: 1.5),
               ),
-              prefixIcon: const Icon(Icons.search, color: SlamTokens.textDim, size: 20),
+              prefixIcon:
+                  const Icon(Icons.search, color: SlamTokens.textDim, size: 20),
               suffixIcon: searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, size: 18, color: SlamTokens.textDim),
-                      onPressed: () => ref.read(searchQueryProvider.notifier).clear(),
+                      icon: const Icon(Icons.clear,
+                          size: 18, color: SlamTokens.textDim),
+                      onPressed: () =>
+                          ref.read(searchQueryProvider.notifier).clear(),
                     )
                   : null,
             ),
-            onChanged: (v) => ref.read(searchQueryProvider.notifier).setQuery(v),
+            onChanged: (v) =>
+                ref.read(searchQueryProvider.notifier).setQuery(v),
           ),
           const SizedBox(height: 12),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _FilterPill('Alle', selected: currentFilter == null,
-                    onTap: () => ref.read(contentTypeFilterProvider.notifier).setFilter(null)),
+                _FilterPill('Alle',
+                    selected: currentFilter == null,
+                    onTap: () => ref
+                        .read(contentTypeFilterProvider.notifier)
+                        .setFilter(null)),
                 const SizedBox(width: 8),
-                _FilterPill('Simulationen', selected: currentFilter == ContentType.miniApp,
-                    onTap: () => ref.read(contentTypeFilterProvider.notifier).setFilter(ContentType.miniApp)),
+                _FilterPill('Simulationen',
+                    selected: currentFilter == ContentType.miniApp,
+                    onTap: () => ref
+                        .read(contentTypeFilterProvider.notifier)
+                        .setFilter(ContentType.miniApp)),
                 const SizedBox(width: 8),
-                _FilterPill('GeoGebra', selected: currentFilter == ContentType.geogebra,
-                    onTap: () => ref.read(contentTypeFilterProvider.notifier).setFilter(ContentType.geogebra)),
+                _FilterPill('GeoGebra',
+                    selected: currentFilter == ContentType.geogebra,
+                    onTap: () => ref
+                        .read(contentTypeFilterProvider.notifier)
+                        .setFilter(ContentType.geogebra)),
               ],
             ),
           ),
@@ -132,7 +150,8 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: SlamTokens.surface,
         title: Text('Inhalt löschen?',
-            style: GoogleFonts.fraunces(fontWeight: FontWeight.w700, color: SlamTokens.text)),
+            style: GoogleFonts.fraunces(
+                fontWeight: FontWeight.w700, color: SlamTokens.text)),
         content: Text(
           'Möchtest du "${content.title}" wirklich löschen?',
           style: GoogleFonts.dmSans(color: SlamTokens.textDim),
@@ -140,11 +159,14 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Abbrechen', style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
+            child: Text('Abbrechen',
+                style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('Löschen', style: GoogleFonts.dmSans(color: SlamTokens.danger, fontWeight: FontWeight.w700)),
+            child: Text('Löschen',
+                style: GoogleFonts.dmSans(
+                    color: SlamTokens.danger, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -155,7 +177,8 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gelöscht', style: GoogleFonts.dmSans(color: SlamTokens.primaryOn)),
+            content: Text('Gelöscht',
+                style: GoogleFonts.dmSans(color: SlamTokens.primaryOn)),
             backgroundColor: SlamTokens.surface,
           ),
         );
@@ -164,7 +187,8 @@ class _ContentLibraryScreenState extends ConsumerState<ContentLibraryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Fehler: $e', style: GoogleFonts.dmSans(color: SlamTokens.primaryOn)),
+            content: Text('Fehler: $e',
+                style: GoogleFonts.dmSans(color: SlamTokens.primaryOn)),
             backgroundColor: SlamTokens.danger,
           ),
         );
@@ -189,11 +213,14 @@ class _FilterPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? SlamTokens.primary : SlamTokens.bgElev,
           borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-          border: Border.all(color: selected ? SlamTokens.primary : SlamTokens.line),
+          border: Border.all(
+              color: selected ? SlamTokens.primary : SlamTokens.line),
         ),
-        child: Text(label, style: GoogleFonts.dmSans(
-            fontSize: 13, fontWeight: FontWeight.w600,
-            color: selected ? SlamTokens.primaryOn : SlamTokens.textDim)),
+        child: Text(label,
+            style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected ? SlamTokens.primaryOn : SlamTokens.textDim)),
       ),
     );
   }
@@ -208,19 +235,27 @@ class _ContentRow extends StatelessWidget {
 
   static IconData _typeIcon(ContentType t) {
     switch (t) {
-      case ContentType.miniApp: return Icons.auto_awesome;
-      case ContentType.geogebra: return Icons.functions;
-      case ContentType.simulation: return Icons.science;
-      case ContentType.chat: return Icons.chat_bubble_outline;
+      case ContentType.miniApp:
+        return Icons.auto_awesome;
+      case ContentType.geogebra:
+        return Icons.functions;
+      case ContentType.simulation:
+        return Icons.science;
+      case ContentType.chat:
+        return Icons.chat_bubble_outline;
     }
   }
 
   static Color _typeColor(ContentType t) {
     switch (t) {
-      case ContentType.miniApp: return SlamTokens.primary;
-      case ContentType.geogebra: return SlamTokens.accentBlueLight;
-      case ContentType.simulation: return SlamTokens.accentGreenLight;
-      case ContentType.chat: return SlamTokens.accentTeal;
+      case ContentType.miniApp:
+        return SlamTokens.primary;
+      case ContentType.geogebra:
+        return SlamTokens.accentBlueLight;
+      case ContentType.simulation:
+        return SlamTokens.accentGreenLight;
+      case ContentType.chat:
+        return SlamTokens.accentTeal;
     }
   }
 
@@ -254,8 +289,7 @@ class _ContentRow extends StatelessWidget {
                 borderRadius: const BorderRadius.horizontal(
                     left: Radius.circular(SlamTokens.rCardMd)),
                 border: Border(
-                    right: BorderSide(
-                        color: color.withValues(alpha: 0.18))),
+                    right: BorderSide(color: color.withValues(alpha: 0.18))),
               ),
               alignment: Alignment.center,
               child: Icon(_typeIcon(content.type), size: 26, color: color),
@@ -299,8 +333,7 @@ class _ContentRow extends StatelessWidget {
                         Text(
                           _formatDate(content.createdAt),
                           style: GoogleFonts.dmSans(
-                              fontSize: 11,
-                              color: SlamTokens.textDim),
+                              fontSize: 11, color: SlamTokens.textDim),
                         ),
                       ],
                     ),
@@ -386,7 +419,10 @@ class _ContentViewerState extends State<_ContentViewer> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(widget.content.title,
-            style: GoogleFonts.fraunces(fontSize: 18, fontWeight: FontWeight.w700, color: SlamTokens.text)),
+            style: GoogleFonts.fraunces(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text)),
         actions: [
           IconButton(
             icon: const Icon(Icons.code, color: SlamTokens.textDim),
@@ -397,7 +433,8 @@ class _ContentViewerState extends State<_ContentViewer> {
       ),
       body: CrossPlatformWebView(
         htmlContent: _buildFullHTML(),
-        onPageFinished: () => debugPrint('✅ Content loaded: ${widget.content.title}'),
+        onPageFinished: () =>
+            debugPrint('✅ Content loaded: ${widget.content.title}'),
       ),
     );
   }

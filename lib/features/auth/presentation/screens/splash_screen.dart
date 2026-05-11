@@ -125,7 +125,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     center: Alignment.center,
                     radius: 0.7,
                     colors: [
-                      SlamTokens.primary.withValues(alpha: _logoCtrl.value * 0.08),
+                      SlamTokens.primary
+                          .withValues(alpha: _logoCtrl.value * 0.08),
                       Colors.transparent,
                     ],
                   ),
@@ -153,7 +154,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             borderRadius: BorderRadius.circular(26),
                             boxShadow: [
                               BoxShadow(
-                                color: SlamTokens.primary.withValues(alpha: 0.45),
+                                color:
+                                    SlamTokens.primary.withValues(alpha: 0.45),
                                 blurRadius: 36,
                                 offset: const Offset(0, 12),
                                 spreadRadius: -4,

@@ -27,19 +27,27 @@ class ShopScreen extends ConsumerWidget {
       backgroundColor: SlamTokens.bg,
       body: userStatsAsync.when(
         data: (stats) => themeUnlocksAsync.when(
-          data: (unlocks) => _ShopBody(stats: stats, unlocks: unlocks, userId: userId),
-          loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
-          error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
+          data: (unlocks) =>
+              _ShopBody(stats: stats, unlocks: unlocks, userId: userId),
+          loading: () => Center(
+              child: CircularProgressIndicator(color: SlamTokens.primary)),
+          error: (e, _) => Center(
+              child: Text('Fehler: $e',
+                  style: const TextStyle(color: SlamTokens.danger))),
         ),
-        loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
-        error: (e, _) => Center(child: Text('Fehler: $e', style: const TextStyle(color: SlamTokens.danger))),
+        loading: () =>
+            Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        error: (e, _) => Center(
+            child: Text('Fehler: $e',
+                style: const TextStyle(color: SlamTokens.danger))),
       ),
     );
   }
 }
 
 class _ShopBody extends ConsumerWidget {
-  const _ShopBody({required this.stats, required this.unlocks, required this.userId});
+  const _ShopBody(
+      {required this.stats, required this.unlocks, required this.userId});
   final UserStats stats;
   final ThemeUnlocks unlocks;
   final String userId;
@@ -51,9 +59,9 @@ class _ShopBody extends ConsumerWidget {
       slivers: [
         SliverToBoxAdapter(child: _ShopHeader(coins: stats.coins)),
         SliverToBoxAdapter(child: _AnimatedSectionLabel('THEMES', delay: 100)),
-
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 18),
+          padding: const EdgeInsets.fromLTRB(
+              SlamTokens.gutter, 0, SlamTokens.gutter, 18),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 190,
@@ -80,11 +88,11 @@ class _ShopBody extends ConsumerWidget {
             ),
           ),
         ),
-
-        SliverToBoxAdapter(child: _AnimatedSectionLabel('POWER-UPS', delay: 300)),
-
+        SliverToBoxAdapter(
+            child: _AnimatedSectionLabel('POWER-UPS', delay: 300)),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 0, SlamTokens.gutter, 32),
+          padding: const EdgeInsets.fromLTRB(
+              SlamTokens.gutter, 0, SlamTokens.gutter, 32),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               _AnimatedPowerUpRow(
@@ -94,7 +102,8 @@ class _ShopBody extends ConsumerWidget {
                 title: 'Streak-Freeze',
                 subtitle: 'Power-Up',
                 cost: 80,
-                onBuy: () => _purchaseStreakFreezeWithCoins(context, ref, userId, stats),
+                onBuy: () =>
+                    _purchaseStreakFreezeWithCoins(context, ref, userId, stats),
               ),
               const SizedBox(height: 8),
               _AnimatedPowerUpRow(
@@ -105,7 +114,8 @@ class _ShopBody extends ConsumerWidget {
                 subtitle: '100 XP Kosten',
                 cost: 0,
                 costLabel: '100 XP',
-                onBuy: () => _purchaseStreakFreezeWithXP(context, ref, userId, stats),
+                onBuy: () =>
+                    _purchaseStreakFreezeWithXP(context, ref, userId, stats),
               ),
             ]),
           ),
@@ -114,14 +124,15 @@ class _ShopBody extends ConsumerWidget {
     );
   }
 
-  Future<void> _purchaseTheme(
-      BuildContext context, WidgetRef ref, AppThemePreset preset, int price) async {
+  Future<void> _purchaseTheme(BuildContext context, WidgetRef ref,
+      AppThemePreset preset, int price) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: SlamTokens.surface,
         title: Text('${ThemePricing.getName(preset)} kaufen?',
-            style: GoogleFonts.fraunces(color: SlamTokens.text, fontWeight: FontWeight.w700)),
+            style: GoogleFonts.fraunces(
+                color: SlamTokens.text, fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,17 +141,21 @@ class _ShopBody extends ConsumerWidget {
                 style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
             const SizedBox(height: 16),
             Row(children: [
-              const Icon(Icons.monetization_on, color: SlamTokens.warn, size: 18),
+              const Icon(Icons.monetization_on,
+                  color: SlamTokens.warn, size: 18),
               const SizedBox(width: 8),
               Text('$price Münzen',
-                  style: GoogleFonts.dmSans(fontWeight: FontWeight.w700, color: SlamTokens.text)),
+                  style: GoogleFonts.dmSans(
+                      fontWeight: FontWeight.w700, color: SlamTokens.text)),
             ]),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
               child: const Text('Abbrechen')),
-          FilledButton(onPressed: () => Navigator.pop(context, true),
+          FilledButton(
+              onPressed: () => Navigator.pop(context, true),
               child: const Text('Kaufen')),
         ],
       ),
@@ -148,73 +163,110 @@ class _ShopBody extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    showDialog(context: context, barrierDismissible: false,
+    showDialog(
+        context: context,
+        barrierDismissible: false,
         builder: (_) => const Center(child: CircularProgressIndicator()));
 
     try {
       final resp = await ref.read(firestoreServiceProvider).purchaseTheme(
-        userId: userId, themeName: preset.name, cost: price,
-      );
+            userId: userId,
+            themeName: preset.name,
+            cost: price,
+          );
       if (context.mounted) Navigator.pop(context);
       if (resp['success'] == true && context.mounted) {
-        PurchaseSuccessAnimation.show(context, itemName: ThemePricing.getName(preset), icon: Icons.palette);
+        PurchaseSuccessAnimation.show(context,
+            itemName: ThemePricing.getName(preset), icon: Icons.palette);
       } else if (context.mounted) {
         _showError(context, resp['message']?.toString() ?? 'Fehler');
       }
     } catch (e) {
-      if (context.mounted) { Navigator.pop(context); _showError(context, e.toString()); }
+      if (context.mounted) {
+        Navigator.pop(context);
+        _showError(context, e.toString());
+      }
     }
   }
 
-  void _selectTheme(BuildContext context, WidgetRef ref, AppThemePreset preset) {
+  void _selectTheme(
+      BuildContext context, WidgetRef ref, AppThemePreset preset) {
     HapticFeedback.selectionClick();
     ref.read(selectedThemeProvider.notifier).setTheme(preset);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${ThemePricing.getName(preset)} aktiviert!'),
-          backgroundColor: SlamTokens.success, duration: const Duration(seconds: 2)),
+      SnackBar(
+          content: Text('${ThemePricing.getName(preset)} aktiviert!'),
+          backgroundColor: SlamTokens.success,
+          duration: const Duration(seconds: 2)),
     );
   }
 
-  Future<void> _purchaseStreakFreezeWithCoins(
-      BuildContext context, WidgetRef ref, String userId, UserStats stats) async {
-    if (stats.coins < 80) { _showError(context, 'Nicht genug Münzen (80 benötigt)'); return; }
-    final confirmed = await _confirmDialog(context, 'Streak Freeze kaufen?', '80 Münzen');
+  Future<void> _purchaseStreakFreezeWithCoins(BuildContext context,
+      WidgetRef ref, String userId, UserStats stats) async {
+    if (stats.coins < 80) {
+      _showError(context, 'Nicht genug Münzen (80 benötigt)');
+      return;
+    }
+    final confirmed =
+        await _confirmDialog(context, 'Streak Freeze kaufen?', '80 Münzen');
     if (confirmed != true || !context.mounted) return;
     try {
-      final resp = await ref.read(firestoreServiceProvider).purchaseStreakFreezeWithCoins(userId: userId, cost: 80);
+      final resp = await ref
+          .read(firestoreServiceProvider)
+          .purchaseStreakFreezeWithCoins(userId: userId, cost: 80);
       if (resp['success'] == true && context.mounted) {
-        PurchaseSuccessAnimation.show(context, itemName: 'Streak Freeze', icon: Icons.ac_unit);
+        PurchaseSuccessAnimation.show(context,
+            itemName: 'Streak Freeze', icon: Icons.ac_unit);
       } else if (context.mounted) {
         _showError(context, resp['message']?.toString() ?? 'Fehler');
       }
-    } catch (e) { if (context.mounted) _showError(context, e.toString()); }
+    } catch (e) {
+      if (context.mounted) _showError(context, e.toString());
+    }
   }
 
-  Future<void> _purchaseStreakFreezeWithXP(
-      BuildContext context, WidgetRef ref, String userId, UserStats stats) async {
-    if (stats.totalXp < 100) { _showError(context, 'Nicht genug XP (100 benötigt)'); return; }
-    final confirmed = await _confirmDialog(context, 'Streak Freeze kaufen?', '100 XP');
+  Future<void> _purchaseStreakFreezeWithXP(BuildContext context, WidgetRef ref,
+      String userId, UserStats stats) async {
+    if (stats.totalXp < 100) {
+      _showError(context, 'Nicht genug XP (100 benötigt)');
+      return;
+    }
+    final confirmed =
+        await _confirmDialog(context, 'Streak Freeze kaufen?', '100 XP');
     if (confirmed != true || !context.mounted) return;
     try {
-      final resp = await ref.read(firestoreServiceProvider).purchaseStreakFreezeWithXP(userId: userId, xpCost: 100);
+      final resp = await ref
+          .read(firestoreServiceProvider)
+          .purchaseStreakFreezeWithXP(userId: userId, xpCost: 100);
       if (resp['success'] == true && context.mounted) {
-        PurchaseSuccessAnimation.show(context, itemName: 'Streak Freeze', icon: Icons.ac_unit);
+        PurchaseSuccessAnimation.show(context,
+            itemName: 'Streak Freeze', icon: Icons.ac_unit);
       } else if (context.mounted) {
         _showError(context, resp['message']?.toString() ?? 'Fehler');
       }
-    } catch (e) { if (context.mounted) _showError(context, e.toString()); }
+    } catch (e) {
+      if (context.mounted) _showError(context, e.toString());
+    }
   }
 
-  Future<bool?> _confirmDialog(BuildContext context, String title, String cost) {
+  Future<bool?> _confirmDialog(
+      BuildContext context, String title, String cost) {
     return showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: SlamTokens.surface,
-        title: Text(title, style: GoogleFonts.fraunces(color: SlamTokens.text, fontWeight: FontWeight.w700)),
-        content: Text(cost, style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
+        title: Text(title,
+            style: GoogleFonts.fraunces(
+                color: SlamTokens.text, fontWeight: FontWeight.w700)),
+        content:
+            Text(cost, style: GoogleFonts.dmSans(color: SlamTokens.textDim)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Abbrechen')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Kaufen')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Abbrechen')),
+          FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Kaufen')),
         ],
       ),
     );
@@ -222,7 +274,10 @@ class _ShopBody extends ConsumerWidget {
 
   void _showError(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: SlamTokens.danger, duration: const Duration(seconds: 4)),
+      SnackBar(
+          content: Text(msg),
+          backgroundColor: SlamTokens.danger,
+          duration: const Duration(seconds: 4)),
     );
   }
 }
@@ -240,7 +295,8 @@ class _ShopHeader extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 24, SlamTokens.gutter, 8),
+        padding: const EdgeInsets.fromLTRB(
+            SlamTokens.gutter, 24, SlamTokens.gutter, 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -248,13 +304,19 @@ class _ShopHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('SHOP', style: GoogleFonts.dmSans(
-                      fontSize: 11, fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2, color: SlamTokens.textDim)),
+                  Text('SHOP',
+                      style: GoogleFonts.dmSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                          color: SlamTokens.textDim)),
                   const SizedBox(height: 6),
-                  Text('Belohnungen', style: GoogleFonts.fraunces(
-                      fontSize: 34, fontWeight: FontWeight.w700,
-                      color: SlamTokens.text, letterSpacing: -0.8)),
+                  Text('Belohnungen',
+                      style: GoogleFonts.fraunces(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w700,
+                          color: SlamTokens.text,
+                          letterSpacing: -0.8)),
                 ],
               ),
             ),
@@ -282,14 +344,18 @@ class _PulsingCoinBadgeState extends State<_PulsingCoinBadge>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1800))
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1800))
       ..repeat(reverse: true);
-    _glow = Tween(begin: 8.0, end: 22.0).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+    _glow = Tween(begin: 8.0, end: 22.0)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -304,18 +370,23 @@ class _PulsingCoinBadgeState extends State<_PulsingCoinBadge>
           decoration: BoxDecoration(
             color: SlamTokens.warn,
             borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-            boxShadow: [BoxShadow(
-              color: SlamTokens.warn.withValues(alpha: 0.55),
-              blurRadius: _glow.value,
-              offset: const Offset(0, 4),
-              spreadRadius: -2,
-            )],
+            boxShadow: [
+              BoxShadow(
+                color: SlamTokens.warn.withValues(alpha: 0.55),
+                blurRadius: _glow.value,
+                offset: const Offset(0, 4),
+                spreadRadius: -2,
+              )
+            ],
           ),
           child: Row(children: [
             Icon(Icons.monetization_on, size: 16, color: SlamTokens.primaryOn),
             const SizedBox(width: 6),
-            Text('$value', style: GoogleFonts.fraunces(
-                fontSize: 14, fontWeight: FontWeight.w800, color: SlamTokens.primaryOn)),
+            Text('$value',
+                style: GoogleFonts.fraunces(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: SlamTokens.primaryOn)),
           ]),
         ),
       ),
@@ -345,17 +416,21 @@ class _AnimatedSectionLabelState extends State<_AnimatedSectionLabel>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween(begin: const Offset(-0.06, 0), end: Offset.zero).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _slide = Tween(begin: const Offset(-0.06, 0), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     Future.delayed(Duration(milliseconds: widget.delay), () {
       if (mounted) _ctrl.forward();
     });
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -364,10 +439,14 @@ class _AnimatedSectionLabelState extends State<_AnimatedSectionLabel>
       child: SlideTransition(
         position: _slide,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 6, SlamTokens.gutter, 10),
-          child: Text(widget.text, style: GoogleFonts.dmSans(
-              fontSize: 11, fontWeight: FontWeight.w800,
-              letterSpacing: 1.2, color: SlamTokens.textDim)),
+          padding: const EdgeInsets.fromLTRB(
+              SlamTokens.gutter, 6, SlamTokens.gutter, 10),
+          child: Text(widget.text,
+              style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                  color: SlamTokens.textDim)),
         ),
       ),
     );
@@ -380,9 +459,13 @@ class _AnimatedSectionLabelState extends State<_AnimatedSectionLabel>
 
 class _AnimatedThemeCard extends StatefulWidget {
   const _AnimatedThemeCard({
-    required this.index, required this.preset, required this.isUnlocked,
-    required this.price, required this.canAfford,
-    required this.onPurchase, required this.onSelect,
+    required this.index,
+    required this.preset,
+    required this.isUnlocked,
+    required this.price,
+    required this.canAfford,
+    required this.onPurchase,
+    required this.onSelect,
   });
   final int index;
   final AppThemePreset preset;
@@ -412,11 +495,16 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
 
   Color get _baseColor {
     switch (widget.preset) {
-      case AppThemePreset.sunsetOrange: return SlamTokens.primary;
-      case AppThemePreset.oceanBlue: return SlamTokens.accentBlue;
-      case AppThemePreset.forestGreen: return SlamTokens.accentGreen;
-      case AppThemePreset.lavenderPurple: return const Color(0xFFA855F7);
-      case AppThemePreset.cherryRed: return SlamTokens.accentRed;
+      case AppThemePreset.sunsetOrange:
+        return SlamTokens.primary;
+      case AppThemePreset.oceanBlue:
+        return SlamTokens.accentBlue;
+      case AppThemePreset.forestGreen:
+        return SlamTokens.accentGreen;
+      case AppThemePreset.lavenderPurple:
+        return const Color(0xFFA855F7);
+      case AppThemePreset.cherryRed:
+        return SlamTokens.accentRed;
     }
   }
 
@@ -424,23 +512,25 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
   void initState() {
     super.initState();
 
-    _entranceCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 650));
-    _entranceFade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
+    _entranceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 650));
+    _entranceFade =
+        CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
     _entranceScale = Tween(begin: 0.78, end: 1.0).animate(
         CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutBack));
-    _entranceSlide = Tween(begin: const Offset(0, 0.18), end: Offset.zero).animate(
-        CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
+    _entranceSlide = Tween(begin: const Offset(0, 0.18), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
 
-    _shimmerCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 2200))
+    _shimmerCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 2200))
       ..repeat();
 
-    _ownedCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 1600))
+    _ownedCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1600))
       ..repeat(reverse: true);
-    _ownedGlow = Tween(begin: 0.0, end: 8.0).animate(
-        CurvedAnimation(parent: _ownedCtrl, curve: Curves.easeInOut));
+    _ownedGlow = Tween(begin: 0.0, end: 8.0)
+        .animate(CurvedAnimation(parent: _ownedCtrl, curve: Curves.easeInOut));
 
     Future.delayed(Duration(milliseconds: 80 + widget.index * 110), () {
       if (mounted) _entranceCtrl.forward();
@@ -458,8 +548,13 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
   void _onTapDown(TapDownDetails _) => setState(() => _pressScale = 0.93);
   void _onTapUp(TapUpDetails _) {
     setState(() => _pressScale = 1.0);
-    if (widget.isUnlocked) { widget.onSelect(); } else if (widget.canAfford) { widget.onPurchase(); }
+    if (widget.isUnlocked) {
+      widget.onSelect();
+    } else if (widget.canAfford) {
+      widget.onPurchase();
+    }
   }
+
   void _onTapCancel() => setState(() => _pressScale = 1.0);
 
   @override
@@ -500,11 +595,14 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
             width: widget.isUnlocked ? 1.5 : 1,
           ),
           boxShadow: widget.isUnlocked
-              ? [BoxShadow(
-                  color: _baseColor.withValues(alpha: 0.22 + _ownedGlow.value / 60),
-                  blurRadius: 12 + _ownedGlow.value,
-                  spreadRadius: -2,
-                )]
+              ? [
+                  BoxShadow(
+                    color: _baseColor.withValues(
+                        alpha: 0.22 + _ownedGlow.value / 60),
+                    blurRadius: 12 + _ownedGlow.value,
+                    spreadRadius: -2,
+                  )
+                ]
               : null,
         ),
         padding: const EdgeInsets.all(12),
@@ -516,9 +614,12 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
           // Gradient preview with shimmer
           Expanded(child: _buildGradientPreview()),
           const SizedBox(height: 8),
-          Text(ThemePricing.getName(widget.preset), style: GoogleFonts.fraunces(
-              fontSize: 13, fontWeight: FontWeight.w700,
-              color: SlamTokens.text, letterSpacing: -0.2)),
+          Text(ThemePricing.getName(widget.preset),
+              style: GoogleFonts.fraunces(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: SlamTokens.text,
+                  letterSpacing: -0.2)),
           const SizedBox(height: 6),
           Row(children: [
             Container(
@@ -528,18 +629,25 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
                 borderRadius: BorderRadius.circular(SlamTokens.rCircle),
               ),
               child: Row(children: [
-                const Icon(Icons.monetization_on, size: 10, color: SlamTokens.warn),
+                const Icon(Icons.monetization_on,
+                    size: 10, color: SlamTokens.warn),
                 const SizedBox(width: 2),
-                Text('${widget.price}', style: GoogleFonts.dmSans(
-                    fontSize: 10, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
+                Text('${widget.price}',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: SlamTokens.warn)),
               ]),
             ),
             const Spacer(),
             Text(
               widget.isUnlocked ? 'BESITZT' : 'KAUFEN',
               style: GoogleFonts.dmSans(
-                fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.6,
-                color: widget.isUnlocked ? SlamTokens.success : SlamTokens.textDim,
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6,
+                color:
+                    widget.isUnlocked ? SlamTokens.success : SlamTokens.textDim,
               ),
             ),
           ]),
@@ -590,7 +698,8 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
               // Owned check badge
               if (widget.isUnlocked)
                 Positioned(
-                  top: 8, right: 8,
+                  top: 8,
+                  right: 8,
                   child: TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
                     duration: const Duration(milliseconds: 400),
@@ -598,12 +707,15 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
                     builder: (_, v, __) => Transform.scale(
                       scale: v,
                       child: Container(
-                        width: 22, height: 22,
+                        width: 22,
+                        height: 22,
                         decoration: BoxDecoration(
-                          color: SlamTokens.overlayBlack33, shape: BoxShape.circle,
+                          color: SlamTokens.overlayBlack33,
+                          shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.check, size: 13, color: Colors.white),
+                        child: const Icon(Icons.check,
+                            size: 13, color: Colors.white),
                       ),
                     ),
                   ),
@@ -622,9 +734,14 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
 
 class _AnimatedPowerUpRow extends StatefulWidget {
   const _AnimatedPowerUpRow({
-    required this.index, required this.icon, required this.iconColor,
-    required this.title, required this.subtitle, required this.cost,
-    this.costLabel, required this.onBuy,
+    required this.index,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.cost,
+    this.costLabel,
+    required this.onBuy,
   });
   final int index;
   final IconData icon;
@@ -651,8 +768,8 @@ class _AnimatedPowerUpRowState extends State<_AnimatedPowerUpRow>
   @override
   void initState() {
     super.initState();
-    _entranceCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 500));
+    _entranceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
     _fade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
     _slide = Tween(begin: const Offset(0.12, 0), end: Offset.zero).animate(
         CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
@@ -660,13 +777,21 @@ class _AnimatedPowerUpRowState extends State<_AnimatedPowerUpRow>
       if (mounted) _entranceCtrl.forward();
     });
 
-    _btnCtrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 160), lowerBound: 0.88, upperBound: 1.0, value: 1.0);
+    _btnCtrl = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 160),
+        lowerBound: 0.88,
+        upperBound: 1.0,
+        value: 1.0);
     _btnScale = _btnCtrl;
   }
 
   @override
-  void dispose() { _entranceCtrl.dispose(); _btnCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _entranceCtrl.dispose();
+    _btnCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -689,7 +814,8 @@ class _AnimatedPowerUpRowState extends State<_AnimatedPowerUpRow>
               curve: Curves.easeOutBack,
               builder: (_, v, child) => Transform.scale(scale: v, child: child),
               child: Container(
-                width: 44, height: 44,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: widget.iconColor.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
@@ -699,14 +825,19 @@ class _AnimatedPowerUpRowState extends State<_AnimatedPowerUpRow>
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(child: Column(
+            Expanded(
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title, style: GoogleFonts.fraunces(
-                    fontSize: 14, fontWeight: FontWeight.w700,
-                    color: SlamTokens.text, letterSpacing: -0.2)),
-                Text(widget.subtitle, style: GoogleFonts.dmSans(
-                    fontSize: 12, color: SlamTokens.textDim)),
+                Text(widget.title,
+                    style: GoogleFonts.fraunces(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: SlamTokens.text,
+                        letterSpacing: -0.2)),
+                Text(widget.subtitle,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 12, color: SlamTokens.textDim)),
               ],
             )),
             // Buy button with scale feedback
@@ -719,22 +850,31 @@ class _AnimatedPowerUpRowState extends State<_AnimatedPowerUpRow>
               onTapCancel: () => _btnCtrl.forward(),
               child: AnimatedBuilder(
                 animation: _btnScale,
-                builder: (_, child) => Transform.scale(scale: _btnScale.value, child: child),
+                builder: (_, child) =>
+                    Transform.scale(scale: _btnScale.value, child: child),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: SlamTokens.warnSoft,
                     borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                   ),
                   child: Row(children: [
                     if (widget.cost > 0) ...[
-                      const Icon(Icons.monetization_on, size: 13, color: SlamTokens.warn),
+                      const Icon(Icons.monetization_on,
+                          size: 13, color: SlamTokens.warn),
                       const SizedBox(width: 4),
-                      Text('${widget.cost}', style: GoogleFonts.dmSans(
-                          fontSize: 13, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
+                      Text('${widget.cost}',
+                          style: GoogleFonts.dmSans(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: SlamTokens.warn)),
                     ] else
-                      Text(widget.costLabel ?? '', style: GoogleFonts.dmSans(
-                          fontSize: 12, fontWeight: FontWeight.w800, color: SlamTokens.warn)),
+                      Text(widget.costLabel ?? '',
+                          style: GoogleFonts.dmSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: SlamTokens.warn)),
                   ]),
                 ),
               ),
@@ -762,7 +902,8 @@ final themeUnlocksStreamProvider =
   final firestoreService = ref.watch(firestoreServiceProvider);
   return firestoreService.themeUnlocksStream(userId).map((data) {
     final unlockedThemes = (data['unlockedThemes'] as List<dynamic>?)
-            ?.map((e) => e.toString()).toList() ??
+            ?.map((e) => e.toString())
+            .toList() ??
         ['sunsetOrange'];
     return ThemeUnlocks(unlockedThemes: unlockedThemes);
   });

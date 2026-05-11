@@ -215,9 +215,11 @@ class _CoinAnimationState extends State<CoinAnimation>
                                   Colors.white54,
                                 ],
                                 stops: [
-                                  (_shineController.value - 0.3).clamp(0.0, 1.0),
+                                  (_shineController.value - 0.3)
+                                      .clamp(0.0, 1.0),
                                   _shineController.value,
-                                  (_shineController.value + 0.3).clamp(0.0, 1.0),
+                                  (_shineController.value + 0.3)
+                                      .clamp(0.0, 1.0),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -293,7 +295,8 @@ class _FlyingCoinsPainter extends CustomPainter {
     for (final coin in coins) {
       // Apply start delay
       final adjustedProgress =
-          ((progress - coin.startDelay) / (1 - coin.startDelay)).clamp(0.0, 1.0);
+          ((progress - coin.startDelay) / (1 - coin.startDelay))
+              .clamp(0.0, 1.0);
       if (adjustedProgress <= 0) continue;
 
       // Calculate position with gravity effect

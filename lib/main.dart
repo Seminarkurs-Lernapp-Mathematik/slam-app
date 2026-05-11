@@ -10,7 +10,7 @@ void main() async {
 
   // Initialize the app
   final initResult = await AppInitializer().initialize();
-  
+
   if (!initResult.success) {
     Logger.fatal('Failed to initialize app: ${initResult.error}');
     // In a real app, you might want to show an error screen here

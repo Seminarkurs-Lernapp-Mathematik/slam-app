@@ -13,29 +13,29 @@ class PerformanceMonitor {
   /// Start timing an operation
   static void start(String operation) {
     if (!kDebugMode) return;
-    
+
     _timers[operation] = Stopwatch()..start();
   }
 
   /// End timing an operation and log the result
   static void end(String operation, {Map<String, dynamic>? metadata}) {
     if (!kDebugMode) return;
-    
+
     final timer = _timers[operation];
     if (timer == null) return;
-    
+
     timer.stop();
     final elapsed = timer.elapsedMilliseconds;
-    
+
     // Store metric
     _metrics.putIfAbsent(operation, () => []);
     _metrics[operation]!.add(elapsed);
-    
+
     // Keep only recent metrics
     if (_metrics[operation]!.length > _maxMetricsPerOperation) {
       _metrics[operation]!.removeAt(0);
     }
-    
+
     // Log slow operations
     if (elapsed > 100) {
       developer.log(
@@ -44,7 +44,7 @@ class PerformanceMonitor {
         error: elapsed > 500 ? 'Critical' : 'Warning',
       );
     }
-    
+
     _timers.remove(operation);
   }
 
@@ -52,31 +52,33 @@ class PerformanceMonitor {
   static double? getAverage(String operation) {
     final metrics = _metrics[operation];
     if (metrics == null || metrics.isEmpty) return null;
-    
+
     return metrics.reduce((a, b) => a + b) / metrics.length;
   }
 
   /// Log all metrics
   static void dumpMetrics() {
     if (!kDebugMode) return;
-    
-    developer.log('========== PERFORMANCE METRICS ==========', name: 'Performance');
-    
+
+    developer.log('========== PERFORMANCE METRICS ==========',
+        name: 'Performance');
+
     final sortedOps = _metrics.entries.toList()
       ..sort((a, b) => getAverage(b.key)!.compareTo(getAverage(a.key)!));
-    
+
     for (final entry in sortedOps) {
       final avg = getAverage(entry.key);
       final max = entry.value.reduce((a, b) => a > b ? a : b);
       final min = entry.value.reduce((a, b) => a < b ? a : b);
-      
+
       developer.log(
         '${entry.key}: avg=${avg?.toStringAsFixed(2)}ms, min=$max, max=$min (${entry.value.length} samples)',
         name: 'Performance',
       );
     }
-    
-    developer.log('========================================', name: 'Performance');
+
+    developer.log('========================================',
+        name: 'Performance');
   }
 
   /// Clear all metrics
@@ -112,8 +114,7 @@ class Throttler {
 
   bool shouldExecute() {
     final now = DateTime.now();
-    if (_lastExecution == null || 
-        now.difference(_lastExecution!) >= interval) {
+    if (_lastExecution == null || now.difference(_lastExecution!) >= interval) {
       _lastExecution = now;
       return true;
     }
@@ -141,11 +142,11 @@ class BuildMonitor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PerformanceMonitor.start('build_$name');
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       PerformanceMonitor.end('build_$name');
     });
-    
+
     return child;
   }
 }

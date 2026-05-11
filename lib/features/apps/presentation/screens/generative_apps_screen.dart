@@ -24,8 +24,7 @@ class GenerativeAppsScreen extends ConsumerStatefulWidget {
       _GenerativeAppsScreenState();
 }
 
-class _GenerativeAppsScreenState
-    extends ConsumerState<GenerativeAppsScreen> {
+class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   final _promptController = TextEditingController();
   bool _isLoading = false;
   String? _error;
@@ -34,7 +33,7 @@ class _GenerativeAppsScreenState
   Timer? _loadingTimer;
 
   static const _loadingStages = [
-    (4,  'Idee wird analysiert…'),
+    (4, 'Idee wird analysiert…'),
     (10, 'Konzept wird entworfen…'),
     (20, 'Code wird geschrieben…'),
     (35, 'Interface wird gebaut…'),
@@ -230,12 +229,10 @@ class _GenerativeAppsScreenState
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
-              borderRadius:
-                  BorderRadius.circular(SlamTokens.rCircle),
+              borderRadius: BorderRadius.circular(SlamTokens.rCircle),
             ),
             child: Text('NEU',
                 style: GoogleFonts.dmSans(
@@ -264,15 +261,13 @@ class _GenerativeAppsScreenState
             ),
             child: TextField(
               controller: _promptController,
-              style: GoogleFonts.dmSans(
-                  color: SlamTokens.text, fontSize: 14),
+              style: GoogleFonts.dmSans(color: SlamTokens.text, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'z.B. "Erstelle einen Funktionsplotter"',
-                hintStyle: GoogleFonts.dmSans(
-                    color: SlamTokens.textDim, fontSize: 14),
+                hintStyle:
+                    GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
                 border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.fromLTRB(16, 14, 48, 14),
+                contentPadding: const EdgeInsets.fromLTRB(16, 14, 48, 14),
                 suffixIcon: _promptController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear,
@@ -302,14 +297,12 @@ class _GenerativeAppsScreenState
                   setState(() {});
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 11, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
                   decoration: BoxDecoration(
                     color: _kiA.withValues(alpha: 0.1),
-                    borderRadius:
-                        BorderRadius.circular(SlamTokens.rCircle),
-                    border: Border.all(
-                        color: _kiA.withValues(alpha: 0.25)),
+                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                    border: Border.all(color: _kiA.withValues(alpha: 0.25)),
                   ),
                   child: Text(_examples[i],
                       style: GoogleFonts.dmSans(
@@ -335,8 +328,7 @@ class _GenerativeAppsScreenState
                         ]
                       : [_kiA, _kiB],
                 ),
-                borderRadius:
-                    BorderRadius.circular(SlamTokens.rCircle),
+                borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                 boxShadow: _isLoading
                     ? null
                     : [
@@ -357,8 +349,7 @@ class _GenerativeAppsScreenState
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white))
+                            strokeWidth: 2, color: Colors.white))
                   else
                     const Icon(Icons.auto_awesome,
                         size: 16, color: Colors.white),
@@ -387,13 +378,11 @@ class _GenerativeAppsScreenState
       decoration: BoxDecoration(
         color: SlamTokens.dangerSoft,
         borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-        border:
-            Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
+        border: Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline,
-              color: SlamTokens.danger, size: 16),
+          const Icon(Icons.error_outline, color: SlamTokens.danger, size: 16),
           const SizedBox(width: 8),
           Expanded(
               child: Text(_error!,
@@ -401,8 +390,8 @@ class _GenerativeAppsScreenState
                       fontSize: 13, color: SlamTokens.danger))),
           GestureDetector(
             onTap: _generate,
-            child: const Icon(Icons.refresh,
-                color: SlamTokens.danger, size: 16),
+            child:
+                const Icon(Icons.refresh, color: SlamTokens.danger, size: 16),
           ),
         ],
       ),
@@ -418,8 +407,7 @@ class _GenerativeAppsScreenState
             SizedBox(
               width: 48,
               height: 48,
-              child: CircularProgressIndicator(
-                  color: _kiA, strokeWidth: 3),
+              child: CircularProgressIndicator(color: _kiA, strokeWidth: 3),
             ),
             const SizedBox(height: 20),
             AnimatedSwitcher(
@@ -481,8 +469,8 @@ class _GenerativeAppsScreenState
               const SizedBox(height: 8),
               Text(
                 'Beschreibe deine Idee — die KI generiert Rechner, Graphen und Simulatoren.',
-                style: GoogleFonts.dmSans(
-                    fontSize: 13, color: SlamTokens.textDim),
+                style:
+                    GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -508,10 +496,8 @@ class _GenerativeAppsScreenState
                     _kiB.withValues(alpha: 0.08)
                   ],
                 ),
-                borderRadius:
-                    BorderRadius.circular(SlamTokens.rCardLg),
-                border: Border.all(
-                    color: _kiA.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(SlamTokens.rCardLg),
+                border: Border.all(color: _kiA.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
@@ -519,13 +505,12 @@ class _GenerativeAppsScreenState
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [_kiA, _kiB]),
+                      gradient: LinearGradient(colors: [_kiA, _kiB]),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.check,
-                        size: 26, color: Colors.white),
+                    child:
+                        const Icon(Icons.check, size: 26, color: Colors.white),
                   ),
                   const SizedBox(height: 14),
                   Text(_currentApp!.title,
@@ -536,8 +521,7 @@ class _GenerativeAppsScreenState
                       textAlign: TextAlign.center),
                   const SizedBox(height: 8),
                   Text('App generiert & gespeichert',
-                      style: GoogleFonts.dmSans(
-                          fontSize: 12, color: _kiA)),
+                      style: GoogleFonts.dmSans(fontSize: 12, color: _kiA)),
                 ],
               ),
             ),
@@ -545,13 +529,11 @@ class _GenerativeAppsScreenState
             GestureDetector(
               onTap: _openApp,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [_kiA, _kiB]),
-                  borderRadius:
-                      BorderRadius.circular(SlamTokens.rCircle),
+                  gradient: LinearGradient(colors: [_kiA, _kiB]),
+                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                   boxShadow: [
                     BoxShadow(
                       color: _kiA.withValues(alpha: 0.4),
@@ -580,8 +562,8 @@ class _GenerativeAppsScreenState
             GestureDetector(
               onTap: _generate,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -590,8 +572,7 @@ class _GenerativeAppsScreenState
                     const SizedBox(width: 6),
                     Text('Neu generieren',
                         style: GoogleFonts.dmSans(
-                            fontSize: 13,
-                            color: SlamTokens.textDim)),
+                            fontSize: 13, color: SlamTokens.textDim)),
                   ],
                 ),
               ),

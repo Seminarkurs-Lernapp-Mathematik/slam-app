@@ -73,7 +73,8 @@ class _CrossPlatformWebViewState extends State<CrossPlatformWebView> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.htmlContent != widget.htmlContent) {
       if (!kIsWeb && _mobileController != null) {
-        _mobileController!.loadHtmlString(widget.htmlContent, baseUrl: widget.baseUrl);
+        _mobileController!
+            .loadHtmlString(widget.htmlContent, baseUrl: widget.baseUrl);
       }
     }
   }

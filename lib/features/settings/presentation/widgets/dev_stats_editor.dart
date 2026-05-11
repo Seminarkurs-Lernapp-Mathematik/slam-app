@@ -37,7 +37,8 @@ class _DevStatsEditorState extends ConsumerState<DevStatsEditor> {
   Future<void> _loadCurrentStats() async {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
-    final stats = await ref.read(firestoreServiceProvider).getUserStats(user.uid);
+    final stats =
+        await ref.read(firestoreServiceProvider).getUserStats(user.uid);
     if (mounted && stats != null) {
       setState(() {
         _currentStats = stats;
@@ -52,19 +53,25 @@ class _DevStatsEditorState extends ConsumerState<DevStatsEditor> {
     final user = ref.read(currentUserProvider);
     if (user == null || _currentStats == null) return;
 
-    final newTotalXp = int.tryParse(_xpController.text) ?? _currentStats!.totalXp;
-    final newCoins = int.tryParse(_coinsController.text) ?? _currentStats!.coins;
-    final newStreak = int.tryParse(_streakController.text) ?? _currentStats!.streak;
+    final newTotalXp =
+        int.tryParse(_xpController.text) ?? _currentStats!.totalXp;
+    final newCoins =
+        int.tryParse(_coinsController.text) ?? _currentStats!.coins;
+    final newStreak =
+        int.tryParse(_streakController.text) ?? _currentStats!.streak;
 
     setState(() => _loading = true);
     try {
       // Recalculate level from totalXp
-      final newStats = _currentStats!.addXp(newTotalXp - _currentStats!.totalXp).copyWith(
-        totalXp: newTotalXp,
-        coins: newCoins,
-        streak: newStreak,
-      );
-      await ref.read(firestoreServiceProvider).updateUserStats(user.uid, newStats);
+      final newStats =
+          _currentStats!.addXp(newTotalXp - _currentStats!.totalXp).copyWith(
+                totalXp: newTotalXp,
+                coins: newCoins,
+                streak: newStreak,
+              );
+      await ref
+          .read(firestoreServiceProvider)
+          .updateUserStats(user.uid, newStats);
       setState(() => _currentStats = newStats);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -119,10 +126,14 @@ class _DevStatsEditorState extends ConsumerState<DevStatsEditor> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _StatDisplay('Level', _currentStats!.calculatedLevel.toString(), Icons.military_tech, Colors.amber),
-                _StatDisplay('Total XP', _currentStats!.totalXp.toString(), Icons.star, Colors.orange),
-                _StatDisplay('Coins', _currentStats!.coins.toString(), Icons.monetization_on, Colors.yellow.shade700),
-                _StatDisplay('Streak', '${_currentStats!.streak}d', Icons.local_fire_department, Colors.deepOrange),
+                _StatDisplay('Level', _currentStats!.calculatedLevel.toString(),
+                    Icons.military_tech, Colors.amber),
+                _StatDisplay('Total XP', _currentStats!.totalXp.toString(),
+                    Icons.star, Colors.orange),
+                _StatDisplay('Coins', _currentStats!.coins.toString(),
+                    Icons.monetization_on, Colors.yellow.shade700),
+                _StatDisplay('Streak', '${_currentStats!.streak}d',
+                    Icons.local_fire_department, Colors.deepOrange),
               ],
             ),
           ),
@@ -164,7 +175,10 @@ class _DevStatsEditorState extends ConsumerState<DevStatsEditor> {
               child: FilledButton.icon(
                 onPressed: _loading ? null : _applyChanges,
                 icon: _loading
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.save, size: 18),
                 label: const Text('Speichern'),
               ),
@@ -233,8 +247,12 @@ class _StatDisplay extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 18),
         const SizedBox(height: 2),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-        Text(label, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        Text(value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+        Text(label,
+            style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.onSurfaceVariant)),
       ],
     );
   }
@@ -263,7 +281,8 @@ class _StatField extends StatelessWidget {
         prefixIcon: Icon(icon, color: color, size: 18),
         isDense: true,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       ),
     );
   }

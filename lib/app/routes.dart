@@ -201,8 +201,6 @@ GoRouter router(Ref ref) {
         ),
       ),
 
-
-
       // /lernplan → handled by redirect above (switches to Plan tab in MainNavigation).
       // Route stub kept so named navigation (goNamed('lernplan')) resolves.
       GoRoute(

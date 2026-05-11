@@ -127,10 +127,8 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
 
       if (widget.contentType == ContentType.miniApp) {
         // Rebuild the app incorporating all modifications
-        final allMods = _messages
-            .where((m) => m.isUser)
-            .map((m) => m.text)
-            .join('\n- ');
+        final allMods =
+            _messages.where((m) => m.isUser).map((m) => m.text).join('\n- ');
         final app = await aiService.generateMiniApp(
           description:
               '${widget.originalPrompt}\n\nGewünschte Änderungen:\n- $allMods',
@@ -158,8 +156,7 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
           setState(() {
             _messages.add(
               _ModMessage(
-                text:
-                    'Visualisierung aktualisiert: "${geo.title}"',
+                text: 'Visualisierung aktualisiert: "${geo.title}"',
                 isUser: false,
               ),
             );
@@ -267,7 +264,8 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
               height: MediaQuery.of(context).size.height * 0.38,
               decoration: BoxDecoration(
                 color: cs.surface,
-                border: Border(top: BorderSide(color: cs.outline.withValues(alpha: 0.3))),
+                border: Border(
+                    top: BorderSide(color: cs.outline.withValues(alpha: 0.3))),
               ),
               child: Column(
                 children: [
@@ -342,8 +340,8 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
                               hintText: 'z.B. "Mache den Button größer…"',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(
-                                    color: cs.outlineVariant),
+                                borderSide:
+                                    BorderSide(color: cs.outlineVariant),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 8),
@@ -424,8 +422,8 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
             SizedBox(
               width: 12,
               height: 12,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2, color: cs.primary),
+              child:
+                  CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
             ),
             const SizedBox(width: 8),
             Text('Generiere…',
@@ -436,4 +434,3 @@ class _AppViewerScreenState extends ConsumerState<AppViewerScreen> {
     );
   }
 }
-

@@ -6,7 +6,9 @@ import '../../../../shared/widgets/glass_panel.dart';
 import '../../../../shared/widgets/math_text.dart';
 import '../../../../core/services/ai_service.dart'; // New import
 
-final customHintProvider = StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>((ref) {
+final customHintProvider =
+    StateNotifierProvider.autoDispose<CustomHintNotifier, AsyncValue<String?>>(
+        (ref) {
   return CustomHintNotifier(ref);
 });
 
@@ -109,7 +111,8 @@ class HintPanel extends ConsumerWidget {
             // Hint Level 2
             _HintCard(
               level: 2,
-              hint: hints.length > 1 ? hints[1] : 'Verwende eine passende Formel',
+              hint:
+                  hints.length > 1 ? hints[1] : 'Verwende eine passende Formel',
               isRevealed: hintsUsed >= 2,
               onReveal: () => _revealHint(ref, 2),
             ),
@@ -119,7 +122,8 @@ class HintPanel extends ConsumerWidget {
             // Hint Level 3
             _HintCard(
               level: 3,
-              hint: hints.length > 2 ? hints[2] : 'Schritt für Schritt vorgehen',
+              hint:
+                  hints.length > 2 ? hints[2] : 'Schritt für Schritt vorgehen',
               isRevealed: hintsUsed >= 3,
               onReveal: () => _revealHint(ref, 3),
             ),

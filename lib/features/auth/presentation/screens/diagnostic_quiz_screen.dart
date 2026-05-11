@@ -151,7 +151,8 @@ class _DiagnosticQuizScreenState extends State<DiagnosticQuizScreen> {
               _levels.length,
               (lvl) => Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(right: lvl < _levels.length - 1 ? 6 : 0),
+                  padding:
+                      EdgeInsets.only(right: lvl < _levels.length - 1 ? 6 : 0),
                   child: _LevelChip(
                     label: _levels[lvl],
                     selected: selected == lvl,
@@ -182,8 +183,8 @@ class _DiagnosticQuizScreenState extends State<DiagnosticQuizScreen> {
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
                 '$answered / $total Themen bewertet',
-                style: GoogleFonts.dmSans(
-                    fontSize: 13, color: SlamTokens.textDim),
+                style:
+                    GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
                 textAlign: TextAlign.center,
               ),
             ),

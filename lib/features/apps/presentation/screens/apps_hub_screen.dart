@@ -33,15 +33,18 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: _buildHeader()),
-          SliverToBoxAdapter(child: _AnimatedHeroCard(
+          SliverToBoxAdapter(
+              child: _AnimatedHeroCard(
             index: 0,
             onTap: () => setState(() => _subScreen = 1),
           )),
-          SliverToBoxAdapter(child: _AnimatedHeroCard(
+          SliverToBoxAdapter(
+              child: _AnimatedHeroCard(
             index: 1,
             onTap: () => setState(() => _subScreen = 0),
           )),
-          SliverToBoxAdapter(child: _AnimatedHeroCard(
+          SliverToBoxAdapter(
+              child: _AnimatedHeroCard(
             index: 2,
             onTap: () => setState(() => _subScreen = 2),
           )),
@@ -53,19 +56,27 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
 
   String _subScreenTitle(int index) {
     switch (index) {
-      case 0: return 'GeoGebra';
-      case 1: return 'KI-Labor';
-      case 2: return 'Meine Inhalte';
-      default: return '';
+      case 0:
+        return 'GeoGebra';
+      case 1:
+        return 'KI-Labor';
+      case 2:
+        return 'Meine Inhalte';
+      default:
+        return '';
     }
   }
 
   Widget _subScreenWidget(int index) {
     switch (index) {
-      case 0: return const GeogebraScreen();
-      case 1: return const GenerativeAppsScreen();
-      case 2: return const ContentLibraryScreen();
-      default: return const SizedBox();
+      case 0:
+        return const GeogebraScreen();
+      case 1:
+        return const GenerativeAppsScreen();
+      case 2:
+        return const ContentLibraryScreen();
+      default:
+        return const SizedBox();
     }
   }
 
@@ -73,32 +84,40 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 24, SlamTokens.gutter, 16),
+        padding: const EdgeInsets.fromLTRB(
+            SlamTokens.gutter, 24, SlamTokens.gutter, 16),
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
           duration: const Duration(milliseconds: 600),
           curve: Curves.easeOutCubic,
           builder: (_, v, child) => Opacity(
             opacity: v,
-            child: Transform.translate(offset: Offset(0, (1 - v) * 16), child: child),
+            child: Transform.translate(
+                offset: Offset(0, (1 - v) * 16), child: child),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('WERKZEUGE', style: GoogleFonts.dmSans(
-                  fontSize: 11, fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2, color: SlamTokens.textDim)),
+              Text('WERKZEUGE',
+                  style: GoogleFonts.dmSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: SlamTokens.textDim)),
               const SizedBox(height: 6),
-              Text('Spiel mit Mathe.', style: GoogleFonts.fraunces(
-                  fontSize: 34, fontWeight: FontWeight.w700,
-                  color: SlamTokens.text, letterSpacing: -0.8, height: 1.05)),
+              Text('Spiel mit Mathe.',
+                  style: GoogleFonts.fraunces(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      color: SlamTokens.text,
+                      letterSpacing: -0.8,
+                      height: 1.05)),
             ],
           ),
         ),
       ),
     );
   }
-
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -134,7 +153,8 @@ const _heroData = [
     badge: 'NEU',
     badgeIcon: Icons.auto_awesome,
     headline: 'Bau deine\nMini-App.',
-    body: 'Beschreibe was du brauchst — die KI generiert Rechner, Graphen, Simulatoren.',
+    body:
+        'Beschreibe was du brauchst — die KI generiert Rechner, Graphen, Simulatoren.',
     cta: 'KI-Labor öffnen',
     colorA: Color(0xFFFF9A4A),
     colorB: Color(0xFFFF6020),
@@ -145,7 +165,8 @@ const _heroData = [
     badge: 'VISUALISIEREN',
     badgeIcon: Icons.architecture,
     headline: 'Entdecke\nGeoGebra.',
-    body: 'Zeichne Funktionen, konstruiere Geometrie und verstehe Mathe visuell.',
+    body:
+        'Zeichne Funktionen, konstruiere Geometrie und verstehe Mathe visuell.',
     cta: 'GeoGebra öffnen',
     colorA: Color(0xFF3B82F6),
     colorB: Color(0xFF6366F1),
@@ -156,7 +177,8 @@ const _heroData = [
     badge: 'BIBLIOTHEK',
     badgeIcon: Icons.folder_open,
     headline: 'Meine\nInhalte.',
-    body: 'Deine gespeicherten Mini-Apps, GeoGebra-Konstruktionen und Visualisierungen.',
+    body:
+        'Deine gespeicherten Mini-Apps, GeoGebra-Konstruktionen und Visualisierungen.',
     cta: 'Inhalte öffnen',
     colorA: Color(0xFFD97706),
     colorB: Color(0xFFF59E0B),
@@ -188,9 +210,9 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
   @override
   void initState() {
     super.initState();
-    _gradCtrl = AnimationController(
-        vsync: this, duration: const Duration(seconds: 4))
-      ..repeat(reverse: true);
+    _gradCtrl =
+        AnimationController(vsync: this, duration: const Duration(seconds: 4))
+          ..repeat(reverse: true);
 
     _badgeCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 900))
@@ -214,8 +236,8 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
       curve: Curves.easeOutCubic,
       builder: (_, v, child) => Opacity(
         opacity: v,
-        child: Transform.translate(
-            offset: Offset(0, (1 - v) * 24), child: child),
+        child:
+            Transform.translate(offset: Offset(0, (1 - v) * 24), child: child),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -301,14 +323,12 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: SlamTokens.overlayBlack33,
-                        borderRadius:
-                            BorderRadius.circular(SlamTokens.rCircle),
+                        borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(data.badgeIcon,
-                              size: 12, color: Colors.white),
+                          Icon(data.badgeIcon, size: 12, color: Colors.white),
                           const SizedBox(width: 6),
                           Text(
                             data.badge,
@@ -337,8 +357,7 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
                     data.body,
                     style: GoogleFonts.dmSans(
                         fontSize: 13,
-                        color:
-                            SlamTokens.primaryOn.withValues(alpha: 0.8),
+                        color: SlamTokens.primaryOn.withValues(alpha: 0.8),
                         height: 1.4),
                   ),
                   const SizedBox(height: 16),
@@ -347,8 +366,7 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
                         horizontal: 18, vertical: 10),
                     decoration: BoxDecoration(
                       color: SlamTokens.primaryOn,
-                      borderRadius:
-                          BorderRadius.circular(SlamTokens.rCircle),
+                      borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -377,7 +395,9 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
 
 class _SubScreenShell extends StatelessWidget {
   const _SubScreenShell({
-    required this.title, required this.onBack, required this.child,
+    required this.title,
+    required this.onBack,
+    required this.child,
   });
   final String title;
   final VoidCallback onBack;
@@ -394,8 +414,11 @@ class _SubScreenShell extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: SlamTokens.text),
           onPressed: onBack,
         ),
-        title: Text(title, style: GoogleFonts.fraunces(
-            fontSize: 18, fontWeight: FontWeight.w700, color: SlamTokens.text)),
+        title: Text(title,
+            style: GoogleFonts.fraunces(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text)),
       ),
       body: child,
     );

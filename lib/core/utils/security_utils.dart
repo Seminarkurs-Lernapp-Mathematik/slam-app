@@ -11,8 +11,10 @@ class SecurityUtils {
   /// Generate a cryptographically secure random string
   static String generateSecureRandomString(int length) {
     final random = Random.secure();
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    return List.generate(length, (_) => chars[random.nextInt(chars.length)]).join();
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return List.generate(length, (_) => chars[random.nextInt(chars.length)])
+        .join();
   }
 
   /// Hash sensitive data (e.g., for caching keys)
@@ -28,11 +30,11 @@ class SecurityUtils {
     final inputBytes = utf8.encode(input);
     final keyBytes = utf8.encode(key);
     final result = <int>[];
-    
+
     for (var i = 0; i < inputBytes.length; i++) {
       result.add(inputBytes[i] ^ keyBytes[i % keyBytes.length]);
     }
-    
+
     return base64Encode(result);
   }
 
@@ -41,11 +43,11 @@ class SecurityUtils {
     final inputBytes = base64Decode(input);
     final keyBytes = utf8.encode(key);
     final result = <int>[];
-    
+
     for (var i = 0; i < inputBytes.length; i++) {
       result.add(inputBytes[i] ^ keyBytes[i % keyBytes.length]);
     }
-    
+
     return utf8.decode(result);
   }
 
@@ -116,12 +118,13 @@ class SecurityUtils {
     var sanitized = input
         .trim()
         .replaceAll(RegExp(r'[<>]'), '') // Remove HTML tags
-        .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'), ''); // Remove control chars
-    
+        .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'),
+            ''); // Remove control chars
+
     if (sanitized.length > maxLength) {
       sanitized = sanitized.substring(0, maxLength);
     }
-    
+
     return sanitized;
   }
 
@@ -129,7 +132,8 @@ class SecurityUtils {
   static final Map<String, _RateLimitEntry> _rateLimits = {};
 
   /// Check if an operation is rate limited
-  static bool isRateLimited(String key, {int maxAttempts = 5, Duration window = const Duration(minutes: 1)}) {
+  static bool isRateLimited(String key,
+      {int maxAttempts = 5, Duration window = const Duration(minutes: 1)}) {
     final now = DateTime.now();
     final entry = _rateLimits[key];
 
@@ -231,7 +235,8 @@ class InputValidators {
   }
 
   /// Validate minimum length
-  static String? minLength(String? value, int minLength, {String fieldName = 'Feld'}) {
+  static String? minLength(String? value, int minLength,
+      {String fieldName = 'Feld'}) {
     if (value == null || value.length < minLength) {
       return '$fieldName muss mindestens $minLength Zeichen haben';
     }
@@ -239,7 +244,8 @@ class InputValidators {
   }
 
   /// Validate maximum length
-  static String? maxLength(String? value, int maxLength, {String fieldName = 'Feld'}) {
+  static String? maxLength(String? value, int maxLength,
+      {String fieldName = 'Feld'}) {
     if (value != null && value.length > maxLength) {
       return '$fieldName darf maximal $maxLength Zeichen haben';
     }
@@ -247,7 +253,8 @@ class InputValidators {
   }
 
   /// Validate numeric range
-  static String? range(num? value, num min, num max, {String fieldName = 'Feld'}) {
+  static String? range(num? value, num min, num max,
+      {String fieldName = 'Feld'}) {
     if (value == null) return null;
     if (value < min || value > max) {
       return '$fieldName muss zwischen $min und $max liegen';
@@ -256,7 +263,8 @@ class InputValidators {
   }
 
   /// Combine multiple validators
-  static String? compose(String? value, List<String? Function(String?)> validators) {
+  static String? compose(
+      String? value, List<String? Function(String?)> validators) {
     for (final validator in validators) {
       final result = validator(value);
       if (result != null) return result;

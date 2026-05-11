@@ -56,7 +56,8 @@ class ThemeConfig {
     return ThemeConfig(
       name: json['name'] ?? 'Sunset',
       primary: json['primary'] ?? '#f97316',
-      gradient: json['gradient'] ?? 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+      gradient: json['gradient'] ??
+          'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
       gradientFrom: json['gradientFrom'] ?? '#f97316',
       gradientTo: json['gradientTo'] ?? '#ea580c',
       glow: json['glow'] ?? 'rgba(249, 115, 22, 0.4)',
@@ -242,9 +243,8 @@ class AppSettings {
       examDate: json['examDate'] != null
           ? DateTime.tryParse(json['examDate'] as String)
           : null,
-      aiPreferences: (json['aiPreferences'] as List<dynamic>?)
-              ?.cast<String>() ??
-          [],
+      aiPreferences:
+          (json['aiPreferences'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 
@@ -308,7 +308,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
           final data = doc.data();
           final settings = data?['settings'] as Map<String, dynamic>?;
 
-          debugPrint('⚙️ Settings data from Firebase: ${settings?.keys.toList()}');
+          debugPrint(
+              '⚙️ Settings data from Firebase: ${settings?.keys.toList()}');
 
           if (settings != null) {
             state = AppSettings.fromJson(settings);
@@ -318,7 +319,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
             return;
           }
         } else {
-          debugPrint('⚠️ Firebase document does not exist, will be created on first save');
+          debugPrint(
+              '⚠️ Firebase document does not exist, will be created on first save');
         }
       }
 
@@ -337,14 +339,16 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     final prefs = await SharedPreferences.getInstance();
 
     final detailLevel = (prefs.getInt('ai_detail_level') ?? 5).clamp(1, 10);
-    final temperature = (prefs.getDouble('ai_temperature') ?? 0.7).clamp(0.0, 1.0);
+    final temperature =
+        (prefs.getDouble('ai_temperature') ?? 0.7).clamp(0.0, 1.0);
     final helpfulness = (prefs.getInt('ai_helpfulness') ?? 7).clamp(1, 10);
     final autoMode = prefs.getBool('ai_auto_mode') ?? true;
     final courseType = prefs.getString('course_type') ?? 'Leistungskurs';
     final gradeLevel = prefs.getString('grade_level') ?? 'Klasse_11';
     final themeIndex = prefs.getInt('selected_theme') ?? 0;
     final examDateStr = prefs.getString('exam_date');
-    final examDate = examDateStr != null ? DateTime.tryParse(examDateStr) : null;
+    final examDate =
+        examDateStr != null ? DateTime.tryParse(examDateStr) : null;
     final aiPreferences = prefs.getStringList('ai_preferences') ?? [];
 
     state = AppSettings(
@@ -356,7 +360,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       ),
       courseType: courseType,
       gradeLevel: gradeLevel,
-      theme: ThemeConfig.fromPreset(AppThemePreset.values[themeIndex.clamp(0, 4)]),
+      theme:
+          ThemeConfig.fromPreset(AppThemePreset.values[themeIndex.clamp(0, 4)]),
       examDate: examDate,
       aiPreferences: aiPreferences,
     );
@@ -388,9 +393,7 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(_userId)
-          .set({
-        'settings': state.toJson()
-      }, SetOptions(merge: true));
+          .set({'settings': state.toJson()}, SetOptions(merge: true));
 
       debugPrint('✅ Settings synced to Firebase successfully');
     } catch (e) {
@@ -546,7 +549,9 @@ class EducationConfigNotifier extends _$EducationConfigNotifier {
   }
 
   void setGradeLevel(String level) {
-    ref.read(appSettingsNotifierProvider.notifier).setGradeLevel('Klasse_$level');
+    ref
+        .read(appSettingsNotifierProvider.notifier)
+        .setGradeLevel('Klasse_$level');
   }
 
   void setCourseType(CourseType type) {

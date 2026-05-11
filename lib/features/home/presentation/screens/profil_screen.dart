@@ -8,7 +8,8 @@ import '../../../gamification/presentation/widgets/level_progress_circle.dart';
 import '../../../gamification/presentation/widgets/xp_stats_card.dart';
 import '../../../gamification/presentation/widgets/streak_calendar.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
-import '../../../gamification/presentation/screens/progress_screen.dart' show userStatsStreamProvider;
+import '../../../gamification/presentation/screens/progress_screen.dart'
+    show userStatsStreamProvider;
 import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../shared/widgets/glass_panel.dart';
@@ -56,24 +57,25 @@ class ProfilScreen extends ConsumerWidget {
                 children: [
                   _buildProfileHeader(context, name),
                   const SizedBox(height: 16),
-
                   userStatsAsync.whenData((stats) {
-                    final today = DateTime.now().toIso8601String().substring(0, 10);
-                    final atRisk = stats.streak > 0 && stats.isStreakAtRisk(today);
-                    return Column(
-                      children: [
-                        if (atRisk) ...[
-                          _StreakRiskBanner(streak: stats.streak),
-                          const SizedBox(height: 12),
-                        ],
-                        if (settings.examDate != null) ...[
-                          _ExamCountdownCard(examDate: settings.examDate!),
-                          const SizedBox(height: 12),
-                        ],
-                      ],
-                    );
-                  }).value ?? const SizedBox.shrink(),
-
+                        final today =
+                            DateTime.now().toIso8601String().substring(0, 10);
+                        final atRisk =
+                            stats.streak > 0 && stats.isStreakAtRisk(today);
+                        return Column(
+                          children: [
+                            if (atRisk) ...[
+                              _StreakRiskBanner(streak: stats.streak),
+                              const SizedBox(height: 12),
+                            ],
+                            if (settings.examDate != null) ...[
+                              _ExamCountdownCard(examDate: settings.examDate!),
+                              const SizedBox(height: 12),
+                            ],
+                          ],
+                        );
+                      }).value ??
+                      const SizedBox.shrink(),
                   _buildQuickActions(context),
                   const SizedBox(height: 24),
                 ],
@@ -104,8 +106,7 @@ class ProfilScreen extends ConsumerWidget {
             colors: [SlamTokens.surfaceHi, SlamTokens.surface],
           ),
           borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-          border: Border.all(
-              color: SlamTokens.primary.withValues(alpha: 0.2)),
+          border: Border.all(color: SlamTokens.primary.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
               color: SlamTokens.primary.withValues(alpha: 0.06),
@@ -177,7 +178,8 @@ class ProfilScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: SlamTokens.textMute, size: 20),
+            const Icon(Icons.chevron_right,
+                color: SlamTokens.textMute, size: 20),
           ],
         ),
       ),
@@ -241,7 +243,6 @@ class ProfilScreen extends ConsumerWidget {
       ),
     );
   }
-
 }
 
 /// Embedded Progress Content (reuses Progress Screen content)
@@ -319,15 +320,24 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildStatRow(context, 'Level', stats.calculatedLevel.toString(), Icons.military_tech, SlamTokens.primary),
+              _buildStatRow(context, 'Level', stats.calculatedLevel.toString(),
+                  Icons.military_tech, SlamTokens.primary),
               const Divider(),
-              _buildStatRow(context, 'Gesamt XP', stats.totalXp.toString(), Icons.star, SlamTokens.warn),
+              _buildStatRow(context, 'Gesamt XP', stats.totalXp.toString(),
+                  Icons.star, SlamTokens.warn),
               const Divider(),
-              _buildStatRow(context, 'Streak', '${stats.streak} Tage', Icons.local_fire_department, SlamTokens.warn),
+              _buildStatRow(context, 'Streak', '${stats.streak} Tage',
+                  Icons.local_fire_department, SlamTokens.warn),
               const Divider(),
-              _buildStatRow(context, 'Level Titel', stats.levelTitle, Icons.emoji_events, SlamTokens.primary),
+              _buildStatRow(context, 'Level Titel', stats.levelTitle,
+                  Icons.emoji_events, SlamTokens.primary),
               const Divider(),
-              _buildStatRow(context, 'Streak Freezes', stats.streakFreezes.toString(), Icons.ac_unit, SlamTokens.success),
+              _buildStatRow(
+                  context,
+                  'Streak Freezes',
+                  stats.streakFreezes.toString(),
+                  Icons.ac_unit,
+                  SlamTokens.success),
             ],
           ),
         ),
@@ -348,7 +358,8 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatRow(BuildContext context, String label, String value, IconData icon, Color color) {
+  Widget _buildStatRow(BuildContext context, String label, String value,
+      IconData icon, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -358,7 +369,8 @@ class _ProfileStatisticsDialog extends ConsumerWidget {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.textDim),
+              style:
+                  GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.textDim),
             ),
           ),
           Text(
@@ -448,7 +460,6 @@ class _ProgressContent extends ConsumerWidget {
   }
 }
 
-
 // ============================================================================
 // COMPACT STATS STRIP — shown at top of profile, below the X button
 // ============================================================================
@@ -463,28 +474,32 @@ class _CompactStatsStrip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Expanded(child: _StatTile(
+          Expanded(
+              child: _StatTile(
             icon: Icons.military_tech,
             label: 'Level',
             value: '${stats.calculatedLevel}',
             color: SlamTokens.primary,
           )),
           const SizedBox(width: 8),
-          Expanded(child: _StatTile(
+          Expanded(
+              child: _StatTile(
             icon: Icons.local_fire_department,
             label: 'Streak',
             value: '${stats.streak}d',
             color: SlamTokens.warn,
           )),
           const SizedBox(width: 8),
-          Expanded(child: _StatTile(
+          Expanded(
+              child: _StatTile(
             icon: Icons.star,
             label: 'XP',
             value: '${stats.totalXp}',
             color: SlamTokens.warn,
           )),
           const SizedBox(width: 8),
-          Expanded(child: _StatTile(
+          Expanded(
+              child: _StatTile(
             icon: Icons.monetization_on,
             label: 'Coins',
             value: '${stats.coins}',
@@ -523,9 +538,7 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 4),
           Text(value,
               style: GoogleFonts.fraunces(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: color)),
+                  fontSize: 16, fontWeight: FontWeight.w700, color: color)),
           Text(label,
               style: GoogleFonts.dmSans(
                   fontSize: 10,
@@ -536,7 +549,6 @@ class _StatTile extends StatelessWidget {
     );
   }
 }
-
 
 // ============================================================================
 // STREAK RISK BANNER
@@ -558,7 +570,8 @@ class _StreakRiskBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.local_fire_department, color: SlamTokens.warn, size: 28),
+          const Icon(Icons.local_fire_department,
+              color: SlamTokens.warn, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

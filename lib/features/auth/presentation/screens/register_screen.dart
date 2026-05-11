@@ -28,8 +28,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String _selectedCourseType = 'Leistungskurs';
 
   static const _grades = [
-    'Klasse_5', 'Klasse_6', 'Klasse_7', 'Klasse_8',
-    'Klasse_9', 'Klasse_10', 'Klasse_11', 'Klasse_12', 'Klasse_13',
+    'Klasse_5',
+    'Klasse_6',
+    'Klasse_7',
+    'Klasse_8',
+    'Klasse_9',
+    'Klasse_10',
+    'Klasse_11',
+    'Klasse_12',
+    'Klasse_13',
   ];
   static const _upperGrades = ['Klasse_11', 'Klasse_12', 'Klasse_13'];
 
@@ -213,7 +220,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                _obscureConfirmPassword = !_obscureConfirmPassword;
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
                               });
                             },
                           ),

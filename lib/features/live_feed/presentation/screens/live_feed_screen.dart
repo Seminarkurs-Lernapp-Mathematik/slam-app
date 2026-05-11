@@ -50,7 +50,9 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       if (ref.read(currentLiveFeedQuestionProvider) == null) {
         final currentQ = ref.read(liveFeedQueueProvider).currentQuestion;
         if (currentQ != null) {
-          ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(currentQ);
+          ref
+              .read(currentLiveFeedQuestionProvider.notifier)
+              .setQuestion(currentQ);
         }
       }
       if (queueNotifier.needsMoreQuestions) _generateQuestions();
@@ -62,7 +64,9 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   Future<void> _generateQuestions() async {
     setState(() => _errorMessage = null);
     try {
-      await ref.read(liveFeedQuestionGeneratorProvider.notifier).generateQuestions();
+      await ref
+          .read(liveFeedQuestionGeneratorProvider.notifier)
+          .generateQuestions();
     } catch (e) {
       if (mounted) setState(() => _errorMessage = e.toString());
     }
@@ -114,8 +118,10 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     List<TopicData> topics,
   ) {
     if (topics.isEmpty) return _buildNoTopicsView();
-    if (_errorMessage != null && currentQuestion == null) return _buildErrorView();
-    if (queueState.isGenerating && currentQuestion == null) return _buildLoadingView();
+    if (_errorMessage != null && currentQuestion == null)
+      return _buildErrorView();
+    if (queueState.isGenerating && currentQuestion == null)
+      return _buildLoadingView();
     if (currentQuestion == null) return _buildEmptyView();
 
     return FeedQuestionCard(
@@ -133,7 +139,10 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
           CircularProgressIndicator(color: SlamTokens.primary),
           const SizedBox(height: 24),
           Text('Generiere Fragen…',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: SlamTokens.textDim)),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: SlamTokens.textDim)),
         ],
       ),
     );
@@ -152,10 +161,16 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
             const SizedBox(height: 8),
             Text(_errorMessage ?? 'Unbekannter Fehler',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: SlamTokens.textDim)),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () { setState(() => _errorMessage = null); _generateQuestions(); },
+              onPressed: () {
+                setState(() => _errorMessage = null);
+                _generateQuestions();
+              },
               icon: const Icon(Icons.refresh),
               label: const Text('Erneut versuchen'),
             ),
@@ -169,7 +184,8 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     return SlamEmptyState(
       icon: Icons.menu_book_outlined,
       title: 'Kein Lernplan',
-      subtitle: 'Füge Themen zu deinem Lernplan hinzu, um mit dem Üben zu beginnen.',
+      subtitle:
+          'Füge Themen zu deinem Lernplan hinzu, um mit dem Üben zu beginnen.',
       iconColor: SlamTokens.analysis,
       action: () => ref.read(mainNavNotifierProvider.notifier).switchToTab(1),
       actionLabel: 'Lernplan öffnen',
@@ -200,41 +216,51 @@ class _FeedHeader extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
     final userId = currentUser?.uid ?? '';
     final userStatsAsync = ref.watch(_feedUserStatsProvider(userId));
-    final avatarLetter =
-        (currentUser?.displayName ?? currentUser?.email ?? 'U')
-            .substring(0, 1)
-            .toUpperCase();
+    final avatarLetter = (currentUser?.displayName ?? currentUser?.email ?? 'U')
+        .substring(0, 1)
+        .toUpperCase();
 
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 12, SlamTokens.gutter, 0),
+        padding: const EdgeInsets.fromLTRB(
+            SlamTokens.gutter, 12, SlamTokens.gutter, 0),
         child: Row(
           children: [
             GestureDetector(
-              onTap: () => ref.read(mainNavNotifierProvider.notifier).openProfile(),
+              onTap: () =>
+                  ref.read(mainNavNotifierProvider.notifier).openProfile(),
               child: userStatsAsync.when(
                 data: (stats) => _AvatarRing(
                   letter: avatarLetter,
                   progress: stats.progressToNextLevel,
                   level: stats.calculatedLevel,
                 ),
-                loading: () => _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
-                error: (_, __) => _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
+                loading: () =>
+                    _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
+                error: (_, __) =>
+                    _AvatarRing(letter: avatarLetter, progress: 0, level: 1),
               ),
             ),
-
             const Spacer(),
-
             userStatsAsync.when(
               data: (stats) => Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _StatPill(icon: Icons.local_fire_department, value: '${stats.streak}', color: SlamTokens.danger),
+                  _StatPill(
+                      icon: Icons.local_fire_department,
+                      value: '${stats.streak}',
+                      color: SlamTokens.danger),
                   const SizedBox(width: 6),
-                  _StatPill(icon: Icons.monetization_on, value: _fmt(stats.coins), color: SlamTokens.warn),
+                  _StatPill(
+                      icon: Icons.monetization_on,
+                      value: _fmt(stats.coins),
+                      color: SlamTokens.warn),
                   const SizedBox(width: 6),
-                  _StatPill(icon: Icons.star, value: _fmt(stats.totalXp), color: SlamTokens.primary),
+                  _StatPill(
+                      icon: Icons.star,
+                      value: _fmt(stats.totalXp),
+                      color: SlamTokens.primary),
                 ],
               ),
               loading: () => const SizedBox.shrink(),
@@ -255,7 +281,8 @@ class _FeedHeader extends ConsumerWidget {
 
 // Avatar with XP progress ring + level badge
 class _AvatarRing extends StatefulWidget {
-  const _AvatarRing({required this.letter, required this.progress, required this.level});
+  const _AvatarRing(
+      {required this.letter, required this.progress, required this.level});
 
   final String letter;
   final double progress;
@@ -265,7 +292,8 @@ class _AvatarRing extends StatefulWidget {
   State<_AvatarRing> createState() => _AvatarRingState();
 }
 
-class _AvatarRingState extends State<_AvatarRing> with SingleTickerProviderStateMixin {
+class _AvatarRingState extends State<_AvatarRing>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
 
@@ -412,7 +440,8 @@ class _RingPainter extends CustomPainter {
 }
 
 class _StatPill extends StatelessWidget {
-  const _StatPill({required this.icon, required this.value, required this.color});
+  const _StatPill(
+      {required this.icon, required this.value, required this.color});
   final IconData icon;
   final String value;
   final Color color;

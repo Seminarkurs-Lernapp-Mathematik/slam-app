@@ -6,20 +6,20 @@ import '../features/settings/presentation/providers/settings_providers.dart';
 
 // Primary colours per preset (mirrors ThemeConfig.fromPreset)
 const Map<AppThemePreset, Color> _kPrimary = {
-  AppThemePreset.sunsetOrange:    Color(0xFFFF7A3B),
-  AppThemePreset.oceanBlue:       Color(0xFF3BA8FF),
-  AppThemePreset.forestGreen:     Color(0xFF3BD490),
-  AppThemePreset.lavenderPurple:  Color(0xFFA07CFF),
-  AppThemePreset.cherryRed:       Color(0xFFFF5566),
+  AppThemePreset.sunsetOrange: Color(0xFFFF7A3B),
+  AppThemePreset.oceanBlue: Color(0xFF3BA8FF),
+  AppThemePreset.forestGreen: Color(0xFF3BD490),
+  AppThemePreset.lavenderPurple: Color(0xFFA07CFF),
+  AppThemePreset.cherryRed: Color(0xFFFF5566),
 };
 
 // "On primary" text colours — dark tint of the primary for legibility
 const Map<AppThemePreset, Color> _kPrimaryOn = {
-  AppThemePreset.sunsetOrange:    Color(0xFF23100A),
-  AppThemePreset.oceanBlue:       Color(0xFF0A1A2E),
-  AppThemePreset.forestGreen:     Color(0xFF071A10),
-  AppThemePreset.lavenderPurple:  Color(0xFF100A20),
-  AppThemePreset.cherryRed:       Color(0xFF1A0A0A),
+  AppThemePreset.sunsetOrange: Color(0xFF23100A),
+  AppThemePreset.oceanBlue: Color(0xFF0A1A2E),
+  AppThemePreset.forestGreen: Color(0xFF071A10),
+  AppThemePreset.lavenderPurple: Color(0xFF100A20),
+  AppThemePreset.cherryRed: Color(0xFF1A0A0A),
 };
 
 /// App Theme — Sunset Glow / Liquid UI (DESIGN.md v2)
@@ -32,33 +32,34 @@ class AppTheme {
   // Legacy color constants — kept for any screens not yet migrated.
   // New code should use SlamTokens directly.
   static Color get primaryOrange => SlamTokens.primary;
-  static const Color primaryOrangeDark  = Color(0xFFE85F20);
+  static const Color primaryOrangeDark = Color(0xFFE85F20);
   static const Color primaryOrangeLight = Color(0xFFFF9B67);
 
   /// Sync SlamTokens primary colours with [preset] and return the ThemeData.
   /// Call this in SLAMApp.build() BEFORE building MaterialApp so every widget
   /// reads the correct colour in the same frame.
   static ThemeData themeForPreset(AppThemePreset preset) {
-    final primary   = _kPrimary[preset]!;
+    final primary = _kPrimary[preset]!;
     final primaryOn = _kPrimaryOn[preset]!;
     SlamTokens.applyTheme(primary: primary, primaryOn: primaryOn);
     return _buildThemeWithPrimaryColor(primary);
   }
 
-  static const Color backgroundDark    = SlamTokens.bg;
-  static const Color surfaceDark       = SlamTokens.surface;
-  static const Color surfaceContainer  = SlamTokens.bgElev;
-  static const Color textPrimary       = SlamTokens.text;
-  static const Color textSecondary     = SlamTokens.textDim;
+  static const Color backgroundDark = SlamTokens.bg;
+  static const Color surfaceDark = SlamTokens.surface;
+  static const Color surfaceContainer = SlamTokens.bgElev;
+  static const Color textPrimary = SlamTokens.text;
+  static const Color textSecondary = SlamTokens.textDim;
 
   // Primary glow (used by existing GlassPanel.accent)
   static BoxShadow get primaryGlow => BoxShadow(
-    color: SlamTokens.primary.withValues(alpha: 0.35),
-    blurRadius: 24,
-    spreadRadius: 0,
-  );
+        color: SlamTokens.primary.withValues(alpha: 0.35),
+        blurRadius: 24,
+        spreadRadius: 0,
+      );
 
-  static ThemeData get darkTheme => _buildThemeWithPrimaryColor(SlamTokens.primary);
+  static ThemeData get darkTheme =>
+      _buildThemeWithPrimaryColor(SlamTokens.primary);
 
   static ThemeData getThemeForPreset(AppThemePreset preset) {
     final Color primaryColor;
@@ -227,7 +228,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(SlamTokens.rInput),
           borderSide: const BorderSide(color: SlamTokens.danger, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         hintStyle: const TextStyle(color: SlamTokens.textMute, fontSize: 15),
       ),
 
@@ -236,94 +238,139 @@ class AppTheme {
         // ── Fraunces: Display (Hero Level, Screen titles, Question text) ──
         displayLarge: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 70, fontWeight: FontWeight.w800,
-            color: SlamTokens.text, letterSpacing: -2, height: 1.0,
+            fontSize: 70,
+            fontWeight: FontWeight.w800,
+            color: SlamTokens.text,
+            letterSpacing: -2,
+            height: 1.0,
           ),
         ),
         displayMedium: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 52, fontWeight: FontWeight.w700,
-            color: SlamTokens.text, letterSpacing: -1.2, height: 1.05,
+            fontSize: 52,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.text,
+            letterSpacing: -1.2,
+            height: 1.05,
           ),
         ),
         displaySmall: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 40, fontWeight: FontWeight.w700,
-            color: SlamTokens.text, letterSpacing: -0.8, height: 1.1,
+            fontSize: 40,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.text,
+            letterSpacing: -0.8,
+            height: 1.1,
           ),
         ),
         headlineLarge: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 34, fontWeight: FontWeight.w700,
-            color: SlamTokens.text, letterSpacing: -0.8, height: 1.15,
+            fontSize: 34,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.text,
+            letterSpacing: -0.8,
+            height: 1.15,
           ),
         ),
         headlineMedium: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 30, fontWeight: FontWeight.w700,
-            color: SlamTokens.text, letterSpacing: -0.6, height: 1.2,
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.text,
+            letterSpacing: -0.6,
+            height: 1.2,
           ),
         ),
         headlineSmall: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 24, fontWeight: FontWeight.w600,
-            color: SlamTokens.text, letterSpacing: -0.4, height: 1.25,
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: SlamTokens.text,
+            letterSpacing: -0.4,
+            height: 1.25,
           ),
         ),
         // ── Fraunces: Card titles ─────────────────────────────────────────
         titleLarge: GoogleFonts.fraunces(
           textStyle: const TextStyle(
-            fontSize: 17, fontWeight: FontWeight.w700,
-            color: SlamTokens.text, letterSpacing: -0.3, height: 1.4,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.text,
+            letterSpacing: -0.3,
+            height: 1.4,
           ),
         ),
         // ── DM Sans: UI structure ─────────────────────────────────────────
         titleMedium: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 15, fontWeight: FontWeight.w600,
-            color: SlamTokens.text, letterSpacing: 0.1, height: 1.4,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: SlamTokens.text,
+            letterSpacing: 0.1,
+            height: 1.4,
           ),
         ),
         titleSmall: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 13, fontWeight: FontWeight.w600,
-            color: SlamTokens.text, letterSpacing: 0.1, height: 1.4,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: SlamTokens.text,
+            letterSpacing: 0.1,
+            height: 1.4,
           ),
         ),
         bodyLarge: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w500,
-            color: SlamTokens.text, letterSpacing: 0, height: 1.5,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: SlamTokens.text,
+            letterSpacing: 0,
+            height: 1.5,
           ),
         ),
         bodyMedium: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w500,
-            color: SlamTokens.text, letterSpacing: 0, height: 1.5,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: SlamTokens.text,
+            letterSpacing: 0,
+            height: 1.5,
           ),
         ),
         bodySmall: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 13, fontWeight: FontWeight.w400,
-            color: SlamTokens.textDim, letterSpacing: 0, height: 1.4,
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: SlamTokens.textDim,
+            letterSpacing: 0,
+            height: 1.4,
           ),
         ),
         labelLarge: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 12, fontWeight: FontWeight.w800,
-            color: SlamTokens.text, letterSpacing: 1.2, height: 1.3,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: SlamTokens.text,
+            letterSpacing: 1.2,
+            height: 1.3,
           ),
         ),
         labelMedium: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w700,
-            color: SlamTokens.textDim, letterSpacing: 1.0, height: 1.3,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.textDim,
+            letterSpacing: 1.0,
+            height: 1.3,
           ),
         ),
         labelSmall: GoogleFonts.dmSans(
           textStyle: const TextStyle(
-            fontSize: 10, fontWeight: FontWeight.w700,
-            color: SlamTokens.textMute, letterSpacing: 0.8, height: 1.3,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: SlamTokens.textMute,
+            letterSpacing: 0.8,
+            height: 1.3,
           ),
         ),
       ),

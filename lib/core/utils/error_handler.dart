@@ -4,7 +4,7 @@ import '../data/models/result.dart';
 import 'logger.dart';
 
 /// Global error handler for the app
-/// 
+///
 /// Usage:
 /// ```dart
 /// void main() {
@@ -23,7 +23,7 @@ class ErrorHandler {
         error: details.exception,
         stackTrace: details.stack,
       );
-      
+
       // In debug mode, show the error
       if (Logger.getRecentLogs().isNotEmpty) {
         FlutterError.presentError(details);
@@ -51,8 +51,9 @@ class ErrorHandler {
     String? context,
     Map<String, dynamic>? metadata,
   }) {
-    final errorMessage = context != null ? '$context: $error' : error.toString();
-    
+    final errorMessage =
+        context != null ? '$context: $error' : error.toString();
+
     Logger.error(
       errorMessage,
       tag: 'ErrorHandler',
@@ -65,49 +66,56 @@ class ErrorHandler {
   /// Convert exceptions to AppError
   static AppError convertException(Object error, [StackTrace? stackTrace]) {
     if (error is AppError) return error;
-    
+
     final errorString = error.toString().toLowerCase();
-    
+
     // Network errors
     if (errorString.contains('socket') ||
         errorString.contains('connection') ||
         errorString.contains('timeout') ||
         errorString.contains('network')) {
-      return NetworkError('Netzwerkfehler: Bitte überprüfe deine Internetverbindung', stackTrace: stackTrace);
+      return NetworkError(
+          'Netzwerkfehler: Bitte überprüfe deine Internetverbindung',
+          stackTrace: stackTrace);
     }
-    
+
     // Auth errors
     if (errorString.contains('permission-denied') ||
         errorString.contains('unauthorized')) {
-      return AuthError('Zugriff verweigert', type: AuthErrorType.unknown, stackTrace: stackTrace);
+      return AuthError('Zugriff verweigert',
+          type: AuthErrorType.unknown, stackTrace: stackTrace);
     }
-    
+
     // Database errors
     if (errorString.contains('firestore') || errorString.contains('firebase')) {
       return DatabaseError('Datenbankfehler', stackTrace: stackTrace);
     }
-    
+
     // Default
-    return UnknownError('Ein unerwarteter Fehler ist aufgetreten', stackTrace: stackTrace);
+    return UnknownError('Ein unerwarteter Fehler ist aufgetreten',
+        stackTrace: stackTrace);
   }
 
   /// Show user-friendly error message
   static String getUserFriendlyMessage(AppError error) {
     return switch (error) {
-      NetworkError() => 'Keine Internetverbindung. Bitte überprüfe deine Netzwerkeinstellungen.',
+      NetworkError() =>
+        'Keine Internetverbindung. Bitte überprüfe deine Netzwerkeinstellungen.',
       AuthError(:final type) => switch (type) {
-        AuthErrorType.invalidCredentials => 'Falsche Anmeldedaten.',
-        AuthErrorType.userNotFound => 'Benutzer nicht gefunden.',
-        AuthErrorType.emailNotVerified => 'Bitte bestätige zuerst deine E-Mail-Adresse.',
-        AuthErrorType.weakPassword => 'Das Passwort ist zu schwach.',
-        AuthErrorType.emailAlreadyInUse => 'Diese E-Mail-Adresse wird bereits verwendet.',
-        AuthErrorType.invalidEmail => 'Ungültige E-Mail-Adresse.',
-        AuthErrorType.unknown => 'Authentifizierungsfehler.',
-      },
-      ValidationError(:final fieldErrors) => 
+          AuthErrorType.invalidCredentials => 'Falsche Anmeldedaten.',
+          AuthErrorType.userNotFound => 'Benutzer nicht gefunden.',
+          AuthErrorType.emailNotVerified =>
+            'Bitte bestätige zuerst deine E-Mail-Adresse.',
+          AuthErrorType.weakPassword => 'Das Passwort ist zu schwach.',
+          AuthErrorType.emailAlreadyInUse =>
+            'Diese E-Mail-Adresse wird bereits verwendet.',
+          AuthErrorType.invalidEmail => 'Ungültige E-Mail-Adresse.',
+          AuthErrorType.unknown => 'Authentifizierungsfehler.',
+        },
+      ValidationError(:final fieldErrors) =>
         fieldErrors != null && fieldErrors.isNotEmpty
-          ? 'Validierungsfehler: ${fieldErrors.values.first}'
-          : 'Ungültige Eingaben.',
+            ? 'Validierungsfehler: ${fieldErrors.values.first}'
+            : 'Ungültige Eingaben.',
       DatabaseError() => 'Datenbankfehler. Bitte versuche es später erneut.',
       CacheError() => 'Cache-Fehler. Die Daten werden neu geladen.',
       UnknownError() => 'Ein unerwarteter Fehler ist aufgetreten.',
@@ -118,7 +126,8 @@ class ErrorHandler {
 /// Error boundary widget that catches errors in the widget tree
 class ErrorBoundary extends StatefulWidget {
   final Widget child;
-  final Widget Function(BuildContext context, FlutterErrorDetails error)? errorBuilder;
+  final Widget Function(BuildContext context, FlutterErrorDetails error)?
+      errorBuilder;
 
   const ErrorBoundary({
     super.key,
@@ -141,10 +150,10 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      return widget.errorBuilder?.call(context, _error!) ?? 
+      return widget.errorBuilder?.call(context, _error!) ??
           _DefaultErrorWidget(error: _error!);
     }
-    
+
     return widget.child;
   }
 
@@ -166,7 +175,7 @@ class _DefaultErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Material(
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -226,13 +235,13 @@ class AsyncHandler {
       return result;
     } catch (e, st) {
       final appError = ErrorHandler.convertException(e, st);
-      
+
       ErrorHandler.handleError(
         e,
         stackTrace: st,
         context: context,
       );
-      
+
       onError?.call(appError);
       return null;
     }
@@ -248,13 +257,13 @@ class AsyncHandler {
       return Success(result);
     } catch (e, st) {
       final appError = ErrorHandler.convertException(e, st);
-      
+
       ErrorHandler.handleError(
         e,
         stackTrace: st,
         context: context,
       );
-      
+
       return Failure(appError);
     }
   }
@@ -268,12 +277,13 @@ class ErrorSnackbar {
     VoidCallback? onRetry,
   }) {
     final message = ErrorHandler.getUserFriendlyMessage(error);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onErrorContainer),
+            Icon(Icons.error_outline,
+                color: Theme.of(context).colorScheme.onErrorContainer),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
@@ -295,7 +305,8 @@ class ErrorSnackbar {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: Theme.of(context).colorScheme.onPrimaryContainer),
+            Icon(Icons.check_circle,
+                color: Theme.of(context).colorScheme.onPrimaryContainer),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],

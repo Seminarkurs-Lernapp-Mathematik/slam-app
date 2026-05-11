@@ -17,7 +17,8 @@ class QuestionSessionScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<QuestionSessionScreen> createState() => _QuestionSessionScreenState();
+  ConsumerState<QuestionSessionScreen> createState() =>
+      _QuestionSessionScreenState();
 }
 
 class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
@@ -92,4 +93,3 @@ class _QuestionSessionScreenState extends ConsumerState<QuestionSessionScreen> {
     );
   }
 }
-

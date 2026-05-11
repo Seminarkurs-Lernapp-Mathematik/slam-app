@@ -44,5 +44,6 @@ class LernplanTopic with _$LernplanTopic {
       _$LernplanTopicFromJson(json);
 
   /// Create a unique key for this topic
-  String get uniqueKey => '${leitidee}_${thema}_$unterthema${addedAt.millisecondsSinceEpoch}';
+  String get uniqueKey =>
+      '${leitidee}_${thema}_$unterthema${addedAt.millisecondsSinceEpoch}';
 }

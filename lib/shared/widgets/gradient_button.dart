@@ -15,10 +15,10 @@ class GradientButton extends StatefulWidget {
     required this.text,
     this.onPressed,
     this.isLoading = false,
-    this.gradient,       // retained for compat — ignored
+    this.gradient, // retained for compat — ignored
     this.height = 52,
     this.width,
-    this.borderRadius,   // retained for compat — ignored
+    this.borderRadius, // retained for compat — ignored
     this.textStyle,
     this.icon,
     this.disabled = false,
@@ -44,7 +44,8 @@ class _GradientButtonState extends State<GradientButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isOff = widget.disabled || widget.isLoading || widget.onPressed == null;
+    final isOff =
+        widget.disabled || widget.isLoading || widget.onPressed == null;
 
     return AnimatedScale(
       scale: _isPressed ? 0.94 : 1.0,
@@ -55,25 +56,28 @@ class _GradientButtonState extends State<GradientButton> {
         width: widget.width,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: isOff
-                ? SlamTokens.surfaceHi
-                : SlamTokens.primary,
+            color: isOff ? SlamTokens.surfaceHi : SlamTokens.primary,
             borderRadius: BorderRadius.circular(SlamTokens.rCircle),
             boxShadow: isOff ? null : [SlamTokens.primaryShadow],
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: isOff ? null : () {
-                HapticFeedback.mediumImpact();
-                widget.onPressed?.call();
-              },
-              onTapDown: isOff ? null : (_) {
-                HapticFeedback.selectionClick();
-                setState(() => _isPressed = true);
-              },
+              onTap: isOff
+                  ? null
+                  : () {
+                      HapticFeedback.mediumImpact();
+                      widget.onPressed?.call();
+                    },
+              onTapDown: isOff
+                  ? null
+                  : (_) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _isPressed = true);
+                    },
               onTapUp: isOff ? null : (_) => setState(() => _isPressed = false),
-              onTapCancel: isOff ? null : () => setState(() => _isPressed = false),
+              onTapCancel:
+                  isOff ? null : () => setState(() => _isPressed = false),
               borderRadius: BorderRadius.circular(SlamTokens.rCircle),
               child: Container(
                 alignment: Alignment.center,
@@ -83,8 +87,8 @@ class _GradientButtonState extends State<GradientButton> {
                         width: 22,
                         height: 22,
                         child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(SlamTokens.primaryOn),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              SlamTokens.primaryOn),
                           strokeWidth: 2.5,
                         ),
                       )
@@ -93,7 +97,8 @@ class _GradientButtonState extends State<GradientButton> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (widget.icon != null) ...[
-                            Icon(widget.icon, color: SlamTokens.primaryOn, size: 20),
+                            Icon(widget.icon,
+                                color: SlamTokens.primaryOn, size: 20),
                             const SizedBox(width: 8),
                           ],
                           Text(
@@ -169,8 +174,7 @@ class SecondaryButton extends StatelessWidget {
                 width: 22,
                 height: 22,
                 child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(SlamTokens.textDim),
+                  valueColor: AlwaysStoppedAnimation<Color>(SlamTokens.textDim),
                   strokeWidth: 2.5,
                 ),
               )
@@ -188,9 +192,7 @@ class SecondaryButton extends StatelessWidget {
                         GoogleFonts.dmSans(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: isOff
-                              ? SlamTokens.textMute
-                              : SlamTokens.text,
+                          color: isOff ? SlamTokens.textMute : SlamTokens.text,
                         ),
                   ),
                 ],

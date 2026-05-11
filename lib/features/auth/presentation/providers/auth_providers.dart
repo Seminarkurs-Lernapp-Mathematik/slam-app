@@ -8,7 +8,8 @@ part 'auth_providers.g.dart';
 
 /// Auth Login Provider
 @riverpod
-Future<User> authLogin(AuthLoginRef ref, Map<String, String> credentials) async {
+Future<User> authLogin(
+    AuthLoginRef ref, Map<String, String> credentials) async {
   final authService = ref.watch(authServiceProvider);
   final firestoreService = ref.watch(firestoreServiceProvider);
 

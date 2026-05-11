@@ -26,11 +26,14 @@ class QuestionResult with _$QuestionResult {
     required String unterthema,
     required String gradeLevel,
     required String courseType,
-    @Default(0) @JsonKey(name: 'timestamp') int timestamp, // Use int for Firestore Timestamp
+    @Default(0)
+    @JsonKey(name: 'timestamp')
+    int timestamp, // Use int for Firestore Timestamp
     @Default(0) int xpEarned,
     @Default(0) int coinsEarned,
     String? feedback, // AI feedback
   }) = _QuestionResult;
 
-  factory QuestionResult.fromJson(Map<String, dynamic> json) => _$QuestionResultFromJson(json);
+  factory QuestionResult.fromJson(Map<String, dynamic> json) =>
+      _$QuestionResultFromJson(json);
 }

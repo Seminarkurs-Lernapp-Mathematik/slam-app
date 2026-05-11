@@ -107,4 +107,3 @@ class SkippedQuestions extends _$SkippedQuestions {
     state = {...state}..remove(index);
   }
 }
-

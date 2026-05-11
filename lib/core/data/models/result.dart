@@ -35,7 +35,8 @@ sealed class Result<S, F> {
   T map<T>({
     required T Function(S value) success,
     required T Function(F error) failure,
-  }) => when(success: success, failure: failure);
+  }) =>
+      when(success: success, failure: failure);
 
   Result<T, F> mapSuccess<T>(T Function(S value) transform) {
     return when(
@@ -75,7 +76,7 @@ class Failure<S, F> extends Result<S, F> {
 sealed class AppError {
   final String message;
   final StackTrace? stackTrace;
-  
+
   const AppError(this.message, {this.stackTrace});
 
   @override

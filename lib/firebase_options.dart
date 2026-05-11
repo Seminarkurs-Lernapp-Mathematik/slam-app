@@ -71,5 +71,4 @@ class DefaultFirebaseOptions {
     authDomain: 'seminarkurs-lernapp.firebaseapp.com',
     storageBucket: 'seminarkurs-lernapp.firebasestorage.app',
   );
-
 }

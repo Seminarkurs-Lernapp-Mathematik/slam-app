@@ -135,9 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         width: i == _page ? 20 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: i == _page
-                              ? cs.primary
-                              : cs.outlineVariant,
+                          color: i == _page ? cs.primary : cs.outlineVariant,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
@@ -152,8 +150,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             ),
-                    icon: Icon(
-                        _isLast ? Icons.check : Icons.arrow_forward, size: 18),
+                    icon: Icon(_isLast ? Icons.check : Icons.arrow_forward,
+                        size: 18),
                     label: Text(_isLast ? 'Los geht\'s!' : 'Weiter'),
                   ),
                 ],
@@ -238,13 +236,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _bulletPoint('Deine Antworten und Fortschritte werden in Firebase gespeichert, um die App personalisieren zu können.'),
+                _bulletPoint(
+                    'Deine Antworten und Fortschritte werden in Firebase gespeichert, um die App personalisieren zu können.'),
                 const SizedBox(height: 8),
-                _bulletPoint('Deine Texteingaben können von KI-Diensten (Claude, Gemini) verarbeitet werden, um Fragen und Feedback zu generieren.'),
+                _bulletPoint(
+                    'Deine Texteingaben können von KI-Diensten (Claude, Gemini) verarbeitet werden, um Fragen und Feedback zu generieren.'),
                 const SizedBox(height: 8),
-                _bulletPoint('E-Mail-Adresse und Name werden ausschließlich für die Authentifizierung verwendet und nicht an KI-Dienste weitergegeben.'),
+                _bulletPoint(
+                    'E-Mail-Adresse und Name werden ausschließlich für die Authentifizierung verwendet und nicht an KI-Dienste weitergegeben.'),
                 const SizedBox(height: 8),
-                _bulletPoint('Du kannst deine Daten jederzeit in den Einstellungen löschen.'),
+                _bulletPoint(
+                    'Du kannst deine Daten jederzeit in den Einstellungen löschen.'),
               ],
             ),
           ),
@@ -263,16 +265,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: BoxDecoration(
                     color: _consented ? SlamTokens.primary : Colors.transparent,
                     border: Border.all(
-                      color: _consented
-                          ? SlamTokens.primary
-                          : SlamTokens.textDim,
+                      color:
+                          _consented ? SlamTokens.primary : SlamTokens.textDim,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: _consented
-                      ? const Icon(Icons.check,
-                          size: 16, color: Colors.white)
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 12),
@@ -282,8 +282,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: GoogleFonts.dmSans(
                           fontSize: 13, color: SlamTokens.textDim),
                       children: [
-                        const TextSpan(
-                            text: 'Ich stimme der '),
+                        const TextSpan(text: 'Ich stimme der '),
                         TextSpan(
                           text: 'Datenschutzerklärung',
                           style: TextStyle(

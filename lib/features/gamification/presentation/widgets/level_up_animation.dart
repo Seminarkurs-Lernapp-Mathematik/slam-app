@@ -89,8 +89,7 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
         weight: 30,
       ),
       TweenSequenceItem(tween: ConstantTween(1.0), weight: 35),
-      TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.8), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.8), weight: 15),
     ]).animate(_mainController);
 
     _pulseController = AnimationController(
@@ -203,7 +202,8 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
             children: [
               // Dark overlay
               Container(
-                color: Colors.black.withValues(alpha: 0.6 * _fadeAnimation.value),
+                color:
+                    Colors.black.withValues(alpha: 0.6 * _fadeAnimation.value),
               ),
 
               // Particle layer
@@ -256,7 +256,8 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
 
                         // Level number with glow
                         AnimatedBuilder(
-                          animation: Listenable.merge([_glowAnimation, _numberAnimation]),
+                          animation: Listenable.merge(
+                              [_glowAnimation, _numberAnimation]),
                           builder: (context, child) {
                             return Container(
                               padding: const EdgeInsets.all(24),
@@ -265,17 +266,19 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
                                 gradient: RadialGradient(
                                   colors: [
                                     theme.colorScheme.primary,
-                                    theme.colorScheme.primary.withValues(alpha: 0.5),
+                                    theme.colorScheme.primary
+                                        .withValues(alpha: 0.5),
                                     Colors.transparent,
                                   ],
                                   stops: const [0.3, 0.6, 1.0],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: _glowAnimation.value * 0.8),
+                                    color: theme.colorScheme.primary.withValues(
+                                        alpha: _glowAnimation.value * 0.8),
                                     blurRadius: 40 + _glowAnimation.value * 20,
-                                    spreadRadius: 10 + _glowAnimation.value * 10,
+                                    spreadRadius:
+                                        10 + _glowAnimation.value * 10,
                                   ),
                                 ],
                               ),
@@ -302,23 +305,27 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
                             return Opacity(
                               opacity: _numberAnimation.value,
                               child: Transform.translate(
-                                offset: Offset(0, 20 * (1 - _numberAnimation.value)),
+                                offset: Offset(
+                                    0, 20 * (1 - _numberAnimation.value)),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                     vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surface.withValues(alpha: 0.9),
+                                    color: theme.colorScheme.surface
+                                        .withValues(alpha: 0.9),
                                     borderRadius: BorderRadius.circular(30),
                                     border: Border.all(
-                                      color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.5),
                                       width: 2,
                                     ),
                                   ),
                                   child: Text(
                                     levelTitle,
-                                    style: theme.textTheme.headlineSmall?.copyWith(
+                                    style:
+                                        theme.textTheme.headlineSmall?.copyWith(
                                       color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -423,7 +430,8 @@ class _LevelParticlePainter extends CustomPainter {
   void _drawSparkle(Canvas canvas, _LevelParticle p) {
     // Sparkles appear and disappear
     final phaseOffset = (p.startX + p.startY) * 2 * math.pi;
-    final sparkleProgress = (math.sin(progress * math.pi * 4 + phaseOffset) + 1) / 2;
+    final sparkleProgress =
+        (math.sin(progress * math.pi * 4 + phaseOffset) + 1) / 2;
 
     if (sparkleProgress < 0.3) return;
 

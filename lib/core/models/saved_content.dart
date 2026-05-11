@@ -48,8 +48,9 @@ class SavedContent with _$SavedContent {
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()
           : null,
-      tags: (data['tags'] as List<dynamic>?)?.map((t) => t as String).toList() ??
-          [],
+      tags:
+          (data['tags'] as List<dynamic>?)?.map((t) => t as String).toList() ??
+              [],
     );
   }
 

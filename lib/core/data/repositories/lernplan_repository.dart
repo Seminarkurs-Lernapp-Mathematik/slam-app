@@ -9,7 +9,8 @@ import '../datasources/local_datasource.dart';
 import '../datasources/remote_datasource.dart';
 import '../models/result.dart';
 import 'base_repository.dart';
-import 'settings_repository.dart' show localDataSourceProvider, remoteDataSourceProvider;
+import 'settings_repository.dart'
+    show localDataSourceProvider, remoteDataSourceProvider;
 
 part 'lernplan_repository.g.dart';
 
@@ -64,7 +65,8 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
 
   @override
   Stream<List<Lernplan>> watchAll() {
-    return watchLernplan().map((lernplan) => lernplan != null ? [lernplan] : []);
+    return watchLernplan()
+        .map((lernplan) => lernplan != null ? [lernplan] : []);
   }
 
   @override
@@ -77,7 +79,8 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
   // ============================================================================
 
   @override
-  bool isStale(DateTime lastUpdated, {Duration maxAge = const Duration(minutes: 5)}) {
+  bool isStale(DateTime lastUpdated,
+      {Duration maxAge = const Duration(minutes: 5)}) {
     return DateTime.now().difference(lastUpdated) > maxAge;
   }
 
@@ -90,11 +93,11 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     }
 
     final operations = pendingResult.successOrNull ?? [];
-    
+
     // Filter for lernplan operations
-    final lernplanOps = operations.where((op) => 
-      op.collection == FirebaseCollections.learningPlan
-    ).toList();
+    final lernplanOps = operations
+        .where((op) => op.collection == FirebaseCollections.learningPlan)
+        .toList();
 
     // Execute pending operations
     for (final op in lernplanOps) {
@@ -112,7 +115,7 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
   @override
   Future<Result<List<Lernplan>, AppError>> refresh() async {
     final result = await _remote.getLernplan(_userId);
-    
+
     return result.map(
       success: (data) async {
         if (data != null) {
@@ -165,8 +168,9 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     await _local.cacheLernplan(_userId, lernplan.toJson());
 
     // Try to save to remote
-    final remoteResult = await _remote.updateLernplan(_userId, _serializeLernplan(lernplan));
-    
+    final remoteResult =
+        await _remote.updateLernplan(_userId, _serializeLernplan(lernplan));
+
     return remoteResult.map(
       success: (_) => Success(lernplan),
       failure: (error) {
@@ -182,22 +186,25 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     );
   }
 
-  Future<Result<Lernplan, AppError>> addTopics(List<LernplanTopic> topics) async {
+  Future<Result<Lernplan, AppError>> addTopics(
+      List<LernplanTopic> topics) async {
     final currentResult = await getLernplan();
-    
+
     return currentResult.map(
       success: (current) async {
         final now = DateTime.now();
         final existingTopics = current.topics;
-        
+
         // Filter duplicates
-        final newTopics = topics.where((newTopic) {
-          return !existingTopics.any((existing) =>
-            existing.leitidee == newTopic.leitidee &&
-            existing.thema == newTopic.thema &&
-            existing.unterthema == newTopic.unterthema
-          );
-        }).map((t) => t.copyWith(addedAt: now)).toList();
+        final newTopics = topics
+            .where((newTopic) {
+              return !existingTopics.any((existing) =>
+                  existing.leitidee == newTopic.leitidee &&
+                  existing.thema == newTopic.thema &&
+                  existing.unterthema == newTopic.unterthema);
+            })
+            .map((t) => t.copyWith(addedAt: now))
+            .toList();
 
         if (newTopics.isEmpty) {
           return Success(current); // No new topics to add
@@ -214,16 +221,18 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     );
   }
 
-  Future<Result<Lernplan, AppError>> removeTopic(LernplanTopic topicToRemove) async {
+  Future<Result<Lernplan, AppError>> removeTopic(
+      LernplanTopic topicToRemove) async {
     final currentResult = await getLernplan();
-    
+
     return currentResult.map(
       success: (current) async {
-        final updatedTopics = current.topics.where((t) =>
-          t.leitidee != topicToRemove.leitidee ||
-          t.thema != topicToRemove.thema ||
-          t.unterthema != topicToRemove.unterthema
-        ).toList();
+        final updatedTopics = current.topics
+            .where((t) =>
+                t.leitidee != topicToRemove.leitidee ||
+                t.thema != topicToRemove.thema ||
+                t.unterthema != topicToRemove.unterthema)
+            .toList();
 
         final updated = current.copyWith(
           topics: updatedTopics,
@@ -241,10 +250,9 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     return result.map(
       success: (lernplan) {
         final exists = lernplan.topics.any((t) =>
-          t.leitidee == topic.leitidee &&
-          t.thema == topic.thema &&
-          t.unterthema == topic.unterthema
-        );
+            t.leitidee == topic.leitidee &&
+            t.thema == topic.thema &&
+            t.unterthema == topic.unterthema);
         return Success(exists);
       },
       failure: (error) => Failure(error),
@@ -259,7 +267,8 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
         .asyncMap((doc) async {
       final data = doc.data();
       if (data != null && data[FirebaseCollections.learningPlan] != null) {
-        final lernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+        final lernplanData =
+            data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
         final lernplan = Lernplan.fromJson(lernplanData);
         // Update local cache
         await _local.cacheLernplan(_userId, lernplan.toJson());
@@ -277,13 +286,15 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     return {
       'id': lernplan.id,
       'userId': lernplan.userId,
-      'topics': lernplan.topics.map((t) => {
-        'leitidee': t.leitidee,
-        'thema': t.thema,
-        'unterthema': t.unterthema,
-        'addedAt': Timestamp.fromDate(t.addedAt),
-        'source': t.source,
-      }).toList(),
+      'topics': lernplan.topics
+          .map((t) => {
+                'leitidee': t.leitidee,
+                'thema': t.thema,
+                'unterthema': t.unterthema,
+                'addedAt': Timestamp.fromDate(t.addedAt),
+                'source': t.source,
+              })
+          .toList(),
       'createdAt': Timestamp.fromDate(lernplan.createdAt),
       'updatedAt': Timestamp.fromDate(lernplan.updatedAt),
     };
@@ -293,7 +304,8 @@ class LernplanRepository extends SyncableRepository<Lernplan, String> {
     switch (op.type) {
       case SyncOperationType.update:
         final lernplan = Lernplan.fromJson(op.data);
-        return await _remote.updateLernplan(_userId, _serializeLernplan(lernplan));
+        return await _remote.updateLernplan(
+            _userId, _serializeLernplan(lernplan));
       default:
         return const Success(null);
     }
@@ -324,7 +336,9 @@ Future<Lernplan> lernplan(Ref ref) async {
 @riverpod
 Stream<Lernplan> lernplanStream(Ref ref) {
   final repository = ref.watch(lernplanRepositoryProvider);
-  return repository.watchLernplan().map((l) => l ?? Lernplan.empty('anonymous'));
+  return repository
+      .watchLernplan()
+      .map((l) => l ?? Lernplan.empty('anonymous'));
 }
 
 @riverpod
@@ -338,10 +352,10 @@ class LernplanNotifier extends _$LernplanNotifier {
 
   Future<void> addTopics(List<LernplanTopic> topics) async {
     state = const AsyncValue.loading();
-    
+
     final repository = ref.read(lernplanRepositoryProvider);
     final result = await repository.addTopics(topics);
-    
+
     state = result.when(
       success: (lernplan) => AsyncValue.data(lernplan),
       failure: (error) => AsyncValue.error(error, StackTrace.current),
@@ -350,10 +364,10 @@ class LernplanNotifier extends _$LernplanNotifier {
 
   Future<void> removeTopic(LernplanTopic topic) async {
     state = const AsyncValue.loading();
-    
+
     final repository = ref.read(lernplanRepositoryProvider);
     final result = await repository.removeTopic(topic);
-    
+
     state = result.when(
       success: (lernplan) => AsyncValue.data(lernplan),
       failure: (error) => AsyncValue.error(error, StackTrace.current),
@@ -370,7 +384,7 @@ class LernplanNotifier extends _$LernplanNotifier {
     state = const AsyncValue.loading();
     final repository = ref.read(lernplanRepositoryProvider);
     await repository.sync();
-    
+
     final result = await repository.getLernplan();
     state = AsyncValue.data(result.getOrElse(Lernplan.empty('anonymous')));
   }

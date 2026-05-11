@@ -42,7 +42,8 @@ class LearningPlan with _$LearningPlan {
       smartLearningEnabled: false,
       createdAt: now,
       updatedAt: now,
-      progress: LearningPlanProgress.initial(totalTopics: selectedTopics.length),
+      progress:
+          LearningPlanProgress.initial(totalTopics: selectedTopics.length),
       metadata: LearningPlanMetadata(
         gradeLevel: gradeLevel ?? 'Klasse_11',
         courseType: courseType ?? 'Leistungskurs',

@@ -14,7 +14,8 @@ Widget buildWebView({
   void Function(String message)? onMessage,
   String? javascriptChannelName,
 }) {
-  final viewId = 'webview-${_viewIdCounter++}-${DateTime.now().millisecondsSinceEpoch}';
+  final viewId =
+      'webview-${_viewIdCounter++}-${DateTime.now().millisecondsSinceEpoch}';
 
   ui_web.platformViewRegistry.registerViewFactory(viewId, (int viewId) {
     final iframe = html.IFrameElement()
@@ -49,6 +50,7 @@ Widget buildWebView({
           }
         }
       }
+
       html.window.addEventListener('message', messageListener);
     }
 

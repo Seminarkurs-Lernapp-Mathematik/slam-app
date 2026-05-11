@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 
 /// Structured logging system for the app
-/// 
+///
 /// Usage:
 /// ```dart
 /// Logger.info('User logged in', tag: 'Auth', data: {'userId': id});
@@ -37,7 +37,8 @@ class Logger {
   // LOG METHODS
   // ============================================================================
 
-  static void verbose(String message, {String? tag, Map<String, dynamic>? data}) {
+  static void verbose(String message,
+      {String? tag, Map<String, dynamic>? data}) {
     _log(LogLevel.verbose, message, tag: tag, data: data);
   }
 
@@ -49,7 +50,8 @@ class Logger {
     _log(LogLevel.info, message, tag: tag, data: data);
   }
 
-  static void warning(String message, {String? tag, Map<String, dynamic>? data, Object? error}) {
+  static void warning(String message,
+      {String? tag, Map<String, dynamic>? data, Object? error}) {
     _log(LogLevel.warning, message, tag: tag, data: data, error: error);
   }
 
@@ -60,7 +62,8 @@ class Logger {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    _log(LogLevel.error, message, tag: tag, data: data, error: error, stackTrace: stackTrace);
+    _log(LogLevel.error, message,
+        tag: tag, data: data, error: error, stackTrace: stackTrace);
   }
 
   static void fatal(
@@ -70,7 +73,8 @@ class Logger {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    _log(LogLevel.fatal, message, tag: tag, data: data, error: error, stackTrace: stackTrace);
+    _log(LogLevel.fatal, message,
+        tag: tag, data: data, error: error, stackTrace: stackTrace);
   }
 
   // ============================================================================
@@ -123,21 +127,22 @@ class Logger {
   static void _printToConsole(LogEntry entry) {
     final emoji = _getEmoji(entry.level);
     final time = entry.timestamp.toIso8601String().split('T')[1].split('.')[0];
-    final prefix = '[$time] $emoji [${entry.tag}] ${entry.level.name.toUpperCase()}';
-    
+    final prefix =
+        '[$time] $emoji [${entry.tag}] ${entry.level.name.toUpperCase()}';
+
     // ignore: avoid_print
     print('$prefix: ${entry.message}');
-    
+
     if (entry.data != null && entry.data!.isNotEmpty) {
       // ignore: avoid_print
       print('  Data: ${entry.data}');
     }
-    
+
     if (entry.error != null) {
       // ignore: avoid_print
       print('  Error: ${entry.error}');
     }
-    
+
     if (entry.stackTrace != null && entry.level.index >= LogLevel.error.index) {
       // ignore: avoid_print
       print('  StackTrace:\n${entry.stackTrace}');
@@ -203,14 +208,14 @@ class LogEntry {
   });
 
   Map<String, dynamic> toJson() => {
-    'timestamp': timestamp.toIso8601String(),
-    'level': level.name,
-    'message': message,
-    'tag': tag,
-    'data': data,
-    'error': error,
-    'stackTrace': stackTrace,
-  };
+        'timestamp': timestamp.toIso8601String(),
+        'level': level.name,
+        'message': message,
+        'tag': tag,
+        'data': data,
+        'error': error,
+        'stackTrace': stackTrace,
+      };
 }
 
 // ============================================================================
@@ -231,7 +236,8 @@ extension LoggerExtension on Object {
   }
 
   void logWarning(String message, {Map<String, dynamic>? data, Object? error}) {
-    Logger.warning(message, tag: runtimeType.toString(), data: data, error: error);
+    Logger.warning(message,
+        tag: runtimeType.toString(), data: data, error: error);
   }
 
   void logError(

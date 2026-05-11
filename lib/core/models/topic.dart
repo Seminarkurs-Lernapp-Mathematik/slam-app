@@ -38,8 +38,7 @@ class Topic with _$Topic {
 
     final completed = data['questionsCompleted'] as int? ?? 0;
     final total = data['totalQuestions'] as int? ?? 0;
-    final progress =
-        total > 0 ? ((completed / total) * 100).round() : 0;
+    final progress = total > 0 ? ((completed / total) * 100).round() : 0;
     final avgAccuracy = data['avgAccuracy'] as int? ?? 0;
 
     return Topic(

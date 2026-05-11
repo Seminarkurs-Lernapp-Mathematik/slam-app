@@ -55,9 +55,13 @@ class EducationSettings extends ConsumerWidget {
               ],
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(educationConfigNotifierProvider.notifier).setGradeLevel(value);
+                  ref
+                      .read(educationConfigNotifierProvider.notifier)
+                      .setGradeLevel(value);
                   if (value != '11' && value != '12') {
-                    ref.read(educationConfigNotifierProvider.notifier).setCourseType(CourseType.grundkurs);
+                    ref
+                        .read(educationConfigNotifierProvider.notifier)
+                        .setCourseType(CourseType.grundkurs);
                   }
                 }
               },
@@ -87,7 +91,9 @@ class EducationSettings extends ConsumerWidget {
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    ref.read(educationConfigNotifierProvider.notifier).setCourseType(value);
+                    ref
+                        .read(educationConfigNotifierProvider.notifier)
+                        .setCourseType(value);
                   }
                 },
               ),
@@ -125,7 +131,8 @@ class EducationSettings extends ConsumerWidget {
                     onPressed: () async {
                       final picked = await showDatePicker(
                         context: context,
-                        initialDate: settings.examDate ?? DateTime.now().add(const Duration(days: 30)),
+                        initialDate: settings.examDate ??
+                            DateTime.now().add(const Duration(days: 30)),
                         firstDate: DateTime.now(),
                         lastDate: DateTime.now().add(const Duration(days: 730)),
                         helpText: 'Prüfungsdatum wählen',
@@ -133,7 +140,9 @@ class EducationSettings extends ConsumerWidget {
                         cancelText: 'Abbrechen',
                       );
                       if (picked != null) {
-                        ref.read(appSettingsNotifierProvider.notifier).setExamDate(picked);
+                        ref
+                            .read(appSettingsNotifierProvider.notifier)
+                            .setExamDate(picked);
                       }
                     },
                     icon: const Icon(Icons.calendar_today, size: 18),
@@ -153,7 +162,9 @@ class EducationSettings extends ConsumerWidget {
                     icon: const Icon(Icons.close),
                     tooltip: 'Datum entfernen',
                     onPressed: () {
-                      ref.read(appSettingsNotifierProvider.notifier).setExamDate(null);
+                      ref
+                          .read(appSettingsNotifierProvider.notifier)
+                          .setExamDate(null);
                     },
                   ),
                 ],

@@ -22,7 +22,8 @@ class _AccountSettingsState extends ConsumerState<AccountSettings> {
     super.initState();
     // Initialize with current user display name
     final user = ref.read(authServiceProvider).currentUser;
-    _displayNameController.text = user?.displayName ?? user?.email?.split('@').first ?? '';
+    _displayNameController.text =
+        user?.displayName ?? user?.email?.split('@').first ?? '';
   }
 
   @override

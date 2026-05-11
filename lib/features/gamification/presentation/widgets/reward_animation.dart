@@ -264,7 +264,8 @@ class _RewardAnimationState extends State<RewardAnimation>
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 30,
                           spreadRadius: 5,
                         ),
@@ -338,7 +339,8 @@ class _RewardAnimationState extends State<RewardAnimation>
                         ),
 
                         // Streak indicator
-                        if (widget.streakDay != null && widget.streakDay! > 0) ...[
+                        if (widget.streakDay != null &&
+                            widget.streakDay! > 0) ...[
                           const SizedBox(height: 16),
                           AnimatedBuilder(
                             animation: _streakScaleAnimation,
@@ -354,7 +356,8 @@ class _RewardAnimationState extends State<RewardAnimation>
                                     color: Colors.orange.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.orange.withValues(alpha: 0.5),
+                                      color:
+                                          Colors.orange.withValues(alpha: 0.5),
                                     ),
                                   ),
                                   child: Row(
@@ -368,7 +371,8 @@ class _RewardAnimationState extends State<RewardAnimation>
                                       const SizedBox(width: 8),
                                       Text(
                                         '${widget.streakDay} Tage Streak!',
-                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
                                           color: Colors.orange,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -473,7 +477,8 @@ class _RewardParticlePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (final p in particles) {
-      final adjustedProgress = ((progress - p.delay) / (1 - p.delay)).clamp(0.0, 1.0);
+      final adjustedProgress =
+          ((progress - p.delay) / (1 - p.delay)).clamp(0.0, 1.0);
       if (adjustedProgress <= 0) continue;
 
       final t = adjustedProgress;

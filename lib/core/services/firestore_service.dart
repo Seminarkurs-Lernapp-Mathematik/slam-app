@@ -30,9 +30,8 @@ class FirestoreService {
     required String displayName,
     required String email,
   }) async {
-    final userRef = _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId);
+    final userRef =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     final doc = await userRef.get();
     if (doc.exists) {
@@ -80,10 +79,7 @@ class FirestoreService {
 
   /// Update user stats
   Future<void> updateUserStats(String userId, UserStats stats) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .update({
+    await _firestore.collection(FirebaseCollections.users).doc(userId).update({
       FirebaseCollections.stats: stats.toJson(),
     });
   }
@@ -113,30 +109,40 @@ class FirestoreService {
       final doc = await transaction.get(docRef);
       final data = doc.data();
       if (data == null) return;
-      final statsData = data[FirebaseCollections.stats] as Map<String, dynamic>?;
+      final statsData =
+          data[FirebaseCollections.stats] as Map<String, dynamic>?;
       if (statsData == null) return;
       final today = DateTime.now().toIso8601String().substring(0, 10);
       final updatedStats = UserStats.fromJson(statsData).updateStreak(today);
-      transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+      transaction
+          .update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
     });
   }
 
   /// Add XP and coins atomically (transaction prevents race conditions).
   /// Falls back to creating the stats field from scratch when the document or
   /// stats field is missing (handles users created before Firestore init was wired).
-  Future<void> addXpAndCoins(String userId, int xpEarned, int coinsEarned) async {
+  Future<void> addXpAndCoins(
+      String userId, int xpEarned, int coinsEarned) async {
     if (xpEarned == 0 && coinsEarned == 0) return;
     final docRef = _firestore.collection(FirebaseCollections.users).doc(userId);
     await _firestore.runTransaction((transaction) async {
       final doc = await transaction.get(docRef);
       final data = doc.data();
-      final statsData = data?[FirebaseCollections.stats] as Map<String, dynamic>?;
-      final currentStats = statsData != null ? UserStats.fromJson(statsData) : UserStats.initial();
+      final statsData =
+          data?[FirebaseCollections.stats] as Map<String, dynamic>?;
+      final currentStats = statsData != null
+          ? UserStats.fromJson(statsData)
+          : UserStats.initial();
       final updatedStats = currentStats.addXp(xpEarned).addCoins(coinsEarned);
       if (!doc.exists) {
-        transaction.set(docRef, {FirebaseCollections.stats: updatedStats.toJson()}, SetOptions(merge: true));
+        transaction.set(
+            docRef,
+            {FirebaseCollections.stats: updatedStats.toJson()},
+            SetOptions(merge: true));
       } else {
-        transaction.update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
+        transaction
+            .update(docRef, {FirebaseCollections.stats: updatedStats.toJson()});
       }
     });
   }
@@ -164,10 +170,7 @@ class FirestoreService {
 
   /// Update user settings
   Future<void> updateUserSettings(String userId, UserSettings settings) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .update({
+    await _firestore.collection(FirebaseCollections.users).doc(userId).update({
       FirebaseCollections.settings: settings.toJson(),
     });
   }
@@ -457,10 +460,7 @@ class FirestoreService {
 
   /// Save Lernplan (updates the Lernplan field on the user document)
   Future<void> saveLernplan(String userId, Lernplan lernplan) async {
-    await _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId)
-        .set({
+    await _firestore.collection(FirebaseCollections.users).doc(userId).set({
       FirebaseCollections.learningPlan: lernplan.toJson(),
     }, SetOptions(merge: true));
   }
@@ -485,10 +485,10 @@ class FirestoreService {
   }
 
   /// Add topics to an existing Lernplan
-  Future<void> addTopicsToLernplan(String userId, List<LernplanTopic> newTopics) async {
-    final lernplanDoc = _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId);
+  Future<void> addTopicsToLernplan(
+      String userId, List<LernplanTopic> newTopics) async {
+    final lernplanDoc =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(lernplanDoc);
@@ -506,10 +506,14 @@ class FirestoreService {
         );
         // Manually serialize to ensure proper JSON conversion
         final jsonData = _lernplanToJson(newLernplan);
-        transaction.set(lernplanDoc, {FirebaseCollections.learningPlan: jsonData}, SetOptions(merge: true));
+        transaction.set(
+            lernplanDoc,
+            {FirebaseCollections.learningPlan: jsonData},
+            SetOptions(merge: true));
       } else {
         // Lernplan found, update it
-        final existingLernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+        final existingLernplanData =
+            data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
         final existingLernplan = Lernplan.fromJson(existingLernplanData);
 
         // Filter out topics that already exist to avoid duplicates
@@ -530,23 +534,25 @@ class FirestoreService {
         );
         // Manually serialize to ensure proper JSON conversion
         final jsonData = _lernplanToJson(updatedLernplan);
-        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
+        transaction
+            .update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
       }
     });
   }
 
   /// Remove a topic from an existing Lernplan
-  Future<void> removeTopicFromLernplan(String userId, LernplanTopic topicToRemove) async {
-    final lernplanDoc = _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId);
+  Future<void> removeTopicFromLernplan(
+      String userId, LernplanTopic topicToRemove) async {
+    final lernplanDoc =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(lernplanDoc);
       final data = snapshot.data();
 
       if (data != null && data.containsKey(FirebaseCollections.learningPlan)) {
-        final existingLernplanData = data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
+        final existingLernplanData =
+            data[FirebaseCollections.learningPlan] as Map<String, dynamic>;
         final existingLernplan = Lernplan.fromJson(existingLernplanData);
 
         final updatedTopics = existingLernplan.topics
@@ -562,7 +568,8 @@ class FirestoreService {
         );
         // Manually serialize to ensure proper JSON conversion
         final jsonData = _lernplanToJson(updatedLernplan);
-        transaction.update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
+        transaction
+            .update(lernplanDoc, {FirebaseCollections.learningPlan: jsonData});
       }
     });
   }
@@ -670,9 +677,7 @@ class FirestoreService {
       query = query.where('isArchived', isEqualTo: false);
     }
 
-    final querySnapshot = await query
-        .orderBy('nextReviewAt')
-        .get();
+    final querySnapshot = await query.orderBy('nextReviewAt').get();
 
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
@@ -767,9 +772,8 @@ class FirestoreService {
       query = query.where('type', isEqualTo: type);
     }
 
-    final querySnapshot = await query
-        .orderBy('createdAt', descending: true)
-        .get();
+    final querySnapshot =
+        await query.orderBy('createdAt', descending: true).get();
 
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
@@ -822,9 +826,8 @@ class FirestoreService {
     required String userId,
     required String themeName,
   }) async {
-    final userRef = _firestore
-        .collection(FirebaseCollections.users)
-        .doc(userId);
+    final userRef =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
@@ -835,7 +838,8 @@ class FirestoreService {
 
       final data = snapshot.data() ?? {};
       final themeUnlocks = data['themeUnlocks'] as Map<String, dynamic>? ?? {};
-      final unlockedThemes = List<String>.from(themeUnlocks['unlockedThemes'] ?? []);
+      final unlockedThemes =
+          List<String>.from(themeUnlocks['unlockedThemes'] ?? []);
 
       if (!unlockedThemes.contains(themeName)) {
         unlockedThemes.add(themeName);
@@ -855,13 +859,18 @@ class FirestoreService {
         .snapshots()
         .map((snapshot) {
       if (!snapshot.exists) {
-        return {'unlockedThemes': ['sunsetOrange']};
+        return {
+          'unlockedThemes': ['sunsetOrange']
+        };
       }
 
       final data = snapshot.data();
       final themeUnlocks = data?['themeUnlocks'] as Map<String, dynamic>?;
 
-      return themeUnlocks ?? {'unlockedThemes': ['sunsetOrange']};
+      return themeUnlocks ??
+          {
+            'unlockedThemes': ['sunsetOrange']
+          };
     });
   }
 
@@ -875,7 +884,8 @@ class FirestoreService {
     required String themeName,
     required int cost,
   }) async {
-    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+    final userRef =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     return await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
@@ -888,13 +898,15 @@ class FirestoreService {
       final stats = data['stats'] as Map<String, dynamic>? ?? {};
       final coins = (stats['coins'] as num?)?.toInt() ?? 0;
       final themeUnlocks = data['themeUnlocks'] as Map<String, dynamic>? ?? {};
-      final unlockedThemes = List<String>.from(themeUnlocks['unlockedThemes'] ?? ['sunsetOrange']);
+      final unlockedThemes =
+          List<String>.from(themeUnlocks['unlockedThemes'] ?? ['sunsetOrange']);
 
       // Check if user has enough coins
       if (coins < cost) {
         return {
           'success': false,
-          'message': 'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
+          'message':
+              'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
         };
       }
 
@@ -929,7 +941,8 @@ class FirestoreService {
     required String userId,
     required int cost,
   }) async {
-    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+    final userRef =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     return await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
@@ -949,7 +962,8 @@ class FirestoreService {
       if (coins < cost) {
         return {
           'success': false,
-          'message': 'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
+          'message':
+              'Nicht genügend Münzen. Benötigt: $cost, Vorhanden: $coins',
         };
       }
 
@@ -957,7 +971,8 @@ class FirestoreService {
       if (streakFreezes >= maxStreakFreezes) {
         return {
           'success': false,
-          'message': 'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
+          'message':
+              'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
         };
       }
 
@@ -984,7 +999,8 @@ class FirestoreService {
     required String userId,
     required int xpCost,
   }) async {
-    final userRef = _firestore.collection(FirebaseCollections.users).doc(userId);
+    final userRef =
+        _firestore.collection(FirebaseCollections.users).doc(userId);
 
     return await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
@@ -1004,7 +1020,8 @@ class FirestoreService {
       if (totalXp < xpCost) {
         return {
           'success': false,
-          'message': 'Nicht genügend XP. Benötigt: $xpCost, Vorhanden: $totalXp',
+          'message':
+              'Nicht genügend XP. Benötigt: $xpCost, Vorhanden: $totalXp',
         };
       }
 
@@ -1012,7 +1029,8 @@ class FirestoreService {
       if (streakFreezes >= maxStreakFreezes) {
         return {
           'success': false,
-          'message': 'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
+          'message':
+              'Maximale Anzahl an Streak Freezes erreicht ($maxStreakFreezes)',
         };
       }
 
@@ -1147,7 +1165,8 @@ class FirestoreService {
   }
 
   /// Get pending friend requests
-  Stream<List<Map<String, dynamic>>> pendingFriendRequestsStream(String userId) {
+  Stream<List<Map<String, dynamic>>> pendingFriendRequestsStream(
+      String userId) {
     return _firestore
         .collection(FirebaseCollections.users)
         .doc(userId)

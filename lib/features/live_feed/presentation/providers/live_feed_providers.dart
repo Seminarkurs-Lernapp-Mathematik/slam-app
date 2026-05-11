@@ -21,7 +21,8 @@ part 'live_feed_providers.g.dart';
 // ============================================================================
 const String _kQuestionQueueKey = 'live_feed_question_queue';
 const String _kQueueTimestampKey = 'live_feed_queue_timestamp';
-const Duration _kCacheValidityDuration = Duration(hours: 24); // Cache valid for 24 hours
+const Duration _kCacheValidityDuration =
+    Duration(hours: 24); // Cache valid for 24 hours
 
 /// Current Difficulty Level Provider (1-10)
 @riverpod
@@ -297,17 +298,20 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       debugPrint('🔄 LiveFeed: Generating questions via backend-managed AI...');
 
       final topicsForAI = lernplanTopics
-          .map((t) => TopicData(leitidee: t.leitidee, thema: t.thema, unterthema: t.unterthema))
+          .map((t) => TopicData(
+              leitidee: t.leitidee, thema: t.thema, unterthema: t.unterthema))
           .toList();
 
       // Pass recent performance so the AI can adapt difficulty
       final questionsAnswered = ref.read(liveFeedQuestionsAnsweredProvider);
       final correctAnswers = ref.read(liveFeedCorrectAnswersProvider);
-      final correctRate = questionsAnswered > 0 ? correctAnswers / questionsAnswered : 0.5;
+      final correctRate =
+          questionsAnswered > 0 ? correctAnswers / questionsAnswered : 0.5;
 
       // Map current difficulty to AFB level string for the backend
       final difficulty = ref.read(liveFeedDifficultyProvider);
-      final afbLevel = difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
+      final afbLevel =
+          difficulty <= 4.5 ? 'I' : (difficulty <= 7.5 ? 'II' : 'III');
       debugPrint('🔄 LiveFeed: Requesting 10 questions at AFB $afbLevel');
 
       // Build memories context: due spaced-repetition items + user preferences
@@ -349,14 +353,19 @@ class LiveFeedQuestionGenerator extends _$LiveFeedQuestionGenerator {
       );
 
       if (session.questions.isNotEmpty) {
-        ref.read(liveFeedQueueProvider.notifier).addQuestions(session.questions);
-        debugPrint('✅ LiveFeed: ${session.questions.length} questions added to queue');
+        ref
+            .read(liveFeedQueueProvider.notifier)
+            .addQuestions(session.questions);
+        debugPrint(
+            '✅ LiveFeed: ${session.questions.length} questions added to queue');
 
         // Automatically load the first question if nothing is showing yet
         if (ref.read(currentLiveFeedQuestionProvider) == null) {
           final first = ref.read(liveFeedQueueProvider).currentQuestion;
           if (first != null) {
-            ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(first);
+            ref
+                .read(currentLiveFeedQuestionProvider.notifier)
+                .setQuestion(first);
           }
         }
       } else {
@@ -491,7 +500,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
         if (questions.isNotEmpty) {
           // The stored list contains only unanswered questions; currentIndex is always 0.
           state = state.copyWith(questions: questions, currentIndex: 0);
-          debugPrint('✅ LiveFeedQueue: Loaded ${questions.length} cached questions');
+          debugPrint(
+              '✅ LiveFeedQueue: Loaded ${questions.length} cached questions');
         }
       } else if (cachedJson != null) {
         // Cache expired, clear it
@@ -512,7 +522,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
       try {
         final questionsJson = state.questions.map((q) => q.toJson()).toList();
         await _prefs!.setString(_kQuestionQueueKey, jsonEncode(questionsJson));
-        await _prefs!.setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
+        await _prefs!
+            .setInt(_kQueueTimestampKey, DateTime.now().millisecondsSinceEpoch);
       } catch (e) {
         debugPrint('❌ LiveFeedQueue: Error saving local cache: $e');
       }
@@ -565,7 +576,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     );
     // Persist to cache
     _saveCache();
-    debugPrint('💾 LiveFeedQueue: Saved ${state.questions.length} questions to cache');
+    debugPrint(
+        '💾 LiveFeedQueue: Saved ${state.questions.length} questions to cache');
   }
 
   /// Remove the answered question from the queue immediately so it can never
@@ -587,7 +599,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
       _clearCache();
       return null;
     }
-    return state.currentQuestion; // index 0 — already the next unanswered question
+    return state
+        .currentQuestion; // index 0 — already the next unanswered question
   }
 
   /// Set the current question (first question load)
@@ -613,9 +626,10 @@ class LiveFeedQueue extends _$LiveFeedQueue {
 
   /// Whether more questions should be generated (prefetch at 4 remaining)
   bool get needsMoreQuestions => state.remainingCount <= 4;
-  
+
   /// Check if there are cached questions available
-  bool get hasCachedQuestions => state.questions.isNotEmpty && state.currentIndex < state.questions.length;
+  bool get hasCachedQuestions =>
+      state.questions.isNotEmpty && state.currentIndex < state.questions.length;
 }
 
 /// Selected Option Provider (tracks which MCQ option was selected)
@@ -682,7 +696,8 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     });
   }
 
-  Future<void> _saveEvaluationResult(Map<String, dynamic> evaluationResult) async {
+  Future<void> _saveEvaluationResult(
+      Map<String, dynamic> evaluationResult) async {
     final userId = ref.read(currentUserProvider)?.uid;
     final currentQuestion = ref.read(currentLiveFeedQuestionProvider);
     final currentAnswer = ref.read(liveFeedAnswerProvider);
@@ -690,7 +705,8 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     final appSettings = ref.read(appSettingsNotifierProvider);
 
     if (userId == null || currentQuestion == null) {
-      debugPrint('❌ LiveFeedEvaluator: userId or currentQuestion is null. Cannot save question result.');
+      debugPrint(
+          '❌ LiveFeedEvaluator: userId or currentQuestion is null. Cannot save question result.');
       return;
     }
 
@@ -706,7 +722,8 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     final questionResult = QuestionResult(
       questionId: currentQuestion.id,
       userId: userId,
-      sessionId: 'live-feed-session', // Live feed questions don't have a real session
+      sessionId:
+          'live-feed-session', // Live feed questions don't have a real session
       questionText: currentQuestion.question,
       correctAnswer: evaluationResult['correctAnswer'] ?? 'N/A',
       userAnswer: currentAnswer,
@@ -726,8 +743,11 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     );
 
     try {
-      await ref.read(firestoreServiceProvider).saveQuestionResult(userId, questionResult);
-      debugPrint('✅ Question result saved successfully: ${questionResult.questionId}');
+      await ref
+          .read(firestoreServiceProvider)
+          .saveQuestionResult(userId, questionResult);
+      debugPrint(
+          '✅ Question result saved successfully: ${questionResult.questionId}');
     } catch (e, st) {
       debugPrint('❌ Error saving question result: $e\n$st');
     }
@@ -830,7 +850,6 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     }
   }
 }
-
 
 /// Timer seconds for the current question — updated by FeedQuestionCard, read by _FeedHeader.
 final liveFeedTimerSecondsProvider = StateProvider<int>((ref) => 0);

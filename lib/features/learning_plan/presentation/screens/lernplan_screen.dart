@@ -21,13 +21,19 @@ class LernplanScreen extends ConsumerWidget {
       backgroundColor: SlamTokens.bg,
       body: lernplanAsync.when(
         data: (lernplan) {
-          final validTopics = lernplan.topics.where((t) =>
-              t.leitidee.isNotEmpty || t.thema.isNotEmpty || t.unterthema.isNotEmpty).toList();
+          final validTopics = lernplan.topics
+              .where((t) =>
+                  t.leitidee.isNotEmpty ||
+                  t.thema.isNotEmpty ||
+                  t.unterthema.isNotEmpty)
+              .toList();
           return _LernplanBody(activeTopics: validTopics);
         },
-        loading: () => Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        loading: () =>
+            Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
         error: (error, _) => Center(
-          child: Text('Fehler: $error', style: const TextStyle(color: SlamTokens.danger)),
+          child: Text('Fehler: $error',
+              style: const TextStyle(color: SlamTokens.danger)),
         ),
       ),
     );
@@ -44,20 +50,22 @@ class _LernplanBody extends ConsumerWidget {
       physics: const BouncingScrollPhysics(),
       slivers: [
         // ── Header ──────────────────────────────────────────────
-        SliverToBoxAdapter(child: _LernplanHeader(activeCount: activeTopics.length)),
+        SliverToBoxAdapter(
+            child: _LernplanHeader(activeCount: activeTopics.length)),
 
         // ── Topic groups ─────────────────────────────────────────
         ...topicCatalog.map((leitidee) => SliverToBoxAdapter(
-          child: _LeitideeSection(
-            leitidee: leitidee,
-            activeTopics: activeTopics,
-          ),
-        )),
+              child: _LeitideeSection(
+                leitidee: leitidee,
+                activeTopics: activeTopics,
+              ),
+            )),
 
         // ── Upload section ────────────────────────────────────────
         const SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(SlamTokens.gutter, 8, SlamTokens.gutter, 32),
+            padding: EdgeInsets.fromLTRB(
+                SlamTokens.gutter, 8, SlamTokens.gutter, 32),
             child: _UploadSection(),
           ),
         ),
@@ -75,7 +83,8 @@ class _LernplanHeader extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 24, SlamTokens.gutter, 8),
+        padding: const EdgeInsets.fromLTRB(
+            SlamTokens.gutter, 24, SlamTokens.gutter, 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,16 +95,21 @@ class _LernplanHeader extends StatelessWidget {
                   Text(
                     'LERNPLAN',
                     style: GoogleFonts.dmSans(
-                      fontSize: 11, fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2, color: SlamTokens.textDim,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: SlamTokens.textDim,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Woran willst\ndu arbeiten?',
                     style: GoogleFonts.fraunces(
-                      fontSize: 34, fontWeight: FontWeight.w700,
-                      color: SlamTokens.text, letterSpacing: -0.8, height: 1.05,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      color: SlamTokens.text,
+                      letterSpacing: -0.8,
+                      height: 1.05,
                     ),
                   ),
                 ],
@@ -103,7 +117,8 @@ class _LernplanHeader extends StatelessWidget {
             ),
             if (activeCount > 0)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: SlamTokens.primarySoft,
                   borderRadius: BorderRadius.circular(SlamTokens.rCircle),
@@ -111,7 +126,8 @@ class _LernplanHeader extends StatelessWidget {
                 child: Text(
                   '$activeCount aktiv',
                   style: GoogleFonts.dmSans(
-                    fontSize: 12, fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
                     color: SlamTokens.primary,
                   ),
                 ),
@@ -130,20 +146,29 @@ class _LeitideeSection extends ConsumerWidget {
 
   (Color, Color) get _colors {
     switch (leitidee.name) {
-      case 'Algebra': return (SlamTokens.algebra, SlamTokens.algebraSoft);
-      case 'Analysis': return (SlamTokens.analysis, SlamTokens.analysisSoft);
-      case 'Geometrie': return (SlamTokens.geometrie, SlamTokens.geometrieSoft);
-      case 'Stochastik': return (SlamTokens.stochastik, SlamTokens.stochastikSoft);
-      default: return (SlamTokens.primary, SlamTokens.primarySoft);
+      case 'Algebra':
+        return (SlamTokens.algebra, SlamTokens.algebraSoft);
+      case 'Analysis':
+        return (SlamTokens.analysis, SlamTokens.analysisSoft);
+      case 'Geometrie':
+        return (SlamTokens.geometrie, SlamTokens.geometrieSoft);
+      case 'Stochastik':
+        return (SlamTokens.stochastik, SlamTokens.stochastikSoft);
+      default:
+        return (SlamTokens.primary, SlamTokens.primarySoft);
     }
   }
 
   IconData get _icon {
     switch (leitidee.icon) {
-      case IconType.functions: return Icons.functions;
-      case IconType.showChart: return Icons.show_chart;
-      case IconType.hexagon: return Icons.hexagon;
-      case IconType.barChart: return Icons.bar_chart;
+      case IconType.functions:
+        return Icons.functions;
+      case IconType.showChart:
+        return Icons.show_chart;
+      case IconType.hexagon:
+        return Icons.hexagon;
+      case IconType.barChart:
+        return Icons.bar_chart;
     }
   }
 
@@ -152,7 +177,8 @@ class _LeitideeSection extends ConsumerWidget {
     final (hue, soft) = _colors;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(SlamTokens.gutter, 14, SlamTokens.gutter, 0),
+      padding: const EdgeInsets.fromLTRB(
+          SlamTokens.gutter, 14, SlamTokens.gutter, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -160,7 +186,8 @@ class _LeitideeSection extends ConsumerWidget {
           Row(
             children: [
               Container(
-                width: 30, height: 30,
+                width: 30,
+                height: 30,
                 decoration: BoxDecoration(color: soft, shape: BoxShape.circle),
                 alignment: Alignment.center,
                 child: Icon(_icon, size: 16, color: hue),
@@ -169,8 +196,10 @@ class _LeitideeSection extends ConsumerWidget {
               Text(
                 leitidee.name,
                 style: GoogleFonts.fraunces(
-                  fontSize: 17, fontWeight: FontWeight.w700,
-                  color: SlamTokens.text, letterSpacing: -0.4,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: SlamTokens.text,
+                  letterSpacing: -0.4,
                 ),
               ),
             ],
@@ -199,8 +228,10 @@ class _LeitideeSection extends ConsumerWidget {
                           Text(
                             thema.name,
                             style: GoogleFonts.dmSans(
-                              fontSize: 12, fontWeight: FontWeight.w800,
-                              color: hue, letterSpacing: 0.3,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: hue,
+                              letterSpacing: 0.3,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -225,9 +256,13 @@ class _LeitideeSection extends ConsumerWidget {
                                     addedAt: DateTime.now(),
                                   );
                                   if (isSelected) {
-                                    ref.read(lernplanNotifierProvider.notifier).removeTopic(topic);
+                                    ref
+                                        .read(lernplanNotifierProvider.notifier)
+                                        .removeTopic(topic);
                                   } else {
-                                    ref.read(lernplanNotifierProvider.notifier).addTopics([topic]);
+                                    ref
+                                        .read(lernplanNotifierProvider.notifier)
+                                        .addTopics([topic]);
                                   }
                                 },
                               );
@@ -325,14 +360,17 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
       final bytes = await file.readAsBytes();
       final aiService = ref.read(aiServiceProvider);
       final result = await aiService.analyzeImage(
-        imageBytes: bytes, analysisType: 'learning_plan',
+        imageBytes: bytes,
+        analysisType: 'learning_plan',
       );
 
       if (!mounted) return;
 
       if (result.topics.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Keine Themen erkannt. Versuche ein klareres Foto.')),
+          const SnackBar(
+              content:
+                  Text('Keine Themen erkannt. Versuche ein klareres Foto.')),
         );
         return;
       }
@@ -362,7 +400,8 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('KI erkannte: ${result.topics.join(', ')} — keine Zuordnung möglich.'),
+              content: Text(
+                  'KI erkannte: ${result.topics.join(', ')} — keine Zuordnung möglich.'),
               duration: const Duration(seconds: 6),
             ),
           );
@@ -401,17 +440,22 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
             Row(
               children: [
                 Container(
-                  width: 30, height: 30,
-                  decoration: BoxDecoration(color: SlamTokens.primarySoft, shape: BoxShape.circle),
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                      color: SlamTokens.primarySoft, shape: BoxShape.circle),
                   alignment: Alignment.center,
-                  child: Icon(Icons.camera_alt, size: 16, color: SlamTokens.primary),
+                  child: Icon(Icons.camera_alt,
+                      size: 16, color: SlamTokens.primary),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   'Themenliste hochladen',
                   style: GoogleFonts.fraunces(
-                    fontSize: 17, fontWeight: FontWeight.w700,
-                    color: SlamTokens.text, letterSpacing: -0.4,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: SlamTokens.text,
+                    letterSpacing: -0.4,
                   ),
                 ),
               ],
@@ -419,11 +463,13 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
             const SizedBox(height: 12),
             Text(
               'Mache ein Foto deiner Themenliste – die KI erkennt die Themen und fügt sie hinzu.',
-              style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim, height: 1.5),
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, color: SlamTokens.textDim, height: 1.5),
             ),
             const SizedBox(height: 16),
             if (_isLoading)
-              Center(child: CircularProgressIndicator(color: SlamTokens.primary))
+              Center(
+                  child: CircularProgressIndicator(color: SlamTokens.primary))
             else
               Row(
                 children: [
@@ -432,7 +478,8 @@ class _UploadSectionState extends ConsumerState<_UploadSection> {
                       onPressed: () => _pickAndAnalyze(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt, size: 16),
                       label: const Text('Foto aufnehmen'),
-                      style: FilledButton.styleFrom(shape: const StadiumBorder()),
+                      style:
+                          FilledButton.styleFrom(shape: const StadiumBorder()),
                     ),
                   ),
                   const SizedBox(width: 10),

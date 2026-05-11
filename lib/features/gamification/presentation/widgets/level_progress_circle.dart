@@ -90,8 +90,7 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
                   size: Size(widget.size, widget.size),
                   painter: _CircleProgressPainter(
                     progress: _animation.value,
-                    backgroundColor:
-                        theme.colorScheme.surfaceContainerHighest,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     progressColor: theme.colorScheme.primary,
                     secondaryColor: theme.colorScheme.secondary,
                     strokeWidth: 12,
@@ -107,7 +106,8 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
                       Text(
                         'Level',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -138,8 +138,8 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.15),
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

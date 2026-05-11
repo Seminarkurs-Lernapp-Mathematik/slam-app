@@ -51,7 +51,6 @@ class ErrorMessage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 /// Inline Error Message (no panel)

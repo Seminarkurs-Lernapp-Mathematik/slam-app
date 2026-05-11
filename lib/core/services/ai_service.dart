@@ -230,7 +230,8 @@ class AIService {
         },
       );
       final jobId = response.data['jobId'] as String?;
-      if (jobId == null) throw AIException(message: 'No jobId in response', statusCode: 500);
+      if (jobId == null)
+        throw AIException(message: 'No jobId in response', statusCode: 500);
       return jobId;
     } on DioException catch (e) {
       throw _handleDioException(e);
@@ -267,7 +268,9 @@ class AIService {
 
       if (status == 'done') {
         final result = job['result'] as Map<String, dynamic>?;
-        if (result == null) throw AIException(message: 'Job fertig, aber kein Ergebnis', statusCode: 500);
+        if (result == null)
+          throw AIException(
+              message: 'Job fertig, aber kein Ergebnis', statusCode: 500);
         return GeneratedApp.fromJson(result);
       }
 
@@ -277,7 +280,9 @@ class AIService {
       }
       // pending / running — keep polling
     }
-    throw AIException(message: 'Zeitüberschreitung beim Warten auf das Ergebnis', statusCode: 408);
+    throw AIException(
+        message: 'Zeitüberschreitung beim Warten auf das Ergebnis',
+        statusCode: 408);
   }
 
   /// Serialize the active SlamTokens palette to hex strings for the backend.
@@ -290,11 +295,11 @@ class AIService {
       (p.b * 255 - 30).clamp(0, 255).round(),
     );
     return {
-      'primary':     _colorToHex(p),
+      'primary': _colorToHex(p),
       'primaryDark': _colorToHex(pDark),
-      'bg':          _colorToHex(SlamTokens.bg),
-      'surface':     _colorToHex(SlamTokens.surface),
-      'text':        _colorToHex(SlamTokens.text),
+      'bg': _colorToHex(SlamTokens.bg),
+      'surface': _colorToHex(SlamTokens.surface),
+      'text': _colorToHex(SlamTokens.text),
     };
   }
 
@@ -416,7 +421,9 @@ class AIService {
         ApiEndpoints.getFullUrl('/api/get-models'),
       );
       final List<dynamic> models = response.data['models'] as List<dynamic>;
-      return models.map((m) => ModelInfo.fromJson(m as Map<String, dynamic>)).toList();
+      return models
+          .map((m) => ModelInfo.fromJson(m as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       throw Exception('Failed to fetch models: $e');
     }
@@ -436,7 +443,9 @@ class AIService {
         final messageField = data['message'];
         if (errorField is String && errorField.isNotEmpty) {
           message = errorField;
-          if (messageField is String && messageField.isNotEmpty && messageField != errorField) {
+          if (messageField is String &&
+              messageField.isNotEmpty &&
+              messageField != errorField) {
             message = '$errorField\n$messageField';
           }
         } else if (messageField is String && messageField.isNotEmpty) {
@@ -472,13 +481,16 @@ class CanvasResponse {
   final List<Drawing>? drawings;
   final List<String>? geogebraCommands;
 
-  CanvasResponse({required this.textResponse, this.drawings, this.geogebraCommands});
+  CanvasResponse(
+      {required this.textResponse, this.drawings, this.geogebraCommands});
 
   factory CanvasResponse.fromJson(Map<String, dynamic> json) {
     return CanvasResponse(
       textResponse: json['text'] as String,
-      drawings: (json['drawings'] as List?)?.map((d) => Drawing.fromJson(d)).toList(),
-      geogebraCommands: (json['geogebraCommands'] as List?)?.map((c) => c as String).toList(),
+      drawings:
+          (json['drawings'] as List?)?.map((d) => Drawing.fromJson(d)).toList(),
+      geogebraCommands:
+          (json['geogebraCommands'] as List?)?.map((c) => c as String).toList(),
     );
   }
 }
@@ -493,7 +505,9 @@ class Drawing {
   factory Drawing.fromJson(Map<String, dynamic> json) {
     return Drawing(
       type: json['type'] as String,
-      points: (json['points'] as List).map((p) => p as Map<String, dynamic>).toList(),
+      points: (json['points'] as List)
+          .map((p) => p as Map<String, dynamic>)
+          .toList(),
       color: json['color'] as String,
     );
   }
@@ -527,7 +541,8 @@ class ImageAnalysisResult {
   final String summary;
   final Map<String, dynamic>? additionalData;
 
-  ImageAnalysisResult({required this.topics, required this.summary, this.additionalData});
+  ImageAnalysisResult(
+      {required this.topics, required this.summary, this.additionalData});
 
   factory ImageAnalysisResult.fromJson(Map<String, dynamic> json) {
     return ImageAnalysisResult(

@@ -96,7 +96,8 @@ class StreakCalendar extends StatelessWidget {
                   boxShadow: isActive
                       ? [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -135,14 +136,15 @@ class StreakCalendar extends StatelessWidget {
   ) {
     if (lastActiveDate == null || streak == 0) return false;
 
-    final daysDifference =
-        DateTime(date.year, date.month, date.day).difference(
-      DateTime(
-        lastActiveDate.year,
-        lastActiveDate.month,
-        lastActiveDate.day,
-      ),
-    ).inDays;
+    final daysDifference = DateTime(date.year, date.month, date.day)
+        .difference(
+          DateTime(
+            lastActiveDate.year,
+            lastActiveDate.month,
+            lastActiveDate.day,
+          ),
+        )
+        .inDays;
 
     // If date is within streak range
     return daysDifference <= 0 && daysDifference > -streak;

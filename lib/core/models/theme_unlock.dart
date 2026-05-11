@@ -44,16 +44,12 @@ class ThemeUnlocks with _$ThemeUnlocks {
 
   /// Get list of locked themes
   List<AppThemePreset> getLockedThemes() {
-    return AppThemePreset.values
-        .where((theme) => !isUnlocked(theme))
-        .toList();
+    return AppThemePreset.values.where((theme) => !isUnlocked(theme)).toList();
   }
 
   /// Get list of unlocked themes as enums
   List<AppThemePreset> getUnlockedThemes() {
-    return AppThemePreset.values
-        .where((theme) => isUnlocked(theme))
-        .toList();
+    return AppThemePreset.values.where((theme) => isUnlocked(theme)).toList();
   }
 }
 

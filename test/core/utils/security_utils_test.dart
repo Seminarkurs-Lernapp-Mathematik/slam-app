@@ -7,14 +7,14 @@ void main() {
       test('should generate consistent hashes', () {
         final hash1 = SecurityUtils.hash('test');
         final hash2 = SecurityUtils.hash('test');
-        
+
         expect(hash1, hash2);
       });
 
       test('should generate different hashes for different inputs', () {
         final hash1 = SecurityUtils.hash('test1');
         final hash2 = SecurityUtils.hash('test2');
-        
+
         expect(hash1, isNot(hash2));
       });
     });
@@ -23,10 +23,10 @@ void main() {
       test('should correctly obfuscate and deobfuscate', () {
         const original = 'secret data';
         const key = 'mykey';
-        
+
         final obfuscated = SecurityUtils.obfuscate(original, key);
         final deobfuscated = SecurityUtils.deobfuscate(obfuscated, key);
-        
+
         expect(obfuscated, isNot(original));
         expect(deobfuscated, original);
       });
@@ -35,9 +35,9 @@ void main() {
         const original = 'secret data';
         const key = 'mykey';
         const wrongKey = 'wrongkey';
-        
+
         final obfuscated = SecurityUtils.obfuscate(original, key);
-        
+
         // With wrong key, deobfuscation will produce garbage
         final deobfuscated = SecurityUtils.deobfuscate(obfuscated, wrongKey);
         expect(deobfuscated, isNot(original));
@@ -80,7 +80,8 @@ void main() {
 
     group('sanitizeInput', () {
       test('should remove HTML tags', () {
-        final sanitized = SecurityUtils.sanitizeInput('<script>alert("xss")</script>');
+        final sanitized =
+            SecurityUtils.sanitizeInput('<script>alert("xss")</script>');
         expect(sanitized.contains('<'), false);
         expect(sanitized.contains('>'), false);
       });
@@ -91,7 +92,8 @@ void main() {
       });
 
       test('should enforce max length', () {
-        final sanitized = SecurityUtils.sanitizeInput('a' * 2000, maxLength: 100);
+        final sanitized =
+            SecurityUtils.sanitizeInput('a' * 2000, maxLength: 100);
         expect(sanitized.length, 100);
       });
     });
@@ -117,8 +119,9 @@ void main() {
       test('should track remaining attempts', () {
         SecurityUtils.isRateLimited('test_key', maxAttempts: 5);
         SecurityUtils.isRateLimited('test_key', maxAttempts: 5);
-        
-        expect(SecurityUtils.getRemainingAttempts('test_key', maxAttempts: 5), 3);
+
+        expect(
+            SecurityUtils.getRemainingAttempts('test_key', maxAttempts: 5), 3);
       });
     });
   });
@@ -151,9 +154,9 @@ void main() {
 
     test('compose should run all validators', () {
       final validator = (String? v) => InputValidators.compose(v, [
-        (v) => InputValidators.required(v),
-        (v) => InputValidators.minLength(v, 5),
-      ]);
+            (v) => InputValidators.required(v),
+            (v) => InputValidators.minLength(v, 5),
+          ]);
 
       expect(validator(null), isNotNull);
       expect(validator('ab'), isNotNull);

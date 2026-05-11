@@ -133,7 +133,8 @@ class ProgressScreen extends ConsumerWidget {
                             onPressed: stats.totalXp >= 100
                                 ? () {
                                     HapticFeedback.lightImpact();
-                                    _purchaseStreakFreeze(context, ref, userId, stats);
+                                    _purchaseStreakFreeze(
+                                        context, ref, userId, stats);
                                   }
                                 : null,
                             icon: const Icon(Icons.add_shopping_cart, size: 18),
@@ -390,7 +391,9 @@ class ProgressScreen extends ConsumerWidget {
         HapticFeedback.mediumImpact();
         final updatedStats = currentStats.purchaseStreakFreeze();
 
-        await ref.read(firestoreServiceProvider).updateUserStats(userId, updatedStats);
+        await ref
+            .read(firestoreServiceProvider)
+            .updateUserStats(userId, updatedStats);
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

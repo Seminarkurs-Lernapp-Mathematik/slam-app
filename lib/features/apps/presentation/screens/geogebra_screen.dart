@@ -33,7 +33,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
   Timer? _loadingTimer;
 
   static const _loadingStages = [
-    (4,  'Mathematik wird analysiert…'),
+    (4, 'Mathematik wird analysiert…'),
     (12, 'Koordinatensystem wird aufgebaut…'),
     (25, 'Objekte werden gezeichnet…'),
     (40, 'Details werden verfeinert…'),
@@ -82,12 +82,15 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     });
     _startLoadingTimer();
     try {
-      final vis = await ref.read(
-        generateGeogebraProvider(prompt: _promptController.text.trim()).future,
-      ).timeout(
-        const Duration(seconds: 60),
-        onTimeout: () => throw TimeoutException('timeout'),
-      );
+      final vis = await ref
+          .read(
+            generateGeogebraProvider(prompt: _promptController.text.trim())
+                .future,
+          )
+          .timeout(
+            const Duration(seconds: 60),
+            onTimeout: () => throw TimeoutException('timeout'),
+          );
       _loadingTimer?.cancel();
       HapticFeedback.mediumImpact();
       setState(() {
@@ -98,7 +101,8 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
     } on TimeoutException {
       _loadingTimer?.cancel();
       setState(() {
-        _error = 'Die Visualisierung hat zu lange gedauert. Bitte erneut versuchen.';
+        _error =
+            'Die Visualisierung hat zu lange gedauert. Bitte erneut versuchen.';
         _isLoading = false;
       });
     } on AIException catch (e) {
@@ -232,12 +236,11 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
             ),
             child: TextField(
               controller: _promptController,
-              style: GoogleFonts.dmSans(
-                  color: SlamTokens.text, fontSize: 14),
+              style: GoogleFonts.dmSans(color: SlamTokens.text, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'z.B. "Zeige eine quadratische Funktion"',
-                hintStyle: GoogleFonts.dmSans(
-                    color: SlamTokens.textDim, fontSize: 14),
+                hintStyle:
+                    GoogleFonts.dmSans(color: SlamTokens.textDim, fontSize: 14),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.fromLTRB(16, 14, 48, 14),
                 suffixIcon: _promptController.text.isNotEmpty
@@ -269,14 +272,12 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                   setState(() {});
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 11, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
                   decoration: BoxDecoration(
                     color: _ggbA.withValues(alpha: 0.1),
-                    borderRadius:
-                        BorderRadius.circular(SlamTokens.rCircle),
-                    border: Border.all(
-                        color: _ggbA.withValues(alpha: 0.25)),
+                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                    border: Border.all(color: _ggbA.withValues(alpha: 0.25)),
                   ),
                   child: Text(_examples[i],
                       style: GoogleFonts.dmSans(
@@ -323,16 +324,13 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white))
+                            strokeWidth: 2, color: Colors.white))
                   else
                     const Icon(Icons.auto_awesome,
                         size: 16, color: Colors.white),
                   const SizedBox(width: 8),
                   Text(
-                    _isLoading
-                        ? 'Generiere…'
-                        : 'Visualisierung erstellen',
+                    _isLoading ? 'Generiere…' : 'Visualisierung erstellen',
                     style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -355,13 +353,11 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
       decoration: BoxDecoration(
         color: SlamTokens.dangerSoft,
         borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
-        border:
-            Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
+        border: Border.all(color: SlamTokens.danger.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline,
-              color: SlamTokens.danger, size: 16),
+          const Icon(Icons.error_outline, color: SlamTokens.danger, size: 16),
           const SizedBox(width: 8),
           Expanded(
               child: Text(_error!,
@@ -369,8 +365,8 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                       fontSize: 13, color: SlamTokens.danger))),
           GestureDetector(
             onTap: _generate,
-            child: const Icon(Icons.refresh,
-                color: SlamTokens.danger, size: 16),
+            child:
+                const Icon(Icons.refresh, color: SlamTokens.danger, size: 16),
           ),
         ],
       ),
@@ -449,7 +445,8 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                       fontWeight: FontWeight.w700,
                       color: SlamTokens.text)),
               const SizedBox(height: 8),
-              Text('Beschreibe eine Funktion, Konstruktion oder Visualisierung.',
+              Text(
+                  'Beschreibe eine Funktion, Konstruktion oder Visualisierung.',
                   style: GoogleFonts.dmSans(
                       fontSize: 13, color: SlamTokens.textDim),
                   textAlign: TextAlign.center),
@@ -486,13 +483,12 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                          colors: [_ggbA, _ggbB]),
+                      gradient: const LinearGradient(colors: [_ggbA, _ggbB]),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.check,
-                        size: 26, color: Colors.white),
+                    child:
+                        const Icon(Icons.check, size: 26, color: Colors.white),
                   ),
                   const SizedBox(height: 14),
                   Text(vis.title,
@@ -512,8 +508,7 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
                     const SizedBox(height: 6),
                   ],
                   Text('${vis.commands.length} Befehle · gespeichert',
-                      style: GoogleFonts.dmSans(
-                          fontSize: 11, color: _ggbA)),
+                      style: GoogleFonts.dmSans(fontSize: 11, color: _ggbA)),
                 ],
               ),
             ),
@@ -521,13 +516,11 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
             GestureDetector(
               onTap: _openVisualization,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [_ggbA, _ggbB]),
-                  borderRadius:
-                      BorderRadius.circular(SlamTokens.rCircle),
+                  gradient: const LinearGradient(colors: [_ggbA, _ggbB]),
+                  borderRadius: BorderRadius.circular(SlamTokens.rCircle),
                   boxShadow: [
                     BoxShadow(
                       color: _ggbA.withValues(alpha: 0.4),
@@ -556,8 +549,8 @@ class _GeogebraScreenState extends ConsumerState<GeogebraScreen> {
             GestureDetector(
               onTap: _generate,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

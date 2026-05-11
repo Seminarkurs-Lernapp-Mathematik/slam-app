@@ -71,14 +71,16 @@ class SlamEmptyState extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   backgroundColor: color,
                   foregroundColor: SlamTokens.primaryOn,
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(SlamTokens.rOption),
                   ),
                 ),
                 child: Text(
                   actionLabel!,
-                  style: GoogleFonts.dmSans(fontWeight: FontWeight.w600, fontSize: 15),
+                  style: GoogleFonts.dmSans(
+                      fontWeight: FontWeight.w600, fontSize: 15),
                 ),
               ),
             ],

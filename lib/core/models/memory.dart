@@ -42,8 +42,7 @@ class Memory with _$Memory {
     @Default(false) bool isArchived,
   }) = _Memory;
 
-  factory Memory.fromJson(Map<String, dynamic> json) =>
-      _$MemoryFromJson(json);
+  factory Memory.fromJson(Map<String, dynamic> json) => _$MemoryFromJson(json);
 
   /// Create initial memory from question
   factory Memory.initial({
@@ -118,8 +117,8 @@ class SM2Calculator {
     required int interval,
   }) {
     // Calculate new ease factor
-    double newEaseFactor = easeFactor +
-        (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    double newEaseFactor =
+        easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
 
     // EF cannot be less than 1.3
     if (newEaseFactor < 1.3) {

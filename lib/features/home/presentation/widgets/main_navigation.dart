@@ -98,10 +98,20 @@ class _SlamBottomNav extends StatelessWidget {
   final void Function(int) onTabSelected;
 
   static const _tabs = [
-    _NavTab(icon: Icons.rss_feed_outlined, selectedIcon: Icons.rss_feed, label: 'Feed'),
-    _NavTab(icon: Icons.calendar_today_outlined, selectedIcon: Icons.calendar_today, label: 'Plan'),
-    _NavTab(icon: Icons.auto_awesome_outlined, selectedIcon: Icons.auto_awesome, label: 'Apps'),
-    _NavTab(icon: Icons.store_outlined, selectedIcon: Icons.store, label: 'Shop'),
+    _NavTab(
+        icon: Icons.rss_feed_outlined,
+        selectedIcon: Icons.rss_feed,
+        label: 'Feed'),
+    _NavTab(
+        icon: Icons.calendar_today_outlined,
+        selectedIcon: Icons.calendar_today,
+        label: 'Plan'),
+    _NavTab(
+        icon: Icons.auto_awesome_outlined,
+        selectedIcon: Icons.auto_awesome,
+        label: 'Apps'),
+    _NavTab(
+        icon: Icons.store_outlined, selectedIcon: Icons.store, label: 'Shop'),
   ];
 
   @override
@@ -328,8 +338,8 @@ class _ProfileSwooshOverlayState extends State<_ProfileSwooshOverlay>
                     child: FadeTransition(
                       opacity: _contentAnim,
                       child: ScaleTransition(
-                        scale: Tween(begin: 0.96, end: 1.0)
-                            .animate(_contentAnim),
+                        scale:
+                            Tween(begin: 0.96, end: 1.0).animate(_contentAnim),
                         alignment: Alignment.topLeft,
                         child: child,
                       ),
@@ -398,5 +408,3 @@ class _CircleRevealClipper extends CustomClipper<Path> {
   bool shouldReclip(_CircleRevealClipper old) =>
       old.fraction != fraction || old.origin != origin;
 }
-
-

@@ -85,9 +85,7 @@ class ThemeSelector extends ConsumerWidget {
                 price: price,
                 onTap: () {
                   if (isUnlocked || price == 0) {
-                    ref
-                        .read(selectedThemeProvider.notifier)
-                        .setTheme(theme);
+                    ref.read(selectedThemeProvider.notifier).setTheme(theme);
                   } else {
                     _showLockedThemeDialog(context);
                   }
@@ -184,9 +182,7 @@ class _ThemeChip extends StatelessWidget {
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
                       color: isLocked
-                          ? Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
+                          ? Theme.of(context).colorScheme.onSurfaceVariant
                           : null,
                     ),
                     overflow: TextOverflow.ellipsis,

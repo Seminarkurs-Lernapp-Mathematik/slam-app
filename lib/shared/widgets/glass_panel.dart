@@ -17,8 +17,8 @@ class GlassPanel extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius,
-    this.blur = 0,       // deprecated; retained for compat
-    this.opacity = 0,    // deprecated; retained for compat
+    this.blur = 0, // deprecated; retained for compat
+    this.opacity = 0, // deprecated; retained for compat
     this.showBorder = true,
     this.borderColor,
     this.glow = false,
@@ -53,7 +53,8 @@ class GlassPanel extends StatelessWidget {
         boxShadow: glow
             ? [
                 BoxShadow(
-                  color: (glowColor ?? SlamTokens.primary).withValues(alpha: 0.35),
+                  color:
+                      (glowColor ?? SlamTokens.primary).withValues(alpha: 0.35),
                   blurRadius: 24,
                   spreadRadius: 0,
                 )

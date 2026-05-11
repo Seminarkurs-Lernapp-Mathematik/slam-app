@@ -36,7 +36,8 @@ Future<void> pumpAndSettleWithTimeout(
   WidgetTester tester, {
   Duration timeout = const Duration(seconds: 5),
 }) async {
-  await tester.pumpAndSettle(const Duration(milliseconds: 100), EnginePhase.sendSemanticsUpdate, timeout);
+  await tester.pumpAndSettle(const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate, timeout);
 }
 
 /// Mock data generators for testing

@@ -40,7 +40,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
     super.initState();
     if (widget.initialUserMessage != null &&
         widget.initialUserMessage!.isNotEmpty) {
-      _messages.add(_ChatMessage(text: widget.initialUserMessage!, isUser: true));
+      _messages
+          .add(_ChatMessage(text: widget.initialUserMessage!, isUser: true));
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _fetchAiResponse(widget.initialUserMessage!);
       });
@@ -73,7 +74,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
       final aiService = ref.read(aiServiceProvider);
       final history = _messages
           .sublist(0, _messages.length - 1)
-          .map((m) => {'role': m.isUser ? 'user' : 'assistant', 'content': m.text})
+          .map((m) =>
+              {'role': m.isUser ? 'user' : 'assistant', 'content': m.text})
           .toList();
       final hint = await aiService.getChatHint(
         questionText: widget.questionText,
@@ -143,7 +145,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
   <div class="ctx"><h3>Aufgabe</h3><p>$safeQuestion</p></div>
   $messagesHtml</body></html>''';
       await FirebaseFirestore.instance
-          .collection('users').doc(user.uid)
+          .collection('users')
+          .doc(user.uid)
           .collection('savedContent')
           .doc('chat-${now.millisecondsSinceEpoch}')
           .set({
@@ -166,8 +169,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Fehler: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Fehler: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -181,7 +184,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
         color: SlamTokens.bgElev,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(SlamTokens.rCardLg)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(SlamTokens.rCardLg)),
       ),
       child: Column(
         children: [
@@ -322,7 +326,8 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
               Text(
                 'Beschreibe, wo du nicht weiterkommst.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
+                style:
+                    GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
               ),
             ],
           ),
@@ -360,9 +365,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                 style: GoogleFonts.dmSans(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: isUser
-                        ? SlamTokens.primary
-                        : SlamTokens.textMute,
+                    color: isUser ? SlamTokens.primary : SlamTokens.textMute,
                     letterSpacing: 0.4),
               ),
             ),
@@ -376,9 +379,7 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                   bottomLeft: Radius.circular(isUser ? 16 : 4),
                   bottomRight: Radius.circular(isUser ? 4 : 16),
                 ),
-                border: isUser
-                    ? null
-                    : Border.all(color: SlamTokens.line),
+                border: isUser ? null : Border.all(color: SlamTokens.line),
                 boxShadow: isUser
                     ? [
                         BoxShadow(
@@ -428,15 +429,14 @@ class _WoHaengtsChatSheetState extends ConsumerState<WoHaengtsChatSheet> {
                 minLines: 1,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _sendMessage(),
-                style: GoogleFonts.dmSans(
-                    fontSize: 14, color: SlamTokens.text),
+                style: GoogleFonts.dmSans(fontSize: 14, color: SlamTokens.text),
                 decoration: InputDecoration(
                   hintText: 'Stell eine Folgefrage…',
                   hintStyle: GoogleFonts.dmSans(
                       fontSize: 14, color: SlamTokens.textDim),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             ),

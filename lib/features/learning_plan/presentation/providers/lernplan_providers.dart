@@ -38,7 +38,9 @@ class LernplanNotifier extends _$LernplanNotifier {
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(firestoreServiceProvider).addTopicsToLernplan(userId, newTopics);
+      await ref
+          .read(firestoreServiceProvider)
+          .addTopicsToLernplan(userId, newTopics);
       return ref.read(lernplanStreamProvider.future);
     });
   }
@@ -49,7 +51,9 @@ class LernplanNotifier extends _$LernplanNotifier {
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(firestoreServiceProvider).removeTopicFromLernplan(userId, topicToRemove);
+      await ref
+          .read(firestoreServiceProvider)
+          .removeTopicFromLernplan(userId, topicToRemove);
       return ref.read(lernplanStreamProvider.future);
     });
   }
@@ -64,11 +68,13 @@ class LernplanTopicsAsTopicData extends _$LernplanTopicsAsTopicData {
 
     return lernplanAsync.when(
       data: (lernplan) {
-        return lernplan.topics.map((lernplanTopic) => TopicData(
-          leitidee: lernplanTopic.leitidee,
-          thema: lernplanTopic.thema,
-          unterthema: lernplanTopic.unterthema,
-        )).toList();
+        return lernplan.topics
+            .map((lernplanTopic) => TopicData(
+                  leitidee: lernplanTopic.leitidee,
+                  thema: lernplanTopic.thema,
+                  unterthema: lernplanTopic.unterthema,
+                ))
+            .toList();
       },
       loading: () => [], // Return empty list while loading
       error: (err, stack) => [], // Return empty list on error

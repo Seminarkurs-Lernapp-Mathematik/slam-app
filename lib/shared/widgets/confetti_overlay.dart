@@ -104,13 +104,16 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
                   animation: _ctrl,
                   builder: (context, _) {
                     final scale = Curves.elasticOut.transform(_ctrl.value);
-                    final opacity = _ctrl.value < 0.7 ? 1.0 : (1.0 - (_ctrl.value - 0.7) / 0.3);
+                    final opacity = _ctrl.value < 0.7
+                        ? 1.0
+                        : (1.0 - (_ctrl.value - 0.7) / 0.3);
                     return Opacity(
                       opacity: opacity,
                       child: Transform.scale(
                         scale: scale,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
                           decoration: BoxDecoration(
                             color: SlamTokens.success,
                             borderRadius: BorderRadius.circular(999),
@@ -175,13 +178,15 @@ class _ConfettiPainter extends CustomPainter {
 
       if (py > size.height) continue;
 
-      final paint = Paint()..color = p.color.withValues(alpha: 1.0 - progress * 0.3);
+      final paint = Paint()
+        ..color = p.color.withValues(alpha: 1.0 - progress * 0.3);
       canvas.save();
       canvas.translate(px, py);
       canvas.rotate(p.rotation + progress * math.pi * 4);
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6),
+          Rect.fromCenter(
+              center: Offset.zero, width: p.size, height: p.size * 0.6),
           Radius.circular(p.size * 0.2),
         ),
         paint,

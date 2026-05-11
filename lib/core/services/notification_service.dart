@@ -47,8 +47,8 @@ class NotificationService {
     if (kIsWeb) return;
     try {
       await _plugin.cancel(_notifId);
-      final (title, body) = _messages[
-          DateTime.now().millisecondsSinceEpoch % _messages.length];
+      final (title, body) =
+          _messages[DateTime.now().millisecondsSinceEpoch % _messages.length];
 
       await _plugin.zonedSchedule(
         _notifId,
@@ -59,8 +59,7 @@ class NotificationService {
           android: const AndroidNotificationDetails(
             _channelId,
             'Tägliche Lern-Erinnerung',
-            channelDescription:
-                'Erinnert dich täglich daran, Mathe zu üben.',
+            channelDescription: 'Erinnert dich täglich daran, Mathe zu üben.',
             importance: Importance.defaultImportance,
             priority: Priority.defaultPriority,
           ),
@@ -78,8 +77,8 @@ class NotificationService {
 
   static tz.TZDateTime _nextInstanceOf(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-        tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
