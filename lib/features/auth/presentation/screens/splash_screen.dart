@@ -145,11 +145,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           width: 88,
                           height: 88,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [Color(0xFFFF9A4A), Color(0xFFFF5020)],
-                            ),
+                            gradient: SlamTokens.primaryGradient,
                             borderRadius: BorderRadius.circular(26),
                             boxShadow: [
                               BoxShadow(

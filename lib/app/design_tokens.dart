@@ -47,6 +47,41 @@ abstract final class SlamTokens {
   static const Color warn        = Color(0xFFFFC94D);
   static const Color warnSoft    = Color(0x24FFC94D);
 
+  // ── Feature Accent Colors (for non-theme-aware decorative use) ─────────
+  // Used in hero cards, app category badges, AFB chips etc.
+  // These are intentionally NOT runtime-mutable — they're thematic, not theme.
+  static const Color accentBlue       = Color(0xFF3B82F6);
+  static const Color accentBlueLight  = Color(0xFF60A5FA);
+  static const Color accentIndigo     = Color(0xFF6366F1);
+  static const Color accentPurple     = Color(0xFF8B5CF6);
+  static const Color accentPurpleDark = Color(0xFF4F46E5);
+  static const Color accentGreen      = Color(0xFF10B981);
+  static const Color accentGreenLight = Color(0xFF4ADE80);
+  static const Color accentTeal       = Color(0xFF2DD4BF);
+  static const Color accentAmber      = Color(0xFFF59E0B);
+  static const Color accentAmberLight = Color(0xFFFBBF24);
+  static const Color accentAmberDark  = Color(0xFFD97706);
+  static const Color accentOrangeDark = Color(0xFFEA580C);
+  static const Color accentRed        = Color(0xFFEF4444);
+  static const Color accentPink       = Color(0xFFFF4080);
+  static const Color accentPinkLight  = Color(0xFFFF6FA0);
+
+  // ── Semantic overlays ──────────────────────────────────────────────────
+  static const Color overlayBlack54    = Color(0x8C000000);
+  static const Color overlayBlack33    = Color(0x38000000);
+  static const Color overlayWhite13    = Color(0x22FFFFFF);
+  static const Color successBgDark     = Color(0xFF052B1C);
+  static const Color dangerBgDark      = Color(0xFF2B0508);
+  static const Color gold             = Color(0xFFFFD700);
+  static const Color goldDark         = Color(0xFFFFA500);
+
+  // ── Gradient presets (theme-primary) ───────────────────────────────────
+  static LinearGradient get primaryGradient => const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFFF9A4A), Color(0xFFFF5020)],
+  );
+
   // ── Corner radius scale (§4.1) ────────────────────────────────────────────
   static const double rCircle  = 999;
   static const double rCardSm  = 22;

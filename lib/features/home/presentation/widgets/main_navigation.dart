@@ -312,7 +312,7 @@ class _ProfileSwooshOverlayState extends State<_ProfileSwooshOverlay>
               // Backdrop: 55% black + blur (§6.7)
               FadeTransition(
                 opacity: _clipAnim,
-                child: Container(color: const Color(0x8C000000)),
+                child: Container(color: SlamTokens.overlayBlack54),
               ),
 
               // Clipped content panel

@@ -44,14 +44,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       _buildSection(
                         icon: Icons.school_outlined,
                         title: 'Bildung',
-                        color: const Color(0xFF4CAF9E),
+                        color: SlamTokens.stochastik,
                         child: const _EducationSettings(),
                       ),
                       const SizedBox(height: 16),
                       _buildSection(
                         icon: Icons.psychology_outlined,
                         title: 'KI-Erinnerungen',
-                        color: const Color(0xFFC88CFF),
+                        color: SlamTokens.geometrie,
                         child: const MemoriesSettingsSection(),
                       ),
                       const SizedBox(height: 16),

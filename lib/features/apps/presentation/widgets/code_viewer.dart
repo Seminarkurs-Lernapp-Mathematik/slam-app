@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../app/design_tokens.dart';
 
 /// Code Viewer Widget
 ///
@@ -140,7 +141,7 @@ class _CodeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF1E1E1E), // Dark background like VS Code
+      color: SlamTokens.bgElev, // Dark background like VS Code
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: SelectableText(
@@ -148,7 +149,7 @@ class _CodeDisplay extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'monospace',
             fontSize: 13,
-            color: Color(0xFFD4D4D4), // Light gray text
+            color: SlamTokens.textDim, // Light gray text
             height: 1.5,
           ),
           // Simple syntax highlighting with TextSpan would go here

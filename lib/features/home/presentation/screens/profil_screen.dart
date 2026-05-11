@@ -98,13 +98,10 @@ class ProfilScreen extends ConsumerWidget {
       onTap: () => _showProfileDialog(context, name),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              SlamTokens.surfaceHi,
-              SlamTokens.surface,
-            ],
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [SlamTokens.surfaceHi, SlamTokens.surface],
           ),
           borderRadius: BorderRadius.circular(SlamTokens.rCardMd),
           border: Border.all(
@@ -124,11 +121,7 @@ class ProfilScreen extends ConsumerWidget {
               width: 68,
               height: 68,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFFF9A4A), Color(0xFFFF5020)],
-                ),
+                gradient: SlamTokens.primaryGradient,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -495,7 +488,7 @@ class _CompactStatsStrip extends StatelessWidget {
             icon: Icons.monetization_on,
             label: 'Coins',
             value: '${stats.coins}',
-            color: const Color(0xFFFFC94D),
+            color: SlamTokens.warn,
           )),
         ],
       ),

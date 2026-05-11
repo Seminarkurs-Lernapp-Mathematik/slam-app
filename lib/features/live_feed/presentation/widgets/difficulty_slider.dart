@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../providers/live_feed_providers.dart';
 
 /// AFB Level Selector — lets the user choose between the three
@@ -86,9 +87,9 @@ class DifficultySlider extends ConsumerWidget {
 }
 
 enum _AfbLevel {
-  afbI(3.0, 'AFB I', 'Wiedergabe & Verständnis', Color(0xFF10b981)),
-  afbII(6.0, 'AFB II', 'Anwendung & Verknüpfung', Color(0xFFf59e0b)),
-  afbIII(9.0, 'AFB III', 'Problemlösung & Reflexion', Color(0xFFef4444));
+  afbI(3.0, 'AFB I', 'Wiedergabe & Verständnis', SlamTokens.accentGreen),
+  afbII(6.0, 'AFB II', 'Anwendung & Verknüpfung', SlamTokens.accentAmber),
+  afbIII(9.0, 'AFB III', 'Problemlösung & Reflexion', SlamTokens.accentRed);
 
   final double difficulty;
   final String label;

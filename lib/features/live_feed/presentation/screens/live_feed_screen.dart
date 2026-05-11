@@ -415,7 +415,7 @@ class _RingPainter extends CustomPainter {
       center,
       radius,
       Paint()
-        ..color = const Color(0x1AFFF4EC)
+        ..color = SlamTokens.line
         ..strokeWidth = strokeWidth
         ..style = PaintingStyle.stroke,
     );

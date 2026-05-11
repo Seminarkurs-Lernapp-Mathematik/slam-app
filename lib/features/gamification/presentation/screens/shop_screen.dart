@@ -410,11 +410,11 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
 
   Color get _baseColor {
     switch (widget.preset) {
-      case AppThemePreset.sunsetOrange: return const Color(0xFFF97316);
-      case AppThemePreset.oceanBlue: return const Color(0xFF3B82F6);
-      case AppThemePreset.forestGreen: return const Color(0xFF22C55E);
+      case AppThemePreset.sunsetOrange: return SlamTokens.primary;
+      case AppThemePreset.oceanBlue: return SlamTokens.accentBlue;
+      case AppThemePreset.forestGreen: return SlamTokens.accentGreen;
       case AppThemePreset.lavenderPurple: return const Color(0xFFA855F7);
-      case AppThemePreset.cherryRed: return const Color(0xFFEF4444);
+      case AppThemePreset.cherryRed: return SlamTokens.accentRed;
     }
   }
 
@@ -597,8 +597,8 @@ class _AnimatedThemeCardState extends State<_AnimatedThemeCard>
                       scale: v,
                       child: Container(
                         width: 22, height: 22,
-                        decoration: const BoxDecoration(
-                          color: Color(0x88000000), shape: BoxShape.circle,
+                        decoration: BoxDecoration(
+                          color: SlamTokens.overlayBlack33, shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
                         child: const Icon(Icons.check, size: 13, color: Colors.white),

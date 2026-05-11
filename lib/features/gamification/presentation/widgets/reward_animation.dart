@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../app/design_tokens.dart';
 
 import 'level_up_animation.dart';
 
@@ -486,10 +487,10 @@ class _RewardParticlePainter extends CustomPainter {
       Color color;
       switch (p.type) {
         case _RewardType.xp:
-          color = const Color(0xFFF97316);
+          color = SlamTokens.primary;
           break;
         case _RewardType.coin:
-          color = const Color(0xFFFFD700);
+          color = SlamTokens.gold;
           break;
         case _RewardType.star:
           color = Colors.white;

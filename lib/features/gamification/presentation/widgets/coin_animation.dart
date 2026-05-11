@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../app/design_tokens.dart';
 
 /// Coin Animation Widget
 ///
@@ -186,8 +187,8 @@ class _CoinAnimationState extends State<CoinAnimation>
                     vertical: 20,
                   ),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                    gradient: LinearGradient(
+                      colors: [SlamTokens.gold, SlamTokens.goldDark],
                     ),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [

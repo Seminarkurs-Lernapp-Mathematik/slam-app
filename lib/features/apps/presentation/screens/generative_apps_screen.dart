@@ -11,7 +11,7 @@ import 'app_viewer_screen.dart';
 
 // KI-Labor accent colors
 final _kiA = SlamTokens.primary;
-const _kiB = Color(0xFFFF4080);
+final _kiB = SlamTokens.accentPink;
 
 class GenerativeAppsScreen extends ConsumerStatefulWidget {
   const GenerativeAppsScreen({super.key});
@@ -138,7 +138,7 @@ class _GenerativeAppsScreenState
           SlamTokens.gutter, 12, SlamTokens.gutter, 0),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [_kiA, _kiB],
@@ -402,7 +402,7 @@ class _GenerativeAppsScreenState
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [_kiA, _kiB],
@@ -468,7 +468,7 @@ class _GenerativeAppsScreenState
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
+                      gradient: LinearGradient(
                           colors: [_kiA, _kiB]),
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -497,7 +497,7 @@ class _GenerativeAppsScreenState
                 padding: const EdgeInsets.symmetric(
                     horizontal: 32, vertical: 14),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                       colors: [_kiA, _kiB]),
                   borderRadius:
                       BorderRadius.circular(SlamTokens.rCircle),

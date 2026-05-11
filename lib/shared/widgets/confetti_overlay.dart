@@ -112,11 +112,11 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4DD490),
+                            color: SlamTokens.success,
                             borderRadius: BorderRadius.circular(999),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF4DD490).withValues(alpha: 0.5),
+                                color: SlamTokens.successSoft,
                                 blurRadius: 20,
                                 spreadRadius: 2,
                               ),
@@ -124,10 +124,10 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
                           ),
                           child: Text(
                             '+${widget.xpEarned} XP',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F0A0D),
+                              color: SlamTokens.bg,
                             ),
                           ),
                         ),

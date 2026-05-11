@@ -11,8 +11,8 @@ import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
 // GeoGebra accent colors
-const _ggbA = Color(0xFF3B82F6);
-const _ggbB = Color(0xFF6366F1);
+const _ggbA = SlamTokens.accentBlue;
+const _ggbB = SlamTokens.accentIndigo;
 
 class GeogebraScreen extends ConsumerStatefulWidget {
   const GeogebraScreen({super.key});

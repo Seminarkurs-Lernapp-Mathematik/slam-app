@@ -575,14 +575,14 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       bg = SlamTokens.surface;
       border = isSelected ? subjectColor : SlamTokens.line;
       textColor = SlamTokens.text;
-      badgeBg = isSelected ? subjectColor : const Color(0x0FFFF4EC);
+      badgeBg = isSelected ? subjectColor : SlamTokens.text.withValues(alpha: 0.06);
       badgeFg = isSelected ? SlamTokens.primaryOn : SlamTokens.textDim;
     } else if (option.isCorrect) {
       bg = SlamTokens.successSoft;
       border = SlamTokens.success;
       textColor = SlamTokens.text;
       badgeBg = SlamTokens.success;
-      badgeFg = const Color(0xFF052B1C);
+      badgeFg = SlamTokens.successBgDark;
       radius = 20;
       scale = 1.02;
     } else if (isSelected && !option.isCorrect) {
@@ -590,12 +590,12 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       border = SlamTokens.danger;
       textColor = SlamTokens.text;
       badgeBg = SlamTokens.danger;
-      badgeFg = const Color(0xFF2B0508);
+      badgeFg = SlamTokens.dangerBgDark;
     } else {
       bg = Colors.transparent;
       border = SlamTokens.line;
       textColor = SlamTokens.textMute;
-      badgeBg = const Color(0x0FFFF4EC);
+      badgeBg = SlamTokens.text.withValues(alpha: 0.06);
       badgeFg = SlamTokens.textMute;
       opacity = 0.45;
       scale = 0.96;
@@ -731,7 +731,7 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0x0AFFF4EC),
+                color: SlamTokens.text.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
@@ -819,13 +819,13 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                         'Nächste Frage',
                         style: GoogleFonts.dmSans(
                           fontSize: 15, fontWeight: FontWeight.w800,
-                          color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn,
+                          color: _isCorrect ? SlamTokens.successBgDark : SlamTokens.primaryOn,
                           letterSpacing: -0.1,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Icon(Icons.arrow_forward, size: 18,
-                          color: _isCorrect ? const Color(0xFF052B1C) : SlamTokens.primaryOn),
+                          color: _isCorrect ? SlamTokens.successBgDark : SlamTokens.primaryOn),
                     ],
                   ),
                 ),
@@ -1225,15 +1225,15 @@ class _BurstParticlePainter extends CustomPainter {
   const _BurstParticlePainter({required this.progress});
   final double progress;
 
-  static const _colors = [
-    Color(0xFF4ADE80), // success green
-    Color(0xFFF97316), // primary orange
-    Color(0xFFFFC94D), // warn yellow
-    Color(0xFFFFB35C), // algebra amber
-    Color(0xFFC88CFF), // geometrie purple
-    Color(0xFF7CC4FF), // analysis blue
-    Color(0xFF7FE3C4), // stochastik teal
-    Color(0xFFFF6FA0), // pink
+  static final _colors = [
+    SlamTokens.accentGreenLight, // success green
+    SlamTokens.primary, // primary orange
+    SlamTokens.warn, // warn yellow
+    SlamTokens.algebra, // algebra amber
+    SlamTokens.geometrie, // geometrie purple
+    SlamTokens.analysis, // analysis blue
+    SlamTokens.stochastik, // stochastik teal
+    SlamTokens.accentPinkLight, // pink
   ];
 
   @override

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
+import '../../../../app/design_tokens.dart';
+
 /// Feed Feedback Overlay - Shows correct/incorrect feedback
 class FeedFeedbackOverlay extends StatelessWidget {
   final bool isCorrect;
@@ -23,8 +25,8 @@ class FeedFeedbackOverlay extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isCorrect
-            ? const Color(0xFF10b981).withValues(alpha: 0.95)
-            : const Color(0xFFef4444).withValues(alpha: 0.95),
+            ? SlamTokens.accentGreen.withValues(alpha: 0.95)
+            : SlamTokens.accentRed.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(24.0),

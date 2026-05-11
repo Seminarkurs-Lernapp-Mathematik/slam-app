@@ -265,8 +265,8 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
                 child: Container(
                   width: 140,
                   height: 140,
-                  decoration: const BoxDecoration(
-                    color: Color(0x22FFFFFF),
+                  decoration: BoxDecoration(
+                    color: SlamTokens.overlayWhite13,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -300,7 +300,7 @@ class _AnimatedHeroCardState extends State<_AnimatedHeroCard>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0x38000000),
+                        color: SlamTokens.overlayBlack33,
                         borderRadius:
                             BorderRadius.circular(SlamTokens.rCircle),
                       ),

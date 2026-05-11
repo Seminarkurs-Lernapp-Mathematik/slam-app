@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../app/design_tokens.dart';
 
 import '../../../../core/constants/level_thresholds.dart';
 
@@ -234,11 +235,11 @@ class _LevelUpAnimationState extends State<LevelUpAnimation>
                         // "LEVEL UP" text
                         ShaderMask(
                           shaderCallback: (bounds) {
-                            return const LinearGradient(
+                            return LinearGradient(
                               colors: [
-                                Color(0xFFFFD700),
-                                Color(0xFFFFA500),
-                                Color(0xFFFF6B00),
+                                SlamTokens.gold,
+                                SlamTokens.goldDark,
+                                SlamTokens.accentOrangeDark,
                               ],
                             ).createShader(bounds);
                           },

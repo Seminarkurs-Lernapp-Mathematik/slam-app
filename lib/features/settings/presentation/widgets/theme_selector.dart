@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/design_tokens.dart';
 import '../providers/settings_providers.dart';
 import '../../../../core/models/theme_unlock.dart';
 import '../../../../core/services/auth_service.dart';
@@ -210,15 +211,15 @@ class _ThemeChip extends StatelessWidget {
   Color _getThemeColor(AppThemePreset theme) {
     switch (theme) {
       case AppThemePreset.sunsetOrange:
-        return const Color(0xFFf97316);
+        return SlamTokens.primary;
       case AppThemePreset.oceanBlue:
-        return const Color(0xFF0ea5e9);
+        return const Color(0xFF3BA8FF);
       case AppThemePreset.forestGreen:
-        return const Color(0xFF10b981);
+        return const Color(0xFF3BD490);
       case AppThemePreset.lavenderPurple:
-        return const Color(0xFFa78bfa);
+        return const Color(0xFFA07CFF);
       case AppThemePreset.cherryRed:
-        return const Color(0xFFef4444);
+        return const Color(0xFFFF5566);
     }
   }
 
