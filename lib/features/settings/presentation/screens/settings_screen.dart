@@ -355,6 +355,7 @@ class _DataSettings extends ConsumerWidget {
       showDivider: false,
       onTap: () async {
         await ref.read(liveFeedQueueProvider.notifier).clear();
+        ref.read(currentLiveFeedQuestionProvider.notifier).clear();
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

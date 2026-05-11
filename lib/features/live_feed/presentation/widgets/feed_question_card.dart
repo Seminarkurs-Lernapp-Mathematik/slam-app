@@ -204,7 +204,6 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
 
     _updateStats(isCorrect, xpEarned, coinsEarned);
     _updateAdaptiveDifficulty(isCorrect);
-    ref.read(liveFeedQueueProvider.notifier).persistAnsweredCurrent();
 
     if (isCorrect && mounted) {
       HapticFeedback.heavyImpact();
