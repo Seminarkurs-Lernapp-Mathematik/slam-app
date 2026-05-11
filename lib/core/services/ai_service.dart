@@ -70,6 +70,7 @@ class AIService {
           'autoModeAssessment': autoModeAssessment,
           'recentMemories': recentMemories,
           'recentPerformance': recentPerformance,
+          'useCache': false,
         },
       );
       return QuestionSession.fromJson(response.data);
