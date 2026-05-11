@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../app/design_tokens.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/presentation/widgets/cross_platform_webview.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../providers/apps_providers.dart';
 import '../widgets/code_viewer.dart';
 
@@ -330,37 +331,13 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 72, height: 72,
-              decoration: BoxDecoration(
-                color: SlamTokens.bgElev,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              alignment: Alignment.center,
-              child: Icon(hasFilter ? Icons.search_off : Icons.folder_open,
-                  size: 36, color: SlamTokens.textDim),
-            ),
-            const SizedBox(height: 20),
-            Text(hasFilter ? 'Keine Inhalte gefunden' : 'Noch keine Inhalte',
-                style: GoogleFonts.fraunces(
-                    fontSize: 20, fontWeight: FontWeight.w700, color: SlamTokens.text)),
-            const SizedBox(height: 8),
-            Text(
-              hasFilter
-                  ? 'Versuche einen anderen Filter'
-                  : 'Erstelle deine ersten Apps im KI-Labor',
-              style: GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    return SlamEmptyState(
+      icon: hasFilter ? Icons.search_off_rounded : Icons.folder_open_rounded,
+      title: hasFilter ? 'Keine Inhalte gefunden' : 'Noch keine Inhalte',
+      subtitle: hasFilter
+          ? 'Versuche einen anderen Filter oder lösche die Suche.'
+          : 'Erstelle deine ersten Apps im KI-Labor oder GeoGebra-Studio.',
+      iconColor: hasFilter ? SlamTokens.warn : SlamTokens.accentBlue,
     );
   }
 }

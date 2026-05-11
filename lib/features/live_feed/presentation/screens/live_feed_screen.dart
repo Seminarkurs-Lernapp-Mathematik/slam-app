@@ -12,6 +12,7 @@ import '../../../../core/services/firestore_service.dart';
 import '../../../../features/home/presentation/providers/main_nav_notifier.dart';
 import '../../../../features/home/presentation/providers/nav_keys.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
+import '../../../../shared/widgets/empty_state.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
@@ -165,54 +166,24 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   Widget _buildNoTopicsView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.menu_book_outlined, size: 56, color: SlamTokens.textMute),
-            const SizedBox(height: 16),
-            Text('Kein Lernplan', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text('Füge Themen zu deinem Lernplan hinzu.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => ref.read(mainNavNotifierProvider.notifier).switchToTab(1),
-              icon: const Icon(Icons.add),
-              label: const Text('Lernplan öffnen'),
-            ),
-          ],
-        ),
-      ),
+    return SlamEmptyState(
+      icon: Icons.menu_book_outlined,
+      title: 'Kein Lernplan',
+      subtitle: 'Füge Themen zu deinem Lernplan hinzu, um mit dem Üben zu beginnen.',
+      iconColor: SlamTokens.analysis,
+      action: () => ref.read(mainNavNotifierProvider.notifier).switchToTab(1),
+      actionLabel: 'Lernplan öffnen',
     );
   }
 
   Widget _buildEmptyView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.psychology, size: 56, color: SlamTokens.primary.withValues(alpha: 0.4)),
-            const SizedBox(height: 24),
-            Text('Keine Fragen verfügbar', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 12),
-            Text('Alle Fragen wurden beantwortet.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SlamTokens.textDim)),
-            const SizedBox(height: 32),
-            FilledButton.icon(
-              onPressed: _generateQuestions,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Neue Fragen generieren'),
-            ),
-          ],
-        ),
-      ),
+    return SlamEmptyState(
+      icon: Icons.check_circle_outline_rounded,
+      title: 'Alle Fragen beantwortet!',
+      subtitle: 'Gut gemacht! Generiere neue Fragen, um weiter zu üben.',
+      iconColor: SlamTokens.success,
+      action: _generateQuestions,
+      actionLabel: 'Neue Fragen generieren',
     );
   }
 }
