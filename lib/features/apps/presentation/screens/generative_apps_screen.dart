@@ -87,13 +87,15 @@ class _GenerativeAppsScreenState
     });
     _startLoadingTimer();
     try {
-      final app = await ref.read(
-        generateMiniAppProvider(
-                description: _promptController.text.trim())
-            .future,
-      ).timeout(
-        const Duration(seconds: 90),
-        onTimeout: () => throw TimeoutException('timeout'),
+      final aiService = ref.read(aiServiceProvider);
+      final app = await aiService.generateMiniAppWithPolling(
+        description: _promptController.text.trim(),
+        onStatusUpdate: (status) {
+          if (!mounted) return;
+          if (status == 'running' && _loadingMessage == 'App wird generiert…') {
+            setState(() => _loadingMessage = 'KI arbeitet…');
+          }
+        },
       );
       _loadingTimer?.cancel();
       HapticFeedback.mediumImpact();
@@ -102,17 +104,11 @@ class _GenerativeAppsScreenState
         _isLoading = false;
       });
       _autoSave(app);
-    } on TimeoutException {
-      _loadingTimer?.cancel();
-      setState(() {
-        _error = 'Die Generierung hat zu lange gedauert. Versuche es mit einer einfacheren Beschreibung oder später erneut.';
-        _isLoading = false;
-      });
     } on AIException catch (e) {
       _loadingTimer?.cancel();
       setState(() {
         _error = e.statusCode == 408
-            ? 'Zeitüberschreitung — das Netzwerk ist langsam. Bitte erneut versuchen.'
+            ? 'Zeitüberschreitung — die Generierung hat zu lange gedauert. Einfachere Beschreibung versuchen.'
             : e.message;
         _isLoading = false;
       });

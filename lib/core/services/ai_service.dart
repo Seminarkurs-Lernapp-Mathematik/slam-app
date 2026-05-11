@@ -217,6 +217,69 @@ class AIService {
     }
   }
 
+  /// Submit async mini-app generation. Returns jobId immediately (HTTP 202).
+  Future<String> generateMiniAppAsync({
+    required String description,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.getFullUrl(ApiEndpoints.generateMiniAppAsync),
+        data: {
+          'description': description,
+          'themeColors': _currentThemeColors(),
+        },
+      );
+      final jobId = response.data['jobId'] as String?;
+      if (jobId == null) throw AIException(message: 'No jobId in response', statusCode: 500);
+      return jobId;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
+  /// Poll a background job. Returns the raw job document.
+  Future<Map<String, dynamic>> getJob(String jobId) async {
+    try {
+      final response = await _dio.get(
+        ApiEndpoints.getFullUrl('${ApiEndpoints.jobs}/$jobId'),
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
+  /// Submit async generation, then poll until done or error. Returns GeneratedApp.
+  Future<GeneratedApp> generateMiniAppWithPolling({
+    required String description,
+    void Function(String status)? onStatusUpdate,
+    Duration pollInterval = const Duration(seconds: 3),
+    Duration timeout = const Duration(seconds: 120),
+  }) async {
+    final jobId = await generateMiniAppAsync(description: description);
+    final deadline = DateTime.now().add(timeout);
+
+    while (DateTime.now().isBefore(deadline)) {
+      await Future.delayed(pollInterval);
+      final job = await getJob(jobId);
+      final status = job['status'] as String? ?? 'pending';
+      onStatusUpdate?.call(status);
+
+      if (status == 'done') {
+        final result = job['result'] as Map<String, dynamic>?;
+        if (result == null) throw AIException(message: 'Job fertig, aber kein Ergebnis', statusCode: 500);
+        return GeneratedApp.fromJson(result);
+      }
+
+      if (status == 'error') {
+        final errMsg = job['error'] as String? ?? 'Unbekannter Fehler';
+        throw AIException(message: errMsg, statusCode: 500);
+      }
+      // pending / running — keep polling
+    }
+    throw AIException(message: 'Zeitüberschreitung beim Warten auf das Ergebnis', statusCode: 408);
+  }
+
   /// Serialize the active SlamTokens palette to hex strings for the backend.
   Map<String, String> _currentThemeColors() {
     final p = SlamTokens.primary;

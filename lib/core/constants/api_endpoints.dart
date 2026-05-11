@@ -27,6 +27,8 @@ class ApiEndpoints {
 
   // Generative Apps (KI-Labor)
   static const String generateMiniApp = '/api/generate-mini-app';
+  static const String generateMiniAppAsync = '/api/generate-mini-app/async';
+  static const String jobs = '/api/jobs';
 
   // Image Analysis
   static const String analyzeImage = '/api/analyze-image';
