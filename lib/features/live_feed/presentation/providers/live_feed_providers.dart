@@ -614,11 +614,41 @@ class LiveFeedQueue extends _$LiveFeedQueue {
     state = state.copyWith(isGenerating: generating);
   }
 
-  /// Clear the queue and reset
-  void clear() {
+  /// Clear the queue and reset.
+  ///
+  /// Async because SharedPreferences may need to be fetched from scratch —
+  /// _prefs is null when this is called from Settings before the live feed
+  /// screen has ever been opened (auto-dispose re-creates the provider without
+  /// a completed _initializeCache run).
+  Future<void> clear() async {
     state = LiveFeedQueueState();
-    _clearCache();
-    debugPrint('🗑️ LiveFeedQueue: Queue cleared and cache removed');
+
+    // Fetch prefs directly if not yet initialised so the Settings button
+    // always clears the actual on-disk cache, not just in-memory state.
+    final prefs = _prefs ?? await SharedPreferences.getInstance();
+    _prefs = prefs;
+
+    try {
+      await prefs.remove(_kQuestionQueueKey);
+      await prefs.remove(_kQueueTimestampKey);
+      debugPrint('🗑️ LiveFeedQueue: SharedPreferences cache cleared');
+    } catch (e) {
+      debugPrint('❌ LiveFeedQueue: Error clearing local cache: $e');
+    }
+
+    final userId = ref.read(authServiceProvider).currentUser?.uid;
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        await ref
+            .read(firestoreServiceProvider)
+            .clearQuestionQueueCache(userId);
+        debugPrint('🗑️ LiveFeedQueue: Firestore cache cleared');
+      } catch (e) {
+        debugPrint('❌ LiveFeedQueue: Error clearing Firestore cache: $e');
+      }
+    }
+
+    debugPrint('🗑️ LiveFeedQueue: Queue and all caches cleared');
   }
 
   /// Get remaining question count

@@ -353,8 +353,9 @@ class _DataSettings extends ConsumerWidget {
       label: 'Fragen-Cache leeren',
       subtitle: 'Löscht alle zwischengespeicherten Fragen',
       showDivider: false,
-      onTap: () {
-        ref.read(liveFeedQueueProvider.notifier).clear();
+      onTap: () async {
+        await ref.read(liveFeedQueueProvider.notifier).clear();
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Cache geleert',

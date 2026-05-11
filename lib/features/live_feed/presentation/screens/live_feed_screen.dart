@@ -73,12 +73,21 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
   }
 
   void _handleAnswerSubmitted() {
+    // Step 1: Remove the answered question from the queue and persist the
+    // change to both caches. MUST happen before nextQuestion() — otherwise
+    // nextQuestion() returns questions[0] which is still the same question.
+    ref.read(liveFeedQueueProvider.notifier).persistAnsweredCurrent();
+
+    // Step 2: Advance to the next unanswered question (now at index 0).
     final nextQ = ref.read(liveFeedQueueProvider.notifier).nextQuestion();
     if (nextQ != null) {
       ref.read(currentLiveFeedQuestionProvider.notifier).setQuestion(nextQ);
+      debugPrint('➡️ LiveFeed: Next question: ${nextQ.id}');
     } else {
       ref.read(currentLiveFeedQuestionProvider.notifier).clear();
+      debugPrint('✅ LiveFeed: Queue exhausted');
     }
+
     ref.read(selectedOptionProvider.notifier).clear();
     ref.read(liveFeedHintsUsedProvider.notifier).reset();
     ref.read(liveFeedShowFeedbackProvider.notifier).hide();
@@ -87,7 +96,11 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     ref.read(woHaengtsInputProvider.notifier).clear();
     ref.read(liveFeedTimerSecondsProvider.notifier).state = 0;
 
+    // Step 3: Trigger background prefetch when queue runs low (≤ 4 remaining).
+    final remaining = ref.read(liveFeedQueueProvider).remainingCount;
+    debugPrint('📊 LiveFeed: $remaining questions left in queue');
     if (ref.read(liveFeedQueueProvider.notifier).needsMoreQuestions) {
+      debugPrint('🔄 LiveFeed: Below prefetch threshold — fetching more');
       _generateQuestions();
     }
   }
