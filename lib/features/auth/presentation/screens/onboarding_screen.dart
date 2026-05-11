@@ -63,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.setBool('dsgvo_consented', true);
     await prefs.setString(
         'dsgvo_consent_date', DateTime.now().toIso8601String());
-    if (mounted) context.go('/home');
+    if (mounted) context.go('/diagnostic');
   }
 
   Future<void> _skip() async {

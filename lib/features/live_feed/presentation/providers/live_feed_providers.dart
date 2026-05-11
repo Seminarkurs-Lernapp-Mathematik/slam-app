@@ -28,7 +28,16 @@ const Duration _kCacheValidityDuration = Duration(hours: 24); // Cache valid for
 class LiveFeedDifficulty extends _$LiveFeedDifficulty {
   @override
   double build() {
-    return 5.0; // Start at medium difficulty
+    // Load initial value from diagnostic quiz result (runs asynchronously).
+    // SharedPreferences is a singleton — the async hop is negligible after app init.
+    Future.microtask(_applyDiagnosticHint);
+    return 5.0;
+  }
+
+  Future<void> _applyDiagnosticHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getDouble('diagnostic_initial_difficulty');
+    if (saved != null) state = saved;
   }
 
   // AFB levels: I=3.0, II=6.0, III=9.0

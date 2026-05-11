@@ -67,9 +67,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _navigateHome() async {
     if (!mounted) return;
     final prefs = await SharedPreferences.getInstance();
-    final done = prefs.getBool('onboarding_done') ?? false;
-    if (!mounted) return;
-    context.go(done ? '/home' : '/onboarding');
+    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+    if (!onboardingDone) {
+      if (mounted) context.go('/onboarding');
+      return;
+    }
+    final diagnosticDone = prefs.getBool('diagnostic_done') ?? false;
+    if (mounted) context.go(diagnosticDone ? '/home' : '/diagnostic');
   }
 
   Future<void> _checkAuthAndNavigate() async {
