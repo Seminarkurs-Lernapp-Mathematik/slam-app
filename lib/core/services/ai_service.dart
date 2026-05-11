@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../app/design_tokens.dart';
 import '../constants/api_endpoints.dart';
 import '../models/question.dart';
 
@@ -204,13 +206,39 @@ class AIService {
     try {
       final response = await _dio.post(
         ApiEndpoints.getFullUrl(ApiEndpoints.generateMiniApp),
-        data: {'description': description},
+        data: {
+          'description': description,
+          'themeColors': _currentThemeColors(),
+        },
       );
       return GeneratedApp.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioException(e);
     }
   }
+
+  /// Serialize the active SlamTokens palette to hex strings for the backend.
+  Map<String, String> _currentThemeColors() {
+    final p = SlamTokens.primary;
+    final pDark = Color.fromARGB(
+      255,
+      (p.r * 255 - 30).clamp(0, 255).round(),
+      (p.g * 255 - 30).clamp(0, 255).round(),
+      (p.b * 255 - 30).clamp(0, 255).round(),
+    );
+    return {
+      'primary':     _colorToHex(p),
+      'primaryDark': _colorToHex(pDark),
+      'bg':          _colorToHex(SlamTokens.bg),
+      'surface':     _colorToHex(SlamTokens.surface),
+      'text':        _colorToHex(SlamTokens.text),
+    };
+  }
+
+  String _colorToHex(Color c) =>
+      '#${(c.r * 255).round().toRadixString(16).padLeft(2, '0')}'
+      '${(c.g * 255).round().toRadixString(16).padLeft(2, '0')}'
+      '${(c.b * 255).round().toRadixString(16).padLeft(2, '0')}';
 
   // ============================================================================
   // IMAGE ANALYSIS
