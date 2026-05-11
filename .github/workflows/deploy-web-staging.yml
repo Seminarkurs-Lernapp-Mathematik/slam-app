@@ -38,6 +38,7 @@ jobs:
         run: |
           flutter build web \
             --release \
+            --wasm \
             --dart-define=API_BASE_URL=https://api-staging.learn-smart.app \
             --dart-define=ENVIRONMENT=staging
 
