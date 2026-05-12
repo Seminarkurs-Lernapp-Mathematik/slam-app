@@ -221,10 +221,17 @@ class MiniAppGenerator extends _$MiniAppGenerator {
     required String description,
     bool isFastMode = false,
   }) async {
-    final aiService = this.ref.read(aiServiceProvider);
-    final user = this.ref.read(currentUserProvider);
+    // Keep this auto-dispose notifier alive for the entire background operation.
+    // Without this, Riverpod disposes the provider as soon as no widget is
+    // watch()ing it, which invalidates ref mid-flight and throws StateError.
+    final link = ref.keepAlive();
+    final aiService = ref.read(aiServiceProvider);
+    final user = ref.read(currentUserProvider);
 
-    if (user == null) return;
+    if (user == null) {
+      link.close();
+      return;
+    }
 
     try {
       final app = await aiService.generateMiniAppWithPolling(
@@ -246,10 +253,14 @@ class MiniAppGenerator extends _$MiniAppGenerator {
         tags: ['ki-labor'],
       );
 
-      await this.ref.read(saveContentProvider(savedContent).future);
+      await ref.read(saveContentProvider(savedContent).future);
 
       // Update state
-      this.ref.read(generatedAppStateProvider.notifier).setApp(app);
+      ref.read(generatedAppStateProvider.notifier).setApp(app);
+
+      // Capture router before link.close() in finally invalidates ref.
+      final router = ref.read(routerProvider);
+      final builtHtml = _buildHtml(app);
 
       // Show success SnackBar
       globalMessengerKey.currentState?.showSnackBar(
@@ -259,9 +270,9 @@ class MiniAppGenerator extends _$MiniAppGenerator {
           action: SnackBarAction(
             label: 'Öffnen',
             onPressed: () {
-              this.ref.read(routerProvider).push('/app-viewer', extra: {
+              router.push('/app-viewer', extra: {
                 'title': app.title,
-                'htmlContent': _buildHtml(app),
+                'htmlContent': builtHtml,
                 'originalPrompt': description,
                 'contentType': ContentType.miniApp,
               });
@@ -280,6 +291,8 @@ class MiniAppGenerator extends _$MiniAppGenerator {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    } finally {
+      link.close();
     }
   }
 
