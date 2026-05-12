@@ -28,6 +28,7 @@ class GenerativeAppsScreen extends ConsumerStatefulWidget {
 class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   final _promptController = TextEditingController();
   bool _isLoading = false;
+  bool _isFastMode = false;
   String? _error;
   GeneratedApp? _currentApp;
   String _loadingMessage = 'App wird generiert…';
@@ -430,9 +431,15 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
               ),
             ),
             const SizedBox(height: 6),
-            Text('Das dauert etwa 15–30 Sekunden',
-                style: GoogleFonts.dmSans(
-                    fontSize: 13, color: SlamTokens.textDim)),
+            Text(
+              _isFastMode 
+                ? 'Das dauert etwa 15-25 Sekunden' 
+                : 'Das dauert etwa 30-90 Sekunden',
+              style: GoogleFonts.dmSans(
+                fontSize: 13, 
+                color: SlamTokens.textDim
+              )
+            ),
           ],
         ),
       );
@@ -590,4 +597,6 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
       ),
     );
   }
+}
+ }
 }
