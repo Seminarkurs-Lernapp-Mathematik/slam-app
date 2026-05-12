@@ -749,6 +749,8 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     final gradeLevel = appSettings.gradeLevel.replaceAll('Klasse_', '');
     final courseType = appSettings.courseType;
 
+    final timeSpent = ref.read(liveFeedTimerSecondsProvider);
+
     final questionResult = QuestionResult(
       questionId: currentQuestion.id,
       userId: userId,
@@ -760,7 +762,7 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
       isCorrect: evaluationResult['isCorrect'] ?? false,
       difficulty: currentQuestion.difficulty,
       hintsUsed: hintsUsed,
-      timeSpentSeconds: 0, // TODO: Implement time tracking
+      timeSpentSeconds: timeSpent,
       leitidee: leitidee,
       thema: thema,
       unterthema: unterthema,
@@ -788,6 +790,7 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
       question: currentQuestion,
       isCorrect: evaluationResult['isCorrect'] ?? false,
       hintsUsed: hintsUsed,
+      timeSpentSeconds: timeSpent,
     );
   }
 
@@ -797,13 +800,14 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     required Question question,
     required bool isCorrect,
     required int hintsUsed,
+    required int timeSpentSeconds,
   }) async {
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       final quality = SM2Calculator.getQualityFromPerformance(
         isCorrect: isCorrect,
         hintsUsed: hintsUsed,
-        timeSpentSeconds: 0,
+        timeSpentSeconds: timeSpentSeconds,
         expectedTimeSeconds: 60,
       );
 

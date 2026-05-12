@@ -9,6 +9,7 @@ import '../../../../app/design_tokens.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/utils/logger.dart';
 import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
@@ -136,7 +137,14 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
         createdAt: DateTime.now(),
         tags: ['ki-labor'],
       )).future);
-    } catch (_) {}
+    } catch (e, st) {
+      Logger.error('Auto-save failed', tag: 'GenerativeAppsScreen', error: e, stackTrace: st);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('App konnte nicht gespeichert werden.')),
+        );
+      }
+    }
   }
 
   void _openApp() {

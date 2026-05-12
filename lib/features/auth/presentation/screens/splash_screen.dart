@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/utils/logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -104,8 +105,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       } else {
         context.go('/login');
       }
-    } catch (_) {
-      if (mounted) context.go('/login');
+    } catch (e, st) {
+      Logger.error('Auth check failed, redirecting to login', tag: 'SplashScreen', error: e, stackTrace: st);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Anmeldung fehlgeschlagen. Bitte erneut versuchen.')),
+        );
+        context.go('/login');
+      }
     }
   }
 
