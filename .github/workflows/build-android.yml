@@ -46,15 +46,7 @@ jobs:
             exit 1
           fi
           printf '%s' "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > android/app/google-services.json
-          # Validate JSON and print the package name for easy diagnosis
-          python3 - <<'EOF'
-import json, sys
-with open('android/app/google-services.json') as f:
-    data = json.load(f)
-clients = data.get('client', [])
-names = [c.get('client_info', {}).get('android_client_info', {}).get('package_name', '?') for c in clients]
-print(f"✅ google-services.json decoded — registered packages: {names}")
-EOF
+          python3 -c "import json; d=json.load(open('android/app/google-services.json')); names=[c.get('client_info',{}).get('android_client_info',{}).get('package_name','?') for c in d.get('client',[])]; print('google-services.json decoded, packages:', names)"
 
       - name: Get Flutter dependencies
         run: flutter pub get
