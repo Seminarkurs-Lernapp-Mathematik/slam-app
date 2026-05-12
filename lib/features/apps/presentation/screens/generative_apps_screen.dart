@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +33,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
     'Binomialverteilung',
     'Ableitungen',
     'Vektoraddition',
-    'Würfelsimulator',
+    'WÃ¼rfelsimulator',
     'Funktionsplotter',
     'Primzahlen',
     'Bruchrechner',
@@ -163,7 +163,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                         letterSpacing: -0.3)),
-                Text('Beschreibe — die KI baut es.',
+                Text('Beschreibe â€” die KI baut es.',
                     style: GoogleFonts.dmSans(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.75))),
@@ -279,7 +279,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                       ),
                     ),
                     Text(
-                      _isFastMode ? 'Schneller, ideal für einfache UI-Apps' : 'Höchste Qualität für komplexe Logik',
+                      _isFastMode ? 'Schneller, ideal fÃ¼r einfache UI-Apps' : 'HÃ¶chste QualitÃ¤t fÃ¼r komplexe Logik',
                       style: GoogleFonts.dmSans(
                         fontSize: 12,
                         color: SlamTokens.textDim,
@@ -395,14 +395,14 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                     size: 38, color: Colors.white),
               ),
               const SizedBox(height: 20),
-              Text('Was soll die App können?',
+              Text('Was soll die App kÃ¶nnen?',
                   style: GoogleFonts.fraunces(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: SlamTokens.text)),
               const SizedBox(height: 8),
               Text(
-                'Beschreibe deine Idee — die KI generiert Rechner, Graphen und Simulatoren.',
+                'Beschreibe deine Idee â€” die KI generiert Rechner, Graphen und Simulatoren.',
                 style:
                     GoogleFonts.dmSans(fontSize: 13, color: SlamTokens.textDim),
                 textAlign: TextAlign.center,
@@ -483,7 +483,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                     const Icon(Icons.open_in_new,
                         size: 16, color: Colors.white),
                     const SizedBox(width: 8),
-                    Text('App öffnen',
+                    Text('App Ã¶ffnen',
                         style: GoogleFonts.dmSans(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
