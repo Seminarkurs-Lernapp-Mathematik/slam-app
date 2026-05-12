@@ -743,5 +743,23 @@ final geogebraVisualizationStateProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$GeogebraVisualizationState = AutoDisposeNotifier<GeoGebraData?>;
+String _$miniAppGeneratorHash() => r'df3ce39d4a864882526d83ff32b9dba06e7ee6ba';
+
+/// Mini-App Generator for background tasks
+///
+/// Copied from [MiniAppGenerator].
+@ProviderFor(MiniAppGenerator)
+final miniAppGeneratorProvider =
+    AutoDisposeNotifierProvider<MiniAppGenerator, void>.internal(
+  MiniAppGenerator.new,
+  name: r'miniAppGeneratorProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$miniAppGeneratorHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$MiniAppGenerator = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

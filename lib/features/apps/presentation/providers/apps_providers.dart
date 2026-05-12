@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../app/app.dart';
+import '../../../../app/routes.dart';
 import '../../../../core/models/question.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/utils/logger.dart';
 
 part 'apps_providers.g.dart';
 
@@ -205,4 +209,89 @@ Future<GeoGebraData> generateGeogebra(
   ref.read(geogebraVisualizationStateProvider.notifier).setVisualization(data);
 
   return data;
+}
+
+/// Mini-App Generator for background tasks
+@riverpod
+class MiniAppGenerator extends _$MiniAppGenerator {
+  @override
+  void build() => null;
+
+  Future<void> generateInBackground({
+    required String description,
+    bool isFastMode = false,
+  }) async {
+    final aiService = this.ref.read(aiServiceProvider);
+    final user = this.ref.read(currentUserProvider);
+
+    if (user == null) return;
+
+    try {
+      final app = await aiService.generateMiniAppWithPolling(
+        description: description,
+        isFastMode: isFastMode,
+      );
+
+      // Auto-save
+      final savedContent = SavedContent(
+        id: 'app-${DateTime.now().millisecondsSinceEpoch}',
+        userId: user.uid,
+        title: app.title,
+        type: ContentType.miniApp,
+        htmlContent: app.html,
+        cssContent: app.css,
+        javascriptContent: app.javascript,
+        description: description,
+        createdAt: DateTime.now(),
+        tags: ['ki-labor'],
+      );
+
+      await this.ref.read(saveContentProvider(savedContent).future);
+
+      // Update state
+      this.ref.read(generatedAppStateProvider.notifier).setApp(app);
+
+      // Show success SnackBar
+      globalMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text("Deine Mini-App '${app.title}' ist fertig!"),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Öffnen',
+            onPressed: () {
+              this.ref.read(routerProvider).push('/app-viewer', extra: {
+                'title': app.title,
+                'htmlContent': _buildHtml(app),
+                'originalPrompt': description,
+                'contentType': ContentType.miniApp,
+              });
+            },
+          ),
+          duration: const Duration(seconds: 8),
+        ),
+      );
+    } catch (e, st) {
+      Logger.error('Background generation failed',
+          tag: 'MiniAppGenerator', error: e, stackTrace: st);
+      globalMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Fehler bei der Generierung: $e'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  String _buildHtml(GeneratedApp app) {
+    final html = app.html.trim();
+    if (html.toLowerCase().startsWith('<!doctype') ||
+        html.toLowerCase().startsWith('<html')) {
+      return html;
+    }
+    return '''<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>* { box-sizing: border-box; } body { margin: 0; padding: 16px; font-family: -apple-system, sans-serif; } ${app.css ?? ''}</style>
+</head><body>${app.html}<script>${app.javascript ?? ''}</script></body></html>''';
+  }
 }

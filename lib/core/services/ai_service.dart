@@ -221,6 +221,7 @@ class AIService {
   /// Submit async mini-app generation. Returns jobId immediately (HTTP 202).
   Future<String> generateMiniAppAsync({
     required String description,
+    bool isFastMode = false,
   }) async {
     try {
       final response = await _dio.post(
@@ -228,6 +229,7 @@ class AIService {
         data: {
           'description': description,
           'themeColors': _currentThemeColors(),
+          'isFastMode': isFastMode,
         },
       );
       final jobId = response.data['jobId'] as String?;
@@ -254,11 +256,12 @@ class AIService {
   /// Submit async generation, then poll until done or error. Returns GeneratedApp.
   Future<GeneratedApp> generateMiniAppWithPolling({
     required String description,
+    bool isFastMode = false,
     void Function(String status)? onStatusUpdate,
     Duration pollInterval = const Duration(seconds: 3),
-    Duration timeout = const Duration(seconds: 300),
+    Duration timeout = const Duration(seconds: 600),
   }) async {
-    final jobId = await generateMiniAppAsync(description: description);
+    final jobId = await generateMiniAppAsync(description: description, isFastMode: isFastMode);
     final deadline = DateTime.now().add(timeout);
 
     while (DateTime.now().isBefore(deadline)) {

@@ -7,7 +7,7 @@ part of 'live_feed_providers.dart';
 // **************************************************************************
 
 String _$liveFeedDifficultyHash() =>
-    r'e129ddfea9c0b9d72797fbfdd6e7cb0af095254d';
+    r'f045bd73a08bb7d7cde7015e75c55c02b96e1454';
 
 /// Current Difficulty Level Provider (1-10)
 ///
@@ -25,7 +25,7 @@ final liveFeedDifficultyProvider =
 );
 
 typedef _$LiveFeedDifficulty = AutoDisposeNotifier<double>;
-String _$questionBufferHash() => r'2c321da4ed3a1b5639eb8996883bfcbdc7bd65a1';
+String _$questionBufferHash() => r'd912ee1348db870829bb6165cff2c74013a2bb99';
 
 /// Question Buffer Provider (caching system)
 ///
@@ -229,7 +229,7 @@ final lastEvaluationResultProvider = AutoDisposeNotifierProvider<
 
 typedef _$LastEvaluationResult = AutoDisposeNotifier<Map<String, dynamic>?>;
 String _$liveFeedQuestionGeneratorHash() =>
-    r'ba3464f9425e96b4124d808af9dfaf036dcf7da1';
+    r'bb69f41a2e0923f893ec12ce9a871c8e988bf876';
 
 /// Live Feed Question Generator
 ///
@@ -247,7 +247,7 @@ final liveFeedQuestionGeneratorProvider =
 );
 
 typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
-String _$liveFeedQueueHash() => r'0ffbd0b8f9c34ee02066401d9e1d0ff58b76710c';
+String _$liveFeedQueueHash() => r'69a509bd003d627d4efb8ca32c766c99f0ccf794';
 
 /// Live Feed Queue Provider with Caching
 ///
@@ -319,7 +319,7 @@ final showWoHaengtsProvider =
 );
 
 typedef _$ShowWoHaengts = AutoDisposeNotifier<bool>;
-String _$liveFeedEvaluatorHash() => r'8989e2e83c6a294382ab81c2fc4006f9b2307b9a';
+String _$liveFeedEvaluatorHash() => r'44bbf0fe8c06af41ec62c2ac05768a6e675149f2';
 
 /// Live Feed Evaluator Provider
 /// This provider listens for new evaluation results and saves them to Firestore.

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/apps/presentation/screens/app_viewer_screen.dart';
 import '../features/auth/presentation/screens/diagnostic_quiz_screen.dart';
 import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
@@ -18,6 +19,7 @@ import '../features/home/presentation/providers/main_nav_notifier.dart';
 import '../features/question_session/presentation/screens/question_session_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../core/services/auth_service.dart';
+import '../core/models/saved_content.dart';
 
 part 'routes.g.dart';
 
@@ -254,6 +256,25 @@ GoRouter router(Ref ref) {
         path: '/progress',
         name: 'progress',
         builder: (context, state) => const ProgressScreen(),
+      ),
+
+      // App Viewer
+      GoRoute(
+        path: '/app-viewer',
+        name: 'app-viewer',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return buildPageWithExpressiveTransition(
+            context: context,
+            state: state,
+            child: AppViewerScreen(
+              title: extra['title'] as String,
+              htmlContent: extra['htmlContent'] as String,
+              originalPrompt: extra['originalPrompt'] as String,
+              contentType: extra['contentType'] as ContentType,
+            ),
+          );
+        },
       ),
 
       // /shop → handled by redirect above (switches to Shop tab in MainNavigation).

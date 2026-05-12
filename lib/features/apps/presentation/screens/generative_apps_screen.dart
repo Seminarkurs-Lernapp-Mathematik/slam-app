@@ -8,8 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../app/design_tokens.dart';
 import '../../../../core/models/saved_content.dart';
 import '../../../../core/services/ai_service.dart';
-import '../../../../core/services/auth_service.dart';
-import '../../../../core/utils/logger.dart';
 import '../providers/apps_providers.dart';
 import 'app_viewer_screen.dart';
 
@@ -27,21 +25,9 @@ class GenerativeAppsScreen extends ConsumerStatefulWidget {
 
 class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   final _promptController = TextEditingController();
-  bool _isLoading = false;
   bool _isFastMode = false;
   String? _error;
   GeneratedApp? _currentApp;
-  String _loadingMessage = 'App wird generiert…';
-  Timer? _loadingTimer;
-
-  static const _loadingStages = [
-    (4, 'Idee wird analysiert…'),
-    (10, 'Konzept wird entworfen…'),
-    (20, 'Code wird geschrieben…'),
-    (35, 'Interface wird gebaut…'),
-    (55, 'Details werden verfeinert…'),
-    (80, 'Fast fertig…'),
-  ];
 
   final List<String> _examples = [
     'Binomialverteilung',
@@ -57,104 +43,51 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   @override
   void dispose() {
     _promptController.dispose();
-    _loadingTimer?.cancel();
     super.dispose();
   }
 
-  void _startLoadingTimer() {
-    _loadingTimer?.cancel();
-    final startTime = DateTime.now();
-    _loadingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      final elapsed = DateTime.now().difference(startTime).inSeconds;
-      for (final (seconds, message) in _loadingStages.reversed) {
-        if (elapsed >= seconds) {
-          if (_loadingMessage != message) {
-            setState(() => _loadingMessage = message);
-          }
-          break;
-        }
-      }
-    });
-  }
-
   Future<void> _generate() async {
-    if (_promptController.text.trim().isEmpty) return;
+    final prompt = _promptController.text.trim();
+    if (prompt.isEmpty) return;
+
+    // Show initial notification
+    final durationText = _isFastMode ? '15-25' : '30-90';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Das dauert ca. $durationText Sekunden. Du kannst die App weiter nutzen, wir benachrichtigen dich!',
+          style: GoogleFonts.dmSans(fontSize: 13),
+        ),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+      ),
+    );
+
+    // Start background generation
+    ref.read(miniAppGeneratorProvider.notifier).generateInBackground(
+          description: prompt,
+          isFastMode: _isFastMode,
+        );
+
+    // Clear and reset UI immediately
     setState(() {
-      _isLoading = true;
+      _promptController.clear();
       _error = null;
       _currentApp = null;
-      _loadingMessage = 'App wird generiert…';
     });
-    _startLoadingTimer();
-    try {
-      final aiService = ref.read(aiServiceProvider);
-      final app = await aiService.generateMiniAppWithPolling(
-        description: _promptController.text.trim(),
-        onStatusUpdate: (status) {
-          if (!mounted) return;
-          if (status == 'running' && _loadingMessage == 'App wird generiert…') {
-            setState(() => _loadingMessage = 'KI arbeitet…');
-          }
-        },
-      );
-      _loadingTimer?.cancel();
-      HapticFeedback.mediumImpact();
-      setState(() {
-        _currentApp = app;
-        _isLoading = false;
-      });
-      _autoSave(app);
-    } on AIException catch (e) {
-      _loadingTimer?.cancel();
-      setState(() {
-        _error = e.statusCode == 408
-            ? 'Zeitüberschreitung — die Generierung hat zu lange gedauert. Einfachere Beschreibung versuchen.'
-            : e.message;
-        _isLoading = false;
-      });
-    } catch (e) {
-      _loadingTimer?.cancel();
-      setState(() {
-        _error = 'Fehler: $e';
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _autoSave(GeneratedApp app) async {
-    final user = ref.read(currentUserProvider);
-    if (user == null) return;
-    try {
-      await ref.read(saveContentProvider(SavedContent(
-        id: 'app-${DateTime.now().millisecondsSinceEpoch}',
-        userId: user.uid,
-        title: app.title,
-        type: ContentType.miniApp,
-        htmlContent: app.html,
-        cssContent: app.css,
-        javascriptContent: app.javascript,
-        description: _promptController.text.trim(),
-        createdAt: DateTime.now(),
-        tags: ['ki-labor'],
-      )).future);
-    } catch (e, st) {
-      Logger.error('Auto-save failed', tag: 'GenerativeAppsScreen', error: e, stackTrace: st);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('App konnte nicht gespeichert werden.')),
-        );
-      }
-    }
+    HapticFeedback.lightImpact();
   }
 
   void _openApp() {
-    if (_currentApp == null) return;
+    final latestApp = ref.read(generatedAppStateProvider);
+    final app = _currentApp ?? latestApp;
+    if (app == null) return;
+    
     Navigator.of(context).push(MaterialPageRoute<void>(
       fullscreenDialog: true,
       builder: (_) => AppViewerScreen(
-        title: _currentApp!.title,
-        htmlContent: _buildHtml(_currentApp!),
+        title: app.title,
+        htmlContent: _buildHtml(app),
         originalPrompt: _promptController.text.trim(),
         contentType: ContentType.miniApp,
       ),
@@ -323,48 +256,68 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
             ),
           ),
           const SizedBox(height: 12),
+          Row(
+            children: [
+              Switch(
+                value: _isFastMode,
+                onChanged: (val) => setState(() => _isFastMode = val),
+                activeColor: _kiA,
+                inactiveThumbColor: SlamTokens.textDim,
+                inactiveTrackColor: SlamTokens.surfaceHi,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _isFastMode ? 'Fast-Modus (Haiku)' : 'Smart-Modus (Sonnet)',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: SlamTokens.text,
+                      ),
+                    ),
+                    Text(
+                      _isFastMode ? 'Schneller, ideal für einfache UI-Apps' : 'Höchste Qualität für komplexe Logik',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        color: SlamTokens.textDim,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           GestureDetector(
-            onTap: _isLoading ? null : _generate,
+            onTap: _generate,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: _isLoading
-                      ? [
-                          _kiA.withValues(alpha: 0.4),
-                          _kiB.withValues(alpha: 0.4)
-                        ]
-                      : [_kiA, _kiB],
+                  colors: [_kiA, _kiB],
                 ),
                 borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                boxShadow: _isLoading
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: _kiA.withValues(alpha: 0.4),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                          spreadRadius: -4,
-                        )
-                      ],
+                boxShadow: [
+                  BoxShadow(
+                    color: _kiA.withValues(alpha: 0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                    spreadRadius: -4,
+                  )
+                ],
               ),
               alignment: Alignment.center,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (_isLoading)
-                    const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
-                  else
-                    const Icon(Icons.auto_awesome,
-                        size: 16, color: Colors.white),
+                  const Icon(Icons.auto_awesome, size: 16, color: Colors.white),
                   const SizedBox(width: 8),
                   Text(
-                    _isLoading ? 'Generiere App…' : 'App generieren',
+                    'App generieren',
                     style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -408,44 +361,10 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
   }
 
   Widget _buildResult() {
-    if (_isLoading) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: CircularProgressIndicator(color: _kiA, strokeWidth: 3),
-            ),
-            const SizedBox(height: 20),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
-              child: Text(
-                _loadingMessage,
-                key: ValueKey(_loadingMessage),
-                style: GoogleFonts.fraunces(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.text),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _isFastMode 
-                ? 'Das dauert etwa 15-25 Sekunden' 
-                : 'Das dauert etwa 30-90 Sekunden',
-              style: GoogleFonts.dmSans(
-                fontSize: 13, 
-                color: SlamTokens.textDim
-              )
-            ),
-          ],
-        ),
-      );
-    }
+    final latestApp = ref.watch(generatedAppStateProvider);
+    final displayApp = _currentApp ?? latestApp;
 
-    if (_currentApp == null) {
+    if (displayApp == null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -528,7 +447,7 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
                         const Icon(Icons.check, size: 26, color: Colors.white),
                   ),
                   const SizedBox(height: 14),
-                  Text(_currentApp!.title,
+                  Text(displayApp.title,
                       style: GoogleFonts.fraunces(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -597,6 +516,4 @@ class _GenerativeAppsScreenState extends ConsumerState<GenerativeAppsScreen> {
       ),
     );
   }
-}
- }
 }

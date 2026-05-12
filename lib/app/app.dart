@@ -4,6 +4,8 @@ import 'routes.dart';
 import 'theme.dart';
 import '../features/settings/presentation/providers/settings_providers.dart';
 
+final globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 class SLAMApp extends ConsumerWidget {
   const SLAMApp({super.key});
 
@@ -17,6 +19,7 @@ class SLAMApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'SLAM Learning',
+      scaffoldMessengerKey: globalMessengerKey,
       theme: theme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
