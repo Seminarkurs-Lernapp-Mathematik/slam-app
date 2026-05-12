@@ -1,7 +1,7 @@
 <div align="center">
 
 # SLAM
-### Smart Learning Adaptive Mathematics
+### Seminarkurs Lernapp Mathematik
 
 *Eine KI-gestützte Lern-App für Mathematik — entwickelt als Seminarkurs-Projekt am MVL-Gymnasium*
 
@@ -35,10 +35,9 @@
 
 | Autor | Commits | |
 |:---|:---:|:---|
-| Marco Duzevic | 141 | `████████████████░░░` 83 % |
-| TheMDcraft | 25 | `███░░░░░░░░░░░░░░░░░` 15 % |
-| joel12055 | 3 | `░░░░░░░░░░░░░░░░░░░░` 2 % |
-| emmilang09 | 1 | `░░░░░░░░░░░░░░░░░░░░` < 1 % |
+| Marco Duzevic | 141 | `███████████████████` 98 % |
+| Joel Dürr | 3 | `░░░░░░░░░░░░░░░░░░░░` 2 % |
+| Emmi Lang | 1 | `░░░░░░░░░░░░░░░░░░░░` < 1 % |
 
 ---
 
@@ -121,5 +120,5 @@ lib/
 ---
 
 <div align="center">
-<sub>© 2025–2026 MVL-Gymnasium · Seminarkurs Informatik</sub>
+<sub>© 2025–2026 Marco Duzevic</sub>
 </div>
