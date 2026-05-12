@@ -654,8 +654,8 @@ class LiveFeedQueue extends _$LiveFeedQueue {
   /// Get remaining question count
   int get remainingCount => state.remainingCount;
 
-  /// Whether more questions should be generated (prefetch at 4 remaining)
-  bool get needsMoreQuestions => state.remainingCount <= 4;
+  /// Whether more questions should be generated (prefetch at 10 remaining)
+  bool get needsMoreQuestions => state.remainingCount <= 10;
 
   /// Check if there are cached questions available
   bool get hasCachedQuestions =>
