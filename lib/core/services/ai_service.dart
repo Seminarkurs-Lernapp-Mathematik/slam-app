@@ -256,7 +256,7 @@ class AIService {
     required String description,
     void Function(String status)? onStatusUpdate,
     Duration pollInterval = const Duration(seconds: 3),
-    Duration timeout = const Duration(seconds: 120),
+    Duration timeout = const Duration(seconds: 300),
   }) async {
     final jobId = await generateMiniAppAsync(description: description);
     final deadline = DateTime.now().add(timeout);
