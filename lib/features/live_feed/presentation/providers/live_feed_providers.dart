@@ -11,6 +11,7 @@ import '../../../../core/services/ai_service.dart';
 import '../../../../core/models/question_result.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/constants/topic_catalog.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 
@@ -740,11 +741,12 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
       return;
     }
 
-    // Extract topic info from the current question's metadata
-    // Question model has 'topic' and 'subtopic' fields, use those
-    final leitidee = 'Unknown'; // Not stored directly in Question
     final thema = currentQuestion.topic;
     final unterthema = currentQuestion.subtopic;
+    final leitidee = findLeitideeForThema(thema) ?? 'Unknown';
+    final topicKey = unterthema.isNotEmpty
+        ? '$leitidee|$thema|$unterthema'
+        : '$leitidee|$thema';
 
     final gradeLevel = appSettings.gradeLevel.replaceAll('Klasse_', '');
     final courseType = appSettings.courseType;
@@ -783,6 +785,17 @@ class LiveFeedEvaluator extends _$LiveFeedEvaluator {
     } catch (e, st) {
       debugPrint('❌ Error saving question result: $e\n$st');
     }
+
+    // Update topic mastery — fire-and-forget, non-fatal
+    ref
+        .read(firestoreServiceProvider)
+        .incrementTopicProgress(
+          userId: userId,
+          topicKey: topicKey,
+          isCorrect: evaluationResult['isCorrect'] ?? false,
+        )
+        // ignore: avoid_catches_without_on_clauses
+        .catchError((Object e) => debugPrint('❌ TopicProgress update: $e'));
 
     // Update spaced-repetition memory (fire-and-forget — non-fatal)
     _upsertMemory(

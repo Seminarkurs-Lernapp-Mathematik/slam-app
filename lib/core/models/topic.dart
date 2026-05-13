@@ -74,6 +74,8 @@ class TopicProgress with _$TopicProgress {
     DateTime? lastAccessed,
     @Default(false) bool needsMoreQuestions,
     @Default(0) int avgAccuracy, // 0-100
+    @Default(0.0) double mastery, // 0.0..1.0 exponential moving average
+    @Default(0.0) double recentDelta, // change after last answer (+/-)
     DateTime? createdAt,
   }) = _TopicProgress;
 

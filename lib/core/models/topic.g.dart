@@ -50,6 +50,8 @@ _$TopicProgressImpl _$$TopicProgressImplFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['lastAccessed'] as String),
       needsMoreQuestions: json['needsMoreQuestions'] as bool? ?? false,
       avgAccuracy: (json['avgAccuracy'] as num?)?.toInt() ?? 0,
+      mastery: (json['mastery'] as num?)?.toDouble() ?? 0.0,
+      recentDelta: (json['recentDelta'] as num?)?.toDouble() ?? 0.0,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -64,6 +66,8 @@ Map<String, dynamic> _$$TopicProgressImplToJson(_$TopicProgressImpl instance) =>
       'lastAccessed': instance.lastAccessed?.toIso8601String(),
       'needsMoreQuestions': instance.needsMoreQuestions,
       'avgAccuracy': instance.avgAccuracy,
+      'mastery': instance.mastery,
+      'recentDelta': instance.recentDelta,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 

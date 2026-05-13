@@ -340,6 +340,59 @@ class FirestoreService {
     }
   }
 
+  /// Increments topic mastery after a single answered question.
+  /// Creates the document if it does not yet exist.
+  Future<void> incrementTopicProgress({
+    required String userId,
+    required String topicKey,
+    required bool isCorrect,
+  }) async {
+    final docRef = _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .collection(FirebaseCollections.topicProgress)
+        .doc(topicKey);
+
+    final doc = await docRef.get();
+    const double alpha = 0.2; // EMA smoothing factor
+
+    if (!doc.exists) {
+      final initialMastery = isCorrect ? 0.2 : 0.0;
+      await docRef.set({
+        'topicKey': topicKey,
+        'questionsCompleted': 1,
+        'totalQuestions': 1,
+        'avgAccuracy': isCorrect ? 100 : 0,
+        'mastery': initialMastery,
+        'recentDelta': initialMastery,
+        'lastAccessed': FieldValue.serverTimestamp(),
+        'needsMoreQuestions': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      return;
+    }
+
+    final data = doc.data()!;
+    final completed = (data['questionsCompleted'] as int? ?? 0) + 1;
+    final prevAccuracy = data['avgAccuracy'] as int? ?? 0;
+    final newAccuracy =
+        ((prevAccuracy * (completed - 1) + (isCorrect ? 100 : 0)) / completed)
+            .round();
+    final prevMastery = (data['mastery'] as num?)?.toDouble() ?? 0.0;
+    final newMastery =
+        ((1 - alpha) * prevMastery + alpha * (isCorrect ? 1.0 : 0.0))
+            .clamp(0.0, 1.0);
+
+    await docRef.update({
+      'questionsCompleted': FieldValue.increment(1),
+      'avgAccuracy': newAccuracy,
+      'mastery': newMastery,
+      'recentDelta': newMastery - prevMastery,
+      'lastAccessed': FieldValue.serverTimestamp(),
+      'needsMoreQuestions': false,
+    });
+  }
+
   /// Get all topics with progress
   Future<List<Topic>> getAllTopicsWithProgress(String userId) async {
     final querySnapshot = await _firestore

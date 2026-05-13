@@ -45,6 +45,16 @@ class ThemaGroup {
   });
 }
 
+/// Returns the Leitidee name for a given Thema name, or null if not found.
+String? findLeitideeForThema(String thema) {
+  for (final leitideeGroup in topicCatalog) {
+    for (final themaGroup in leitideeGroup.themen) {
+      if (themaGroup.name == thema) return leitideeGroup.name;
+    }
+  }
+  return null;
+}
+
 /// Complete German math curriculum topic catalog
 const List<LeitideeGroup> topicCatalog = [
   LeitideeGroup(

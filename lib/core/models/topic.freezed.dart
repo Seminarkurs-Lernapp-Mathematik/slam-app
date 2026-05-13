@@ -450,6 +450,10 @@ mixin _$TopicProgress {
   DateTime? get lastAccessed => throw _privateConstructorUsedError;
   bool get needsMoreQuestions => throw _privateConstructorUsedError;
   int get avgAccuracy => throw _privateConstructorUsedError; // 0-100
+  double get mastery =>
+      throw _privateConstructorUsedError; // 0.0..1.0 exponential moving average
+  double get recentDelta =>
+      throw _privateConstructorUsedError; // change after last answer (+/-)
   DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this TopicProgress to a JSON map.
@@ -476,6 +480,8 @@ abstract class $TopicProgressCopyWith<$Res> {
       DateTime? lastAccessed,
       bool needsMoreQuestions,
       int avgAccuracy,
+      double mastery,
+      double recentDelta,
       DateTime? createdAt});
 }
 
@@ -501,6 +507,8 @@ class _$TopicProgressCopyWithImpl<$Res, $Val extends TopicProgress>
     Object? lastAccessed = freezed,
     Object? needsMoreQuestions = null,
     Object? avgAccuracy = null,
+    Object? mastery = null,
+    Object? recentDelta = null,
     Object? createdAt = freezed,
   }) {
     return _then(_value.copyWith(
@@ -532,6 +540,14 @@ class _$TopicProgressCopyWithImpl<$Res, $Val extends TopicProgress>
           ? _value.avgAccuracy
           : avgAccuracy // ignore: cast_nullable_to_non_nullable
               as int,
+      mastery: null == mastery
+          ? _value.mastery
+          : mastery // ignore: cast_nullable_to_non_nullable
+              as double,
+      recentDelta: null == recentDelta
+          ? _value.recentDelta
+          : recentDelta // ignore: cast_nullable_to_non_nullable
+              as double,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -556,6 +572,8 @@ abstract class _$$TopicProgressImplCopyWith<$Res>
       DateTime? lastAccessed,
       bool needsMoreQuestions,
       int avgAccuracy,
+      double mastery,
+      double recentDelta,
       DateTime? createdAt});
 }
 
@@ -579,6 +597,8 @@ class __$$TopicProgressImplCopyWithImpl<$Res>
     Object? lastAccessed = freezed,
     Object? needsMoreQuestions = null,
     Object? avgAccuracy = null,
+    Object? mastery = null,
+    Object? recentDelta = null,
     Object? createdAt = freezed,
   }) {
     return _then(_$TopicProgressImpl(
@@ -610,6 +630,14 @@ class __$$TopicProgressImplCopyWithImpl<$Res>
           ? _value.avgAccuracy
           : avgAccuracy // ignore: cast_nullable_to_non_nullable
               as int,
+      mastery: null == mastery
+          ? _value.mastery
+          : mastery // ignore: cast_nullable_to_non_nullable
+              as double,
+      recentDelta: null == recentDelta
+          ? _value.recentDelta
+          : recentDelta // ignore: cast_nullable_to_non_nullable
+              as double,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -629,6 +657,8 @@ class _$TopicProgressImpl extends _TopicProgress {
       this.lastAccessed,
       this.needsMoreQuestions = false,
       this.avgAccuracy = 0,
+      this.mastery = 0.0,
+      this.recentDelta = 0.0,
       this.createdAt})
       : super._();
 
@@ -655,11 +685,19 @@ class _$TopicProgressImpl extends _TopicProgress {
   final int avgAccuracy;
 // 0-100
   @override
+  @JsonKey()
+  final double mastery;
+// 0.0..1.0 exponential moving average
+  @override
+  @JsonKey()
+  final double recentDelta;
+// change after last answer (+/-)
+  @override
   final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'TopicProgress(topicKey: $topicKey, questionsCompleted: $questionsCompleted, totalQuestions: $totalQuestions, lastSessionId: $lastSessionId, lastAccessed: $lastAccessed, needsMoreQuestions: $needsMoreQuestions, avgAccuracy: $avgAccuracy, createdAt: $createdAt)';
+    return 'TopicProgress(topicKey: $topicKey, questionsCompleted: $questionsCompleted, totalQuestions: $totalQuestions, lastSessionId: $lastSessionId, lastAccessed: $lastAccessed, needsMoreQuestions: $needsMoreQuestions, avgAccuracy: $avgAccuracy, mastery: $mastery, recentDelta: $recentDelta, createdAt: $createdAt)';
   }
 
   @override
@@ -681,6 +719,9 @@ class _$TopicProgressImpl extends _TopicProgress {
                 other.needsMoreQuestions == needsMoreQuestions) &&
             (identical(other.avgAccuracy, avgAccuracy) ||
                 other.avgAccuracy == avgAccuracy) &&
+            (identical(other.mastery, mastery) || other.mastery == mastery) &&
+            (identical(other.recentDelta, recentDelta) ||
+                other.recentDelta == recentDelta) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -696,6 +737,8 @@ class _$TopicProgressImpl extends _TopicProgress {
       lastAccessed,
       needsMoreQuestions,
       avgAccuracy,
+      mastery,
+      recentDelta,
       createdAt);
 
   /// Create a copy of TopicProgress
@@ -723,6 +766,8 @@ abstract class _TopicProgress extends TopicProgress {
       final DateTime? lastAccessed,
       final bool needsMoreQuestions,
       final int avgAccuracy,
+      final double mastery,
+      final double recentDelta,
       final DateTime? createdAt}) = _$TopicProgressImpl;
   const _TopicProgress._() : super._();
 
@@ -743,6 +788,10 @@ abstract class _TopicProgress extends TopicProgress {
   bool get needsMoreQuestions;
   @override
   int get avgAccuracy; // 0-100
+  @override
+  double get mastery; // 0.0..1.0 exponential moving average
+  @override
+  double get recentDelta; // change after last answer (+/-)
   @override
   DateTime? get createdAt;
 
