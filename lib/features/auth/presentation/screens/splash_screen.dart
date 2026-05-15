@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/firestore_service.dart';
 import '../../../../core/utils/logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -67,12 +68,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateHome() async {
     if (!mounted) return;
-    final prefs = await SharedPreferences.getInstance();
-    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
-    if (!onboardingDone) {
-      if (mounted) context.go('/onboarding');
-      return;
+    final authService = ref.read(authServiceProvider);
+    final uid = authService.currentUser?.uid;
+    if (uid != null) {
+      try {
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final onboardingDone = await firestoreService.hasCompletedOnboarding(uid);
+        if (!onboardingDone) {
+          if (mounted) context.go('/setup');
+          return;
+        }
+      } catch (_) {
+        // Firestore unavailable — fall through to SharedPrefs fallback
+        final prefs = await SharedPreferences.getInstance();
+        final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+        if (!onboardingDone) {
+          if (mounted) context.go('/setup');
+          return;
+        }
+      }
     }
+    final prefs = await SharedPreferences.getInstance();
     final diagnosticDone = prefs.getBool('diagnostic_done') ?? false;
     if (mounted) context.go(diagnosticDone ? '/home' : '/diagnostic');
   }

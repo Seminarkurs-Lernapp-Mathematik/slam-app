@@ -65,6 +65,11 @@ abstract final class SlamTokens {
   static const Color accentRed = Color(0xFFEF4444);
   static const Color accentPink = Color(0xFFFF4080);
   static const Color accentPinkLight = Color(0xFFFF6FA0);
+  static const Color accentOrangeLight = Color(0xFFFF9A4A);
+  static const Color accentOrangeMid = Color(0xFFFF6020);
+  static const Color accentEmerald = Color(0xFF059669);
+  static const Color accentTealMid = Color(0xFF14B8A6);
+  static const Color accentTealDark = Color(0xFF0D9488);
 
   // ── Semantic overlays ──────────────────────────────────────────────────
   static const Color overlayBlack54 = Color(0x8C000000);
@@ -114,6 +119,10 @@ abstract final class SlamTokens {
   static const Duration dScreen = Duration(milliseconds: 500);
   static const Duration dSwoosh = Duration(milliseconds: 680);
   static const Duration dConfetti = Duration(milliseconds: 1200);
+  static const Duration motionStagger = Duration(milliseconds: 40);
+
+  // ── Surface effects ──────────────────────────────────────────────────────
+  static const double glassBlur = 24.0;
 
   // ── Elevation shadows ────────────────────────────────────────────────────
   static BoxShadow get primaryShadow => BoxShadow(

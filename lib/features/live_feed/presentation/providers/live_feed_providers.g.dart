@@ -247,7 +247,7 @@ final liveFeedQuestionGeneratorProvider =
 );
 
 typedef _$LiveFeedQuestionGenerator = AutoDisposeNotifier<bool>;
-String _$liveFeedQueueHash() => r'69a509bd003d627d4efb8ca32c766c99f0ccf794';
+String _$liveFeedQueueHash() => r'bbdeaa0295f3c67e7d6c9297e808f70de5c234da';
 
 /// Live Feed Queue Provider with Caching
 ///
@@ -319,7 +319,7 @@ final showWoHaengtsProvider =
 );
 
 typedef _$ShowWoHaengts = AutoDisposeNotifier<bool>;
-String _$liveFeedEvaluatorHash() => r'44bbf0fe8c06af41ec62c2ac05768a6e675149f2';
+String _$liveFeedEvaluatorHash() => r'c7cf776e2f14cd7118128da37c1a8cf506d317d6';
 
 /// Live Feed Evaluator Provider
 /// This provider listens for new evaluation results and saves them to Firestore.

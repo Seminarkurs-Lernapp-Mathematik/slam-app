@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../features/apps/presentation/screens/app_viewer_screen.dart';
 import '../features/auth/presentation/screens/diagnostic_quiz_screen.dart';
 import '../features/auth/presentation/screens/onboarding_screen.dart';
+import '../features/auth/presentation/screens/setup_wizard_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
@@ -76,6 +77,7 @@ GoRouter router(Ref ref) {
           state.matchedLocation == '/verify-email';
       final isOnSplash = state.matchedLocation == '/';
       final isOnOnboarding = state.matchedLocation == '/onboarding';
+      final isOnSetup = state.matchedLocation == '/setup';
       final isOnDiagnostic = state.matchedLocation == '/diagnostic';
 
       // Allow splash screen
@@ -86,8 +88,8 @@ GoRouter router(Ref ref) {
         return '/home';
       }
 
-      // Allow onboarding and diagnostic quiz for authenticated users
-      if (isOnOnboarding || isOnDiagnostic) return null;
+      // Allow onboarding, setup wizard, and diagnostic quiz for authenticated users
+      if (isOnOnboarding || isOnSetup || isOnDiagnostic) return null;
 
       // If not authenticated and trying to access protected routes, redirect to login
       if (!isAuthenticated && !isOnAuthRoute && !isOnSplash) {
@@ -142,6 +144,16 @@ GoRouter router(Ref ref) {
           context: context,
           state: state,
           child: const OnboardingScreen(),
+        ),
+      ),
+      // Setup Wizard (shown after first registration, replaces old onboarding)
+      GoRoute(
+        path: '/setup',
+        name: 'setup',
+        pageBuilder: (context, state) => buildPageWithExpressiveTransition(
+          context: context,
+          state: state,
+          child: const SetupWizardScreen(),
         ),
       ),
       // Cold-start diagnostic quiz (shown once after onboarding)

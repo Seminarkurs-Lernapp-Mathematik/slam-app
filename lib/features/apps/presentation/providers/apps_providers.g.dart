@@ -743,7 +743,7 @@ final geogebraVisualizationStateProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$GeogebraVisualizationState = AutoDisposeNotifier<GeoGebraData?>;
-String _$miniAppGeneratorHash() => r'df3ce39d4a864882526d83ff32b9dba06e7ee6ba';
+String _$miniAppGeneratorHash() => r'78fd2348d341c28a4775ed14e9bb6ded80702c4b';
 
 /// Mini-App Generator for background tasks
 ///

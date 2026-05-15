@@ -203,6 +203,7 @@ class AppSettings {
   final ThemeConfig theme;
   final DateTime? examDate; // Optional exam/test date for countdown
   final List<String> aiPreferences; // User-written instructions for the AI
+  final List<String> learningGoals; // e.g. ['abi', 'klausur', 'luecken']
 
   const AppSettings({
     this.aiModel = const AIModelConfig(),
@@ -211,6 +212,7 @@ class AppSettings {
     required this.theme,
     this.examDate,
     this.aiPreferences = const [],
+    this.learningGoals = const [],
   });
 
   factory AppSettings.initial() {
@@ -227,6 +229,7 @@ class AppSettings {
         'theme': theme.toJson(),
         'examDate': examDate?.toIso8601String(),
         'aiPreferences': aiPreferences,
+        'learningGoals': learningGoals,
       };
 
   /// Create from Firebase JSON
@@ -245,6 +248,8 @@ class AppSettings {
           : null,
       aiPreferences:
           (json['aiPreferences'] as List<dynamic>?)?.cast<String>() ?? [],
+      learningGoals:
+          (json['learningGoals'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 
@@ -256,6 +261,7 @@ class AppSettings {
     DateTime? examDate,
     bool clearExamDate = false,
     List<String>? aiPreferences,
+    List<String>? learningGoals,
   }) {
     return AppSettings(
       aiModel: aiModel ?? this.aiModel,
@@ -264,6 +270,7 @@ class AppSettings {
       theme: theme ?? this.theme,
       examDate: clearExamDate ? null : (examDate ?? this.examDate),
       aiPreferences: aiPreferences ?? this.aiPreferences,
+      learningGoals: learningGoals ?? this.learningGoals,
     );
   }
 }
@@ -485,6 +492,12 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     state = date != null
         ? state.copyWith(examDate: date)
         : state.copyWith(clearExamDate: true);
+    _saveSettings();
+  }
+
+  // Learning goals (set during wizard)
+  void setLearningGoals(List<String> goals) {
+    state = state.copyWith(learningGoals: goals);
     _saveSettings();
   }
 

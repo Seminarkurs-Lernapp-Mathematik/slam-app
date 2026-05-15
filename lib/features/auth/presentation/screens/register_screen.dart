@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
 import '../providers/auth_providers.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -24,21 +23,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   String? _errorMessage;
-  String _selectedGrade = 'Klasse_11';
-  String _selectedCourseType = 'Leistungskurs';
-
-  static const _grades = [
-    'Klasse_5',
-    'Klasse_6',
-    'Klasse_7',
-    'Klasse_8',
-    'Klasse_9',
-    'Klasse_10',
-    'Klasse_11',
-    'Klasse_12',
-    'Klasse_13',
-  ];
-  static const _upperGrades = ['Klasse_11', 'Klasse_12', 'Klasse_13'];
 
   @override
   void dispose() {
@@ -64,15 +48,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         'displayName': _nameController.text.trim(),
       }).future);
 
-      // Save grade/course selection to settings
-      final settingsNotifier = ref.read(appSettingsNotifierProvider.notifier);
-      settingsNotifier.setGradeLevel(_selectedGrade);
-      if (_upperGrades.contains(_selectedGrade)) {
-        settingsNotifier.setCourseType(_selectedCourseType);
-      }
-
       if (mounted) {
-        context.go('/email-verification');
+        context.go('/verify-email');
       }
     } catch (e) {
       setState(() {
@@ -236,48 +213,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
-
-                      // Grade Level
-                      DropdownButtonFormField<String>(
-                        value: _selectedGrade,
-                        decoration: const InputDecoration(
-                          labelText: 'Klasse / Jahrgangsstufe',
-                          prefixIcon: Icon(Icons.school),
-                        ),
-                        items: _grades.map((g) {
-                          final label = g.startsWith('Klasse_')
-                              ? 'Klasse ${g.substring(7)}'
-                              : g;
-                          return DropdownMenuItem(value: g, child: Text(label));
-                        }).toList(),
-                        onChanged: (v) {
-                          if (v == null) return;
-                          setState(() => _selectedGrade = v);
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Course type (only for upper school)
-                      if (_upperGrades.contains(_selectedGrade))
-                        DropdownButtonFormField<String>(
-                          value: _selectedCourseType,
-                          decoration: const InputDecoration(
-                            labelText: 'Kursart',
-                            prefixIcon: Icon(Icons.menu_book),
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                                value: 'Grundkurs', child: Text('Grundkurs')),
-                            DropdownMenuItem(
-                                value: 'Leistungskurs',
-                                child: Text('Leistungskurs')),
-                          ],
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() => _selectedCourseType = v);
-                          },
-                        ),
                       const SizedBox(height: 24),
 
                       // Error Message

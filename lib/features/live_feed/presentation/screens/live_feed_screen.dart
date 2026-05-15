@@ -13,6 +13,7 @@ import '../../../../features/home/presentation/providers/main_nav_notifier.dart'
 import '../../../../features/home/presentation/providers/nav_keys.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
 import '../../../../shared/widgets/empty_state.dart';
+import '../../../home/presentation/widgets/daily_insight_card.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
 
@@ -117,6 +118,11 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       body: Column(
         children: [
           const _FeedHeader(),
+          DailyInsightCard(
+            onTopicTap: () {
+              // Card tap starts the feed — already on this screen
+            },
+          ),
           Expanded(
             child: _buildQuestionArea(currentQuestion, queueState, topics),
           ),

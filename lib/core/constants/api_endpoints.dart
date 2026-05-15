@@ -42,6 +42,9 @@ class ApiEndpoints {
   // Shop/Purchases
   static const String purchase = '/api/purchase';
 
+  // Exam Simulation
+  static const String generateExam = '/api/generate-exam';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

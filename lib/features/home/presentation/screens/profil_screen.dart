@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../gamification/presentation/screens/progress_screen.dart';
 import '../../../gamification/presentation/widgets/level_progress_circle.dart';
+import '../../../gamification/presentation/widgets/usage_indicator.dart';
 import '../../../gamification/presentation/widgets/xp_stats_card.dart';
 import '../../../gamification/presentation/widgets/streak_calendar.dart';
+import '../../../knowledge_graph/presentation/screens/knowledge_graph_screen.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 import '../../../gamification/presentation/screens/progress_screen.dart'
     show userStatsStreamProvider;
@@ -406,6 +408,14 @@ class _ProgressContent extends ConsumerWidget {
         XPStatsCard(stats: stats),
         const SizedBox(height: 24),
 
+        // Knowledge Graph
+        const SizedBox(height: 24),
+        GlassPanel(
+          padding: const EdgeInsets.all(20),
+          child: const KnowledgeGraphSection(),
+        ),
+        const SizedBox(height: 24),
+
         // Streak Section
         GlassPanel(
           padding: const EdgeInsets.all(20),
@@ -452,6 +462,7 @@ class _ProgressContent extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               StreakCalendar(stats: stats),
+              const UsageIndicator(),
             ],
           ),
         ),

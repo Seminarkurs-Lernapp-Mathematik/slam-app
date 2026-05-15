@@ -6,6 +6,7 @@ import '../../../../app/design_tokens.dart';
 import 'geogebra_screen.dart';
 import 'generative_apps_screen.dart';
 import 'content_library_screen.dart';
+import '../../../exam_simulation/presentation/screens/exam_setup_screen.dart';
 
 class AppsHubScreen extends ConsumerStatefulWidget {
   const AppsHubScreen({super.key});
@@ -48,6 +49,11 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
             index: 2,
             onTap: () => setState(() => _subScreen = 2),
           )),
+          SliverToBoxAdapter(
+              child: _AnimatedHeroCard(
+            index: 3,
+            onTap: () => setState(() => _subScreen = 3),
+          )),
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
@@ -62,6 +68,8 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
         return 'KI-Labor';
       case 2:
         return 'Meine Inhalte';
+      case 3:
+        return 'Prüfungssimulation';
       default:
         return '';
     }
@@ -75,6 +83,8 @@ class _AppsHubScreenState extends ConsumerState<AppsHubScreen> {
         return const GenerativeAppsScreen();
       case 2:
         return const ContentLibraryScreen();
+      case 3:
+        return const ExamSetupScreen();
       default:
         return const SizedBox();
     }
@@ -156,10 +166,10 @@ const _heroData = [
     body:
         'Beschreibe was du brauchst — die KI generiert Rechner, Graphen, Simulatoren.',
     cta: 'KI-Labor öffnen',
-    colorA: Color(0xFFFF9A4A),
-    colorB: Color(0xFFFF6020),
-    colorC: Color(0xFFFF6FA0),
-    colorD: Color(0xFFFF4080),
+    colorA: SlamTokens.accentOrangeLight,
+    colorB: SlamTokens.accentOrangeMid,
+    colorC: SlamTokens.accentPinkLight,
+    colorD: SlamTokens.accentPink,
   ),
   _HeroData(
     badge: 'VISUALISIEREN',
@@ -168,10 +178,10 @@ const _heroData = [
     body:
         'Zeichne Funktionen, konstruiere Geometrie und verstehe Mathe visuell.',
     cta: 'GeoGebra öffnen',
-    colorA: Color(0xFF3B82F6),
-    colorB: Color(0xFF6366F1),
-    colorC: Color(0xFF8B5CF6),
-    colorD: Color(0xFF4F46E5),
+    colorA: SlamTokens.accentBlue,
+    colorB: SlamTokens.accentIndigo,
+    colorC: SlamTokens.accentPurple,
+    colorD: SlamTokens.accentPurpleDark,
   ),
   _HeroData(
     badge: 'BIBLIOTHEK',
@@ -180,10 +190,22 @@ const _heroData = [
     body:
         'Deine gespeicherten Mini-Apps, GeoGebra-Konstruktionen und Visualisierungen.',
     cta: 'Inhalte öffnen',
-    colorA: Color(0xFFD97706),
-    colorB: Color(0xFFF59E0B),
-    colorC: Color(0xFFFBBF24),
-    colorD: Color(0xFFEA580C),
+    colorA: SlamTokens.accentAmberDark,
+    colorB: SlamTokens.accentAmber,
+    colorC: SlamTokens.accentAmberLight,
+    colorD: SlamTokens.accentOrangeDark,
+  ),
+  _HeroData(
+    badge: 'KLAUSUR',
+    badgeIcon: Icons.edit_document,
+    headline: 'Prüfungs-\nsimulation.',
+    body:
+        'Generiere eine echte Klausur nach deinem Lernplan — mit Timer und KI-Auswertung.',
+    cta: 'Klausur starten',
+    colorA: SlamTokens.accentTealDark,
+    colorB: SlamTokens.accentEmerald,
+    colorC: SlamTokens.accentGreen,
+    colorD: SlamTokens.accentTealMid,
   ),
 ];
 

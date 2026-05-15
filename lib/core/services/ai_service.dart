@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../app/design_tokens.dart';
 import '../constants/api_endpoints.dart';
 import '../models/question.dart';
+import 'auth_service.dart';
 
 part 'ai_service.g.dart';
 
@@ -573,6 +574,7 @@ class AIException implements Exception {
 
 @riverpod
 AIService aiService(AiServiceRef ref) {
+  final authService = ref.watch(authServiceProvider);
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiEndpoints.baseUrl,
@@ -581,5 +583,18 @@ AIService aiService(AiServiceRef ref) {
       headers: {'Content-Type': 'application/json'},
     ),
   );
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      try {
+        final token = await authService.currentUser?.getIdToken();
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+      } catch (_) {
+        // Proceed without auth header if token fetch fails
+      }
+      handler.next(options);
+    },
+  ));
   return AIService(dio);
 }

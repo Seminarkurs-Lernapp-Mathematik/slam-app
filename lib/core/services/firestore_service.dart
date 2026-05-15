@@ -296,6 +296,34 @@ class FirestoreService {
   }
 
   // ============================================================================
+  // ONBOARDING STATE
+  // ============================================================================
+
+  /// Returns true when the user has completed the setup wizard.
+  Future<bool> hasCompletedOnboarding(String userId) async {
+    final doc = await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .get();
+    final profile = doc.data()?['profile'] as Map<String, dynamic>?;
+    return profile?['onboardingCompletedAt'] != null;
+  }
+
+  /// Marks the setup wizard as complete and persists DSGVO consent.
+  Future<void> markOnboardingComplete(String userId) async {
+    await _firestore
+        .collection(FirebaseCollections.users)
+        .doc(userId)
+        .set({
+      'profile': {
+        'onboardingCompletedAt': FieldValue.serverTimestamp(),
+        'dsgvoConsentedAt': FieldValue.serverTimestamp(),
+        'dsgvoConsentVersion': '2026.05',
+      }
+    }, SetOptions(merge: true));
+  }
+
+  // ============================================================================
   // TOPIC PROGRESS
   // ============================================================================
 
