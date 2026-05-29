@@ -32,7 +32,14 @@ class ProgressScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      body: userStatsAsync.when(
+      body: FloatingParticles(
+        count: 12,
+        colors: [
+          theme.colorScheme.primary.withValues(alpha: 0.12),
+          Colors.amber.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.04),
+        ],
+        child: userStatsAsync.when(
         data: (stats) => SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -190,6 +197,7 @@ class ProgressScreen extends ConsumerWidget {
           ),
         ),
       ),
+      ),  // FloatingParticles
     );
   }
 

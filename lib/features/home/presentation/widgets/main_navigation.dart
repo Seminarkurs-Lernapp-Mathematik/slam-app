@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../shared/animations/app_animations.dart';
 import '../../../live_feed/presentation/screens/live_feed_screen.dart';
 import '../../../learning_plan/presentation/screens/lernplan_screen.dart';
 import '../../../apps/presentation/screens/apps_hub_screen.dart';
@@ -169,8 +170,9 @@ class _NavTab {
   final String label;
 }
 
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   const _NavItem({
+    super.key,
     required this.tab,
     required this.isActive,
     required this.width,
@@ -183,55 +185,123 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_NavItem> createState() => _NavItemState();
+}
+
+class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin {
+  late final AnimationController _bounceCtrl;
+  late final Animation<double> _bounceScale;
+  late final Animation<double> _bounceRotate;
+  bool _wasActive = false;
+  bool _showParticle = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _wasActive = widget.isActive;
+    _bounceCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+    _bounceScale = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.4)
+          .chain(CurveTween(curve: Curves.easeOut)), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 1.4, end: 0.85)
+          .chain(CurveTween(curve: Curves.easeInOut)), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 0.85, end: 1.0)
+          .chain(CurveTween(curve: AppCurves.spring)), weight: 40),
+    ]).animate(_bounceCtrl);
+    _bounceRotate = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: -0.2), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: -0.2, end: 0.15), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 0.15, end: 0.0), weight: 35),
+    ]).animate(_bounceCtrl);
+  }
+
+  @override
+  void didUpdateWidget(_NavItem old) {
+    super.didUpdateWidget(old);
+    if (widget.isActive && !_wasActive) {
+      _bounceCtrl.forward(from: 0);
+      setState(() => _showParticle = true);
+      Future.delayed(const Duration(milliseconds: 700), () {
+        if (mounted) setState(() => _showParticle = false);
+      });
+    }
+    _wasActive = widget.isActive;
+  }
+
+  @override
+  void dispose() { _bounceCtrl.dispose(); super.dispose(); }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
-        onTap();
+        widget.onTap();
       },
       child: AnimatedContainer(
         duration: SlamTokens.dState,
         curve: SlamTokens.curveStandard,
-        width: width,
+        width: widget.width,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: isActive ? SlamTokens.primary : Colors.transparent,
+          color: widget.isActive ? SlamTokens.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(SlamTokens.rCircle),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            AnimatedScale(
-              scale: isActive ? 1.0 : 0.95,
-              duration: SlamTokens.dState,
-              curve: SlamTokens.curveStandard,
-              child: Icon(
-                isActive ? tab.selectedIcon : tab.icon,
-                size: 20,
-                color: isActive ? SlamTokens.primaryOn : SlamTokens.textDim,
+            // Particle burst on activation
+            if (_showParticle)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: LottieOnce(
+                    asset: AppAnim.sparkleBurst,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
-            ),
-            AnimatedSize(
-              duration: SlamTokens.dState,
-              curve: SlamTokens.curveStandard,
-              child: isActive
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 6),
-                        Text(
-                          tab.label,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: SlamTokens.primaryOn,
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedBuilder(
+                  animation: _bounceCtrl,
+                  builder: (_, __) => Transform.rotate(
+                    angle: _bounceRotate.value,
+                    child: Transform.scale(
+                      scale: widget.isActive ? _bounceScale.value : 1.0,
+                      child: Icon(
+                        widget.isActive ? widget.tab.selectedIcon : widget.tab.icon,
+                        size: 20,
+                        color: widget.isActive ? SlamTokens.primaryOn : SlamTokens.textDim,
+                      ),
+                    ),
+                  ),
+                ),
+                AnimatedSize(
+                  duration: SlamTokens.dState,
+                  curve: SlamTokens.curveStandard,
+                  child: widget.isActive
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(width: 6),
+                            Text(
+                              widget.tab.label,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: SlamTokens.primaryOn,
+                                letterSpacing: 0.1,
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
             ),
           ],
         ),

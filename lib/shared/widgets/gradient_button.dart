@@ -48,7 +48,15 @@ class _GradientButtonState extends State<GradientButton> {
     final isOff =
         widget.disabled || widget.isLoading || widget.onPressed == null;
 
-    return AnimatedScale(
+    return TapRipple(
+      onTap: isOff ? null : () {
+        HapticFeedback.mediumImpact();
+        widget.onPressed?.call();
+      },
+      color: SlamTokens.primary,
+      borderRadius: SlamTokens.rCircle,
+      haptic: HapticStrength.none,
+      child: AnimatedScale(
       scale: _isPressed ? 0.94 : 1.0,
       duration: const Duration(milliseconds: 120),
       curve: Curves.easeOutCubic,
@@ -120,7 +128,8 @@ class _GradientButtonState extends State<GradientButton> {
           ),
         ),
       ),
-    );
+      ), // AnimatedScale
+    ); // TapRipple
   }
 }
 

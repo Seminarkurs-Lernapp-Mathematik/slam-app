@@ -121,9 +121,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SlamTokens.bg,
-      body: Stack(
+      body: FloatingParticles(
+        count: 18,
+        colors: [
+          SlamTokens.primary.withValues(alpha: 0.18),
+          SlamTokens.primary.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.05),
+        ],
+        child: Stack(
         children: [
-          // Subtle radial glow behind the logo
+          // Animated radial glow behind the logo
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _logoCtrl,
@@ -131,12 +138,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     center: Alignment.center,
-                    radius: 0.7,
+                    radius: 0.9,
                     colors: [
                       SlamTokens.primary
-                          .withValues(alpha: _logoCtrl.value * 0.08),
+                          .withValues(alpha: _logoCtrl.value * 0.14),
+                      SlamTokens.primary.withValues(alpha: 0.02),
                       Colors.transparent,
                     ],
+                    stops: const [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
@@ -237,6 +246,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ),
         ],
       ),
+      ),  // FloatingParticles
     );
   }
 }

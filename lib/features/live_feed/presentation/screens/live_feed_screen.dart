@@ -115,13 +115,20 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
 
     return Scaffold(
       backgroundColor: SlamTokens.bg,
-      body: Column(
-        children: [
-          const _FeedHeader(),
-          Expanded(
-            child: _buildQuestionArea(currentQuestion, queueState, topics),
-          ),
+      body: FloatingParticles(
+        count: 10,
+        colors: [
+          SlamTokens.primary.withValues(alpha: 0.1),
+          Colors.white.withValues(alpha: 0.04),
         ],
+        child: Column(
+          children: [
+            const _FeedHeader(),
+            Expanded(
+              child: _buildQuestionArea(currentQuestion, queueState, topics),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -77,8 +77,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      body: AnimatedGradientBg(
+        colors: const [
+          [Color(0xFF0D0D14), Color(0xFF1A0A1F)],
+          [Color(0xFF0D0D14), Color(0xFF0F1A1F)],
+          [Color(0xFF0D0D14), Color(0xFF1A100A)],
+        ],
+        duration: const Duration(seconds: 7),
+        child: FloatingParticles(
+          count: 16,
+          colors: [
+            const Color(0xFFFF6B2C).withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.05),
+            const Color(0xFF9B5CFF).withValues(alpha: 0.1),
+          ],
+          child: SafeArea(
+            child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
@@ -236,7 +250,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
           ),
         ),
-      ),
+        ),   // FloatingParticles
+      ),     // AnimatedGradientBg
     );
   }
 }

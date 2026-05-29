@@ -113,59 +113,27 @@ class XPStatsCard extends StatelessWidget {
     UserStats stats,
     ThemeData theme,
   ) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 1000),
-            curve: Curves.easeOutCubic,
-            tween: Tween<double>(
-              begin: 0.0,
-              end: stats.progressToNextLevel,
-            ),
-            builder: (context, value, child) {
-              return Stack(
-                children: [
-                  // Background
-                  Container(
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  // Progress
-                  FractionallySizedBox(
-                    widthFactor: value,
-                    child: Container(
-                      height: 12,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary,
-                            theme.colorScheme.secondary,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+    return Column(children: [
+      SparkleOverlay(
+        active: stats.progressToNextLevel > 0.8,
+        color: theme.colorScheme.primary,
+        child: AnimatedProgressBar(
+          value: stats.progressToNextLevel,
+          color: theme.colorScheme.primary,
+          height: 12,
+          showGlow: true,
         ),
-      ],
-    );
+      ),
+      const SizedBox(height: 6),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text('${(stats.progressToNextLevel * 100).toStringAsFixed(0)}%',
+            style: TextStyle(fontSize: 10, color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w700)),
+        Text('Level ${stats.calculatedLevel + 1}',
+            style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                fontWeight: FontWeight.w600)),
+      ]),
+    ]);
   }
 
   /// Build Single XP Stat

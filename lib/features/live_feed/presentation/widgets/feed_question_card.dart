@@ -511,7 +511,12 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                         const SizedBox(height: 16),
                         _AnimatedReveal(
                           key: ValueKey('feedback_${widget.question.id}'),
-                          child: _buildFeedback(),
+                          child: GlowBorder(
+                            color: _isCorrect ? SlamTokens.success : SlamTokens.danger,
+                            glowRadius: 16,
+                            animate: _isCorrect,
+                            child: _buildFeedback(),
+                          ),
                         ),
                         if (!_isCorrect && _showWoHaengtsInput) ...[
                           const SizedBox(height: 10),
@@ -602,119 +607,30 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
     if (options == null || options.isEmpty) {
       return Text('Keine Antwortoptionen verfügbar',
           style: GoogleFonts.dmSans(color: SlamTokens.textDim));
+
     }
 
     return Column(
-      children: options.map((opt) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: _buildOptionButton(opt, subjectColor, subjectSoft),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildOptionButton(
-      QuestionOption option, Color subjectColor, Color subjectSoft) {
-    final isSelected = _selectedOptionId == option.id;
-
-    Color bg, border, textColor;
-    Color badgeBg;
-    Color badgeFg;
-    double radius = SlamTokens.rOption;
-    double scale = 1.0;
-    double opacity = 1.0;
-
-    if (!_answered) {
-      bg = SlamTokens.surface;
-      border = isSelected ? subjectColor : SlamTokens.line;
-      textColor = SlamTokens.text;
-      badgeBg =
-          isSelected ? subjectColor : SlamTokens.text.withValues(alpha: 0.06);
-      badgeFg = isSelected ? SlamTokens.primaryOn : SlamTokens.textDim;
-    } else if (option.isCorrect) {
-      bg = SlamTokens.successSoft;
-      border = SlamTokens.success;
-      textColor = SlamTokens.text;
-      badgeBg = SlamTokens.success;
-      badgeFg = SlamTokens.successBgDark;
-      radius = 20;
-      scale = 1.02;
-    } else if (isSelected && !option.isCorrect) {
-      bg = SlamTokens.dangerSoft;
-      border = SlamTokens.danger;
-      textColor = SlamTokens.text;
-      badgeBg = SlamTokens.danger;
-      badgeFg = SlamTokens.dangerBgDark;
-    } else {
-      bg = Colors.transparent;
-      border = SlamTokens.line;
-      textColor = SlamTokens.textMute;
-      badgeBg = SlamTokens.text.withValues(alpha: 0.06);
-      badgeFg = SlamTokens.textMute;
-      opacity = 0.45;
-      scale = 0.96;
-    }
-
-    return AnimatedOpacity(
-      duration: SlamTokens.dState,
-      opacity: opacity,
-      child: AnimatedScale(
-        scale: scale,
-        duration: SlamTokens.dState,
-        curve: SlamTokens.curveStandard,
-        child: GestureDetector(
-          onTap: _answered ? null : () => _selectOption(option.id),
-          child: AnimatedContainer(
-            duration: SlamTokens.dState,
-            curve: SlamTokens.curveStandard,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(radius),
-              border: Border.all(
-                color: border,
-                width: isSelected || (_answered && option.isCorrect) ? 1.5 : 1,
+      children: [
+        for (int i = 0; i < options.length; i++)
+          SlideInUp(
+            key: ValueKey('opt_${options[i].id}'),
+            delay: Duration(milliseconds: 80 + i * 55),
+            duration: const Duration(milliseconds: 320),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _AnimatedOptionCard(
+                option: options[i],
+                subjectColor: subjectColor,
+                subjectSoft: subjectSoft,
+                selectedId: _selectedOptionId,
+                answered: _answered,
+                onTap: _answered ? null : () => _selectOption(options[i].id),
+                buildText: _buildOptionText,
               ),
             ),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  duration: SlamTokens.dState,
-                  curve: SlamTokens.curveStandard,
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: badgeBg,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  alignment: Alignment.center,
-                  child: _answered &&
-                          (option.isCorrect ||
-                              (isSelected && !option.isCorrect))
-                      ? Icon(
-                          option.isCorrect ? Icons.check : Icons.close,
-                          size: 18,
-                          color: badgeFg,
-                        )
-                      : Text(
-                          option.id,
-                          style: GoogleFonts.fraunces(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: badgeFg,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: _buildOptionText(option.text, textColor),
-                ),
-              ],
-            ),
           ),
-        ),
-      ),
+      ],
     );
   }
 
@@ -885,38 +801,47 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
       child: _answered
           ? _AnimatedReveal(
               key: ValueKey('actionbar_answered_${widget.question.id}'),
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  _skipToNext();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
-                    borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Nächste Frage',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: _isCorrect
-                              ? SlamTokens.successBgDark
-                              : SlamTokens.primaryOn,
-                          letterSpacing: -0.1,
+              child: TapRipple(
+                onTap: () { HapticFeedback.mediumImpact(); _skipToNext(); },
+                color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
+                borderRadius: SlamTokens.rCircle,
+                child: GlowBorder(
+                  color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
+                  glowRadius: 20,
+                  borderRadius: SlamTokens.rCircle,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: _isCorrect ? SlamTokens.success : SlamTokens.primary,
+                      borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_isCorrect) ...[
+                          SizedBox(width: 28, height: 28,
+                              child: LottieOnce(asset: AppAnim.sparkleBurst)),
+                          const SizedBox(width: 4),
+                        ],
+                        Text(
+                          'Nächste Frage',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: _isCorrect
+                                ? SlamTokens.successBgDark
+                                : SlamTokens.primaryOn,
+                            letterSpacing: -0.1,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(Icons.arrow_forward,
-                          size: 18,
-                          color: _isCorrect
-                              ? SlamTokens.successBgDark
-                              : SlamTokens.primaryOn),
-                    ],
+                        const SizedBox(width: 8),
+                        Icon(Icons.arrow_forward,
+                            size: 18,
+                            color: _isCorrect
+                                ? SlamTokens.successBgDark
+                                : SlamTokens.primaryOn),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -924,7 +849,11 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
           : Row(
               children: [
                 // Hint button
-                GestureDetector(
+                RippleTap(
+                  onTap: canHint ? _revealHint : null,
+                  color: subjectColor,
+                  borderRadius: SlamTokens.rCircle,
+                  child: GestureDetector(
                   onTap: canHint ? _revealHint : null,
                   child: AnimatedContainer(
                     duration: SlamTokens.dState,
@@ -958,7 +887,8 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                       ],
                     ),
                   ),
-                ),
+                ),   // GestureDetector (hint)
+                ),   // RippleTap (hint)
 
                 // Center text
                 Expanded(
@@ -974,8 +904,10 @@ class _FeedQuestionCardState extends ConsumerState<FeedQuestionCard>
                 ),
 
                 // Skip button
-                GestureDetector(
+                RippleTap(
                   onTap: _skipToNext,
+                  color: SlamTokens.textDim,
+                  borderRadius: SlamTokens.rCircle,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 12),
@@ -1345,6 +1277,238 @@ class _SuccessBurstState extends State<_SuccessBurst>
                 },
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fully animated option card — 4 states: idle, selected, correct, wrong
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AnimatedOptionCard extends StatefulWidget {
+  const _AnimatedOptionCard({
+    super.key,
+    required this.option,
+    required this.subjectColor,
+    required this.subjectSoft,
+    required this.selectedId,
+    required this.answered,
+    this.onTap,
+    required this.buildText,
+  });
+
+  final QuestionOption option;
+  final Color subjectColor, subjectSoft;
+  final String? selectedId;
+  final bool answered;
+  final VoidCallback? onTap;
+  final Widget Function(String text, Color textColor) buildText;
+
+  @override
+  State<_AnimatedOptionCard> createState() => _AnimatedOptionCardState();
+}
+
+class _AnimatedOptionCardState extends State<_AnimatedOptionCard>
+    with TickerProviderStateMixin {
+  late final AnimationController _pressCtrl;
+  late final AnimationController _revealCtrl;
+  late final AnimationController _glowCtrl;
+  late final Animation<double> _pressScale;
+  late final Animation<double> _revealScale;
+  late final Animation<double> _glow;
+
+  bool _prevAnswered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pressCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 110),
+        reverseDuration: const Duration(milliseconds: 280));
+    _pressScale = Tween<double>(begin: 1.0, end: 0.94)
+        .animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut,
+            reverseCurve: AppCurves.spring));
+
+    _revealCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 420));
+    _revealScale = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.06)
+          .chain(CurveTween(curve: Curves.easeOut)), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.06, end: 0.97)
+          .chain(CurveTween(curve: Curves.easeInOut)), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 0.97, end: 1.0)
+          .chain(CurveTween(curve: AppCurves.spring)), weight: 35),
+    ]).animate(_revealCtrl);
+
+    _glowCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200))
+      ..repeat(reverse: true);
+    _glow = Tween<double>(begin: 0.3, end: 1.0)
+        .animate(CurvedAnimation(parent: _glowCtrl, curve: AppCurves.ambient));
+  }
+
+  @override
+  void didUpdateWidget(_AnimatedOptionCard old) {
+    super.didUpdateWidget(old);
+    final isSelected = widget.selectedId == widget.option.id;
+    final wasSelected = old.selectedId == old.option.id;
+
+    if (isSelected && !wasSelected) {
+      HapticFeedback.selectionClick();
+      _revealCtrl.forward(from: 0);
+    }
+    if (widget.answered && !_prevAnswered) {
+      if (widget.option.isCorrect) {
+        HapticFeedback.heavyImpact();
+        _revealCtrl.forward(from: 0);
+      } else if (isSelected) {
+        HapticFeedback.mediumImpact();
+      }
+    }
+    _prevAnswered = widget.answered;
+  }
+
+  @override
+  void dispose() {
+    _pressCtrl.dispose();
+    _revealCtrl.dispose();
+    _glowCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = widget.selectedId == widget.option.id;
+    final isCorrect = widget.option.isCorrect;
+    final isWrong = widget.answered && isSelected && !isCorrect;
+
+    Color bg, border, textColor, badgeBg, badgeFg;
+    double opacity = 1.0;
+    bool showGlow = false;
+
+    if (!widget.answered) {
+      bg = isSelected ? widget.subjectSoft : SlamTokens.surface;
+      border = isSelected ? widget.subjectColor : SlamTokens.line;
+      textColor = SlamTokens.text;
+      badgeBg = isSelected
+          ? widget.subjectColor
+          : SlamTokens.text.withValues(alpha: 0.06);
+      badgeFg = isSelected ? Colors.white : SlamTokens.textDim;
+      showGlow = isSelected;
+    } else if (isCorrect) {
+      bg = SlamTokens.successSoft;
+      border = SlamTokens.success;
+      textColor = SlamTokens.text;
+      badgeBg = SlamTokens.success;
+      badgeFg = Colors.white;
+      showGlow = true;
+    } else if (isWrong) {
+      bg = SlamTokens.dangerSoft;
+      border = SlamTokens.danger;
+      textColor = SlamTokens.text;
+      badgeBg = SlamTokens.danger;
+      badgeFg = Colors.white;
+    } else {
+      bg = Colors.transparent;
+      border = SlamTokens.line;
+      textColor = SlamTokens.textMute;
+      badgeBg = SlamTokens.text.withValues(alpha: 0.04);
+      badgeFg = SlamTokens.textMute;
+      opacity = 0.42;
+    }
+
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 280),
+      opacity: opacity,
+      child: ScaleTransition(
+        scale: _pressScale,
+        child: AnimatedBuilder(
+          animation: _revealScale,
+          builder: (_, child) => Transform.scale(
+              scale: _revealScale.value, child: child),
+          child: AnimatedBuilder(
+            animation: _glow,
+            builder: (_, child) => Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SlamTokens.rOption),
+                boxShadow: showGlow
+                    ? [BoxShadow(
+                        color: (isCorrect ? SlamTokens.success : widget.subjectColor)
+                            .withValues(alpha: _glow.value * 0.4),
+                        blurRadius: _glow.value * 16,
+                        spreadRadius: _glow.value * 2)]
+                    : null,
+              ),
+              child: child,
+            ),
+            child: GestureDetector(
+              onTapDown: widget.onTap == null ? null : (_) => _pressCtrl.forward(),
+              onTapUp: widget.onTap == null
+                  ? null
+                  : (_) {
+                      _pressCtrl.reverse();
+                      widget.onTap?.call();
+                    },
+              onTapCancel: () => _pressCtrl.reverse(),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: AppCurves.emphasized,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: BorderRadius.circular(SlamTokens.rOption),
+                  border: Border.all(
+                    color: border,
+                    width: (isSelected || (widget.answered && isCorrect)) ? 2.0 : 1.0,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 280),
+                      curve: AppCurves.spring,
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(
+                          color: badgeBg,
+                          borderRadius: BorderRadius.circular(12)),
+                      alignment: Alignment.center,
+                      child: widget.answered &&
+                              (isCorrect || isWrong)
+                          ? AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              transitionBuilder: (c, a) => ScaleTransition(
+                                  scale: a, child: FadeTransition(opacity: a, child: c)),
+                              child: isCorrect
+                                  ? Icon(Icons.check_rounded, size: 20,
+                                      color: badgeFg, key: const ValueKey('check'))
+                                  : Icon(Icons.close_rounded, size: 20,
+                                      color: badgeFg, key: const ValueKey('x')))
+                          : AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: Text(widget.option.id,
+                                  key: ValueKey(widget.option.id),
+                                  style: GoogleFonts.fraunces(fontSize: 14,
+                                      fontWeight: FontWeight.w800, color: badgeFg))),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(child: widget.buildText(widget.option.text, textColor)),
+                    if (widget.answered && isCorrect)
+                      SizedBox(
+                        width: 32, height: 32,
+                        child: LottieOnce(asset: AppAnim.sparkleBurst),
+                      ),
+                    if (isWrong)
+                      SizedBox(
+                        width: 32, height: 32,
+                        child: LottieOnce(asset: AppAnim.wrongX),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
