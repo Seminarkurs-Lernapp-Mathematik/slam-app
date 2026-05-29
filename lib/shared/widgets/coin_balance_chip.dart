@@ -6,6 +6,7 @@ import '../../app/design_tokens.dart';
 import '../../core/models/user_stats.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/firestore_service.dart';
+import '../animations/app_animations.dart';
 
 /// Coin Balance Chip Widget
 ///
@@ -33,7 +34,11 @@ class CoinBalanceChip extends ConsumerWidget {
     );
 
     return userStatsAsync.when(
-      data: (stats) => _buildChip(context, theme, stats.coins),
+      data: (stats) => ScaleIn(
+        curve: AppCurves.spring,
+        duration: AppDurations.standard,
+        child: _buildChip(context, theme, stats.coins),
+      ),
       loading: () => _buildChip(context, theme, 0, isLoading: true),
       error: (_, __) => _buildChip(context, theme, 0),
     );
@@ -59,17 +64,13 @@ class CoinBalanceChip extends ConsumerWidget {
           const SizedBox(width: 6),
           if (isLoading)
             SizedBox(
-              width: 12,
+              width: 24,
               height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(SlamTokens.warn),
-              ),
+              child: LottieLoop(asset: AppAnim.loadingDots),
             )
           else
-            Text(
-              _formatNumber(coins),
+            AnimatedCounter(
+              value: coins,
               style: GoogleFonts.dmSans(
                 color: SlamTokens.warn,
                 fontWeight: FontWeight.w700,
@@ -81,16 +82,6 @@ class CoinBalanceChip extends ConsumerWidget {
     );
   }
 
-  /// Format number with K/M suffixes
-  String _formatNumber(int number) {
-    if (number >= 1000000) {
-      return '${(number / 1000000).toStringAsFixed(1)}M';
-    } else if (number >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
-    } else {
-      return number.toString();
-    }
-  }
 }
 
 /// User Stats Stream Provider (local to this widget)
