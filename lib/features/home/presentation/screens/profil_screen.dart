@@ -12,6 +12,7 @@ import '../../../gamification/presentation/screens/progress_screen.dart'
     show userStatsStreamProvider;
 import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 
 /// Profil Screen - Combines progress display with quick actions
@@ -39,7 +40,9 @@ class ProfilScreen extends ConsumerWidget {
 
                 // Compact stats strip — lives in the space "freed" by pushing content down
                 userStatsAsync.when(
-                  data: (stats) => _CompactStatsStrip(stats: stats),
+                  data: (stats) => SlideInUp(
+                    child: _CompactStatsStrip(stats: stats),
+                  ),
                   loading: () => const SizedBox(height: 52),
                   error: (_, __) => const SizedBox(height: 52),
                 ),
@@ -55,7 +58,10 @@ class ProfilScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Column(
                 children: [
-                  _buildProfileHeader(context, name),
+                  SlideInUp(
+                    delay: const Duration(milliseconds: 80),
+                    child: _buildProfileHeader(context, name),
+                  ),
                   const SizedBox(height: 16),
                   userStatsAsync.whenData((stats) {
                         final today =
@@ -76,7 +82,10 @@ class ProfilScreen extends ConsumerWidget {
                         );
                       }).value ??
                       const SizedBox.shrink(),
-                  _buildQuickActions(context),
+                  SlideInUp(
+                    delay: const Duration(milliseconds: 160),
+                    child: _buildQuickActions(context),
+                  ),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -96,7 +105,7 @@ class ProfilScreen extends ConsumerWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, String name) {
-    return GestureDetector(
+    return PressScale(
       onTap: () => _showProfileDialog(context, name),
       child: Container(
         decoration: BoxDecoration(
@@ -118,28 +127,34 @@ class ProfilScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            Container(
-              width: 68,
-              height: 68,
-              decoration: BoxDecoration(
-                gradient: SlamTokens.primaryGradient,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: SlamTokens.primary.withValues(alpha: 0.4),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
-                    spreadRadius: -4,
-                  )
-                ],
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                name.substring(0, 1).toUpperCase(),
-                style: GoogleFonts.fraunces(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
+            PulseGlow(
+              color: SlamTokens.primary,
+              minRadius: 2.0,
+              maxRadius: 10.0,
+              duration: const Duration(milliseconds: 2000),
+              child: Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  gradient: SlamTokens.primaryGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: SlamTokens.primary.withValues(alpha: 0.4),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                      spreadRadius: -4,
+                    )
+                  ],
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  name.substring(0, 1).toUpperCase(),
+                  style: GoogleFonts.fraunces(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -475,36 +490,65 @@ class _CompactStatsStrip extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
+            child: ScaleIn(
+              delay: const Duration(milliseconds: 0),
               child: _StatTile(
-            icon: Icons.military_tech,
-            label: 'Level',
-            value: '${stats.calculatedLevel}',
-            color: SlamTokens.primary,
-          )),
+                icon: Icons.military_tech,
+                label: 'Level',
+                value: '${stats.calculatedLevel}',
+                color: SlamTokens.primary,
+              ),
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
-              child: _StatTile(
-            icon: Icons.local_fire_department,
-            label: 'Streak',
-            value: '${stats.streak}d',
-            color: SlamTokens.warn,
-          )),
+            child: ScaleIn(
+              delay: const Duration(milliseconds: 60),
+              child: stats.streak > 0
+                  ? PulseGlow(
+                      color: SlamTokens.warn,
+                      minRadius: 0,
+                      maxRadius: 6,
+                      duration: const Duration(milliseconds: 1600),
+                      child: _StatTile(
+                        icon: Icons.local_fire_department,
+                        label: 'Streak',
+                        value: '${stats.streak}d',
+                        color: SlamTokens.warn,
+                      ),
+                    )
+                  : _StatTile(
+                      icon: Icons.local_fire_department,
+                      label: 'Streak',
+                      value: '${stats.streak}d',
+                      color: SlamTokens.warn,
+                    ),
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
+            child: ScaleIn(
+              delay: const Duration(milliseconds: 120),
               child: _StatTile(
-            icon: Icons.star,
-            label: 'XP',
-            value: '${stats.totalXp}',
-            color: SlamTokens.warn,
-          )),
+                icon: Icons.star,
+                label: 'XP',
+                value: '${stats.totalXp}',
+                color: SlamTokens.warn,
+              ),
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
+            child: ScaleIn(
+              delay: const Duration(milliseconds: 180),
               child: _StatTile(
-            icon: Icons.monetization_on,
-            label: 'Coins',
-            value: '${stats.coins}',
-            color: SlamTokens.warn,
-          )),
+                icon: Icons.monetization_on,
+                label: 'Coins',
+                value: '${stats.coins}',
+                color: SlamTokens.warn,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -10,6 +10,7 @@ import '../../../../core/models/user_stats.dart';
 import '../../../../core/models/theme_unlock.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 import '../widgets/purchase_success_animation.dart';
 
@@ -30,13 +31,13 @@ class ShopScreen extends ConsumerWidget {
           data: (unlocks) =>
               _ShopBody(stats: stats, unlocks: unlocks, userId: userId),
           loading: () => Center(
-              child: CircularProgressIndicator(color: SlamTokens.primary)),
+              child: LottieLoop(asset: AppAnim.loadingDots, width: 80, height: 32)),
           error: (e, _) => Center(
               child: Text('Fehler: $e',
                   style: const TextStyle(color: SlamTokens.danger))),
         ),
         loading: () =>
-            Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+            Center(child: LottieLoop(asset: AppAnim.loadingDots, width: 80, height: 32)),
         error: (e, _) => Center(
             child: Text('Fehler: $e',
                 style: const TextStyle(color: SlamTokens.danger))),

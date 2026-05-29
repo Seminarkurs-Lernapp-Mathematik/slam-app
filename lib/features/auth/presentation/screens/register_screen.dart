@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
@@ -107,198 +108,237 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Logo & Title
-                      Icon(
-                        Icons.person_add,
-                        size: 64,
-                        color: theme.colorScheme.primary,
+                      ScaleIn(
+                        curve: AppCurves.spring,
+                        duration: AppDurations.slow,
+                        child: Icon(
+                          Icons.person_add,
+                          size: 64,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Registrieren',
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 80),
+                        child: Text(
+                          'Registrieren',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Erstelle dein SLAM-Konto',
-                        style: theme.textTheme.titleSmall,
-                        textAlign: TextAlign.center,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 120),
+                        child: Text(
+                          'Erstelle dein SLAM-Konto',
+                          style: theme.textTheme.titleSmall,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                       const SizedBox(height: 32),
 
                       // Name Field
-                      TextFormField(
-                        controller: _nameController,
-                        textCapitalization: TextCapitalization.words,
-                        decoration: InputDecoration(
-                          labelText: 'Name',
-                          hintText: 'Max Mustermann',
-                          prefixIcon: Icon(Icons.account_circle),
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 160),
+                        child: TextFormField(
+                          controller: _nameController,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: const InputDecoration(
+                            labelText: 'Name',
+                            hintText: 'Max Mustermann',
+                            prefixIcon: Icon(Icons.account_circle),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte Namen eingeben';
+                            }
+                            if (value.length < 2) {
+                              return 'Name muss mindestens 2 Zeichen lang sein';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte Namen eingeben';
-                          }
-                          if (value.length < 2) {
-                            return 'Name muss mindestens 2 Zeichen lang sein';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Email Field
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'E-Mail',
-                          hintText: 'name@mvl-gym.de',
-                          prefixIcon: Icon(Icons.alternate_email),
-                          helperText: 'Nur @mvl-gym.de Adressen erlaubt',
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 200),
+                        child: TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            labelText: 'E-Mail',
+                            hintText: 'name@mvl-gym.de',
+                            prefixIcon: Icon(Icons.alternate_email),
+                            helperText: 'Nur @mvl-gym.de Adressen erlaubt',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte E-Mail eingeben';
+                            }
+                            final authService = ref.read(authServiceProvider);
+                            if (!authService.isValidEmail(value)) {
+                              return 'Nur @mvl-gym.de Adressen erlaubt';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte E-Mail eingeben';
-                          }
-                          final authService = ref.read(authServiceProvider);
-                          if (!authService.isValidEmail(value)) {
-                            return 'Nur @mvl-gym.de Adressen erlaubt';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Password Field
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Passwort',
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 240),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: 'Passwort',
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: AnimatedSwitcher(
+                                duration: AppDurations.quick,
+                                child: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  key: ValueKey(_obscurePassword),
+                                ),
+                              ),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
+                            helperText: 'Mindestens 6 Zeichen',
                           ),
-                          helperText: 'Mindestens 6 Zeichen',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte Passwort eingeben';
+                            }
+                            if (value.length < 6) {
+                              return 'Passwort muss mindestens 6 Zeichen lang sein';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte Passwort eingeben';
-                          }
-                          if (value.length < 6) {
-                            return 'Passwort muss mindestens 6 Zeichen lang sein';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Confirm Password Field
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: _obscureConfirmPassword,
-                        decoration: InputDecoration(
-                          labelText: 'Passwort bestätigen',
-                          prefixIcon: Icon(Icons.lock_outline),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 280),
+                        child: TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          decoration: InputDecoration(
+                            labelText: 'Passwort bestätigen',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: AnimatedSwitcher(
+                                duration: AppDurations.quick,
+                                child: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  key: ValueKey(_obscureConfirmPassword),
+                                ),
+                              ),
+                              onPressed: () => setState(() =>
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword;
-                              });
-                            },
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte Passwort bestätigen';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwörter stimmen nicht überein';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte Passwort bestätigen';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwörter stimmen nicht überein';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Grade Level
-                      DropdownButtonFormField<String>(
-                        value: _selectedGrade,
-                        decoration: const InputDecoration(
-                          labelText: 'Klasse / Jahrgangsstufe',
-                          prefixIcon: Icon(Icons.school),
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 320),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedGrade,
+                          decoration: const InputDecoration(
+                            labelText: 'Klasse / Jahrgangsstufe',
+                            prefixIcon: Icon(Icons.school),
+                          ),
+                          items: _grades.map((g) {
+                            final label = g.startsWith('Klasse_')
+                                ? 'Klasse ${g.substring(7)}'
+                                : g;
+                            return DropdownMenuItem(
+                                value: g, child: Text(label));
+                          }).toList(),
+                          onChanged: (v) {
+                            if (v == null) return;
+                            setState(() => _selectedGrade = v);
+                          },
                         ),
-                        items: _grades.map((g) {
-                          final label = g.startsWith('Klasse_')
-                              ? 'Klasse ${g.substring(7)}'
-                              : g;
-                          return DropdownMenuItem(value: g, child: Text(label));
-                        }).toList(),
-                        onChanged: (v) {
-                          if (v == null) return;
-                          setState(() => _selectedGrade = v);
-                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Course type (only for upper school)
                       if (_upperGrades.contains(_selectedGrade))
-                        DropdownButtonFormField<String>(
-                          value: _selectedCourseType,
-                          decoration: const InputDecoration(
-                            labelText: 'Kursart',
-                            prefixIcon: Icon(Icons.menu_book),
+                        SlideInUp(
+                          delay: const Duration(milliseconds: 360),
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedCourseType,
+                            decoration: const InputDecoration(
+                              labelText: 'Kursart',
+                              prefixIcon: Icon(Icons.menu_book),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'Grundkurs',
+                                  child: Text('Grundkurs')),
+                              DropdownMenuItem(
+                                  value: 'Leistungskurs',
+                                  child: Text('Leistungskurs')),
+                            ],
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() => _selectedCourseType = v);
+                            },
                           ),
-                          items: const [
-                            DropdownMenuItem(
-                                value: 'Grundkurs', child: Text('Grundkurs')),
-                            DropdownMenuItem(
-                                value: 'Leistungskurs',
-                                child: Text('Leistungskurs')),
-                          ],
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() => _selectedCourseType = v);
-                          },
                         ),
                       const SizedBox(height: 24),
 
                       // Error Message
                       if (_errorMessage != null) ...[
-                        InlineErrorMessage(message: _errorMessage!),
+                        SlideInUp(
+                          child: InlineErrorMessage(message: _errorMessage!),
+                        ),
                         const SizedBox(height: 16),
                       ],
 
                       // Register Button
-                      GradientButton(
-                        text: 'Registrieren',
-                        onPressed: _handleRegister,
-                        isLoading: _isLoading,
-                        icon: Icons.person_add,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 380),
+                        child: GradientButton(
+                          text: 'Registrieren',
+                          onPressed: _handleRegister,
+                          isLoading: _isLoading,
+                          icon: Icons.person_add,
+                        ),
                       ),
                       const SizedBox(height: 16),
 
-                      // Login Link
-                      TextButton(
-                        onPressed: () => context.go('/login'),
-                        child: const Text('Schon ein Konto? Anmelden'),
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 420),
+                        child: TextButton(
+                          onPressed: () => context.go('/login'),
+                          child: const Text('Schon ein Konto? Anmelden'),
+                        ),
                       ),
                     ],
                   ),
