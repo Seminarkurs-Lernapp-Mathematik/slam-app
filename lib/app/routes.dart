@@ -43,13 +43,33 @@ class GoRouterRefreshStream extends ChangeNotifier {
 }
 
 /// Material 3 Expressive Page Transition
-/// Uses emphasized easing curves for smooth, physics-based motion
-NoTransitionPage<void> buildPageWithExpressiveTransition({
+/// Fade + scale (0.95→1.0) with emphasized easing — 320ms
+CustomTransitionPage<void> buildPageWithExpressiveTransition({
   required BuildContext context,
   required GoRouterState state,
   required Widget child,
 }) {
-  return NoTransitionPage<void>(key: state.pageKey, child: child);
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 320),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Emphasized easing: fast start → gentle deceleration
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: const Cubic(0.05, 0.7, 0.1, 1.0),
+        reverseCurve: const Cubic(0.3, 0.0, 1.0, 1.0),
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
 }
 
 /// App Routes Provider

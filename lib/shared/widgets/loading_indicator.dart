@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Loading Indicator Widget
-///
-/// Displays a loading spinner with optional message.
+import '../animations/app_animations.dart';
+
 class LoadingIndicator extends StatelessWidget {
   final String? message;
   final double size;
@@ -18,26 +17,25 @@ class LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final effectiveColor = color ?? theme.colorScheme.primary;
 
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: size,
-            height: size,
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(effectiveColor),
-              strokeWidth: 3,
-            ),
+          LottieLoop(
+            asset: AppAnim.loadingDots,
+            width: size * 2,
+            height: size * 0.7,
           ),
           if (message != null) ...[
-            const SizedBox(height: 16),
-            Text(
-              message!,
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
+            const SizedBox(height: 12),
+            SlideInUp(
+              delay: const Duration(milliseconds: 100),
+              child: Text(
+                message!,
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ],
@@ -45,8 +43,7 @@ class LoadingIndicator extends StatelessWidget {
     );
   }
 
-  /// Small inline spinner
   factory LoadingIndicator.small({Color? color}) {
-    return LoadingIndicator(size: 24, color: color);
+    return const LoadingIndicator(size: 24);
   }
 }
