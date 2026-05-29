@@ -243,15 +243,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           child: const Text('Passwort vergessen?'),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        ),   // FloatingParticles
-      ),     // AnimatedGradientBg
-    );
+                    ],           // children
+                  ),             // Column
+                ),               // Form
+              ),                 // GlassPanel
+            ),                   // ConstrainedBox
+          ),                     // SingleChildScrollView
+        ),                       // Center
+      ),                         // SafeArea
+    ),                           // FloatingParticles
+  ),                             // AnimatedGradientBg (body:)
+);
   }
 }
