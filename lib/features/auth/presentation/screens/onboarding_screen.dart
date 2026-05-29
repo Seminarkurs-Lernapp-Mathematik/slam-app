@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/design_tokens.dart';
+import '../../../../shared/animations/app_animations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -143,16 +144,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
 
                   // Action button
-                  FilledButton.icon(
-                    onPressed: _isLast
+                  PressScale(
+                    onTap: _isLast
                         ? (_consented ? _finish : null)
                         : () => _controller.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                             ),
-                    icon: Icon(_isLast ? Icons.check : Icons.arrow_forward,
-                        size: 18),
-                    label: Text(_isLast ? 'Los geht\'s!' : 'Weiter'),
+                    child: FilledButton.icon(
+                      onPressed: _isLast
+                          ? (_consented ? _finish : null)
+                          : () => _controller.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              ),
+                      icon: AnimatedSwitcher(
+                        duration: AppDurations.quick,
+                        child: Icon(
+                          _isLast ? Icons.check : Icons.arrow_forward,
+                          size: 18,
+                          key: ValueKey(_isLast),
+                        ),
+                      ),
+                      label: AnimatedSwitcher(
+                        duration: AppDurations.quick,
+                        child: Text(
+                          _isLast ? 'Los geht\'s!' : 'Weiter',
+                          key: ValueKey(_isLast),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -169,30 +190,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
+          ScaleIn(
+            key: ValueKey(page.icon),
+            duration: const Duration(milliseconds: 500),
+            curve: AppCurves.spring,
+            child: PulseGlow(
+              color: cs.primary,
+              minRadius: 0,
+              maxRadius: 12,
+              duration: const Duration(milliseconds: 2000),
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: cs.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(page.icon, size: 56, color: cs.primary),
+              ),
             ),
-            child: Icon(page.icon, size: 56, color: cs.primary),
           ),
           const SizedBox(height: 40),
-          Text(
-            page.title,
-            style: theme.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+          SlideInUp(
+            key: ValueKey('${page.icon}_title'),
+            delay: const Duration(milliseconds: 100),
+            child: Text(
+              page.title,
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 16),
-          Text(
-            page.body,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: cs.onSurfaceVariant,
-              height: 1.5,
+          SlideInUp(
+            key: ValueKey('${page.icon}_body'),
+            delay: const Duration(milliseconds: 160),
+            child: Text(
+              page.body,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: cs.onSurfaceVariant,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -205,25 +245,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(
-              color: SlamTokens.primarySoft,
-              borderRadius: BorderRadius.circular(24),
+          ScaleIn(
+            duration: const Duration(milliseconds: 500),
+            curve: AppCurves.spring,
+            child: Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: SlamTokens.primarySoft,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(Icons.privacy_tip_outlined,
+                  size: 44, color: SlamTokens.primary),
             ),
-            child: Icon(Icons.privacy_tip_outlined,
-                size: 44, color: SlamTokens.primary),
           ),
           const SizedBox(height: 28),
-          Text(
-            'Datenschutz & Einwilligung',
-            style: GoogleFonts.fraunces(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: SlamTokens.text,
+          SlideInUp(
+            delay: const Duration(milliseconds: 100),
+            child: Text(
+              'Datenschutz & Einwilligung',
+              style: GoogleFonts.fraunces(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: SlamTokens.text,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Container(

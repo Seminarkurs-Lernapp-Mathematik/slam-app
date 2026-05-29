@@ -7,6 +7,7 @@ import '../../../../app/design_tokens.dart';
 import '../../../../core/constants/topic_catalog.dart';
 import '../../../../core/models/lernplan.dart';
 import '../../../../core/services/ai_service.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/glass_panel.dart';
 import '../providers/lernplan_providers.dart';
 
@@ -29,8 +30,8 @@ class LernplanScreen extends ConsumerWidget {
               .toList();
           return _LernplanBody(activeTopics: validTopics);
         },
-        loading: () =>
-            Center(child: CircularProgressIndicator(color: SlamTokens.primary)),
+        loading: () => Center(
+          child: LottieLoop(asset: AppAnim.loadingDots, width: 80, height: 32)),
         error: (error, _) => Center(
           child: Text('Fehler: $error',
               style: const TextStyle(color: SlamTokens.danger)),
@@ -82,7 +83,8 @@ class _LernplanHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      child: Padding(
+      child: SlideInUp(
+        child: Padding(
         padding: const EdgeInsets.fromLTRB(
             SlamTokens.gutter, 24, SlamTokens.gutter, 8),
         child: Row(
@@ -134,6 +136,7 @@ class _LernplanHeader extends StatelessWidget {
               ),
           ],
         ),
+      ),
       ),
     );
   }
