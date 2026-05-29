@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/models/user_stats.dart';
+import '../../../../shared/animations/app_animations.dart';
 
 /// Level Progress Circle Widget
 ///
@@ -76,7 +77,10 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
     final theme = Theme.of(context);
 
     return Center(
-      child: SizedBox(
+      child: ScaleIn(
+        duration: const Duration(milliseconds: 600),
+        curve: AppCurves.spring,
+        child: SizedBox(
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
@@ -157,6 +161,7 @@ class _LevelProgressCircleState extends State<LevelProgressCircle>
             );
           },
         ),
+      ),
       ),
     );
   }

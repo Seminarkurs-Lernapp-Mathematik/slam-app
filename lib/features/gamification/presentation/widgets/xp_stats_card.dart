@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/models/user_stats.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/widgets.dart';
 
 /// XP Stats Card Widget
@@ -18,7 +19,9 @@ class XPStatsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return GlassPanel(
+    return SlideInUp(
+      delay: const Duration(milliseconds: 60),
+      child: GlassPanel(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,6 +103,7 @@ class XPStatsCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -173,18 +177,31 @@ class XPStatsCard extends StatelessWidget {
     required Color color,
   }) {
     final theme = Theme.of(context);
+    // Parse numeric value if possible for animated counter
+    final numericStr = value.replaceAll(RegExp(r'[^0-9]'), '');
+    final numericVal = int.tryParse(numericStr);
+    final suffix = value.replaceAll(RegExp(r'[0-9]'), '').trim();
 
     return Column(
       children: [
         Icon(icon, color: color, size: 20),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
+        numericVal != null
+            ? AnimatedCounter(
+                value: numericVal,
+                suffix: suffix.isNotEmpty ? ' $suffix' : '',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              )
+            : Text(
+                value,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
