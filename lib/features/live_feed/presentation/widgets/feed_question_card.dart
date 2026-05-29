@@ -13,6 +13,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../providers/live_feed_providers.dart';
 import 'wo_haengts_chat_sheet.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/math_text.dart';
 import '../../../../shared/widgets/confetti_overlay.dart';
 
@@ -1290,33 +1291,20 @@ class _SuccessBurstState extends State<_SuccessBurst>
               ),
             ),
 
-            // Check circle with spring scale
-            AnimatedBuilder(
-              animation: _checkCtrl,
-              builder: (_, __) {
-                final t = Curves.easeOutBack.transform(_checkCtrl.value);
-                return Transform.scale(
-                  scale: t,
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: SlamTokens.success,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: SlamTokens.success.withValues(alpha: 0.55),
-                          blurRadius: 24,
-                          spreadRadius: 2,
-                        )
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.check_rounded,
-                        color: Colors.white, size: 34),
-                  ),
-                );
-              },
+            // Lottie success checkmark
+            LottieOnce(
+              asset: AppAnim.success,
+              size: 140,
+            ),
+
+            // Lottie confetti burst layer
+            Positioned.fill(
+              child: IgnorePointer(
+                child: LottieOnce(
+                  asset: AppAnim.confetti,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
 
             // Floating XP chip

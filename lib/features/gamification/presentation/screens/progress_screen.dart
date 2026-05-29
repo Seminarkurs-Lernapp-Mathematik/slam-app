@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/firestore_service.dart';
@@ -35,8 +36,9 @@ class ProgressScreen extends ConsumerWidget {
         data: (stats) => SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: StaggeredList(
+              staggerMs: 80,
+              initialDelayMs: 40,
               children: [
                 // Level Progress Circle
                 LevelProgressCircle(stats: stats),
@@ -54,19 +56,28 @@ class ProgressScreen extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary
-                                  .withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              Icons.local_fire_department,
-                              color: theme.colorScheme.primary,
-                              size: 24,
-                            ),
-                          ),
+                          stats.streak > 0
+                              ? SizedBox(
+                                  width: 40,
+                                  height: 44,
+                                  child: LottieLoop(
+                                    asset: AppAnim.fireStreak,
+                                    fit: BoxFit.contain,
+                                  ),
+                                )
+                              : Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.local_fire_department,
+                                    color: theme.colorScheme.primary,
+                                    size: 24,
+                                  ),
+                                ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,6 +175,7 @@ class ProgressScreen extends ConsumerWidget {
 
                 // Level Info Card
                 _buildLevelInfoCard(context, stats, theme),
+                const SizedBox(height: 8),
               ],
             ),
           ),

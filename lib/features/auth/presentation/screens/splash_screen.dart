@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/design_tokens.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../shared/animations/app_animations.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -217,21 +218,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             ),
           ),
 
-          // Subtle loading dots at the bottom (barely visible, just indicates activity)
+          // Animated loading indicator at the bottom
           Positioned(
-            bottom: 52,
+            bottom: 48,
             left: 0,
             right: 0,
             child: FadeTransition(
               opacity: _textFade,
               child: Center(
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.5,
-                    color: SlamTokens.primary.withValues(alpha: 0.4),
-                  ),
+                child: LottieLoop(
+                  asset: AppAnim.loadingDots,
+                  width: 72,
+                  height: 28,
+                  speed: 0.85,
                 ),
               ),
             ),

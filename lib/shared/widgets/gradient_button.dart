@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/design_tokens.dart';
+import '../animations/app_animations.dart';
 
 /// Primary CTA button (DESIGN.md §6.1) — pill shape, primary bg, primaryOn text,
 /// with shadow `0 10px 30px -8px primaryAA`.
@@ -84,12 +85,11 @@ class _GradientButtonState extends State<GradientButton> {
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 child: widget.isLoading
                     ? SizedBox(
-                        width: 22,
+                        width: 60,
                         height: 22,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              SlamTokens.primaryOn),
-                          strokeWidth: 2.5,
+                        child: LottieLoop(
+                          asset: AppAnim.loadingDots,
+                          fit: BoxFit.contain,
                         ),
                       )
                     : Row(

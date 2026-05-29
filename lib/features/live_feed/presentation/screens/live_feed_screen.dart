@@ -12,6 +12,7 @@ import '../../../../core/services/firestore_service.dart';
 import '../../../../features/home/presentation/providers/main_nav_notifier.dart';
 import '../../../../features/home/presentation/providers/nav_keys.dart';
 import '../../../learning_plan/presentation/providers/lernplan_providers.dart';
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../providers/live_feed_providers.dart';
 import '../widgets/feed_question_card.dart';
@@ -149,13 +150,18 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: SlamTokens.primary),
-          const SizedBox(height: 24),
-          Text('Generiere Fragen…',
+          LottieLoop(asset: AppAnim.loadingDots, width: 100, height: 40),
+          const SizedBox(height: 20),
+          SlideInUp(
+            delay: const Duration(milliseconds: 200),
+            child: Text(
+              'Generiere Fragen…',
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge
-                  ?.copyWith(color: SlamTokens.textDim)),
+                  ?.copyWith(color: SlamTokens.textDim),
+            ),
+          ),
         ],
       ),
     );
@@ -165,27 +171,46 @@ class _LiveFeedScreenState extends ConsumerState<LiveFeedScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: StaggeredList(
           children: [
-            const Icon(Icons.error_outline, size: 56, color: SlamTokens.danger),
+            ScaleIn(
+              curve: AppCurves.spring,
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: SlamTokens.danger.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.error_outline,
+                    size: 36, color: SlamTokens.danger),
+              ),
+            ),
             const SizedBox(height: 16),
             Text('Fehler', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
-            Text(_errorMessage ?? 'Unbekannter Fehler',
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: SlamTokens.textDim)),
+            Text(
+              _errorMessage ?? 'Unbekannter Fehler',
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: SlamTokens.textDim),
+            ),
             const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () {
+            PressScale(
+              onTap: () {
                 setState(() => _errorMessage = null);
                 _generateQuestions();
               },
-              icon: const Icon(Icons.refresh),
-              label: const Text('Erneut versuchen'),
+              child: FilledButton.icon(
+                onPressed: () {
+                  setState(() => _errorMessage = null);
+                  _generateQuestions();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Erneut versuchen'),
+              ),
             ),
           ],
         ),
@@ -261,19 +286,25 @@ class _FeedHeader extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _StatPill(
-                      icon: Icons.local_fire_department,
-                      value: '${stats.streak}',
-                      color: SlamTokens.danger),
+                    icon: Icons.local_fire_department,
+                    value: '${stats.streak}',
+                    color: SlamTokens.danger,
+                    delay: const Duration(milliseconds: 50),
+                  ),
                   const SizedBox(width: 6),
                   _StatPill(
-                      icon: Icons.monetization_on,
-                      value: _fmt(stats.coins),
-                      color: SlamTokens.warn),
+                    icon: Icons.monetization_on,
+                    value: _fmt(stats.coins),
+                    color: SlamTokens.warn,
+                    delay: const Duration(milliseconds: 110),
+                  ),
                   const SizedBox(width: 6),
                   _StatPill(
-                      icon: Icons.star,
-                      value: _fmt(stats.totalXp),
-                      color: SlamTokens.primary),
+                    icon: Icons.star,
+                    value: _fmt(stats.totalXp),
+                    color: SlamTokens.primary,
+                    delay: const Duration(milliseconds: 170),
+                  ),
                 ],
               ),
               loading: () => const SizedBox.shrink(),
@@ -453,46 +484,49 @@ class _RingPainter extends CustomPainter {
 }
 
 class _StatPill extends StatelessWidget {
-  const _StatPill(
-      {required this.icon, required this.value, required this.color});
+  const _StatPill({
+    required this.icon,
+    required this.value,
+    required this.color,
+    this.delay = Duration.zero,
+  });
   final IconData icon;
   final String value;
   final Color color;
+  final Duration delay;
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOutBack,
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: SlamTokens.surface,
-              borderRadius: BorderRadius.circular(SlamTokens.rCircle),
-              border: Border.all(color: SlamTokens.line),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 14, color: color),
-                const SizedBox(width: 4),
-                Text(
-                  value,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: SlamTokens.text,
-                  ),
-                ),
-              ],
-            ),
+    return ScaleIn(
+      delay: delay,
+      duration: const Duration(milliseconds: 380),
+      curve: AppCurves.spring,
+      child: PressScale(
+        pressedScale: 0.90,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: SlamTokens.surface,
+            borderRadius: BorderRadius.circular(SlamTokens.rCircle),
+            border: Border.all(color: SlamTokens.line),
           ),
-        );
-      },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 4),
+              Text(
+                value,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: SlamTokens.text,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

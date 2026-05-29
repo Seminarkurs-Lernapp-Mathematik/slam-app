@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../shared/animations/app_animations.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../providers/auth_providers.dart';
 
@@ -12,7 +13,8 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -20,15 +22,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  // Shake controller for error feedback
+  late AnimationController _shakeCtrl;
+  late Animation<double> _shakeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _shakeAnim = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _shakeCtrl, curve: Curves.elasticIn),
+    );
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _shakeCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      _shakeCtrl.forward(from: 0);
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -41,19 +63,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         'password': _passwordController.text,
       }).future);
 
-      if (mounted) {
-        context.go('/home');
-      }
+      if (mounted) context.go('/home');
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
+      setState(() => _errorMessage = e.toString());
+      _shakeCtrl.forward(from: 0);
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -76,103 +91,143 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Logo & Title
-                      Icon(
-                        Icons.school,
-                        size: 64,
-                        color: theme.colorScheme.primary,
+                      // Icon
+                      ScaleIn(
+                        curve: AppCurves.spring,
+                        duration: AppDurations.slow,
+                        child: Icon(
+                          Icons.school,
+                          size: 64,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'SLAM Learning',
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+
+                      // Title
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 80),
+                        child: Text(
+                          'SLAM Learning',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Anmelden',
-                        style: theme.textTheme.titleMedium,
-                        textAlign: TextAlign.center,
+
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 120),
+                        child: Text(
+                          'Anmelden',
+                          style: theme.textTheme.titleMedium,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                       const SizedBox(height: 32),
 
-                      // Email Field
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'E-Mail',
-                          hintText: 'name@mvl-gym.de',
-                          prefixIcon: Icon(Icons.alternate_email),
+                      // Email
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 160),
+                        child: TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            labelText: 'E-Mail',
+                            hintText: 'name@mvl-gym.de',
+                            prefixIcon: Icon(Icons.alternate_email),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte E-Mail eingeben';
+                            }
+                            if (!value.contains('@')) return 'Ungültige E-Mail';
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte E-Mail eingeben';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Ungültige E-Mail';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 16),
 
-                      // Password Field
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Passwort',
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                      // Password
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 210),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: 'Passwort',
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: AnimatedSwitcher(
+                                duration: AppDurations.quick,
+                                child: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  key: ValueKey(_obscurePassword),
+                                ),
+                              ),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bitte Passwort eingeben';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Bitte Passwort eingeben';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 24),
 
-                      // Error Message
+                      // Error message with shake
                       if (_errorMessage != null) ...[
-                        InlineErrorMessage(message: _errorMessage!),
+                        AnimatedBuilder(
+                          animation: _shakeAnim,
+                          builder: (_, child) => Transform.translate(
+                            offset: Offset(
+                              8 *
+                                  (0.5 - (_shakeAnim.value * 3 % 1).abs()) *
+                                  (1 - _shakeAnim.value),
+                              0,
+                            ),
+                            child: child,
+                          ),
+                          child: SlideInUp(
+                            child: InlineErrorMessage(message: _errorMessage!),
+                          ),
+                        ),
                         const SizedBox(height: 16),
                       ],
 
                       // Login Button
-                      GradientButton(
-                        text: 'Anmelden',
-                        onPressed: _handleLogin,
-                        isLoading: _isLoading,
-                        icon: Icons.login,
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 260),
+                        child: GradientButton(
+                          text: 'Anmelden',
+                          onPressed: _handleLogin,
+                          isLoading: _isLoading,
+                          icon: Icons.login,
+                        ),
                       ),
                       const SizedBox(height: 16),
 
-                      // Register Link
-                      TextButton(
-                        onPressed: () => context.go('/register'),
-                        child: const Text('Noch kein Konto? Registrieren'),
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 300),
+                        child: TextButton(
+                          onPressed: () => context.go('/register'),
+                          child:
+                              const Text('Noch kein Konto? Registrieren'),
+                        ),
                       ),
 
-                      // Forgot Password
-                      TextButton(
-                        onPressed: () => context.go('/password-reset'),
-                        child: const Text('Passwort vergessen?'),
+                      SlideInUp(
+                        delay: const Duration(milliseconds: 330),
+                        child: TextButton(
+                          onPressed: () => context.go('/password-reset'),
+                          child: const Text('Passwort vergessen?'),
+                        ),
                       ),
                     ],
                   ),
