@@ -77,7 +77,37 @@ TypeScript       ████████████                           
 
 ---
 
-## Quick Start
+## App installieren
+
+> ⚠️ **Die Web-Version unter [app.learn-smart.app](https://app.learn-smart.app) hat erhebliche Performance-Probleme** und ist nicht für den regulären Einsatz geeignet. Wir empfehlen dringend die native Installation auf Android oder iOS.
+
+### Android
+
+1. [Releases](https://github.com/Seminarkurs-Lernapp-Mathematik/slam-app/releases) öffnen und die neueste **`app-release.apk`** herunterladen.
+2. Die APK auf dem Gerät öffnen (ggf. vorher unter **Einstellungen → Sicherheit** die Installation aus unbekannten Quellen erlauben).
+3. Installation bestätigen — fertig.
+
+### iOS (Sideloading)
+
+Da die App nicht im App Store verfügbar ist, muss sie per Sideloading installiert werden. Lade zunächst die neueste **`app-unsigned.ipa`** von [Releases](https://github.com/Seminarkurs-Lernapp-Mathematik/slam-app/releases) herunter.
+
+> **Hinweis:** Mit einer kostenlosen Apple-ID muss die App alle **7 Tage** neu signiert werden (Einschränkung von Apple, kein bezahltes Developer-Konto nötig).
+
+**Windows & Linux — Sideloadly (empfohlen)**
+
+1. [Sideloadly](https://sideloadly.io) herunterladen und installieren (für Windows oder Linux).
+2. iPhone per USB anschließen und auf dem Gerät „Vertrauen" tippen.
+3. Die `app-unsigned.ipa` in Sideloadly ziehen, Apple-ID eingeben, auf **Start** klicken.
+4. Am iPhone: **Einstellungen → Allgemein → VPN & Geräteverwaltung** → dem Entwickler-Zertifikat vertrauen.
+
+**macOS — Sideloadly (einfachste Option)**
+
+Sideloadly gibt es auch für macOS — die Schritte sind identisch mit Windows/Linux oben.  
+Alternativ: Mit Xcode (**Window → Devices and Simulators** → IPA auf das verbundene iPhone ziehen) lässt sich die App ebenfalls installieren, das ist aber aufwändiger.
+
+---
+
+## Quick Start (Entwicklung)
 
 ```bash
 flutter pub get
